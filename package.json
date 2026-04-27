@@ -1,0 +1,62 @@
+{
+  "name": "tracepulse",
+  "version": "0.1.0",
+  "description": "Runtime feedback MCP server for AI coding agents. ViewGraph sees the UI — TracePulse feels the backend.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Sourjya Dutta",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sourjya/tracepulse.git"
+  },
+  "homepage": "https://github.com/sourjya/tracepulse",
+  "bugs": {
+    "url": "https://github.com/sourjya/tracepulse/issues"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "debugging",
+    "runtime",
+    "dev-server",
+    "error-monitoring",
+    "ai-agent",
+    "coding-agent",
+    "model-context-protocol"
+  ],
+  "bin": {
+    "tracepulse": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "skills"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/ tests/",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.32.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "eslint": "^9.26.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
+  }
+}

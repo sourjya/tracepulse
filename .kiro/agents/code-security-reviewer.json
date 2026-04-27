@@ -1,0 +1,47 @@
+{
+  "name": "code-security-reviewer",
+  "description": "Performs structured code security and quality audits with restricted tool access. Supports tiered review (T1 pre-commit, T2 feature, T3 sprint).",
+  "prompt": "file://../prompts/review-code-security.md",
+  "tools": [
+    "read",
+    "grep",
+    "glob",
+    "knowledge",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "knowledge"
+  ],
+  "resources": [
+    "file://README.md",
+    "file://docs/**/*.md",
+    "file://.kiro/**/*.md",
+    "file://pyproject.toml",
+    "file://package.json",
+    "file://package-lock.json",
+    "file://requirements.txt",
+    "file://Gemfile",
+    "file://Gemfile.lock",
+    "file://go.mod",
+    "file://go.sum",
+    "file://Cargo.toml",
+    "file://Cargo.lock",
+    "file://pom.xml",
+    "file://Dockerfile*",
+    "file://docker-compose*.yml",
+    "file://docker-compose*.yaml",
+    "file://.github/**/*.yml",
+    "file://.github/**/*.yaml",
+    "file://terraform/**/*.tf",
+    "file://k8s/**/*.yaml",
+    "file://helm/**/*.yaml",
+    "file://cdk/**/*.ts",
+    "file://.env.example",
+    "file://nginx*.conf",
+    "file://Makefile"
+  ],
+  "welcomeMessage": "Security reviewer ready. I will inspect trust boundaries, auth, secrets, injection risks, supply chain, and misconfigurations before suggesting fixes."
+}
