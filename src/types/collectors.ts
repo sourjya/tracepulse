@@ -36,6 +36,8 @@ export interface EventBuffer {
   count(filters?: import("@/types/events.js").EventFilters): number;
   /** Remove all events. Returns count of removed events. */
   clear(): number;
+  /** Remove events matching a specific fingerprint. Returns count removed. */
+  clearByFingerprint(fingerprint: string): number;
   /** Current number of events in the buffer. */
   readonly size: number;
   /** Subscribe to new events. Returns an unsubscribe function. Only called for new events, not dedup updates. */

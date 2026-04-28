@@ -28,6 +28,7 @@ import { handleGetCorrelatedErrors } from "@/tools/get-correlated-errors.js";
 import { handleGetNewErrors } from "@/tools/get-new-errors.js";
 import { handleGetErrorTrends } from "@/tools/get-error-trends.js";
 import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
+import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -185,7 +186,12 @@ export function handleGetRuntimeStatus(
  * @param buffer - The event buffer to clear.
  * @returns CallToolResult with JSON { cleared_count }.
  */
-export function handleClearErrors(buffer: EventBuffer): CallToolResult {
+export function handleClearErrors(buffer: EventBuffer, args?: Record<string, unknown>): CallToolResult {
+  const fingerprint = args?.fingerprint as string | undefined;
+  if (fingerprint) {
+    const removed = buffer.clearByFingerprint(fingerprint);
+    return jsonResult({ cleared_count: removed, fingerprint });
+  }
   const cleared = buffer.clear();
   return jsonResult({ cleared_count: cleared });
 }
@@ -278,14 +284,17 @@ export function createMcpServer(
 
   server.registerTool("clear_errors", {
     title: "Clear Errors",
-    description: "Clear all events from the buffer. Returns count of cleared events.",
+    description: "Clear events from the buffer. Pass fingerprint to clear a specific error, or omit to clear all.",
+    inputSchema: {
+      fingerprint: z.string().optional().describe("Clear only events with this fingerprint. Omit to clear all."),
+    },
     annotations: {
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, () => handleClearErrors(buffer));
+  }, (args) => handleClearErrors(buffer, args as Record<string, unknown>));
 
   // ── Phase 2 Tools ──
 
@@ -406,6 +415,13 @@ export function createMcpServer(
       openWorldHint: false,
     },
   }, () => handleCorrelateWithDiff(buffer, options?.cwd ?? process.cwd()));
+
+  server.registerTool("get_health_summary", {
+    title: "Get Health Summary",
+    description:
+      "One-line health check: error count, warning count, total events, uptime. Use instead of calling get_runtime_status + get_errors + get_server_logs separately.",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetHealthSummary(buffer, getConnected));
 
   return server;
 }

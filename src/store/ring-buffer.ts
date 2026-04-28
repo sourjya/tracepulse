@@ -187,6 +187,18 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
       return removed;
     },
 
+    clearByFingerprint(fingerprint: string): number {
+      let removed = 0;
+      for (let i = 0; i < count; i++) {
+        if (slots[i] && slots[i]!.fingerprint === fingerprint) {
+          removed += slots[i]!.occurrence_count;
+          slots[i] = undefined;
+          fpMap.delete(fingerprint);
+        }
+      }
+      return removed;
+    },
+
     get size(): number {
       return count;
     },

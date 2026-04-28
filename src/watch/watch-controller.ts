@@ -27,6 +27,8 @@ export interface WatchResult {
   readonly watch_duration_ms: number;
   /** Whether any hot-reload event was detected during the window. */
   readonly hot_reload_detected: boolean;
+  /** Total events seen during window (all levels, not just errors). */
+  readonly total_events_seen: number;
 }
 
 /**
@@ -62,12 +64,15 @@ export function watchForErrors(
     const startTime = Date.now();
     const collected: RuntimeEvent[] = [];
     let hotReloadDetected = false;
+    let totalEventsSeen = 0;
 
     const unsubscribe = buffer.subscribe((event: RuntimeEvent) => {
+      totalEventsSeen++;
+
       // Track hot-reload events
       if (event.fingerprint.startsWith("hotreload:")) {
         hotReloadDetected = true;
-        return; // Don't include info-level hot-reload events in error results
+        return;
       }
 
       // Only collect error and warn level events
@@ -85,6 +90,7 @@ export function watchForErrors(
         events: collected,
         watch_duration_ms: Date.now() - startTime,
         hot_reload_detected: hotReloadDetected,
+        total_events_seen: totalEventsSeen,
       });
     }, durationSeconds * 1000);
 
