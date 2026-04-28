@@ -18,6 +18,12 @@ import { redact } from "@/pipeline/secret-redactor.js";
 import { normalizeEvent, normalizeRawLine } from "@/pipeline/event-normalizer.js";
 import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
 
+/** Default allowed command prefixes. Only these can be executed. */
+const DEFAULT_ALLOWED_PREFIXES = [
+  "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
+  "vitest", "jest", "go test", "cargo test", "make", "bash",
+];
+
 /**
  * Handle run_and_watch MCP tool call.
  *
@@ -29,6 +35,21 @@ export async function handleRunAndWatch(
   const command = args.command as string | undefined;
   if (!command) {
     return { content: [{ type: "text", text: "command parameter is required" }], isError: true };
+  }
+
+  // Security: validate command against allowlist
+  const cmdLower = command.trim().toLowerCase();
+  const allowed = DEFAULT_ALLOWED_PREFIXES.some((prefix) =>
+    cmdLower.startsWith(prefix.toLowerCase()),
+  );
+  if (!allowed) {
+    return {
+      content: [{
+        type: "text",
+        text: `Command not allowed. Must start with one of: ${DEFAULT_ALLOWED_PREFIXES.join(", ")}. This restriction prevents arbitrary shell execution.`,
+      }],
+      isError: true,
+    };
   }
 
   const timeout = ((args.timeout_seconds as number | undefined) ?? 60) * 1000;

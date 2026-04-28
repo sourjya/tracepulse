@@ -56,12 +56,36 @@ export function createLogCollector(
     });
   }
 
+  /** Simple token bucket rate limiter: 100 requests per second. */
+  let tokenCount = 100;
+  let lastRefill = Date.now();
+  const RATE_LIMIT = 100;
+  const REFILL_INTERVAL_MS = 1000;
+
+  function checkRateLimit(): boolean {
+    const now = Date.now();
+    if (now - lastRefill >= REFILL_INTERVAL_MS) {
+      tokenCount = RATE_LIMIT;
+      lastRefill = now;
+    }
+    if (tokenCount <= 0) return false;
+    tokenCount--;
+    return true;
+  }
+
   /** Handle incoming HTTP requests. */
   function handleRequest(req: IncomingMessage, res: ServerResponse): void {
-    // Health check
+    // Health check (exempt from rate limiting)
     if (req.method === "GET" && req.url === "/api/v1/health") {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+
+    // Rate limit check
+    if (!checkRateLimit()) {
+      res.writeHead(429, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Rate limit exceeded (100 req/s)" }));
       return;
     }
 
@@ -85,11 +109,20 @@ export function createLogCollector(
             return;
           }
 
+          let parsedPath: string;
+          try {
+            parsedPath = new URL(url).pathname;
+          } catch {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Invalid URL format" }));
+            return;
+          }
+
           const fe: FrontendError = {
             id: crypto.randomUUID(),
             timestamp: Date.now(),
             url,
-            path: new URL(url).pathname,
+            path: parsedPath,
             method: (payload.method as string) ?? "GET",
             statusCode: (payload.statusCode as number) ?? 0,
             statusText: (payload.statusText as string) ?? "",

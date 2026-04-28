@@ -165,7 +165,7 @@ See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
 
 | SRR | Date | Scope | Report |
 |-----|------|-------|--------|
-| _None yet_ | | | |
+| SRR-001 | 2026-04-29 | T2 full codebase (v0.8.0) | [Report](../security/SRR-001-2026-04-29-T2.md) |
 
 ## ADRs
 

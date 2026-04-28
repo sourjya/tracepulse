@@ -41,6 +41,12 @@ export const REDACTION_PATTERNS: ReadonlyArray<
   // OpenAI / Anthropic style API keys - sk- prefix
   ["api-key-sk", /sk[-_](?:live|test|proj)?[-_]?[A-Za-z0-9]{20,}/g],
 
+  // Stripe keys - sk_live_, pk_live_, rk_live_, sk_test_, pk_test_
+  ["stripe-key", /[spr]k_(?:live|test)_[A-Za-z0-9]{20,}/g],
+
+  // npm tokens - npm_xxxx
+  ["npm-token", /npm_[A-Za-z0-9]{36,}/g],
+
   // Bearer tokens in Authorization headers - preserve "Bearer " prefix
   ["bearer-token", /(?<=Bearer\s)[A-Za-z0-9\-._~+/]+=*/g],
 
