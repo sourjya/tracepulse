@@ -41,6 +41,7 @@ See `docs/feedback/feature-request-analysis-session3.md` for full analysis of se
 - [ ] **Investigate structlog JSON parsing** - Agent reports all events as `level: "info"`. JSON log parser exists but may not match structlog format. Highest ROI fix.
 - [ ] **Add `message_contains` filter** to `get_errors` and `get_server_logs` - enables path/URL filtering without a new tool
 - [ ] **Update SKILL.md** - teach agent to use `since` param as a cursor, and to bridge FE errors manually via Chrome DevTools MCP
+- [ ] **Multi-file attach mode** - `tracepulse attach --log-file backend=./backend.log --log-file frontend=./frontend.log`. Solves the #1 agent pain point. See `docs/ideas/log-ingestion-flexibility.md` #1.
 
 ### Attach Mode Visibility
 
@@ -109,6 +110,18 @@ Auto-connect to Chrome via CDP and capture failed network requests. This is the 
 Agent feedback: "Test failures are a major error source but TP doesn't capture them."
 
 New pytest/jest parser that understands PASSED/FAILED/ERROR summary lines. Medium effort, high value.
+
+### Log Ingestion Flexibility (post-v1.0 sequence)
+
+See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
+
+| # | Feature | Effort | Depends on |
+|---|---------|--------|------------|
+| 1 | Multi-file attach mode | Low | Nothing (quick win, pre-v1.0) |
+| 2 | Stdin pipe mode | Low | HTTP transport |
+| 3 | Log directory watching | Medium | #1 |
+| 4 | Combined start + attach | Low | #1 |
+| 5 | HTTP log ingestion (expand) | Low | Already built |
 
 ## Security Reviews
 
