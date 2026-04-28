@@ -219,6 +219,14 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 | `get_error_context` | **Unused** | 0x | No errors to investigate |
 | `get_error_trends` | **Unused** | 0x | No errors to investigate |
 
+### hot_reload_detected finally returned true!
+
+Agent restarted the server after fixing the activity endpoint bug, then called `watch_for_errors(10)`:
+
+> "Zero events AND `hot_reload_detected: true`! **Win** - the HMR detection actually worked this time after the restart. The activity endpoint fix is live and no errors. This is the first time `hot_reload_detected` returned true this session - confirms the server reloaded with the new code."
+
+**Status:** ✅ The uvicorn reload patterns (shipped v0.6.1) are working. The agent's previous sessions had `hot_reload_detected: false` because the patterns weren't in the code yet. After the v0.6.1+ build, the detection works. The agent now trusts the watch_for_errors workflow: clear -> restart -> watch -> confirm clean.
+
 ### get_errors caught live bug with 42 occurrences
 
 Agent called `get_errors(limit: 3)` and found `AttributeError: 'EntityMeta' object has no attribute 'get'` with 42 occurrences on the activity endpoint.
