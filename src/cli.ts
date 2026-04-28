@@ -35,6 +35,7 @@ import { createFingerprintHistory } from "@/persistence/fingerprint-history.js";
 import { loadFingerprints, saveFingerprints } from "@/persistence/fingerprint-store.js";
 import { createMultiProcessCollector } from "@/collectors/multi-process-collector.js";
 import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
+import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -49,6 +50,7 @@ interface StartArgs {
   readonly http?: boolean;
   readonly httpPort?: number;
   readonly persist?: boolean;
+  readonly healthUrl?: string;
 }
 
 /** Parsed CLI arguments for the "attach" command. */
@@ -131,6 +133,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
     let http = false;
     let httpPort: number | undefined;
     let persist = false;
+    let healthUrl: string | undefined;
 
     for (let i = 1; i < args.length; i++) {
       const arg = args[i];
@@ -148,6 +151,9 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
         i++;
       } else if (arg === "--persist") {
         persist = true;
+      } else if (arg === "--health-url" && args[i + 1]) {
+        healthUrl = args[i + 1];
+        i++;
       } else if (!arg.startsWith("--") && !target) {
         target = arg;
       }
@@ -164,6 +170,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
       http: http || undefined,
       httpPort,
       persist: persist || undefined,
+      healthUrl,
     };
   }
 
@@ -223,6 +230,8 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
 import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
 import { detectHotReload } from "@/watch/hot-reload-detector.js";
 import { createLineAccumulator } from "@/pipeline/line-accumulator.js";
+import { createCrashLoopDetector } from "@/pipeline/crash-loop-detector.js";
+import { validateEnvironment } from "@/infra/env-validator.js";
 
 // ──────────────────────────────────────────────
 // Pipeline Factory
@@ -244,6 +253,8 @@ export function createPipeline(
   registry: ParserRegistry,
 ): (source: EventSource, rawLine: string, service?: string) => void {
   /** Process a single line (or joined multi-line block) through the pipeline. */
+  const crashLoopDetect = createCrashLoopDetector((alert) => buffer.push(alert));
+
   function processLine(source: EventSource, rawLine: string, service?: string): void {
     const stripped = rawLine.replace(ANSI_ESCAPE_REGEX, "");
     const redacted = redact(stripped);
@@ -262,6 +273,7 @@ export function createPipeline(
       : normalizeRawLine(redacted, source);
     const tagged = service ? { ...event, service } : event;
     buffer.push(tagged);
+    crashLoopDetect(tagged);
   }
 
   // Accumulator joins multi-line blocks (Python tracebacks, Java exceptions)
@@ -346,6 +358,15 @@ async function main(): Promise<void> {
     process.stderr.write(`[tracepulse] Loaded ${entries.length} fingerprints from disk\n`);
   }
 
+  // Validate environment variables against .env.example
+  const envWarnings = validateEnvironment();
+  for (const warning of envWarnings) {
+    buffer.push(warning);
+  }
+  if (envWarnings.length > 0) {
+    process.stderr.write(`[tracepulse] ${envWarnings.length} missing environment variable(s)\n`);
+  }
+
   // Create the appropriate collector based on command.
   let collector: Collector | { start: (cb: (s: EventSource, l: string) => void) => Promise<void>; stop: () => Promise<void>; isConnected: () => boolean };
   if (parsed.command === "start") {
@@ -406,6 +427,14 @@ async function main(): Promise<void> {
 
   process.stderr.write(`[tracepulse] Collector started (${parsed.command} mode)\n`);
 
+  // Start health prober if --health-url is configured
+  let healthProber: HealthProber | null = null;
+  if (parsed.command === "start" && parsed.healthUrl) {
+    healthProber = createHealthProber(parsed.healthUrl);
+    healthProber.start();
+    process.stderr.write(`[tracepulse] Health prober started: ${parsed.healthUrl}\n`);
+  }
+
   // Create and connect MCP server over stdio
   const server = createMcpServer(buffer, () => collector.isConnected(), {
     registry: serviceRegistry,
@@ -422,6 +451,7 @@ async function main(): Promise<void> {
     if (shuttingDown) return;
     shuttingDown = true;
     process.stderr.write("[tracepulse] Shutting down...\n");
+    if (healthProber) healthProber.stop();
     if (persistEnabled) {
       saveFingerprints(FINGERPRINT_PERSISTENCE_PATH, fingerprintHistory.exportEntries());
       process.stderr.write("[tracepulse] Fingerprints saved to disk\n");
