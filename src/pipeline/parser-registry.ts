@@ -24,6 +24,8 @@ import { eslintParser } from '@/parsers/build/eslint-parser.js';
 import { viteWebpackParser } from '@/parsers/build/vite-webpack-parser.js';
 import { pytestParser } from '@/parsers/test/pytest-parser.js';
 import { jestParser } from '@/parsers/test/jest-parser.js';
+import { vitestParser } from '@/parsers/test/vitest-parser.js';
+import { goTestParser } from '@/parsers/test/go-test-parser.js';
 import { migrationParser } from '@/parsers/migration-parser.js';
 
 // ──────────────────────────────────────────────
@@ -97,6 +99,8 @@ export function createDefaultRegistry(): ParserRegistry {
     viteWebpackParser,
     pytestParser,
     jestParser,
+    vitestParser,
+    goTestParser,
     migrationParser,
   ]);
 }
