@@ -25,7 +25,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-002: Phase 3-5 tools conditionally registered based on optional dependencies
+## TD-002: ~~Phase 3-5 tools conditionally registered based on optional dependencies
 
 **Added:** 2026-04-28
 **Severity:** Low
@@ -39,7 +39,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-003: Multi-process collector doesn't tag events with service name in the RuntimeEvent
+## TD-003: ~~Multi-process collector doesn't tag events with service name in the RuntimeEvent
 
 **Added:** 2026-04-28
 **Severity:** Medium
@@ -51,7 +51,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-004: ESLint config needs migration to v9 flat config format
+## TD-004: ~~ESLint config needs migration to v9 flat config format
 
 **Added:** 2026-04-28
 **Severity:** Low
@@ -63,7 +63,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-005: Intermittent multi-process collector test failure
+## TD-005: ~~Intermittent multi-process collector test failure
 
 **Added:** 2026-04-28
 **Severity:** Low
@@ -77,7 +77,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-006: `hot_reload_detected` returns `false` in attach mode instead of `null`
+## TD-006: ~~`hot_reload_detected` returns `false` in attach mode instead of `null`
 
 **Added:** 2026-04-28
 **Severity:** Medium
@@ -91,7 +91,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 ---
 
-## TD-007: `watch_for_errors` doesn't report which HMR events were seen
+## TD-007: ~~`watch_for_errors` doesn't report which HMR events were seen
 
 **Added:** 2026-04-28
 **Severity:** Low
