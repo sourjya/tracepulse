@@ -1,6 +1,6 @@
-# TracePulse
+# The Backend Feedback Layer for AI Coding Agents
 
-**Runtime feedback MCP server for AI coding agents.**
+**TracePulse - Runtime feedback MCP server.**
 
 ViewGraph sees the UI. TracePulse feels the backend.
 
