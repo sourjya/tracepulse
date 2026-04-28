@@ -15,6 +15,7 @@ export interface FingerprintRecord {
   readonly first_seen: number;
   readonly last_seen: number;
   readonly total_occurrences: number;
+  readonly last_message?: string;
 }
 
 /** Public API for the fingerprint history manager. */
@@ -22,7 +23,7 @@ export interface FingerprintHistory {
   /** Check if a fingerprint has never been seen. */
   isNew(fingerprint: string): boolean;
   /** Record an occurrence of a fingerprint. */
-  record(fingerprint: string, timestamp: number): void;
+  record(fingerprint: string, timestamp: number, message?: string): void;
   /** Get the full record for a fingerprint, or null. */
   getRecord(fingerprint: string): FingerprintRecord | null;
   /** Load persisted entries into memory. */
@@ -44,13 +45,14 @@ export function createFingerprintHistory(): FingerprintHistory {
       return !records.has(fingerprint);
     },
 
-    record(fingerprint: string, timestamp: number): void {
+    record(fingerprint: string, timestamp: number, message?: string): void {
       const existing = records.get(fingerprint);
       if (existing) {
         records.set(fingerprint, {
           ...existing,
           last_seen: Math.max(existing.last_seen, timestamp),
           total_occurrences: existing.total_occurrences + 1,
+          last_message: message?.slice(0, 200) ?? existing.last_message,
         });
       } else {
         records.set(fingerprint, {
@@ -58,6 +60,7 @@ export function createFingerprintHistory(): FingerprintHistory {
           first_seen: timestamp,
           last_seen: timestamp,
           total_occurrences: 1,
+          last_message: message?.slice(0, 200),
         });
       }
     },
@@ -83,6 +86,7 @@ export function createFingerprintHistory(): FingerprintHistory {
         first_seen: r.first_seen,
         last_seen: r.last_seen,
         total_count: r.total_occurrences,
+        last_message: r.last_message,
       }));
     },
   };

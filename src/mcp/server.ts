@@ -33,6 +33,7 @@ import { handleVerifyFix } from "@/tools/verify-fix.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
+import { handleGetRequests } from "@/tools/get-requests.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -469,6 +470,18 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleRunAndWatch(args as Record<string, unknown>));
+
+  server.registerTool("get_requests", {
+    title: "Get Requests",
+    description:
+      "Get recent HTTP requests from access logs. Filter by URL path and status code. Shows method, path, status, and timing.",
+    inputSchema: {
+      path: z.string().optional().describe("Filter by URL path substring (e.g., '/api/export')."),
+      limit: z.number().optional().describe("Maximum results (default 20)."),
+      status_code_min: z.number().optional().describe("Minimum HTTP status code (e.g., 400)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleGetRequests(buffer, args as Record<string, unknown>));
 
   return server;
 }

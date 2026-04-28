@@ -19,6 +19,8 @@ export interface PersistedFingerprintEntry {
   readonly first_seen: number;
   readonly last_seen: number;
   readonly total_count: number;
+  /** Last error message (truncated to 200 chars). Optional for backward compat. */
+  readonly last_message?: string;
 }
 
 /** On-disk file schema. */
