@@ -30,7 +30,7 @@ describe("MultiProcessCollector", () => {
     });
 
     // Wait for process to finish
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
 
     expect(registry.getService("api")).toBeDefined();
     expect(registry.getService("api")!.sourceType).toBe("process");
@@ -47,7 +47,7 @@ describe("MultiProcessCollector", () => {
     );
 
     await collector.start(() => {});
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
 
     expect(registry.getService("svc-a")).toBeDefined();
     expect(registry.getService("svc-b")).toBeDefined();
@@ -65,7 +65,7 @@ describe("MultiProcessCollector", () => {
       lines.push({ service, source, line });
     });
 
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
 
     const tagged = lines.find((l) => l.line.includes("tagged-output"));
     expect(tagged).toBeDefined();
@@ -81,7 +81,7 @@ describe("MultiProcessCollector", () => {
     );
 
     await collector.start(() => {});
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
 
     expect(registry.getService("clean-exit")!.status).toBe("stopped");
   });
@@ -94,7 +94,7 @@ describe("MultiProcessCollector", () => {
     );
 
     await collector.start(() => {});
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2500));
 
     expect(registry.getService("crash-svc")!.status).toBe("crashed");
   });

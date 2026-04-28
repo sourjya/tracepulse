@@ -25,8 +25,8 @@ export interface WatchResult {
   readonly events: RuntimeEvent[];
   /** Actual watch duration in milliseconds. */
   readonly watch_duration_ms: number;
-  /** Whether any hot-reload event was detected during the window. */
-  readonly hot_reload_detected: boolean;
+  /** Whether any hot-reload event was detected during the window. null = unknown (attach mode). */
+  readonly hot_reload_detected: boolean | null;
   /** Total events seen during window (all levels, not just errors). */
   readonly total_events_seen: number;
 }
@@ -48,6 +48,7 @@ export function watchForErrors(
   buffer: EventBuffer,
   durationSeconds: number,
   source?: EventSource,
+  isAttachMode?: boolean,
 ): Promise<WatchResult> {
   if (
     durationSeconds < MIN_WATCH_DURATION_SECONDS ||
@@ -89,7 +90,7 @@ export function watchForErrors(
       resolve({
         events: collected,
         watch_duration_ms: Date.now() - startTime,
-        hot_reload_detected: hotReloadDetected,
+        hot_reload_detected: hotReloadDetected ? true : (isAttachMode ? null : false),
         total_events_seen: totalEventsSeen,
       });
     }, durationSeconds * 1000);

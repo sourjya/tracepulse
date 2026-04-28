@@ -221,6 +221,7 @@ export function createMcpServer(
     fingerprintHistory?: FingerprintHistory;
     cwd?: string;
     correlationSource?: string;
+    isAttachMode?: boolean;
   },
 ): McpServer {
   const server = new McpServer({
@@ -313,7 +314,7 @@ export function createMcpServer(
       idempotentHint: false,
       openWorldHint: false,
     },
-  }, (args) => handleWatchForErrors(buffer, args as Record<string, unknown>));
+  }, (args) => handleWatchForErrors(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
   server.registerTool("get_build_errors", {
     title: "Get Build Errors",
@@ -432,7 +433,7 @@ export function createMcpServer(
       duration_seconds: z.number().optional().describe("How long to watch (default 15 seconds)."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>));
+  }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
   return server;
 }

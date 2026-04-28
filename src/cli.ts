@@ -441,6 +441,7 @@ async function main(): Promise<void> {
     frontendBuffer,
     fingerprintHistory,
     cwd: process.cwd(),
+    isAttachMode: parsed.command === "attach",
   });
   const transport = new StdioServerTransport();
 

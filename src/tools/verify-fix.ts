@@ -26,11 +26,12 @@ import { DEFAULT_WATCH_DURATION_SECONDS } from "@/constants/watch.js";
 export async function handleVerifyFix(
   buffer: EventBuffer,
   args: Record<string, unknown>,
+  isAttachMode?: boolean,
 ): Promise<CallToolResult> {
   const duration = (args.duration_seconds as number | undefined) ?? DEFAULT_WATCH_DURATION_SECONDS;
 
   try {
-    const watchResult = await watchForErrors(buffer, duration);
+    const watchResult = await watchForErrors(buffer, duration, undefined, isAttachMode);
 
     const buildErrors = buffer.query({ source: "build-error" });
     const allErrors = buffer.query({ level: "error" });

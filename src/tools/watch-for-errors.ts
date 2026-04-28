@@ -24,13 +24,14 @@ import { DEFAULT_WATCH_DURATION_SECONDS } from "@/constants/watch.js";
 export async function handleWatchForErrors(
   buffer: EventBuffer,
   args: Record<string, unknown>,
+  isAttachMode?: boolean,
 ): Promise<CallToolResult> {
   const duration =
     (args.duration_seconds as number | undefined) ?? DEFAULT_WATCH_DURATION_SECONDS;
   const source = args.source as EventSource | undefined;
 
   try {
-    const result = await watchForErrors(buffer, duration, source);
+    const result = await watchForErrors(buffer, duration, source, isAttachMode);
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],
     };
