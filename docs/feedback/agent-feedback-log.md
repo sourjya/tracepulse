@@ -243,6 +243,18 @@ Agent called `get_errors(limit: 3)` and found `AttributeError: 'EntityMeta' obje
 
 **Status:** 🔲 Interesting idea. Vite prints module count and build time in its output (`910 modules transformed`, `built in 1.06s`). TracePulse could parse these from the Vite build output and include them in `get_build_errors` response. Low effort if the dev server prints build stats to stdout. Add to post-v1.0 roadmap.
 
+### "Last build timestamp" request
+
+> "Can't confirm the dev server actually recompiled. The `oldest_event_at` timestamp is from session start, not from last compilation. A 'last build timestamp' field would help distinguish 'no errors because build succeeded' from 'no errors because build hasn't run yet.'"
+
+**Status:** 🔲 Valid gap. TracePulse knows when events arrived but not when the last compilation happened. If the Vite/webpack build parser sees a "compiled successfully" line, it could store that timestamp and surface it in `get_build_errors` as `last_build_at`. Low effort, high trust value.
+
+### hot_reload_detected still false in attach mode (repeat)
+
+> "hot_reload_detected: false - this is the attach-mode limitation. Would be more useful if it could detect file-change events from the Vite process even in attach mode."
+
+**Status:** 🔲 Known limitation. Multi-file attach (shipped v0.7.0) solves this if agent tails both backend + frontend logs. Agent hasn't tried multi-file attach yet.
+
 ### First real error caught by filtering - 500 on activity endpoint
 
 Agent reported "nothing shows" on the activity page. Used `get_server_logs(limit: 10, message_contains: "/activity")` and **immediately found the 500 error** on line 50 of activity.py.
