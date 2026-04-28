@@ -12,3 +12,4 @@
 export { typescriptParser } from "./typescript-parser.js";
 export { eslintParser } from "./eslint-parser.js";
 export { viteWebpackParser } from "./vite-webpack-parser.js";
+export { buildStatsParser } from "./build-stats-parser.js";

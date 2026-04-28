@@ -22,6 +22,7 @@ import { rustParser } from '@/parsers/rust-parser.js';
 import { typescriptParser } from '@/parsers/build/typescript-parser.js';
 import { eslintParser } from '@/parsers/build/eslint-parser.js';
 import { viteWebpackParser } from '@/parsers/build/vite-webpack-parser.js';
+import { buildStatsParser } from '@/parsers/build/build-stats-parser.js';
 import { pytestParser } from '@/parsers/test/pytest-parser.js';
 import { jestParser } from '@/parsers/test/jest-parser.js';
 import { vitestParser } from '@/parsers/test/vitest-parser.js';
@@ -97,6 +98,7 @@ export function createDefaultRegistry(): ParserRegistry {
     typescriptParser,
     eslintParser,
     viteWebpackParser,
+    buildStatsParser,
     pytestParser,
     jestParser,
     vitestParser,
