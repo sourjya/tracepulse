@@ -2,11 +2,11 @@
 
 | | TracePulse | BrowserTools MCP |
 |---|:-:|:-:|
-| Backend errors | ✅ | ❌ |
-| Browser console | ❌ | ✅ |
-| "Debugger Mode" | ✅ (skill) | ✅ (built-in) |
-| Error parsing | ✅ (18 parsers) | ❌ |
-| Requires extension | ❌ | ✅ |
-| Requires separate server | ❌ | ✅ (port 3025) |
+| Backend errors | Yes | No |
+| Browser console | No | Yes |
+| "Debugger Mode" | Yes (skill) | Yes (built-in) |
+| Error parsing | Yes (18 parsers) | No |
+| Requires extension | No | Yes |
+| Requires separate server | No | Yes (port 3025) |
 
 BrowserTools inspired our "Debugger Mode" skill. TracePulse applies the same UX pattern to backend debugging.

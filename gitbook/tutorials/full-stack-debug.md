@@ -41,7 +41,7 @@ This matches the browser HTTP failure with the backend stack trace.
 get_error_context(fingerprint: "<from step 1>")
 ```
 
-See the full error + surrounding logs ±5 seconds.
+See the full error + surrounding logs +/-5 seconds.
 
 ## Step 5: Check git changes
 

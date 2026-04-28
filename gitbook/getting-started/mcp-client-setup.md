@@ -6,7 +6,7 @@ Detailed setup instructions for each AI coding tool.
 
 Config file: `.kiro/settings/mcp.json` (in your project root)
 
-> ⚠️ **Common mistake:** Kiro uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`.
+> WARNING: **Common mistake:** Kiro uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`.
 
 ```json
 {

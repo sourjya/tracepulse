@@ -11,7 +11,7 @@ When you're using an AI assistant (Kiro, Claude Code, Cursor, Copilot) to write 
 TracePulse sits between your dev server and your AI agent:
 
 ```
-Dev Server → stdout/stderr → TracePulse → MCP Tools → AI Agent
+Dev Server -> stdout/stderr -> TracePulse -> MCP Tools -> AI Agent
 ```
 
 1. **Reads** log output from your dev server

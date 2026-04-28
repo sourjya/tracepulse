@@ -6,7 +6,7 @@ The core workflow: edit code, verify it works, repeat.
 
 ```
 1. Edit code
-2. verify_fix(10)  →  PASS or FAIL
+2. verify_fix(10)  ->  PASS or FAIL
 3. If FAIL: read error, fix, go to 2
 4. If PASS: move on
 ```

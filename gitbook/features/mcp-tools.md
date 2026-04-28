@@ -30,7 +30,7 @@ Every tool the agent can call, organized by workflow.
 
 | Tool | What it does | Cost |
 |------|-------------|------|
-| `get_error_context(fingerprint)` | Full error + surrounding logs ±5s + occurrence count | ~3,000 tokens |
+| `get_error_context(fingerprint)` | Full error + surrounding logs +/-5s + occurrence count | ~3,000 tokens |
 | `get_timeline(since, duration_seconds?, limit?)` | Chronological stream of all events | ~5,000 tokens |
 | `get_server_logs(level?, since?, limit?, message_contains?, status_code_min?)` | All log events at any severity | ~2,000 tokens |
 

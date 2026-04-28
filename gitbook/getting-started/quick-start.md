@@ -45,6 +45,6 @@ The agent now has 18 tools for backend debugging. It will use them automatically
 
 ## Next Steps
 
-- [Installation options →](installation.md)
-- [Attach mode (for already-running servers) →](installation.md#attach-mode)
-- [All 18 MCP tools →](../features/mcp-tools.md)
+- [Installation options ->](installation.md)
+- [Attach mode (for already-running servers) ->](installation.md#attach-mode)
+- [All 18 MCP tools ->](../features/mcp-tools.md)

@@ -18,23 +18,23 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Backend exceptions (Node.js) | ✅ | - | - | - | - |
-| Backend exceptions (Python) | ✅ | - | - | - | - |
-| Backend exceptions (Go) | ✅ | - | - | - | - |
-| Backend exceptions (Java) | ✅ | - | - | - | - |
-| Backend exceptions (Rust) | ✅ | - | - | - | - |
-| JSON structured logs (pino, logback) | ✅ | - | - | - | - |
-| Structlog key-value format | ✅ | - | - | - | - |
-| TypeScript compiler errors | ✅ | - | - | - | - |
-| ESLint errors | ✅ | - | - | - | - |
-| Vite/webpack build errors | ✅ | - | - | - | - |
-| Browser console errors | via correlation | ✅ | ✅ | - | ✅ |
-| Browser console warnings | via correlation | ✅ | ✅ | - | ✅ |
-| Browser network failures (4xx/5xx) | via correlation | ✅ | ✅ | - | ✅ |
-| Structured error parsing | ✅ (10 parsers) | - (raw text) | - (raw text) | - | - (raw text) |
-| File:line extraction | ✅ | - | - | - | - |
-| Error type classification | ✅ | - | - | - | - |
-| Stack trace parsing | ✅ (15 frames max) | - | - | - | - |
+| Backend exceptions (Node.js) | Yes | - | - | - | - |
+| Backend exceptions (Python) | Yes | - | - | - | - |
+| Backend exceptions (Go) | Yes | - | - | - | - |
+| Backend exceptions (Java) | Yes | - | - | - | - |
+| Backend exceptions (Rust) | Yes | - | - | - | - |
+| JSON structured logs (pino, logback) | Yes | - | - | - | - |
+| Structlog key-value format | Yes | - | - | - | - |
+| TypeScript compiler errors | Yes | - | - | - | - |
+| ESLint errors | Yes | - | - | - | - |
+| Vite/webpack build errors | Yes | - | - | - | - |
+| Browser console errors | via correlation | Yes | Yes | - | Yes |
+| Browser console warnings | via correlation | Yes | Yes | - | Yes |
+| Browser network failures (4xx/5xx) | via correlation | Yes | Yes | - | Yes |
+| Structured error parsing | Yes (10 parsers) | - (raw text) | - (raw text) | - | - (raw text) |
+| File:line extraction | Yes | - | - | - | - |
+| Error type classification | Yes | - | - | - | - |
+| Stack trace parsing | Yes (15 frames max) | - | - | - | - |
 
 ---
 
@@ -42,14 +42,14 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Signal scoring (0-100) | ✅ | - | - | - | - |
-| Signal strength tiers (high/med/low) | ✅ | - | - | - | - |
-| Severity classification (crash/error/warn/info) | ✅ | - | - | - | - |
-| Fingerprint deduplication | ✅ | - | - | - | - |
-| Occurrence counting | ✅ | - | - | - | - |
-| Cross-session fingerprint tracking | ✅ | - | - | - | - |
-| New error detection (unseen fingerprints) | ✅ | - | - | - | - |
-| Error trend analysis | ✅ | - | - | - | - |
+| Signal scoring (0-100) | Yes | - | - | - | - |
+| Signal strength tiers (high/med/low) | Yes | - | - | - | - |
+| Severity classification (crash/error/warn/info) | Yes | - | - | - | - |
+| Fingerprint deduplication | Yes | - | - | - | - |
+| Occurrence counting | Yes | - | - | - | - |
+| Cross-session fingerprint tracking | Yes | - | - | - | - |
+| New error detection (unseen fingerprints) | Yes | - | - | - | - |
+| Error trend analysis | Yes | - | - | - | - |
 
 ---
 
@@ -57,21 +57,21 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Process spawning (start mode) | ✅ | - | - | - | - |
-| Log file tailing (attach mode) | ✅ | - | - | - | - |
-| Multi-process monitoring | ✅ | - | - | - | - |
-| Docker Compose log tailing | ✅ (partial) | - | - | - | - |
-| Hot-reload detection (Vite) | ✅ | - | - | - | - |
-| Hot-reload detection (webpack) | ✅ | - | - | - | - |
-| Hot-reload detection (nodemon) | ✅ | - | - | - | - |
-| Hot-reload detection (Next.js) | ✅ | - | - | - | - |
-| Hot-reload detection (ts-node-dev) | ✅ | - | - | - | - |
-| Hot-reload detection (uvicorn) | ✅ | - | - | - | - |
-| Hot-reload detection (Django) | ✅ | - | - | - | - |
-| Hot-reload detection (Flask) | ✅ | - | - | - | - |
-| Config file support | ✅ | - | - | - | - |
-| Service registry (status tracking) | ✅ | - | - | - | - |
-| Graceful shutdown (SIGTERM/SIGKILL) | ✅ | - | - | - | - |
+| Process spawning (start mode) | Yes | - | - | - | - |
+| Log file tailing (attach mode) | Yes | - | - | - | - |
+| Multi-process monitoring | Yes | - | - | - | - |
+| Docker Compose log tailing | Yes (partial) | - | - | - | - |
+| Hot-reload detection (Vite) | Yes | - | - | - | - |
+| Hot-reload detection (webpack) | Yes | - | - | - | - |
+| Hot-reload detection (nodemon) | Yes | - | - | - | - |
+| Hot-reload detection (Next.js) | Yes | - | - | - | - |
+| Hot-reload detection (ts-node-dev) | Yes | - | - | - | - |
+| Hot-reload detection (uvicorn) | Yes | - | - | - | - |
+| Hot-reload detection (Django) | Yes | - | - | - | - |
+| Hot-reload detection (Flask) | Yes | - | - | - | - |
+| Config file support | Yes | - | - | - | - |
+| Service registry (status tracking) | Yes | - | - | - | - |
+| Graceful shutdown (SIGTERM/SIGKILL) | Yes | - | - | - | - |
 
 ---
 
@@ -79,18 +79,18 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Console message reading | - | ✅ | ✅ | - | ✅ |
-| Network request listing | - | ✅ | ✅ | - | ✅ |
-| Network request/response bodies | - | ✅ | ✅ | - | - |
-| DOM snapshot (a11y tree) | - | ✅ | - | - | ✅ |
-| DOM element selection | - | ✅ | ✅ | - | ✅ |
-| Screenshots | - | ✅ | ✅ | - | ✅ |
-| Page navigation | - | ✅ | - | - | ✅ |
-| Click/fill/type interactions | - | ✅ | - | - | ✅ |
-| Lighthouse audits | - | ✅ | ✅ | - | - |
-| Performance tracing | - | ✅ | - | - | - |
-| Memory snapshots | - | ✅ | - | - | - |
-| Device emulation | - | ✅ | - | - | ✅ |
+| Console message reading | - | Yes | Yes | - | Yes |
+| Network request listing | - | Yes | Yes | - | Yes |
+| Network request/response bodies | - | Yes | Yes | - | - |
+| DOM snapshot (a11y tree) | - | Yes | - | - | Yes |
+| DOM element selection | - | Yes | Yes | - | Yes |
+| Screenshots | - | Yes | Yes | - | Yes |
+| Page navigation | - | Yes | - | - | Yes |
+| Click/fill/type interactions | - | Yes | - | - | Yes |
+| Lighthouse audits | - | Yes | Yes | - | - |
+| Performance tracing | - | Yes | - | - | - |
+| Memory snapshots | - | Yes | - | - | - |
+| Device emulation | - | Yes | - | - | Yes |
 
 ---
 
@@ -98,16 +98,16 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Runtime variable inspection | - | ✅ (evaluate_script) | - | ✅ (instruments) | ✅ (evaluate) |
-| Code instrumentation | - | - | - | ✅ | - |
-| Breakpoint-style debugging | - | - | - | ✅ (via logging) | - |
-| Watch mode (block and collect) | ✅ | - | - | - | - |
-| Error context (surrounding logs) | ✅ | - | - | - | - |
-| Timeline query (time-windowed) | ✅ | - | - | - | - |
-| Git diff correlation | ✅ | - | - | - | - |
-| Frontend-backend correlation | ✅ | - | - | - | - |
-| "Debugger Mode" (guided workflow) | via SKILL.md | - | ✅ | - | - |
-| "Audit Mode" (comprehensive scan) | via SKILL.md | - | ✅ | - | - |
+| Runtime variable inspection | - | Yes (evaluate_script) | - | Yes (instruments) | Yes (evaluate) |
+| Code instrumentation | - | - | - | Yes | - |
+| Breakpoint-style debugging | - | - | - | Yes (via logging) | - |
+| Watch mode (block and collect) | Yes | - | - | - | - |
+| Error context (surrounding logs) | Yes | - | - | - | - |
+| Timeline query (time-windowed) | Yes | - | - | - | - |
+| Git diff correlation | Yes | - | - | - | - |
+| Frontend-backend correlation | Yes | - | - | - | - |
+| "Debugger Mode" (guided workflow) | via SKILL.md | - | Yes | - | - |
+| "Audit Mode" (comprehensive scan) | via SKILL.md | - | Yes | - | - |
 
 ---
 
@@ -115,11 +115,11 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Secret redaction (API keys, tokens) | ✅ (12 patterns) | - | - | - | - |
-| Localhost-only HTTP binding | ✅ | ✅ | ✅ | ✅ | - |
-| No source code modification | ✅ | ✅ | ✅ | - (modifies code) | ✅ |
-| No raw messages in persistence | ✅ | N/A | N/A | N/A | N/A |
-| Content truncation limits | ✅ | - | ✅ (configurable) | - | - |
+| Secret redaction (API keys, tokens) | Yes (12 patterns) | - | - | - | - |
+| Localhost-only HTTP binding | Yes | Yes | Yes | Yes | - |
+| No source code modification | Yes | Yes | Yes | - (modifies code) | Yes |
+| No raw messages in persistence | Yes | N/A | N/A | N/A | N/A |
+| Content truncation limits | Yes | - | Yes (configurable) | - | - |
 
 ---
 
@@ -128,13 +128,13 @@ Last updated: 2026-04-28
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
 | Number of MCP tools | 13 | 20+ | ~10 | 7 | ~8 |
-| Agent skill files (SKILL.md) | ✅ (4 skills) | - | - | - | - |
-| Tool routing guide (which tool when) | ✅ | - | - | - | - |
-| Token-efficient responses | ✅ (truncation) | - | ✅ (configurable) | - | - |
-| Progressive disclosure | ✅ (status->errors->context) | - | - | - | - |
-| Response freshness metadata | ✅ | - | - | - | - |
-| Works without browser running | ✅ | - | - | ✅ | - |
-| Works with any language backend | ✅ | N/A | N/A | JS/TS/Python | N/A |
+| Agent skill files (SKILL.md) | Yes (4 skills) | - | - | - | - |
+| Tool routing guide (which tool when) | Yes | - | - | - | - |
+| Token-efficient responses | Yes (truncation) | - | Yes (configurable) | - | - |
+| Progressive disclosure | Yes (status->errors->context) | - | - | - | - |
+| Response freshness metadata | Yes | - | - | - | - |
+| Works without browser running | Yes | - | - | Yes | - |
+| Works with any language backend | Yes | N/A | N/A | JS/TS/Python | N/A |
 
 ---
 
@@ -142,10 +142,10 @@ Last updated: 2026-04-28
 
 | Capability | **TracePulse** | **Chrome DevTools** | **BrowserTools** | **agentic-debugger** | **Playwright** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| In-memory event buffer | ✅ (500 events) | - | ✅ (wiped on refresh) | ✅ (session only) | - |
-| Cross-session fingerprint persistence | ✅ | - | - | - | - |
-| Error trend tracking | ✅ | - | - | - | - |
-| Buffer survives page refresh | ✅ | N/A | - | N/A | N/A |
+| In-memory event buffer | Yes (500 events) | - | Yes (wiped on refresh) | Yes (session only) | - |
+| Cross-session fingerprint persistence | Yes | - | - | - | - |
+| Error trend tracking | Yes | - | - | - | - |
+| Buffer survives page refresh | Yes | N/A | - | N/A | N/A |
 
 ---
 

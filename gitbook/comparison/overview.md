@@ -6,11 +6,11 @@ TracePulse is the only backend-first runtime feedback tool for AI coding agents.
 
 | Tool | Focus | Backend Errors | Signal Scoring | Error Parsing |
 |------|-------|:-:|:-:|:-:|
-| **TracePulse** | Backend dev server | ✅ | ✅ | ✅ (18 parsers) |
-| Chrome DevTools MCP | Browser | ❌ | ❌ | ❌ |
-| BrowserTools MCP | Browser | ❌ | ❌ | ❌ |
-| agentic-debugger | Code instrumentation | ❌ | ❌ | ❌ |
-| Sentry MCP | Production monitoring | ✅ (production) | ❌ | ✅ |
+| **TracePulse** | Backend dev server | Yes | Yes | Yes (18 parsers) |
+| Chrome DevTools MCP | Browser | No | No | No |
+| BrowserTools MCP | Browser | No | No | No |
+| agentic-debugger | Code instrumentation | No | No | No |
+| Sentry MCP | Production monitoring | Yes (production) | No | Yes |
 
 ## Key Differentiators
 
