@@ -37,6 +37,7 @@ export function handleGetBuildErrors(
           total_count: totalCount,
           oldest_event_at: buffer.oldestEventAt,
           buffer_cleared_at: buffer.bufferClearedAt,
+          last_build_at: buffer.lastBuildAt,
         }),
       },
     ],

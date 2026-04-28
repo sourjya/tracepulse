@@ -48,4 +48,6 @@ export interface EventBuffer {
   readonly bufferClearedAt: number | null;
   /** Timestamp of the oldest event in the buffer, or null if empty. */
   readonly oldestEventAt: number | null;
+  /** Unix ms when the last hot-reload/build-success event was seen, or null. */
+  readonly lastBuildAt: number | null;
 }

@@ -43,6 +43,8 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
   const sessionStartedAt = Date.now();
   /** When clear() was last called. */
   let bufferClearedAt: number | null = null;
+  /** When the last hot-reload/build-success event was seen. */
+  let lastBuildAt: number | null = null;
 
   /**
    * Check whether an event passes all provided filters.
@@ -146,6 +148,11 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
 
       writePtr = (writePtr + 1) % maxSize;
 
+      // Track hot-reload/build-success events for lastBuildAt
+      if (event.fingerprint.startsWith("hotreload:")) {
+        lastBuildAt = event.timestamp;
+      }
+
       // Notify subscribers - only for new events, not dedup updates.
       // Each callback is isolated so one failure doesn't break others.
       for (const cb of subscribers) {
@@ -220,6 +227,10 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
         }
       }
       return oldest;
+    },
+
+    get lastBuildAt(): number | null {
+      return lastBuildAt;
     },
 
     subscribe(callback: (event: RuntimeEvent) => void): () => void {
