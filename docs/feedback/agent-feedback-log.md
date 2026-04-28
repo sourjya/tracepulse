@@ -168,14 +168,58 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 **Status:** ✅ Already fixed in v0.6.1 - uvicorn/Django/Flask patterns added to hot-reload detector. Agent is on a pre-fix session. Will work after session restart.
 
-## Adoption Summary
+### Session Report - Full Day Usage (2026-04-28 evening)
 
-| Tool | Agent Trust Level | Usage Pattern |
-|------|------------------|---------------|
-| `get_build_errors` | **High** - habitual | Called after every change as gate check |
-| `get_errors` | **Medium** - useful | Called for backend error triage |
-| `watch_for_errors` | **Low** - limited by attach mode | HMR detection blind in current setup |
-| `get_runtime_status` | **Not observed** | Agent prefers `get_errors` directly |
+The agent produced a comprehensive session report after ~35 tool invocations across a full day of PlanIQ development.
+
+**Usage stats:** `get_build_errors` ~15x, `watch_for_errors` ~8x, `get_errors` ~5x, `get_runtime_status` ~3x, `get_server_logs` ~2x, `get_new_errors` ~1x, `get_error_trends` 0x, `get_error_context` 0x.
+
+**Net assessment from agent:**
+> "TP is a reliable build error gate and error counter. It's not yet a debugging tool - when something breaks, I still read code and run manual checks. The gap is frontend visibility and request-level filtering."
+
+> "Time saved: ~20 minutes from get_build_errors alone (avoided 15+ full Vite builds). Time lost: ~15 minutes on the export bug that TP couldn't surface. Net positive, but the ceiling is much higher."
+
+**What worked (agent's words):**
+- `get_build_errors`: "Best tool. Fast, reliable, always fresh. Single biggest time saver."
+- `get_errors` + `get_new_errors`: "Good pre-commit gate. Confirmed zero new fingerprints before each commit."
+- `get_server_logs`: "The new structured format with http_status, framework, occurrence_count was much better than raw log lines."
+- `get_runtime_status`: "session_started_at confirmed fresh sessions after restarts."
+
+**What didn't work:**
+- `watch_for_errors`: "hot_reload_detected always false for Vite HMR. Stopped trusting it."
+- `get_correlated_errors`: "Always empty. No browser-side error source."
+- `correlate_with_diff`: "15 changed files, 0 correlations. Untested in real debugging."
+
+**Two debugging failures TracePulse missed:**
+1. Export bug: wrong localStorage key (access_token vs planiq_access_token). Request got 401 but never reached backend. Pure frontend issue - TP was blind.
+2. Saved views API: hook expected {items, total} but API returned flat array. Frontend silently got undefined. No error, no 4xx, just broken UI.
+
+**Agent's priority list:**
+1. HTTP status code filtering (DONE in v0.7.0)
+2. Browser-side error capture (Chrome DevTools MCP scope)
+3. watch_for_errors HMR detection (uvicorn patterns added in v0.6.1, Vite needs attach-mode fix)
+4. Structured error payloads (Chrome DevTools MCP scope)
+5. Request/response pairing (roadmap - request tracking buffer)
+6. "Since last check" cursor (DONE - last_event_timestamp in v0.7.0)
+
+**Status:** Items 1 and 6 already shipped. Item 3 partially fixed. Items 2 and 4 are Chrome DevTools MCP scope (documented in SKILL.md routing guide). Item 5 is on the post-v1.0 roadmap.
+
+## Adoption Summary (end of day 1)
+
+| Tool | Trust Level | Usage | Agent Verdict |
+|------|------------|-------|---------------|
+| `get_build_errors` | **Highest** - habitual | ~15x/session | "Best tool. Single biggest time saver." |
+| `get_errors` | **High** - pre-commit gate | ~5x/session | "Good pre-commit gate. Gave confidence to keep shipping." |
+| `get_new_errors` | **Medium** - useful | ~1x/session | Used for pre-commit fingerprint check |
+| `get_runtime_status` | **Medium** - session start | ~3x/session | "Useful for session start. Quick health check." |
+| `get_server_logs` | **Medium** - improved | ~2x/session | "Structured format much better than raw log lines." |
+| `watch_for_errors` | **Low** - distrusted | ~8x/session | "Stopped trusting it. hot_reload_detected always false." |
+| `get_correlated_errors` | **None** - always empty | ~1x/session | "Always empty. No browser-side error source." |
+| `correlate_with_diff` | **Untested** | ~1x/session | "0 correlations. Untested in real debugging." |
+| `get_error_context` | **Unused** | 0x | No errors to investigate |
+| `get_error_trends` | **Unused** | 0x | No errors to investigate |
+
+**Key metric:** 20 minutes saved (build checks) vs 15 minutes lost (export bug TP couldn't see). Net +5 minutes, but ceiling is "much higher" per agent.
 
 ### Agent feature requests - session 3 (detailed debugging gaps)
 
