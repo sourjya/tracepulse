@@ -16,6 +16,7 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M7a: Multi-File Attach + Filters | Agent Feedback | v0.7.0 | 🔲 Not Started |
 | M7b: Test Runner Integration | Agent Feedback | v0.7.1 | 🔲 Not Started |
 | M7c: Agent Workflow Skills | Competitive Research | v0.7.2 | 🔲 Not Started |
+| M8: Dev Infrastructure Awareness | Agent Feedback + Research | v0.8.0 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 
 ## M7: Agent-Driven Enhancements
@@ -32,6 +33,25 @@ Features driven by real agent feedback (Acme App) and competitive research (Cybe
 | **M7a** | v0.7.0 | Multi-file attach mode, HTTP access log parser (uvicorn/express/nginx), `status_code_min` filter | Medium |
 | **M7b** | v0.7.1 | Pytest parser, Jest parser, test runner skill | Medium |
 | **M7c** | v0.7.2 | Audit endpoints skill, debugger mode skill, GitHub issue skill, `last_event_timestamp` | Low |
+
+## M8: Dev Infrastructure Awareness
+
+Detect infrastructure issues from the existing log stream. No new data sources - smarter parsing and pattern detection.
+
+**Spec:** [`.kiro/specs/m8-infra-awareness/`](../../.kiro/specs/m8-infra-awareness/)
+- [requirements.md](../../.kiro/specs/m8-infra-awareness/requirements.md) - 6 features with design
+- [tasks.md](../../.kiro/specs/m8-infra-awareness/tasks.md) - 20 tasks across 5 phases
+
+| Feature | Effort | Impact |
+|---------|--------|--------|
+| Crash loop detection (3+ restarts in 60s) | Low | HIGH |
+| Slow request alerting (duration > 1s) | Low | HIGH |
+| Infrastructure error patterns (connection refused, OOM, pool exhausted) | Low | HIGH |
+| Database migration parser (alembic, Django) | Low | Medium |
+| Environment validation (.env.example check) | Low | Medium |
+| Health endpoint probing (periodic GET /health) | Medium | Medium |
+
+**Design patterns:** Log-based anomaly detection, sliding window counters, threshold-based alerting, startup validation.
 
 ## M6: Stable Release - Remaining Work
 
