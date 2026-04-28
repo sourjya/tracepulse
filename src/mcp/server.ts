@@ -292,7 +292,7 @@ export function createMcpServer(
   server.registerTool("watch_for_errors", {
     title: "Watch For Errors",
     description:
-      "Block for N seconds and collect any new errors/warnings from the dev server. Use after editing code to verify if the fix worked.",
+      "Block for N seconds and collect any new errors/warnings from the dev server. Use after editing code to verify if the fix worked. Note: hot_reload_detected only works in start mode or when the dev server's reload messages appear in the tailed log file. In attach mode with separate frontend/backend processes, use get_build_errors as the reliable post-change check instead.",
     inputSchema: {
       duration_seconds: z.number().optional().describe("How long to watch (1-120 seconds). Default: 15."),
       source: z.string().optional().describe("Filter by event source"),
@@ -354,74 +354,46 @@ export function createMcpServer(
 
   // ── Phase 3 Tools ──
 
-  if (options?.registry) {
-    const registry = options.registry;
-    server.registerTool("list_services", {
-      title: "List Services",
-      description: "List all monitored services with status, error count, and last activity.",
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false,
-      },
-    }, () => handleListServices(registry));
-  }
+  // ── Phase 3 Tools (always registered) ──
 
-  // ── Phase 4 Tools ──
+  server.registerTool("list_services", {
+    title: "List Services",
+    description: "List all monitored services with status, error count, and last activity.",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => options?.registry
+    ? handleListServices(options.registry)
+    : errorResult("list_services requires multi-process mode (--service flags or --config)"));
 
-  if (options?.frontendBuffer) {
-    const frontendBuffer = options.frontendBuffer;
-    server.registerTool("get_correlated_errors", {
-      title: "Get Correlated Errors",
-      description:
-        "Match browser HTTP failures with backend stack traces. Returns paired errors with confidence scores.",
-      inputSchema: {
-        url: z.string().optional().describe("Filter by URL substring"),
-      },
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false,
-      },
-    }, (args) => handleGetCorrelatedErrors(buffer, frontendBuffer, args as Record<string, unknown>));
-  }
+  // ── Phase 4 Tools (always registered) ──
 
-  // ── Phase 5 Tools ──
+  server.registerTool("get_correlated_errors", {
+    title: "Get Correlated Errors",
+    description: "Match browser HTTP failures with backend stack traces. Returns paired errors with confidence scores.",
+    inputSchema: { url: z.string().optional().describe("Filter by URL substring") },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => options?.frontendBuffer
+    ? handleGetCorrelatedErrors(buffer, options.frontendBuffer, args as Record<string, unknown>)
+    : errorResult("get_correlated_errors requires frontend error source configuration"));
 
-  if (options?.fingerprintHistory) {
-    const history = options.fingerprintHistory;
-    server.registerTool("get_new_errors", {
-      title: "Get New Errors",
-      description:
-        "Get only errors with fingerprints not seen in previous sessions. Focus on what's actually new.",
-      inputSchema: {
-        limit: z.number().optional().describe("Maximum results (default 10)"),
-      },
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false,
-      },
-    }, (args) => handleGetNewErrors(buffer, history, args as Record<string, unknown>));
+  // ── Phase 5 Tools (always registered) ──
 
-    server.registerTool("get_error_trends", {
-      title: "Get Error Trends",
-      description:
-        "Cross-session frequency and history for a specific error fingerprint.",
-      inputSchema: {
-        fingerprint: z.string().describe("The fingerprint to look up"),
-      },
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false,
-      },
-    }, (args) => handleGetErrorTrends(history, args as Record<string, unknown>));
-  }
+  server.registerTool("get_new_errors", {
+    title: "Get New Errors",
+    description: "Get only errors with fingerprints not seen in previous sessions. Focus on what's actually new.",
+    inputSchema: { limit: z.number().optional().describe("Maximum results (default 10)") },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => options?.fingerprintHistory
+    ? handleGetNewErrors(buffer, options.fingerprintHistory, args as Record<string, unknown>)
+    : errorResult("get_new_errors requires --persist flag for cross-session fingerprint tracking"));
+
+  server.registerTool("get_error_trends", {
+    title: "Get Error Trends",
+    description: "Cross-session frequency and history for a specific error fingerprint.",
+    inputSchema: { fingerprint: z.string().describe("The fingerprint to look up") },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => options?.fingerprintHistory
+    ? handleGetErrorTrends(options.fingerprintHistory, args as Record<string, unknown>)
+    : errorResult("get_error_trends requires --persist flag for cross-session fingerprint tracking"));
 
   server.registerTool("correlate_with_diff", {
     title: "Correlate With Diff",

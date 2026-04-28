@@ -241,8 +241,8 @@ import { detectHotReload } from "@/watch/hot-reload-detector.js";
 export function createPipeline(
   buffer: EventBuffer,
   registry: ParserRegistry,
-): (source: EventSource, rawLine: string) => void {
-  return (source: EventSource, rawLine: string): void => {
+): (source: EventSource, rawLine: string, service?: string) => void {
+  return (source: EventSource, rawLine: string, service?: string): void => {
     // Strip ANSI escape codes (colored output) before any processing.
     // Many dev servers output colored text that breaks regex parsing.
     const stripped = rawLine.replace(ANSI_ESCAPE_REGEX, "");
@@ -263,7 +263,9 @@ export function createPipeline(
     const event = parsed
       ? normalizeEvent(parsed, redacted, source, true)
       : normalizeRawLine(redacted, source);
-    buffer.push(event);
+    // Override service name if provided (multi-process/multi-file mode)
+    const tagged = service ? { ...event, service } : event;
+    buffer.push(tagged);
   };
 }
 

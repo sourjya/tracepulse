@@ -1,14 +1,22 @@
 # TracePulse
 
+[![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-592%20passing-brightgreen)]()
+
 **Runtime feedback MCP server for AI coding agents.**
 
 ViewGraph sees the UI. TracePulse feels the backend.
+
+> "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark." - [Sentry Engineering](https://blog.sentry.io/vibe-coding-closing-the-feedback-loop-with-traceability/)
+>
+> TracePulse closes this loop at dev time - seconds after the code change, not minutes after deployment.
 
 TracePulse watches your dev server's stdout/stderr, parses errors into structured events with signal scoring, and exposes them as MCP tools that any AI coding agent can call. The agent edits code, calls `get_errors`, and instantly knows if the fix worked - no manual log reading, no copy-paste.
 
 ## Status
 
-🟡 **Alpha v0.6.1 - Phases 1–5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 10 error parsers, 13 MCP tools, 566 tests passing.
+🟡 **Alpha v0.7.1 - Phases 1-5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 13 error parsers, 13 MCP tools, 592 tests passing.
 
 ## Quick Start
 
