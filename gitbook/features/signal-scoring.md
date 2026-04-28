@@ -30,7 +30,7 @@ Final score is clamped to [0, 100].
 
 ## Why It Matters
 
-The agent sees errors sorted by signal score (highest first). A crash with a user-code stack trace (score ~85) appears before a deprecation warning (score ~5). The agent triages like a senior developer — most important first.
+The agent sees errors sorted by signal score (highest first). A crash with a user-code stack trace (score ~85) appears before a deprecation warning (score ~5). The agent triages like a senior developer - most important first.
 
 ## Infrastructure Boost
 

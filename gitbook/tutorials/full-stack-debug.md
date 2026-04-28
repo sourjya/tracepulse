@@ -12,7 +12,7 @@ User reports: "The page shows a blank state." You need to find out why.
 get_errors(limit: 5)
 ```
 
-If TracePulse shows a 500 error with a stack trace — you found it. Fix the backend.
+If TracePulse shows a 500 error with a stack trace - you found it. Fix the backend.
 
 ## Step 2: Check browser
 

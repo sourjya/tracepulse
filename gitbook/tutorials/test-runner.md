@@ -53,7 +53,7 @@ run_and_watch(command: "npx eslint src/", timeout_seconds: 30)
 3. Errors are scored and structured
 4. When the process exits, results are returned
 
-The output is parsed the same way as dev server logs — pytest failures get file:line extraction, TypeScript errors get TS code extraction, etc.
+The output is parsed the same way as dev server logs - pytest failures get file:line extraction, TypeScript errors get TS code extraction, etc.
 
 ## Security
 

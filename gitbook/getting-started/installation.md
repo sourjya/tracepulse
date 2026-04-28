@@ -48,7 +48,7 @@ Then in your MCP config:
 
 ## Modes
 
-### Start mode — spawn and monitor
+### Start mode - spawn and monitor
 
 TracePulse spawns your dev server as a child process:
 
@@ -56,7 +56,7 @@ TracePulse spawns your dev server as a child process:
 { "args": ["tracepulse", "start", "npm run dev"] }
 ```
 
-### Attach mode — tail existing log
+### Attach mode - tail existing log
 
 For servers already running (Docker, tmux, pm2, scripts):
 
@@ -64,13 +64,13 @@ For servers already running (Docker, tmux, pm2, scripts):
 { "args": ["tracepulse", "attach", "--log-file", "./logs/server.log"] }
 ```
 
-### Multi-file attach — multiple services
+### Multi-file attach - multiple services
 
 ```json
 { "args": ["tracepulse", "attach", "--log-file", "backend=./logs/backend.log", "--log-file", "frontend=./logs/frontend.log"] }
 ```
 
-### Multi-process — spawn multiple services
+### Multi-process - spawn multiple services
 
 ```json
 { "args": ["tracepulse", "start", "--service", "api=npm run dev:api", "--service", "worker=npm run worker"] }

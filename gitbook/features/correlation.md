@@ -6,8 +6,8 @@ Match browser HTTP failures with backend stack traces.
 
 `get_correlated_errors(url?)` reads from both the backend event buffer and the frontend error buffer, matching pairs by:
 
-1. **Trace ID** (confidence 1.0) — W3C traceparent or Datadog trace ID
-2. **URL path + timestamp** (confidence 0.7-0.9) — same path within 2 seconds
+1. **Trace ID** (confidence 1.0) - W3C traceparent or Datadog trace ID
+2. **URL path + timestamp** (confidence 0.7-0.9) - same path within 2 seconds
 
 ## Setup
 

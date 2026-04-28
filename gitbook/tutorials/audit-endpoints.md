@@ -21,11 +21,11 @@ Audit all API endpoints. Find the routes file, then for each endpoint:
 
 ```
 API Audit Results:
-- GET /api/users       — CLEAN
-- GET /api/users/:id   — CLEAN
-- POST /api/users      — ERROR: ValidationError at users.py:42 (signal: 65)
-- GET /api/products    — CLEAN
-- POST /api/export     — ERROR: PermissionError at export.py:18 (signal: 72)
+- GET /api/users       - CLEAN
+- GET /api/users/:id   - CLEAN
+- POST /api/users      - ERROR: ValidationError at users.py:42 (signal: 65)
+- GET /api/products    - CLEAN
+- POST /api/export     - ERROR: PermissionError at export.py:18 (signal: 72)
 
 2 errors found across 5 endpoints.
 Highest priority: POST /api/export (signal: 72)

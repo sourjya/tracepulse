@@ -37,7 +37,7 @@ Open your AI coding agent. TracePulse starts automatically when the MCP client c
 Are there any backend errors?
 ```
 
-The agent calls `get_errors()` and tells you what's wrong — with file, line number, error type, and importance score.
+The agent calls `get_errors()` and tells you what's wrong - with file, line number, error type, and importance score.
 
 ## That's it
 

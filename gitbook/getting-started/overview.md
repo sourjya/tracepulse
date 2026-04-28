@@ -24,12 +24,12 @@ Dev Server → stdout/stderr → TracePulse → MCP Tools → AI Agent
 
 ## Two Modes
 
-**Start mode** — TracePulse spawns your dev server:
+**Start mode** - TracePulse spawns your dev server:
 ```bash
 tracepulse start "npm run dev"
 ```
 
-**Attach mode** — TracePulse tails an existing log file:
+**Attach mode** - TracePulse tails an existing log file:
 ```bash
 tracepulse attach --log-file ./logs/server.log
 ```

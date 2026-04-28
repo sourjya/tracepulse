@@ -1,6 +1,6 @@
 # 18 Error Parsers
 
-TracePulse parses errors from 18 sources. Parsers run in priority order — first match wins.
+TracePulse parses errors from 18 sources. Parsers run in priority order - first match wins.
 
 ## Runtime Parsers
 

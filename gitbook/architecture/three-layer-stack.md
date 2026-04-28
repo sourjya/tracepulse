@@ -11,9 +11,9 @@
 
 Each tool owns its layer:
 
-- **TracePulse** — backend errors, logs, builds, tests
-- **Chrome DevTools MCP** — browser console, network, performance
-- **ViewGraph** — DOM state, accessibility, layout, annotations
+- **TracePulse** - backend errors, logs, builds, tests
+- **Chrome DevTools MCP** - browser console, network, performance
+- **ViewGraph** - DOM state, accessibility, layout, annotations
 
 Together they give the AI agent complete visibility into your application.
 

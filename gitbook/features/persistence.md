@@ -16,8 +16,8 @@ tracepulse start --persist "npm run dev"
 
 ## Tools Enabled
 
-- `get_new_errors()` — only errors with fingerprints not seen before
-- `get_error_trends(fingerprint)` — cross-session frequency and history
+- `get_new_errors()` - only errors with fingerprints not seen before
+- `get_error_trends(fingerprint)` - cross-session frequency and history
 
 ## Security
 
