@@ -255,6 +255,14 @@ Agent called `get_errors(limit: 3)` and found `AttributeError: 'EntityMeta' obje
 
 **Status:** 🔲 Known limitation. Multi-file attach (shipped v0.7.0) solves this if agent tails both backend + frontend logs. Agent hasn't tried multi-file attach yet.
 
+### "HMR completed for N files" in watch_for_errors
+
+> "Would be useful if watch_for_errors could report 'HMR completed successfully for N files' rather than just silence. Silence means either 'nothing happened' or 'everything is fine' - can't distinguish."
+
+**Status:** Partially addressed - `total_events_seen` field (shipped v0.7.2) shows event count during window. If > 0, something happened. But doesn't specifically say "HMR completed for N files." The file change tracker (shipped post-v0.8.1) captures which files triggered reloads but isn't wired into watch_for_errors response yet.
+
+**Fix:** Wire file change tracker into watch result: `{ hot_reload_detected: true, files_changed: ["auth.py", "models.py"], total_events_seen: 12 }`. Low effort.
+
 ### First real error caught by filtering - 500 on activity endpoint
 
 Agent reported "nothing shows" on the activity page. Used `get_server_logs(limit: 10, message_contains: "/activity")` and **immediately found the 500 error** on line 50 of activity.py.
