@@ -222,6 +222,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
 
 import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
 import { detectHotReload } from "@/watch/hot-reload-detector.js";
+import { createLineAccumulator } from "@/pipeline/line-accumulator.js";
 
 // ──────────────────────────────────────────────
 // Pipeline Factory
@@ -242,20 +243,16 @@ export function createPipeline(
   buffer: EventBuffer,
   registry: ParserRegistry,
 ): (source: EventSource, rawLine: string, service?: string) => void {
-  return (source: EventSource, rawLine: string, service?: string): void => {
-    // Strip ANSI escape codes (colored output) before any processing.
-    // Many dev servers output colored text that breaks regex parsing.
+  /** Process a single line (or joined multi-line block) through the pipeline. */
+  function processLine(source: EventSource, rawLine: string, service?: string): void {
     const stripped = rawLine.replace(ANSI_ESCAPE_REGEX, "");
     const redacted = redact(stripped);
 
-    // Check for hot-reload patterns before error parsing.
-    // Hot-reload events are synthetic info-level markers injected into the buffer.
     const hotReloadEvent = detectHotReload(redacted);
     if (hotReloadEvent) {
-      buffer.push(hotReloadEvent);
+      buffer.push(service ? { ...hotReloadEvent, service } : hotReloadEvent);
     }
 
-    // Limit line length before parsing to prevent ReDoS on pathological input.
     const parseInput = redacted.length > MAX_PARSE_INPUT_LENGTH
       ? redacted.slice(0, MAX_PARSE_INPUT_LENGTH)
       : redacted;
@@ -263,9 +260,22 @@ export function createPipeline(
     const event = parsed
       ? normalizeEvent(parsed, redacted, source, true)
       : normalizeRawLine(redacted, source);
-    // Override service name if provided (multi-process/multi-file mode)
     const tagged = service ? { ...event, service } : event;
     buffer.push(tagged);
+  }
+
+  // Accumulator joins multi-line blocks (Python tracebacks, Java exceptions)
+  // before feeding them to the parser pipeline.
+  let currentSource: EventSource = "server-stdout";
+  let currentService: string | undefined;
+  const accumulator = createLineAccumulator((joined) => {
+    processLine(currentSource, joined, currentService);
+  });
+
+  return (source: EventSource, rawLine: string, service?: string): void => {
+    currentSource = source;
+    currentService = service;
+    accumulator(rawLine);
   };
 }
 
