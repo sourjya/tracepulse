@@ -9,6 +9,50 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-04-29
+
+### Added
+
+- **Multi-file attach mode** - `tracepulse attach --log-file backend=./b.log --log-file frontend=./f.log`
+- **HTTP access log parser** - uvicorn, express/morgan, nginx formats with status code and duration extraction
+- **`status_code_min` filter** on `get_errors` and `get_server_logs` - filter to 4xx/5xx only
+- **`message_contains` filter** on `get_errors` and `get_server_logs` - URL/path substring filtering
+- **Pytest parser** - FAILED, ERROR, summary lines
+- **Jest parser** - FAIL header, failure lines, Expected/Received assertions
+- **Vitest parser** - FAIL file, assertion errors, summary
+- **Go test parser** - `--- FAIL`, FAIL summary, error with file:line
+- **Migration parser** - alembic and Django migration output
+- **Crash loop detector** - 3+ restarts in 60s triggers signal_score 95 alert
+- **Infrastructure error patterns** - 22 patterns for DB, network, memory, disk, Redis, TLS, DNS
+- **Slow request alerting** - HTTP requests >1000ms flagged as [SLOW] warnings
+- **Environment validator** - checks .env.example against process.env on startup
+- **Health endpoint prober** - periodic GET to configurable endpoint via `--health-url`
+- **`get_health_summary` tool** - one-line health check replacing 3 separate calls (15th tool)
+- **`verify_fix` tool** - all-in-one post-fix verification: watch + build check + pass/fail verdict
+- **`clear_errors(fingerprint)` selective clear** - clear specific errors without nuking everything
+- **`last_build_at` timestamp** on `get_build_errors` response
+- **`last_event_timestamp`** on `get_errors` response for cursor pattern
+- **`total_events_seen`** on `watch_for_errors` response
+- **Multi-line accumulator** - Python tracebacks now get file:line extraction from stack frames
+- **Structlog key-value parser** - `[info]`, `[warning]`, `[error]` bracket format
+- **4 agent workflow skills** - audit-endpoints, debugger-mode, github-issue, test-runner
+- **8 agent skill files** total shipped with package
+
+### Changed
+
+- **`get_errors` response format** - structured object with freshness metadata
+- **`hot_reload_detected`** returns `null` in attach mode instead of misleading `false`
+- **All 15 tools always registered** - helpful error messages when dependencies not configured
+- **Pipeline service name tagging** - multi-process events correctly tagged with service name
+- **17 parsers** registered in priority order (was 10)
+
+### Fixed
+
+- All 7 tech debt items (TD-001 through TD-007) resolved
+- ESLint v9 flat config working
+- Intermittent multi-process test stabilized
+- uvicorn/Django/Flask hot-reload patterns added
+
 ## [0.6.1] - 2026-04-28
 
 ### Added

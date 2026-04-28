@@ -16,7 +16,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.7.1 - Phases 1-5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 13 error parsers, 13 MCP tools, 592 tests passing.
+🟡 **Alpha v0.8.0 - Phases 1-5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 17 error parsers, 15 MCP tools, 617 tests passing.
 
 ## Quick Start
 

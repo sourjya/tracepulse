@@ -95,7 +95,7 @@ When a frontend page shows errors and you suspect a backend cause:
 3. `get_errors()` - see only errors from this action
 4. `get_new_errors()` - if persistence is enabled, shows only errors never seen before
 
-## Tool Reference (13 tools)
+## Tool Reference (15 tools)
 
 ### Quick checks (start here)
 
@@ -132,8 +132,10 @@ When a frontend page shows errors and you suspect a backend cause:
 
 | Tool | When to use | Cost |
 |------|-------------|------|
-| `clear_errors()` | Reset buffer before a verification cycle. | ~50 tokens |
+| `clear_errors(fingerprint?)` | Reset buffer or clear a specific error by fingerprint. | ~50 tokens |
 | `list_services()` | Multi-service mode: which services are running/crashed? | ~200 tokens |
+| `get_health_summary()` | One-line health check: error count, warnings, uptime. Replaces 3 separate calls. | ~100 tokens |
+| `verify_fix(duration_seconds?)` | All-in-one post-fix check: watches for errors + checks build + reports pass/fail verdict. | ~500 tokens |
 
 ## Key Fields in Error Responses
 
