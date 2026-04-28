@@ -63,6 +63,21 @@ describe("HTTP access log parser", () => {
     expect(result!.context.file).toBe("/api/users");
   });
 
+  it("detects slow requests (>1000ms) as warnings", () => {
+    const line = "GET /api/export 200 2345.678 ms";
+    const result = httpAccessLogParser.parse(line);
+    expect(result).not.toBeNull();
+    expect(result!.level).toBe("warn");
+    expect(result!.message).toContain("[SLOW]");
+  });
+
+  it("extracts duration from express format", () => {
+    const line = "GET /api/users 200 15.234 ms";
+    const result = httpAccessLogParser.parse(line);
+    expect(result).not.toBeNull();
+    expect(result!.message).toContain("15ms");
+  });
+
   it("does not match non-HTTP lines", () => {
     expect(httpAccessLogParser.canParse("TypeError: Cannot read property")).toBe(false);
     expect(httpAccessLogParser.canParse("Server listening on port 3000")).toBe(false);
