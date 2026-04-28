@@ -219,6 +219,15 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 | `get_error_context` | **Unused** | 0x | No errors to investigate |
 | `get_error_trends` | **Unused** | 0x | No errors to investigate |
 
+### First real error caught by filtering - 500 on activity endpoint
+
+Agent reported "nothing shows" on the activity page. Used `get_server_logs(limit: 10, message_contains: "/activity")` and **immediately found the 500 error** on line 50 of activity.py.
+
+Agent's feedback:
+> "**Win** - immediately found the 500 error on the project activity endpoint. Line 50 of `activity.py` is crashing. The `message_contains` filter worked perfectly to scope to activity-related requests."
+
+**Status:** ✅ This is the first time TracePulse caught a real runtime error through filtering. The `message_contains` feature (shipped same day it was requested) directly enabled this. Without it, the agent would have scanned 10+ log lines manually.
+
 ### First real debugging use case - transient crash detection
 
 Agent was editing user.py when uvicorn's file watcher triggered a reload mid-write, causing a brief crash. Agent used `watch_for_errors(10)` after restart to confirm the server was healthy again. Agent's assessment: "Zero events after restart. Server is healthy. The previous errors were transient from a mid-write reload."
