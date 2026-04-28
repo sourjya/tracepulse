@@ -30,6 +30,8 @@ import { handleGetErrorTrends } from "@/tools/get-error-trends.js";
 import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
 import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import { handleVerifyFix } from "@/tools/verify-fix.js";
+import { handleWaitForBuild } from "@/tools/wait-for-build.js";
+import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -434,6 +436,27 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
+
+  server.registerTool("wait_for_build", {
+    title: "Wait For Build",
+    description:
+      "Block until the next build/hot-reload event completes, then return the result. Event-driven - returns immediately when build finishes instead of waiting a fixed duration.",
+    inputSchema: {
+      timeout_seconds: z.number().optional().describe("Max wait time (default 30s)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, (args) => handleWaitForBuild(buffer, args as Record<string, unknown>));
+
+  server.registerTool("wait_for_event", {
+    title: "Wait For Event",
+    description:
+      "Block until the next event of a specific type arrives. Types: error, warning, build, crash, any.",
+    inputSchema: {
+      type: z.string().optional().describe("Event type: error, warning, build, crash, any (default: any)."),
+      timeout_seconds: z.number().optional().describe("Max wait time (default 30s)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, (args) => handleWaitForEvent(buffer, args as Record<string, unknown>));
 
   return server;
 }
