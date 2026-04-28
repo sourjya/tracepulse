@@ -5,7 +5,7 @@
 [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse feels the backend.
 
 > "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark."
-> - Sentry Engineering
+> - [Sentry Engineering](https://blog.sentry.io/vibe-coding-closing-the-feedback-loop-with-traceability/)
 
 TracePulse closes this loop at dev time - seconds after the code change, not minutes after deployment.
 
