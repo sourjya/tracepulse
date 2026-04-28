@@ -22,6 +22,8 @@ import { rustParser } from '@/parsers/rust-parser.js';
 import { typescriptParser } from '@/parsers/build/typescript-parser.js';
 import { eslintParser } from '@/parsers/build/eslint-parser.js';
 import { viteWebpackParser } from '@/parsers/build/vite-webpack-parser.js';
+import { pytestParser } from '@/parsers/test/pytest-parser.js';
+import { jestParser } from '@/parsers/test/jest-parser.js';
 
 // ──────────────────────────────────────────────
 // Parser Registry Interface
@@ -92,5 +94,7 @@ export function createDefaultRegistry(): ParserRegistry {
     typescriptParser,
     eslintParser,
     viteWebpackParser,
+    pytestParser,
+    jestParser,
   ]);
 }
