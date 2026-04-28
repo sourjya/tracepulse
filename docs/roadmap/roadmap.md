@@ -13,7 +13,25 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M3: Multi-Process & Docker | Phase 3 | v0.4.0 | ✅ Complete |
 | M4: Frontend-Backend Correlation | Phase 4 | v0.5.0 | ✅ Complete |
 | M5: Proactive Monitoring | Phase 5 | v0.6.0 | ✅ Complete |
+| M7a: Multi-File Attach + Filters | Agent Feedback | v0.7.0 | 🔲 Not Started |
+| M7b: Test Runner Integration | Agent Feedback | v0.7.1 | 🔲 Not Started |
+| M7c: Agent Workflow Skills | Competitive Research | v0.7.2 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
+
+## M7: Agent-Driven Enhancements
+
+Features driven by real agent feedback (PlanIQ) and competitive research (CyberAgent, BrowserTools, Sentry).
+
+**Spec:** [`.kiro/specs/m7-agent-enhancements/`](../../.kiro/specs/m7-agent-enhancements/)
+- [requirements.md](../../.kiro/specs/m7-agent-enhancements/requirements.md) - 10 user stories
+- [design.md](../../.kiro/specs/m7-agent-enhancements/design.md) - data flows, parser designs, file changes
+- [tasks.md](../../.kiro/specs/m7-agent-enhancements/tasks.md) - 35 TDD tasks across 10 phases
+
+| Sub-milestone | Version | Key Features | Effort |
+|---------------|---------|-------------|--------|
+| **M7a** | v0.7.0 | Multi-file attach mode, HTTP access log parser (uvicorn/express/nginx), `status_code_min` filter | Medium |
+| **M7b** | v0.7.1 | Pytest parser, Jest parser, test runner skill | Medium |
+| **M7c** | v0.7.2 | Audit endpoints skill, debugger mode skill, GitHub issue skill, `last_event_timestamp` | Low |
 
 ## M6: Stable Release - Remaining Work
 
