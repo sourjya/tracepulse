@@ -19,24 +19,24 @@ kiro-rails and will be overwritten on upgrade.
 
 ## Dev Server Ports
 
-- No dev server — this is a CLI tool / MCP server
+- No dev server - this is a CLI tool / MCP server
 - MCP transport: stdio (primary), Streamable HTTP on port 9800 (secondary, Phase 3+)
 - Internal log collector HTTP server: port 9801 (for future browser integration, Phase 4+)
 
 ## Database Engine
 
-- No database — all state is in-memory (ring buffer) during runtime
+- No database - all state is in-memory (ring buffer) during runtime
 - Optional file-based persistence for error fingerprint history (JSON files in `.tracepulse/`)
 
 ## Project-Specific Rules
 
-- This is an MCP server — stdout is reserved for JSON-RPC protocol messages. All debug/diagnostic output goes to stderr.
+- This is an MCP server - stdout is reserved for JSON-RPC protocol messages. All debug/diagnostic output goes to stderr.
 - The tool must work with ANY MCP-compatible agent (Kiro, Claude Code, Cursor, Copilot, Cline, Windsurf). No agent-specific code.
-- Zero config for basic usage — `npx tracepulse start "npm run dev"` must work without a config file.
+- Zero config for basic usage - `npx tracepulse start "npm run dev"` must work without a config file.
 - Every RuntimeEvent must include `signal_score` (0-100) and `signal_strength` (high/medium/low) per Decision 7 in the architecture analysis.
-- Error parsers are pluggable — each framework parser is a separate module implementing a common interface.
+- Error parsers are pluggable - each framework parser is a separate module implementing a common interface.
 - Secret redaction runs on ALL log output before it enters the ring buffer. No secrets in MCP responses.
-- Process spawning must handle graceful shutdown — SIGINT/SIGTERM forwarded to child process.
+- Process spawning must handle graceful shutdown - SIGINT/SIGTERM forwarded to child process.
 
 ## Domain Constants
 
@@ -55,7 +55,7 @@ kiro-rails and will be overwritten on upgrade.
 - Prefer `interface` over `type` for object shapes
 - Use `readonly` on all interface properties that shouldn't be mutated
 - Error classes extend a base `TracePulseError` class
-- All MCP tool handlers are pure functions that read from the event buffer — no side effects
+- All MCP tool handlers are pure functions that read from the event buffer - no side effects
 
 ## Environment and Tooling
 

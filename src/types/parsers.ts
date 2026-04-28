@@ -38,7 +38,7 @@ export interface ScoringHints {
 /**
  * Intermediate representation returned by error parsers.
  * The event normalizer converts this into a RuntimeEvent.
- * Parsers only extract what they can — all fields except message are optional.
+ * Parsers only extract what they can - all fields except message are optional.
  */
 export interface ParsedError {
   /** The error message text. */
@@ -68,7 +68,7 @@ export interface ErrorParser {
 
   /**
    * Test whether this parser can handle the given line(s).
-   * Must be fast — called for every line against every parser until one matches.
+   * Must be fast - called for every line against every parser until one matches.
    * Should not throw.
    */
   canParse(line: string): boolean;

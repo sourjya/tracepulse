@@ -97,7 +97,7 @@ Adapt paths to your machine before using.
 
 ## Notes
 
-- **TracePulse** tools are all auto-approved because `get_errors`, `get_server_logs`, and `get_runtime_status` are read-only (`readOnlyHint: true`). `clear_errors` is destructive but idempotent — safe to auto-approve for dev workflows.
+- **TracePulse** tools are all auto-approved because `get_errors`, `get_server_logs`, and `get_runtime_status` are read-only (`readOnlyHint: true`). `clear_errors` is destructive but idempotent - safe to auto-approve for dev workflows.
 - **Chrome DevTools** uses `--headless` for CI/agent use, `--isolated` for clean sessions. Remove `--headless` if you need to see the browser.
 - **ViewGraph** `VIEWGRAPH_CAPTURES_DIR` should point to the project's `.viewgraph/captures/` directory. Use a relative path if running from the project root.
 - **executable-path**: This machine has Google Chrome at `/usr/bin/google-chrome`. The other machine (sourjyas) uses Snap Chromium at `/snap/bin/chromium`. Adjust per machine.

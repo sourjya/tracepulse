@@ -1,5 +1,5 @@
 /**
- * Event normalizer — converts ParsedErrors into RuntimeEvents.
+ * Event normalizer - converts ParsedErrors into RuntimeEvents.
  *
  * This is the final pipeline stage before events enter the ring buffer.
  * It takes parser output (ParsedError) or raw unmatched lines and produces

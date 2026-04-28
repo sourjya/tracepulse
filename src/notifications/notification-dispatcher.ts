@@ -3,14 +3,14 @@
  *
  * Determines whether an event should trigger a notification based on
  * novelty (new fingerprint) and signal strength. Designed for future
- * MCP notification support — currently a no-op unless feature flag is set.
+ * MCP notification support - currently a no-op unless feature flag is set.
  *
  * @see .kiro/specs/phase5-proactive/design.md for notification design
  */
 
 import type { RuntimeEvent } from "@/types/events.js";
 
-/** Notification payload — token-efficient summary of an error. */
+/** Notification payload - token-efficient summary of an error. */
 export interface ErrorNotificationPayload {
   readonly fingerprint: string;
   readonly message: string;

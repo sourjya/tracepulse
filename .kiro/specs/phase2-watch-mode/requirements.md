@@ -1,10 +1,10 @@
-# Phase 2: Watch Mode — Requirements
+# Phase 2: Watch Mode - Requirements
 
 ## Overview
 
-Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives the agent passive visibility into dev server errors, Phase 2 lets the agent **actively wait for results** after making a code change. The agent edits a file, calls `watch_for_errors(15)`, and gets back any new errors that appeared during the hot-reload window — no manual log reading, no polling.
+Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives the agent passive visibility into dev server errors, Phase 2 lets the agent **actively wait for results** after making a code change. The agent edits a file, calls `watch_for_errors(15)`, and gets back any new errors that appeared during the hot-reload window - no manual log reading, no polling.
 
-**Prerequisite:** Phase 1 (MVP — "What broke?") must be complete. Phase 2 depends on the RuntimeEvent schema, ring buffer, error parsers, signal scoring, secret redaction, and the Phase 1 MCP tools (`get_errors`, `get_server_logs`, `get_runtime_status`, `clear_errors`).
+**Prerequisite:** Phase 1 (MVP - "What broke?") must be complete. Phase 2 depends on the RuntimeEvent schema, ring buffer, error parsers, signal scoring, secret redaction, and the Phase 1 MCP tools (`get_errors`, `get_server_logs`, `get_runtime_status`, `clear_errors`).
 
 ---
 
@@ -19,7 +19,7 @@ Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives th
 **Acceptance Criteria:**
 
 1. `watch_for_errors(duration_seconds)` blocks the MCP tool call for exactly `duration_seconds` (±500ms tolerance).
-2. Only errors that arrive **after** the tool call starts are returned — pre-existing errors are excluded.
+2. Only errors that arrive **after** the tool call starts are returned - pre-existing errors are excluded.
 3. Returns `RuntimeEvent[]` sorted by timestamp ascending.
 4. If no errors appear during the window, returns an empty array.
 5. `duration_seconds` must be between 1 and 120 inclusive; values outside this range return a validation error.
@@ -39,7 +39,7 @@ Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives th
 2. Detection uses pattern matching on stdout/stderr lines (e.g., `compiled successfully`, `ready in`, `watching for file changes`, `restarting due to changes`).
 3. Each detected hot-reload injects a synthetic `RuntimeEvent` with `level: 'info'`, `source: 'server-stdout'`, and a descriptive message (e.g., `"Hot-reload detected: Vite compiled successfully in 245ms"`).
 4. Hot-reload events have `signal_score: 5` and `signal_strength: 'low'` (informational, not errors).
-5. The hot-reload pattern registry is extensible — new patterns can be added via a config file or programmatic API.
+5. The hot-reload pattern registry is extensible - new patterns can be added via a config file or programmatic API.
 6. `watch_for_errors` can optionally wait for a hot-reload event before starting the error collection window (early-return optimization for future consideration, not required for initial implementation).
 
 ### US-3: Build Error Parsing
@@ -68,7 +68,7 @@ Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives th
 1. `get_build_errors()` returns only `RuntimeEvent` objects with `source: 'build-error'`.
 2. Results are sorted by timestamp descending (most recent first).
 3. Returns at most `limit` results (default 20, configurable via parameter).
-4. Deduplicates by fingerprint — returns only the latest occurrence of each unique build error.
+4. Deduplicates by fingerprint - returns only the latest occurrence of each unique build error.
 5. If no build errors exist, returns an empty array.
 
 ### US-5: Error Context Deep-Dive
@@ -92,7 +92,7 @@ Phase 2 closes the agent's edit → verify feedback loop. After Phase 1 gives th
 
 **As** an AI coding agent,
 **I want** to call `get_timeline(since, duration_seconds)` to get a chronological stream of ALL events in a time window,
-**So that** I can see the full picture of what happened — errors, warnings, info logs, hot-reload events — in temporal order.
+**So that** I can see the full picture of what happened - errors, warnings, info logs, hot-reload events - in temporal order.
 
 **Acceptance Criteria:**
 
@@ -133,7 +133,7 @@ Phase 2 tools must work with any MCP-compatible agent (Kiro, Claude Code, Cursor
 
 ### NFR-5: Graceful Degradation
 
-If the dev server process crashes during a `watch_for_errors` call, the tool must return immediately with collected errors and a process-exit event — not hang until the timeout.
+If the dev server process crashes during a `watch_for_errors` call, the tool must return immediately with collected errors and a process-exit event - not hang until the timeout.
 
 ### NFR-6: Concurrent Safety
 
@@ -147,11 +147,11 @@ Build error parsers (TypeScript, ESLint, Vite/webpack) must handle ANSI-colored 
 
 ## Out of Scope
 
-1. **Multi-process / Docker Compose monitoring** — Phase 3 scope. Phase 2 assumes a single dev server process.
-2. **Frontend-backend error correlation** — Phase 4 scope. No CDP/browser integration.
-3. **Push notifications to the agent** — Phase 5 scope. Phase 2 is pull-only.
-4. **Custom user-defined hot-reload patterns via config file** — The pattern registry is extensible programmatically, but config file support is deferred.
-5. **Automatic early-return from `watch_for_errors` on hot-reload success** — Noted as future optimization. Initial implementation always waits the full duration.
-6. **Streaming partial results during `watch_for_errors`** — The tool blocks and returns all results at once. SSE/streaming is not in scope.
-7. **Persistent error history across restarts** — All state is in-memory per the architecture decision. Fingerprint persistence is Phase 3+.
-8. **Windows-specific hot-reload patterns** — Linux/macOS first. Windows support is deferred.
+1. **Multi-process / Docker Compose monitoring** - Phase 3 scope. Phase 2 assumes a single dev server process.
+2. **Frontend-backend error correlation** - Phase 4 scope. No CDP/browser integration.
+3. **Push notifications to the agent** - Phase 5 scope. Phase 2 is pull-only.
+4. **Custom user-defined hot-reload patterns via config file** - The pattern registry is extensible programmatically, but config file support is deferred.
+5. **Automatic early-return from `watch_for_errors` on hot-reload success** - Noted as future optimization. Initial implementation always waits the full duration.
+6. **Streaming partial results during `watch_for_errors`** - The tool blocks and returns all results at once. SSE/streaming is not in scope.
+7. **Persistent error history across restarts** - All state is in-memory per the architecture decision. Fingerprint persistence is Phase 3+.
+8. **Windows-specific hot-reload patterns** - Linux/macOS first. Windows support is deferred.

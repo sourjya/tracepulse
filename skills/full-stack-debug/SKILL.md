@@ -42,11 +42,11 @@ Link errors to recent code changes. Focus on files that appear in both the error
 
 ### Step 6: Fix and Verify
 1. Edit the code to fix the root cause
-2. `watch_for_errors(15)` — verify backend is clean
+2. `watch_for_errors(15)` - verify backend is clean
 3. Using Chrome DevTools MCP:
-   - `navigate_page(type: "reload")` — reload the page
-   - `wait_for("expected content")` — verify the page loads correctly
-   - `list_console_messages(types: ["error"])` — verify no new browser errors
+   - `navigate_page(type: "reload")` - reload the page
+   - `wait_for("expected content")` - verify the page loads correctly
+   - `list_console_messages(types: ["error"])` - verify no new browser errors
 
 ## Tool Reference
 

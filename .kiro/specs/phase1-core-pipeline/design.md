@@ -1,4 +1,4 @@
-# Phase 1: Core Pipeline — Design
+# Phase 1: Core Pipeline - Design
 
 ## Architecture Overview
 
@@ -38,7 +38,7 @@ The core data structure. Every log line or error becomes a RuntimeEvent.
 
 ```typescript
 /**
- * Event source — where the log line originated.
+ * Event source - where the log line originated.
  * Phase 1 supports server-stdout and server-stderr from process spawning
  * and log file tailing. build-error and docker-log are reserved for Phase 2+.
  */
@@ -49,7 +49,7 @@ type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
 /**
  * Signal strength tier derived from signal_score.
- * Agents use this for progressive disclosure — high-signal errors get
+ * Agents use this for progressive disclosure - high-signal errors get
  * full attention, low-signal events are background noise.
  * See Decision 7 in feature-architecture-analysis.md.
  */
@@ -57,7 +57,7 @@ type SignalStrength = 'high' | 'medium' | 'low';
 
 /**
  * Structured context extracted from parsed errors.
- * All fields are optional — parsers populate what they can extract.
+ * All fields are optional - parsers populate what they can extract.
  */
 interface EventContext {
   /** Source file path where the error originated. */
@@ -77,14 +77,14 @@ interface EventContext {
 /**
  * The core event schema. Every log line or error is normalized into this shape.
  * Agents query RuntimeEvents via MCP tools. The schema is designed for
- * token efficiency — agents get structured data, not raw text to parse.
+ * token efficiency - agents get structured data, not raw text to parse.
  *
  * Immutable after creation except for occurrence_count and timestamp on dedup.
  */
 interface RuntimeEvent {
-  /** UUIDv4 — unique per first occurrence. Deduped events share the original ID. */
+  /** UUIDv4 - unique per first occurrence. Deduped events share the original ID. */
   readonly id: string;
-  /** Unix milliseconds — updated to latest occurrence on dedup. */
+  /** Unix milliseconds - updated to latest occurrence on dedup. */
   readonly timestamp: number;
   /** Where the log line came from. */
   readonly source: EventSource;
@@ -106,20 +106,20 @@ interface RuntimeEvent {
   readonly context: EventContext;
   /** Original raw log line(s), truncated to 1000 chars. */
   readonly raw: string;
-  /** Unix ms — when this fingerprint was first seen. Never changes on dedup. */
+  /** Unix ms - when this fingerprint was first seen. Never changes on dedup. */
   readonly first_seen: number;
   /** How many times this fingerprint has been seen. Increments on dedup. */
   readonly occurrence_count: number;
 }
 ```
 
-### ParsedError (internal — parser output)
+### ParsedError (internal - parser output)
 
 ```typescript
 /**
  * Intermediate representation returned by error parsers.
  * The normalizer converts this into a RuntimeEvent.
- * Parsers only extract what they can — all fields except message are optional.
+ * Parsers only extract what they can - all fields except message are optional.
  */
 interface ParsedError {
   /** The error message text. */
@@ -141,7 +141,7 @@ interface ParsedError {
 }
 ```
 
-### ErrorParser (interface — pluggable parsers)
+### ErrorParser (interface - pluggable parsers)
 
 ```typescript
 /**
@@ -158,7 +158,7 @@ interface ErrorParser {
 
   /**
    * Test whether this parser can handle the given line(s).
-   * Must be fast — called for every line against every parser until one matches.
+   * Must be fast - called for every line against every parser until one matches.
    * Should not throw.
    */
   canParse(line: string): boolean;
@@ -179,7 +179,7 @@ interface ErrorParser {
 
 ### 1. CLI (`src/cli.ts`)
 
-Parses command-line arguments and orchestrates startup. No argument parsing library — the CLI surface is small enough for manual parsing.
+Parses command-line arguments and orchestrates startup. No argument parsing library - the CLI surface is small enough for manual parsing.
 
 ```
 npx tracepulse start "npm run dev"        → ProcessSpawner + MCP Server
@@ -231,7 +231,7 @@ interface Collector {
 
 ### 5. Secret Redactor (`src/pipeline/secret-redactor.ts`)
 
-Runs regex-based pattern matching on every raw line **before** any parsing or storage. This is the first stage of the pipeline — nothing enters the system unredacted.
+Runs regex-based pattern matching on every raw line **before** any parsing or storage. This is the first stage of the pipeline - nothing enters the system unredacted.
 
 **Patterns (built-in):**
 - API key prefixes: `sk-`, `sk_live_`, `sk_test_`, `AKIA`, `ghp_`, `gho_`, `glpat-`, `xoxb-`, `xoxp-`
@@ -250,12 +250,12 @@ All matches are replaced with `[REDACTED]`.
 Maintains an ordered list of `ErrorParser` implementations. For each raw line, tries parsers in order until one matches. If none match, returns `null` (the normalizer creates a default info event).
 
 **Parser order (most specific first):**
-1. `JsonLogParser` — if the line is valid JSON
-2. `NodeErrorParser` — Node.js stack traces
-3. `PythonErrorParser` — Python tracebacks
-4. `GoErrorParser` — Go panics
-5. `JavaErrorParser` — Java exceptions
-6. `RustErrorParser` — Rust panics
+1. `JsonLogParser` - if the line is valid JSON
+2. `NodeErrorParser` - Node.js stack traces
+3. `PythonErrorParser` - Python tracebacks
+4. `GoErrorParser` - Go panics
+5. `JavaErrorParser` - Java exceptions
+6. `RustErrorParser` - Rust panics
 
 **Multi-line handling:** Some parsers (Python tracebacks, Java stack traces) need multiple lines. The registry provides a `getNextLine` callback that reads ahead from the collector's line buffer.
 
@@ -325,7 +325,7 @@ Fixed-size circular buffer backed by a pre-allocated array. Maintains a separate
 ```typescript
 /**
  * Bounded circular buffer for RuntimeEvents.
- * FIFO eviction — oldest event is dropped when buffer is full.
+ * FIFO eviction - oldest event is dropped when buffer is full.
  * Maintains a fingerprint index for O(1) dedup lookups.
  */
 interface EventBuffer {
@@ -342,7 +342,7 @@ interface EventBuffer {
 }
 
 interface EventFilters {
-  readonly since?: number;       // Unix ms — only events after this timestamp
+  readonly since?: number;       // Unix ms - only events after this timestamp
   readonly source?: EventSource; // Filter by event source
   readonly level?: LogLevel;     // Minimum level filter
   readonly limit?: number;       // Max results
@@ -426,7 +426,7 @@ Registers 4 MCP tools with `@modelcontextprotocol/sdk` and connects them to the 
 ```json
 {
   "name": "get_runtime_status",
-  "description": "Quick health check for the dev server. Returns connection status, error count, and last error time. Cheapest tool call (~100 tokens) — use this first before drilling into errors.",
+  "description": "Quick health check for the dev server. Returns connection status, error count, and last error time. Cheapest tool call (~100 tokens) - use this first before drilling into errors.",
   "inputSchema": {
     "type": "object",
     "properties": {}
@@ -477,8 +477,8 @@ Registers 4 MCP tools with `@modelcontextprotocol/sdk` and connects them to the 
 
 ```
 src/
-├── cli.ts                          # CLI entry point — argument parsing, orchestration
-├── index.ts                        # Package entry point — version export
+├── cli.ts                          # CLI entry point - argument parsing, orchestration
+├── index.ts                        # Package entry point - version export
 ├── constants/
 │   ├── events.ts                   # EventSource, LogLevel, SignalStrength enums/unions
 │   ├── limits.ts                   # Ring buffer size, message length, stack frame limits
@@ -575,7 +575,7 @@ All diagnostic output uses structured JSON to stderr. Format:
 
 ### What Does NOT Get Logged
 
-- Raw log content (may contain secrets even after redaction — defense in depth)
+- Raw log content (may contain secrets even after redaction - defense in depth)
 - Full RuntimeEvent payloads (available via MCP tools)
 - Environment variables
 - File system paths from the user's project (except in error context)
@@ -592,7 +592,7 @@ All diagnostic output uses structured JSON to stderr. Format:
 | LogFileTailer | Read error | Log to stderr, skip line, continue tailing |
 | SecretRedactor | Regex timeout (pathological input) | Apply 10ms timeout per pattern, skip pattern on timeout |
 | Parser | Parser throws | Catch, log to stderr, treat line as unparsed info event |
-| RingBuffer | Concurrent access | Single-threaded (Node.js event loop) — no locking needed |
+| RingBuffer | Concurrent access | Single-threaded (Node.js event loop) - no locking needed |
 | MCP Server | Invalid tool params | Return MCP error response with descriptive message |
 | MCP Server | stdio pipe broken | Detect via error event, initiate graceful shutdown |
 | Pipeline | ANSI escape codes in output | Strip before parsing via regex replace _(Pitfall 4.4)_ |
@@ -608,7 +608,7 @@ All diagnostic output uses structured JSON to stderr. Format:
 
 Based on the [Collector Pitfalls & Hardening Guide](../../../docs/references/collector-pitfalls-hardening.md), the following defensive measures are built into the pipeline:
 
-### P0 — Implemented in Phase 1
+### P0 - Implemented in Phase 1
 
 1. **ANSI Stripping**: Strip ANSI escape codes (`/\x1b\[[0-9;]*m/g`) from every line before secret redaction and parsing. Many dev servers output colored text that breaks regex parsers. _(Pitfall 4.4)_
 2. **Line Length Guard**: Lines exceeding `MAX_PARSE_INPUT_LENGTH` (10KB) are truncated before entering the parser pipeline. Prevents ReDoS from pathological input. _(Pitfalls 1.8, 6.2)_
@@ -617,7 +617,7 @@ Based on the [Collector Pitfalls & Hardening Guide](../../../docs/references/col
 5. **Global Error Handlers**: `process.on('uncaughtException')` and `process.on('unhandledRejection')` log to stderr and trigger graceful shutdown. _(Pitfall 3.2)_
 6. **EPIPE Detection**: Error listener on `process.stdout` detects broken pipe (client crash) and triggers shutdown. _(Pitfall 3.3)_
 
-### P1 — Deferred to Future Hardening Pass
+### P1 - Deferred to Future Hardening Pass
 
 7. **Multi-line Stack Trace Accumulator**: Buffer consecutive lines that belong to the same stack trace before passing to parsers. _(Pitfall 4.2)_
 8. **fs.watch Polling Fallback**: Detect Docker/NFS mounts and fall back to stat-based polling. _(Pitfall 2.2)_
@@ -629,8 +629,8 @@ Based on the [Collector Pitfalls & Hardening Guide](../../../docs/references/col
 
 ## Security Considerations
 
-1. **Secret redaction is the first pipeline stage** — raw lines are redacted before parsing, scoring, fingerprinting, or storage. No unredacted data exists in memory beyond the initial line read.
-2. **No environment variable exposure** — TracePulse inherits the user's env for the child process but never logs, stores, or exposes env vars via MCP.
-3. **Input validation on MCP tool params** — `since` must be a positive number, `limit` must be a positive integer ≤ 100, `source` must be a valid EventSource enum value. Invalid params return an MCP error, not a crash.
-4. **No file system writes** — Phase 1 is fully ephemeral. No files are created, no state is persisted. This eliminates path traversal and file corruption risks.
-5. **Child process isolation** — The child process runs with the user's permissions. TracePulse does not elevate privileges or modify the child's environment.
+1. **Secret redaction is the first pipeline stage** - raw lines are redacted before parsing, scoring, fingerprinting, or storage. No unredacted data exists in memory beyond the initial line read.
+2. **No environment variable exposure** - TracePulse inherits the user's env for the child process but never logs, stores, or exposes env vars via MCP.
+3. **Input validation on MCP tool params** - `since` must be a positive number, `limit` must be a positive integer ≤ 100, `source` must be a valid EventSource enum value. Invalid params return an MCP error, not a crash.
+4. **No file system writes** - Phase 1 is fully ephemeral. No files are created, no state is persisted. This eliminates path traversal and file corruption risks.
+5. **Child process isolation** - The child process runs with the user's permissions. TracePulse does not elevate privileges or modify the child's environment.

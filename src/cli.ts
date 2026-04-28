@@ -7,10 +7,10 @@
  * stdout is reserved for MCP JSON-RPC protocol messages.
  *
  * Usage:
- *   npx tracepulse start "npm run dev"      — spawn and monitor
- *   npx tracepulse attach --log-file ./log   — tail existing log
- *   npx tracepulse --version                 — print version to stderr
- *   npx tracepulse --help                    — print usage to stderr
+ *   npx tracepulse start "npm run dev"      - spawn and monitor
+ *   npx tracepulse attach --log-file ./log   - tail existing log
+ *   npx tracepulse --version                 - print version to stderr
+ *   npx tracepulse --help                    - print usage to stderr
  *
  * @see src/index.ts for VERSION
  * @see src/mcp/server.ts for MCP tool registration
@@ -79,7 +79,7 @@ export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs;
 // ──────────────────────────────────────────────
 
 /** Help text printed to stderr on --help or invalid usage. */
-const USAGE = `TracePulse v${VERSION} — Runtime feedback MCP server for AI coding agents.
+const USAGE = `TracePulse v${VERSION} - Runtime feedback MCP server for AI coding agents.
 
 Usage:
   tracepulse start <command>          Spawn a dev server and monitor its output
@@ -103,7 +103,7 @@ import { parseServiceFlag } from "@/config/config-loader.js";
  *
  * Expects argv in the same shape as process.argv (first two entries are
  * node binary and script path, skipped). Returns null if arguments are
- * invalid — caller should print usage and exit.
+ * invalid - caller should print usage and exit.
  *
  * @param argv - Raw process.argv array
  * @returns Parsed arguments, or null if invalid
@@ -262,7 +262,7 @@ export function createPipeline(
  * and sets up graceful shutdown handlers.
  *
  * Exits with code 0 on success, 1 on invalid arguments or startup failure.
- * All output goes to stderr — stdout is reserved for MCP JSON-RPC.
+ * All output goes to stderr - stdout is reserved for MCP JSON-RPC.
  */
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv);
@@ -348,7 +348,7 @@ async function main(): Promise<void> {
     return process.exit(1);
   }
 
-  // Start collector — rejects on command-not-found or file-not-found
+  // Start collector - rejects on command-not-found or file-not-found
   try {
     await collector.start(processLine);
   } catch (err) {

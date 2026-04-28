@@ -1,23 +1,23 @@
 # Runtime Feedback Tool: Feature & Architecture Analysis
 
 **Date:** 2026-04-27
-**Status:** Planning — Pre-Implementation Analysis
+**Status:** Planning - Pre-Implementation Analysis
 **Purpose:** Synthesize existing research, competitive landscape (April 2026), and gap analysis into actionable product decisions.
 
 ---
 
 ## 1. The Thesis (Validated)
 
-AI coding agents are blind to what happens after code runs. The developer is a human clipboard — copying errors from terminals and browsers into the agent. This is the #1 bottleneck in agentic development workflows.
+AI coding agents are blind to what happens after code runs. The developer is a human clipboard - copying errors from terminals and browsers into the agent. This is the #1 bottleneck in agentic development workflows.
 
 **Evidence (April 2026):**
-- Lightrun's 2026 report: "Almost half of AI-generated code fails in production" — agents lack runtime visibility
+- Lightrun's 2026 report: "Almost half of AI-generated code fails in production" - agents lack runtime visibility
 - HUD.io (QCon London): "Before trying to make agents smarter, make sure they can actually see the system they're changing"
 - Google's Chrome DevTools PM calls the current state "coding with blindfolds on"
 - LangChain built a self-healing CI/CD flow specifically because agents can't see post-deploy behavior
 - Every major tool (Cursor, Claude Code, Copilot) is adding runtime visibility features
 
-The thesis from the research docs is not just valid — it's becoming consensus. The question is no longer "should we build this?" but "what specifically should we build that isn't already covered?"
+The thesis from the research docs is not just valid - it's becoming consensus. The question is no longer "should we build this?" but "what specifically should we build that isn't already covered?"
 
 ---
 
@@ -60,13 +60,13 @@ The thesis from the research docs is not just valid — it's becoming consensus.
 
 Specifically, no tool does:
 
-1. **Dev server stdout/stderr → MCP** — Tail your `npm run dev` or `python manage.py runserver` output and expose errors as structured MCP tools. Zero config.
-2. **Edit → hot-reload → error-check loop** — Agent makes a change, calls `watch_for_errors(15)`, gets back any new errors that appeared after hot reload. First-class workflow.
-3. **Frontend-backend error correlation in dev** — Browser shows a 500 → what's the corresponding stack trace in the server terminal? Nobody connects these two in dev.
-4. **Docker Compose log aggregation for dev** — Multi-service dev setup (API + DB + worker + frontend) — nobody tails all containers and exposes unified errors via MCP.
-5. **Build error capture** — TypeScript compilation failures, Vite build errors, linting failures — not exposed via MCP for agent consumption.
+1. **Dev server stdout/stderr → MCP** - Tail your `npm run dev` or `python manage.py runserver` output and expose errors as structured MCP tools. Zero config.
+2. **Edit → hot-reload → error-check loop** - Agent makes a change, calls `watch_for_errors(15)`, gets back any new errors that appeared after hot reload. First-class workflow.
+3. **Frontend-backend error correlation in dev** - Browser shows a 500 → what's the corresponding stack trace in the server terminal? Nobody connects these two in dev.
+4. **Docker Compose log aggregation for dev** - Multi-service dev setup (API + DB + worker + frontend) - nobody tails all containers and exposes unified errors via MCP.
+5. **Build error capture** - TypeScript compilation failures, Vite build errors, linting failures - not exposed via MCP for agent consumption.
 
-The DAP debuggers (mcp-debugger, DebugMCP) are for **interactive step-through debugging** — setting breakpoints, inspecting variables. That's a different workflow from "what is my dev server doing right now?" Chrome DevTools MCP handles the browser side. Our tool handles the backend side.
+The DAP debuggers (mcp-debugger, DebugMCP) are for **interactive step-through debugging** - setting breakpoints, inspecting variables. That's a different workflow from "what is my dev server doing right now?" Chrome DevTools MCP handles the browser side. Our tool handles the backend side.
 
 ---
 
@@ -115,15 +115,15 @@ The DAP debuggers (mcp-debugger, DebugMCP) are for **interactive step-through de
 The developer runs their dev server normally. Our tool watches. The agent queries when it needs to. No browser extensions, no special flags, no code changes, no instrumentation injection.
 
 HUD.io's three properties apply perfectly:
-- **Zero config** — point it at your dev server command, it works
-- **Complete** — stdout, stderr, build errors, all captured
-- **Deep** — parsed into structured errors with stack traces, fingerprints, dedup
+- **Zero config** - point it at your dev server command, it works
+- **Complete** - stdout, stderr, build errors, all captured
+- **Deep** - parsed into structured errors with stack traces, fingerprints, dedup
 
 ---
 
 ## 4. Feature Set (Prioritized)
 
-### Phase 1: MVP — "What broke?" (Week 1-2)
+### Phase 1: MVP - "What broke?" (Week 1-2)
 
 The minimum viable product that delivers immediate value.
 
@@ -151,7 +151,7 @@ clear_errors() → { cleared_count: int }
 
 **Validation:** Developer starts dev server via the tool, makes a breaking change, agent calls `get_errors` and sees the stack trace. No copy-paste.
 
-### Phase 2: Watch Mode — "Did my fix work?" (Week 3-4)
+### Phase 2: Watch Mode - "Did my fix work?" (Week 3-4)
 
 The edit → verify loop that closes the feedback cycle.
 
@@ -211,7 +211,7 @@ get_correlated_errors(url?) → { frontend_error, backend_error, correlation_con
 
 ### Phase 5: Proactive Monitoring (Week 9-10)
 
-Shift from pull to push — agent gets notified of new errors.
+Shift from pull to push - agent gets notified of new errors.
 
 | Feature | Description | Priority |
 |---|---|---|
@@ -234,31 +234,31 @@ Shift from pull to push — agent gets notified of new errors.
 
 ## 5. Architecture Decisions
 
-### Decision 1: Language — TypeScript (Node.js)
+### Decision 1: Language - TypeScript (Node.js)
 
 **Rationale:**
 - MCP SDK is TypeScript-first (`@modelcontextprotocol/sdk`)
 - Process spawning and log tailing are native Node.js strengths
 - CDP client libraries (Puppeteer) are JavaScript
 - Docker API clients are well-supported in Node.js
-- Distributable via `npx` — zero install for users
+- Distributable via `npx` - zero install for users
 - Matches the ecosystem (Chrome DevTools MCP, mcp-debugger, agentic-debugger all TypeScript)
 
-### Decision 2: Transport — stdio (primary), Streamable HTTP (secondary)
+### Decision 2: Transport - stdio (primary), Streamable HTTP (secondary)
 
 **Rationale:**
 - stdio is the standard for local MCP servers spawned by agents
 - Streamable HTTP enables multi-client scenarios (agent + dashboard)
 - Start with stdio only. Add HTTP when multi-client is needed.
 
-### Decision 3: Process Management — Spawn OR Attach
+### Decision 3: Process Management - Spawn OR Attach
 
 **Rationale:**
 - **Spawn mode:** Tool starts the dev server as a child process, captures stdout/stderr directly. Simplest, most reliable. `devwatch start "npm run dev"`
 - **Attach mode:** Tool tails a log file or connects to an already-running process. For developers who don't want to change how they start their server.
 - Support both from day one. Spawn is the default, attach is the escape hatch.
 
-### Decision 4: Error Parsing — Framework-Specific Regex + JSON Fallback
+### Decision 4: Error Parsing - Framework-Specific Regex + JSON Fallback
 
 **Rationale:**
 - Most dev servers output unstructured text. We need regex parsers.
@@ -285,10 +285,10 @@ Shift from pull to push — agent gets notified of new errors.
 
 **Rationale:**
 
-Two proven systems solve the same fundamental problem — "how do you give an AI agent structured, token-efficient context for evidence-based decisions?" — at different layers:
+Two proven systems solve the same fundamental problem - "how do you give an AI agent structured, token-efficient context for evidence-based decisions?" - at different layers:
 
-- **ViewGraph's salience model** scores DOM elements (0-100) by diagnostic value and tiers them (high/medium/low). High-salience elements get full data; low-salience get structure only. This is an *input filter* — it controls what the agent sees.
-- **Clipboard Health's confidence model** scores the agent's *diagnosis* (1-5) and gates action — confidence ≤2 means "don't propose a fix, gather more data." This is an *output gate* — it controls whether the agent acts.
+- **ViewGraph's salience model** scores DOM elements (0-100) by diagnostic value and tiers them (high/medium/low). High-salience elements get full data; low-salience get structure only. This is an *input filter* - it controls what the agent sees.
+- **Clipboard Health's confidence model** scores the agent's *diagnosis* (1-5) and gates action - confidence ≤2 means "don't propose a fix, gather more data." This is an *output gate* - it controls whether the agent acts.
 
 These are complementary, not overlapping:
 
@@ -322,7 +322,7 @@ Scoring factors (additive, 0-100):
 
 **This enables Clipboard's confidence pattern without us implementing it:**
 
-By returning structured, scored events with full evidence (message + stack + file:line + surrounding context), the agent has everything it needs to self-assess confidence. We don't gate the agent's actions — we give it the data quality signal so it can gate itself. An agent seeing a `high` signal error with a clear stack trace can act immediately. An agent seeing a `low` signal warning should gather more data first.
+By returning structured, scored events with full evidence (message + stack + file:line + surrounding context), the agent has everything it needs to self-assess confidence. We don't gate the agent's actions - we give it the data quality signal so it can gate itself. An agent seeing a `high` signal error with a clear stack trace can act immediately. An agent seeing a `low` signal warning should gather more data first.
 
 **Progressive disclosure (borrowed from ViewGraph):**
 
@@ -333,7 +333,7 @@ By returning structured, scored events with full evidence (message + stack + fil
 | `get_error_context(fingerprint)` | ~3,000 | Full error + stack trace + surrounding logs (±5s) + occurrence history |
 | `get_timeline(since, duration)` | ~5,000 | Unified chronological stream of all events (inspired by Clipboard's unified timeline) |
 
-The agent calls the cheapest tool first and drills down only when needed — same pattern as ViewGraph's `get_page_summary` → `get_interactive_elements` → `get_capture` progression.
+The agent calls the cheapest tool first and drills down only when needed - same pattern as ViewGraph's `get_page_summary` → `get_interactive_elements` → `get_capture` progression.
 
 ---
 
@@ -482,10 +482,10 @@ No manual log reading. No copy-paste. The agent closed its own feedback loop.
 | **runtime-mcp** | Descriptive of what it is | Boring |
 | **logpipe** | Evocative of the core function | Doesn't convey the MCP/agent angle |
 | **devloop** | Captures the feedback loop concept | Might confuse with dev tooling |
-| **watchdog** | Strong metaphor — it watches and alerts | Already used by Python's watchdog library |
+| **watchdog** | Strong metaphor - it watches and alerts | Already used by Python's watchdog library |
 | **tailpipe** | Log tailing + pipeline | Sounds like car exhaust |
 
-Working name: **devwatch** — simple, memorable, describes the core function.
+Working name: **devwatch** - simple, memorable, describes the core function.
 
 ---
 
@@ -495,7 +495,7 @@ Working name: **devwatch** — simple, memorable, describes the core function.
 |---|---|---|
 | Agents don't know to call `get_errors` after edits | Tool is useless if agent doesn't use it | Provide agent instructions/system prompt snippet. `watch_for_errors` is self-documenting. |
 | Log parsing is fragile across frameworks | Missed errors, false positives | Start with the 5 most common frameworks. Structured JSON fallback. User-extensible parsers. |
-| Token budget — too much log data overwhelms agent | Agent gets confused by noise | Fingerprint dedup, occurrence counting, configurable limits, structured summaries over raw logs. |
+| Token budget - too much log data overwhelms agent | Agent gets confused by noise | Fingerprint dedup, occurrence counting, configurable limits, structured summaries over raw logs. |
 | MCP ecosystem changes | Protocol breaking changes | Pin to stable MCP SDK version. stdio transport is stable. |
 | Cursor/Kiro build this in natively | Tool becomes redundant | Ship fast. Being agent-agnostic (works with ANY MCP client) is the moat. |
 | Process spawning is unreliable | Dev server doesn't start properly | Attach mode as fallback. Clear error messages. |
@@ -504,17 +504,17 @@ Working name: **devwatch** — simple, memorable, describes the core function.
 
 ## 10. Open Questions for Implementation
 
-1. **Config file format?** — TOML? JSON? Or just CLI args? Leaning toward CLI args for MVP, config file for multi-service setups.
+1. **Config file format?** - TOML? JSON? Or just CLI args? Leaning toward CLI args for MVP, config file for multi-service setups.
 
-2. **How to handle structured vs unstructured logs?** — Auto-detect JSON lines. Fall back to regex. But what about mixed output (some lines JSON, some not)?
+2. **How to handle structured vs unstructured logs?** - Auto-detect JSON lines. Fall back to regex. But what about mixed output (some lines JSON, some not)?
 
-3. **Should we support Windows?** — Node.js child_process works on Windows, but log tailing and Docker integration have platform-specific quirks. Start Linux/macOS, add Windows later.
+3. **Should we support Windows?** - Node.js child_process works on Windows, but log tailing and Docker integration have platform-specific quirks. Start Linux/macOS, add Windows later.
 
-4. **How to handle long-running processes that don't restart on file change?** — Some dev servers (Go, Java) require manual restart. The tool should detect "no activity for N seconds after file change" and suggest restart.
+4. **How to handle long-running processes that don't restart on file change?** - Some dev servers (Go, Java) require manual restart. The tool should detect "no activity for N seconds after file change" and suggest restart.
 
-5. **Should `watch_for_errors` block or poll?** — Block (hold the MCP tool call open for N seconds) is simpler for the agent. Poll (return immediately, agent calls `get_errors(since=X)` later) is more flexible. Leaning toward block.
+5. **Should `watch_for_errors` block or poll?** - Block (hold the MCP tool call open for N seconds) is simpler for the agent. Poll (return immediately, agent calls `get_errors(since=X)` later) is more flexible. Leaning toward block.
 
-6. **Relationship with ViewGraph?** — Separate npm package, separate MCP server. They can coexist. Phase 4 could optionally pull ViewGraph's network failure data for correlation. No hard dependency.
+6. **Relationship with ViewGraph?** - Separate npm package, separate MCP server. They can coexist. Phase 4 could optionally pull ViewGraph's network failure data for correlation. No hard dependency.
 
 ---
 
@@ -525,12 +525,12 @@ Working name: **devwatch** — simple, memorable, describes the core function.
 devwatch is the **parent process**. The dev server is its **child**. This is the key architectural fact that determines all lifecycle behavior.
 
 ```
-devwatch (parent — stays alive across restarts)
-  └── npm run dev (child — restarts on hot-reload, crash, etc.)
-        └── node server.js (grandchild — managed by the dev server)
+devwatch (parent - stays alive across restarts)
+  └── npm run dev (child - restarts on hot-reload, crash, etc.)
+        └── node server.js (grandchild - managed by the dev server)
 ```
 
-In **attach mode** (tailing a log file), devwatch is independent of the dev server — neither is parent/child. The dev server can crash and restart without affecting devwatch.
+In **attach mode** (tailing a log file), devwatch is independent of the dev server - neither is parent/child. The dev server can crash and restart without affecting devwatch.
 
 ### Scenario Analysis
 
@@ -557,11 +557,11 @@ In **attach mode** (tailing a log file), devwatch is independent of the dev serv
 
 | Data | Value | Complexity | When |
 |---|---|---|---|
-| **Fingerprint history** (`{ fingerprint → { first_seen, last_seen, total_count } }`) | Lets agent ask "is this error new or was it there before I started?" | Low — single JSON file in `.devwatch/`, written on graceful shutdown | Phase 3+ |
-| **Error frequency stats** ("this error appeared in 5 of your last 8 sessions") | Identifies chronic bugs vs one-off failures | Medium — needs session tracking | Phase 5+ |
-| **Session replay** (full event log for post-mortem) | Debug devwatch itself, or replay a session for a different agent | High — unbounded storage, rotation policy needed | Maybe never |
+| **Fingerprint history** (`{ fingerprint → { first_seen, last_seen, total_count } }`) | Lets agent ask "is this error new or was it there before I started?" | Low - single JSON file in `.devwatch/`, written on graceful shutdown | Phase 3+ |
+| **Error frequency stats** ("this error appeared in 5 of your last 8 sessions") | Identifies chronic bugs vs one-off failures | Medium - needs session tracking | Phase 5+ |
+| **Session replay** (full event log for post-mortem) | Debug devwatch itself, or replay a session for a different agent | High - unbounded storage, rotation policy needed | Maybe never |
 
-If persistence is added, it's a JSON file at `.devwatch/fingerprints.json` — read on startup, written on `SIGINT`/`SIGTERM`. No database, no complex I/O.
+If persistence is added, it's a JSON file at `.devwatch/fingerprints.json` - read on startup, written on `SIGINT`/`SIGTERM`. No database, no complex I/O.
 
 ### Graceful Shutdown Contract
 
@@ -580,10 +580,10 @@ When the stdio pipe breaks (IDE crash):
 
 ## 12. Next Steps
 
-1. **ADR** — Write ADR-001 for the tech stack and architecture decisions above
-2. **Spec** — Create `.kiro/specs/devwatch-mvp/` with requirements.md, design.md, tasks.md for Phase 1
-3. **Prototype** — Build the minimal spawn + parse + MCP loop to validate the concept
-4. **Test with real agents** — Try it with Kiro CLI, Claude Code, and Cursor to validate the workflow
+1. **ADR** - Write ADR-001 for the tech stack and architecture decisions above
+2. **Spec** - Create `.kiro/specs/devwatch-mvp/` with requirements.md, design.md, tasks.md for Phase 1
+3. **Prototype** - Build the minimal spawn + parse + MCP loop to validate the concept
+4. **Test with real agents** - Try it with Kiro CLI, Claude Code, and Cursor to validate the workflow
 
 ---
 
@@ -613,14 +613,14 @@ When the stdio pipe breaks (IDE crash):
 - **Stars:** 70 | **Language:** Markdown (skill file)
 - **What:** Cursor-style hypothesis-driven debugging skill for Claude Code/Codex/Gemini CLI
 - **Workflow:** Bug Report → Hypotheses → Instrument Code (#region DEBUG) → Reproduce → Analyze Logs → Fix → Verify → Clean Up
-- **Key insight:** Not an MCP server — it's a skill/prompt that teaches the agent a debugging methodology. Logs to `.claude/debug.log`.
+- **Key insight:** Not an MCP server - it's a skill/prompt that teaches the agent a debugging methodology. Logs to `.claude/debug.log`.
 - **Relationship to us:** Orthogonal. This teaches the agent HOW to debug. We give the agent WHAT to debug (the runtime data).
 
 ### agentic-debugger (iarmankhan/agentic-debugger)
 - **Stars:** Small | **Language:** TypeScript
 - **What:** MCP server that injects temporary logging (fetch() calls) into code to capture variable values
 - **Tools:** start_debug_session, add_instrument, remove_instruments, read_debug_logs, etc. (7 tools)
-- **Key insight:** Instrumentation approach — modifies source code temporarily. Uses region markers for cleanup.
+- **Key insight:** Instrumentation approach - modifies source code temporarily. Uses region markers for cleanup.
 - **Relationship to us:** Different approach. They inject code (active). We observe output (passive). Both valid, different use cases.
 
 ### Chrome DevTools MCP (ChromeDevTools/chrome-devtools-mcp)
@@ -631,13 +631,13 @@ When the stdio pipe breaks (IDE crash):
 - **Relationship to us:** Complementary. They handle the browser. We handle the backend. Phase 4 could correlate data from both.
 
 ### HUD.io Runtime Code Sensor
-- **What:** Commercial product — "Runtime Code Sensor" that gives agents runtime context about production behavior
+- **What:** Commercial product - "Runtime Code Sensor" that gives agents runtime context about production behavior
 - **Key insight:** Three properties: zero config, complete, deep. "Before trying to make agents smarter, make sure they can actually see the system they're changing."
 - **Relationship to us:** They're production-focused and commercial. We're dev-time and open source. Different market.
 
 ## Appendix B: Comprehensive Market Research (April 2026)
 
-This appendix catalogs every known tool in the runtime feedback / agentic debugging space — open source and commercial — with architecture, tech stack, and framework details.
+This appendix catalogs every known tool in the runtime feedback / agentic debugging space - open source and commercial - with architecture, tech stack, and framework details.
 
 ### B.1 MCP-Based Debugging & Runtime Tools (Open Source)
 
@@ -648,34 +648,34 @@ This appendix catalogs every known tool in the runtime feedback / agentic debugg
 | **mcp-debugger** (debugmcp) | 101 | TypeScript | MCP Server → Session Manager → Adapter Registry → Language DAP adapters | v0.20.0. Python/JS/Rust/Go/Java/.NET. Clean adapter pattern. 1266+ tests. Docker + npm + npx. |
 | **Microsoft DebugMCP** | 316 | TypeScript | VS Code Extension → MCP Server (Streamable HTTP, localhost:3001) → VS Code Debug API | 9 languages. Zero config. Auto-registers with AI assistants. VS Code-specific. |
 | **claude-debugs-for-you** | 426 | TypeScript | VS Code Extension + MCP Server → DAP (Debug Adapter Protocol) | Language-agnostic. Works with any debugger that has a valid launch.json. Interactive expression evaluation. |
-| **IDE Code Debug Bridge** | — | TypeScript | VS Code/Cursor Extension → MCP tools exposing full debugger | Exposes breakpoints, stepping, variable inspection. Claude Code can watch debugging happen live in editor. |
-| **Debugssy** | — | TypeScript | VS Code Extension | Debugging assistant for VS Code. |
-| **mcp_server_gdb** | — | Python | MCP Server → GDB CLI | Exposes GDB debugging capabilities via MCP. Low-level C/C++ debugging. |
-| **x64DbgMCPServer** | — | C# | MCP Server → x64Dbg | Windows binary debugging via MCP. Claude/Windsurf/Cursor support. |
+| **IDE Code Debug Bridge** | - | TypeScript | VS Code/Cursor Extension → MCP tools exposing full debugger | Exposes breakpoints, stepping, variable inspection. Claude Code can watch debugging happen live in editor. |
+| **Debugssy** | - | TypeScript | VS Code Extension | Debugging assistant for VS Code. |
+| **mcp_server_gdb** | - | Python | MCP Server → GDB CLI | Exposes GDB debugging capabilities via MCP. Low-level C/C++ debugging. |
+| **x64DbgMCPServer** | - | C# | MCP Server → x64Dbg | Windows binary debugging via MCP. Claude/Windsurf/Cursor support. |
 
 #### IDE Context & Diagnostics
 
 | Tool | Stars | Language | Architecture | Key Detail |
 |---|---|---|---|---|
-| **vscode-mcp** (tjx666) | — | TypeScript | VS Code Extension → MCP Server (monorepo) | Real-time LSP diagnostics, type information, code navigation for AI agents. Faster than running tsc/eslint. |
-| **Diagnostics MCP Server** | — | TypeScript | VS Code Extension → HTTP MCP (port 3846) | Exposes VS Code diagnostics (TS, ESLint, Prettier, all extensions). Workspace health scoring. Severity filtering. |
-| **MCP Diagnostics Extension** | — | TypeScript | VS Code Extension → MCP | Real-time diagnostic problems (errors, warnings) via MCP. Production-ready. |
-| **VSCode LSP MCP** | — | TypeScript | VS Code Extension → MCP | Exposes Language Server Protocol features through MCP. AI assistants get language intelligence. |
-| **MCP-coding-assistant** | — | — | MCP Server | Detects hallucinations, repetitive bug fix loops ("bottomless pit"). Helps AI coders with documentation access. |
+| **vscode-mcp** (tjx666) | - | TypeScript | VS Code Extension → MCP Server (monorepo) | Real-time LSP diagnostics, type information, code navigation for AI agents. Faster than running tsc/eslint. |
+| **Diagnostics MCP Server** | - | TypeScript | VS Code Extension → HTTP MCP (port 3846) | Exposes VS Code diagnostics (TS, ESLint, Prettier, all extensions). Workspace health scoring. Severity filtering. |
+| **MCP Diagnostics Extension** | - | TypeScript | VS Code Extension → MCP | Real-time diagnostic problems (errors, warnings) via MCP. Production-ready. |
+| **VSCode LSP MCP** | - | TypeScript | VS Code Extension → MCP | Exposes Language Server Protocol features through MCP. AI assistants get language intelligence. |
+| **MCP-coding-assistant** | - | - | MCP Server | Detects hallucinations, repetitive bug fix loops ("bottomless pit"). Helps AI coders with documentation access. |
 
 #### Container & Infrastructure Debugging
 
 | Tool | Stars | Language | Architecture | Key Detail |
 |---|---|---|---|---|
-| **ig-mcp-server** (Inspektor Gadget) | — | Go | MCP Server → eBPF gadgets → Container runtimes / K8s API | Debug containers and K8s workloads via AI. Automated gadget discovery, one-click deployment. Uses eBPF for deep kernel-level tracing. |
-| **Docker MCP** (QuantGeekDev) | — | TypeScript | MCP Server → Docker API | Container lifecycle management. Compose, monitor, debug Docker workflows. Not log-tailing focused. |
-| **Elastic MCP App** | — | — | MCP → Elastic Observability | K8s observability. Query failures, surface ML anomalies. CI/CD deployment gates. |
+| **ig-mcp-server** (Inspektor Gadget) | - | Go | MCP Server → eBPF gadgets → Container runtimes / K8s API | Debug containers and K8s workloads via AI. Automated gadget discovery, one-click deployment. Uses eBPF for deep kernel-level tracing. |
+| **Docker MCP** (QuantGeekDev) | - | TypeScript | MCP Server → Docker API | Container lifecycle management. Compose, monitor, debug Docker workflows. Not log-tailing focused. |
+| **Elastic MCP App** | - | - | MCP → Elastic Observability | K8s observability. Query failures, surface ML anomalies. CI/CD deployment gates. |
 
 #### Code Instrumentation
 
 | Tool | Stars | Language | Architecture | Key Detail |
 |---|---|---|---|---|
-| **agentic-debugger** | — | TypeScript | MCP Server → Code injection (fetch() calls) → HTTP log collector (port 9876) | Inserts temporary logging instruments. Captures variable values at runtime. JS/TS/Python. 7 MCP tools. Region markers for cleanup. |
+| **agentic-debugger** | - | TypeScript | MCP Server → Code injection (fetch() calls) → HTTP log collector (port 9876) | Inserts temporary logging instruments. Captures variable values at runtime. JS/TS/Python. 7 MCP tools. Region markers for cleanup. |
 
 ### B.2 Commercial / Paid Runtime Context Tools
 
@@ -684,7 +684,7 @@ This appendix catalogs every known tool in the runtime feedback / agentic debugg
 | Tool | Pricing | Architecture | Key Detail |
 |---|---|---|---|
 | **Sentry Seer** | Flat pricing, unlimited usage | Sentry platform → Seer AI agent → MCP Server for IDE integration | AI debugging agent using Sentry telemetry (errors, spans, logs, metrics). Expanded to local dev + code review (Jan 2026). Autofix generates PRs. MCP server connects Claude Code/Cursor to Sentry issues. |
-| **Sonarly** (YC W26) | — | Connects to Sentry/Datadog/Grafana → AI agent → GitHub PRs | Triages every alert, removes noise/duplicates. Investigates logs, traces, metrics, code. Builds living map of production system. Opens fix PRs. |
+| **Sonarly** (YC W26) | - | Connects to Sentry/Datadog/Grafana → AI agent → GitHub PRs | Triages every alert, removes noise/duplicates. Investigates logs, traces, metrics, code. Builds living map of production system. Opens fix PRs. |
 | **TraceRoot.AI** (YC) | Open source core | Traces + logs + metrics + code + PRs + Slack → AI agents → auto-fix | Open-source AI-native observability. Connects structured context across tools for automated bug resolution. |
 
 #### Observability Platforms with MCP/AI Agent Support
@@ -813,69 +813,69 @@ Nobody simply watches your `npm run dev` terminal and tells the agent what went 
 
 ## Appendix C: Key Quotes
 
-> "Debugging is definitely one of the biggest pain points when working with coding agents." — Industry analysis
+> "Debugging is definitely one of the biggest pain points when working with coding agents." - Industry analysis
 
-> "Most coding agents can't debug code at runtime like a human — missing step-by-step execution, breakpoints, and stack traces." — Developer forum
+> "Most coding agents can't debug code at runtime like a human - missing step-by-step execution, breakpoints, and stack traces." - Developer forum
 
-> "Almost half of AI-generated code fails in production." — Lightrun 2026 Report
+> "Almost half of AI-generated code fails in production." - Lightrun 2026 Report
 
-> "Before trying to make agents smarter, make sure they can actually see the system they're changing." — May Walter, CTO of HUD.io, QCon London 2026
+> "Before trying to make agents smarter, make sure they can actually see the system they're changing." - May Walter, CTO of HUD.io, QCon London 2026
 
-> "Coding with blindfolds on." — Michael Hablich, PM for Chrome DevTools, Google
+> "Coding with blindfolds on." - Michael Hablich, PM for Chrome DevTools, Google
 
-> "The bottleneck isn't generation anymore. It's whether the system generating the code understands what happens after." — HUD.io
+> "The bottleneck isn't generation anymore. It's whether the system generating the code understands what happens after." - HUD.io
 
-> "Your agent can write code, but it has no idea what happens when that code actually runs in a browser." — Michael Hablich, Google (Arcade.dev interview)
+> "Your agent can write code, but it has no idea what happens when that code actually runs in a browser." - Michael Hablich, Google (Arcade.dev interview)
 
-> "Agents don't have access to what actually matters in production. They see code, tests, docs. They don't see behavior." — HUD.io, QCon London 2026
+> "Agents don't have access to what actually matters in production. They see code, tests, docs. They don't see behavior." - HUD.io, QCon London 2026
 
-> "The recent AI-related incidents weren't really about bad code... Those changes didn't look obviously wrong. They passed the review. They just didn't behave well once they hit production." — HUD.io on Amazon dev4 incidents
+> "The recent AI-related incidents weren't really about bad code... Those changes didn't look obviously wrong. They passed the review. They just didn't behave well once they hit production." - HUD.io on Amazon dev4 incidents
 
-> "We're trying to operate Level 3 systems on top of Level 1 infrastructure." — May Walter, HUD.io
+> "We're trying to operate Level 3 systems on top of Level 1 infrastructure." - May Walter, HUD.io
 
-> "AI agents start play sessions, read output logs in real-time, stop the session, fix code, and go again, all without you touching anything." — Roblox Studio MCP community
+> "AI agents start play sessions, read output logs in real-time, stop the session, fix code, and go again, all without you touching anything." - Roblox Studio MCP community
 
-> "Observability must evolve into a proactive, intelligent partner that interprets outcomes, highlights what matters and takes action on our behalf." — New Relic Advance 2026
+> "Observability must evolve into a proactive, intelligent partner that interprets outcomes, highlights what matters and takes action on our behalf." - New Relic Advance 2026
 
-## Appendix D: Case Study — Clipboard Health's Agent Feedback Loop (April 2026)
+## Appendix D: Case Study - Clipboard Health's Agent Feedback Loop (April 2026)
 
-**Source:** "Agents Can't Iterate Against Tests That Lie" — Rocky Warren, Senior Staff Engineer, Clipboard Health (April 21, 2026)
+**Source:** "Agents Can't Iterate Against Tests That Lie" - Rocky Warren, Senior Staff Engineer, Clipboard Health (April 21, 2026)
 **Open source:** `@clipboard-health/playwright-reporter-llm` + `flaky-test-debugger` skill (MIT, github.com/ClipboardHealth/core-utils)
 
 ### The Problem
 
-Clipboard Health went from agents writing none of their code to nearly all of it in 12 months. This broke their test suite — 100% of PRs in their two largest repos hit at least one flaky E2E test. When humans write code, flakes are annoying. When agents write code, **flakes break the feedback loop that keeps agents moving at full speed.** The agent can't distinguish "my code is wrong" from "the test is lying."
+Clipboard Health went from agents writing none of their code to nearly all of it in 12 months. This broke their test suite - 100% of PRs in their two largest repos hit at least one flaky E2E test. When humans write code, flakes are annoying. When agents write code, **flakes break the feedback loop that keeps agents moving at full speed.** The agent can't distinguish "my code is wrong" from "the test is lying."
 
 ### What They Built
 
 #### 1. Agent-Driven Test Triage (Multi-Model Consensus)
 
-They used agents to triage every E2E test. Three models with separate harnesses categorized each test, then two more agents reached consensus in fresh context windows. Result: proposed cutting 174 tests to 46. After domain owner pushback, landed at 87. Key insight: **code is a liability, and tests have maintenance cost — lying tests have the highest cost.**
+They used agents to triage every E2E test. Three models with separate harnesses categorized each test, then two more agents reached consensus in fresh context windows. Result: proposed cutting 174 tests to 46. After domain owner pushback, landed at 87. Key insight: **code is a liability, and tests have maintenance cost - lying tests have the highest cost.**
 
-#### 2. `@clipboard-health/playwright-reporter-llm` — Agent-Optimized Test Reporter
+#### 2. `@clipboard-health/playwright-reporter-llm` - Agent-Optimized Test Reporter
 
 A custom Playwright reporter that outputs structured JSON designed for LLM consumption, not human reading. The report includes:
 
-- **Unified timeline** — steps, network requests, and console events sorted by `offsetMs` (milliseconds since attempt start). Single temporal view of everything that happened.
-- **Error extraction** — ANSI-stripped clean error text with extracted assertion diffs and exact file:line location.
-- **Network capture** — Up to 200 requests per attempt, priority-based (fetch/xhr and errors retained over static assets). Includes timing breakdown, redirect chains, failure details.
-- **Console messages** — Only high-signal entries (warning, error, pageerror, page-closed, page-crashed). Capped at 2KB/50 per attempt.
-- **Failure artifacts** — Base64-encoded screenshots (max 512KB) and video paths for failing attempts.
-- **Trace ID promotion** — `x-datadog-trace-id` extracted from response headers and promoted to top-level `traceId` field for direct Datadog APM correlation.
-- **Retry history** — Full `attempts[]` array with per-attempt status, timing, errors, and artifacts.
-- **Flaky detection** — `flaky: true` flag when test passed after retry.
-- **Token budgeting** — Truncation markers (`[truncated]`), size caps on all fields, priority-based filtering.
+- **Unified timeline** - steps, network requests, and console events sorted by `offsetMs` (milliseconds since attempt start). Single temporal view of everything that happened.
+- **Error extraction** - ANSI-stripped clean error text with extracted assertion diffs and exact file:line location.
+- **Network capture** - Up to 200 requests per attempt, priority-based (fetch/xhr and errors retained over static assets). Includes timing breakdown, redirect chains, failure details.
+- **Console messages** - Only high-signal entries (warning, error, pageerror, page-closed, page-crashed). Capped at 2KB/50 per attempt.
+- **Failure artifacts** - Base64-encoded screenshots (max 512KB) and video paths for failing attempts.
+- **Trace ID promotion** - `x-datadog-trace-id` extracted from response headers and promoted to top-level `traceId` field for direct Datadog APM correlation.
+- **Retry history** - Full `attempts[]` array with per-attempt status, timing, errors, and artifacts.
+- **Flaky detection** - `flaky: true` flag when test passed after retry.
+- **Token budgeting** - Truncation markers (`[truncated]`), size caps on all fields, priority-based filtering.
 
-#### 3. `flaky-test-debugger` Skill — Structured Debugging Methodology
+#### 3. `flaky-test-debugger` Skill - Structured Debugging Methodology
 
 A Claude Code skill (SKILL.md) that teaches the agent a 6-phase debugging workflow:
 
-1. **Triage Snapshot** — Capture failing test + GitHub Actions URL, fetch LLM report
-2. **Quick Classification** — Categorize the flake (test-state leakage, data collision, backend stale data, frontend cache, silent network failure, render/hydration bug, environment/infra, locator/UX drift)
-3. **Analyze LLM Report** — Walk the unified timeline, compare pass vs fail attempts side-by-side, extract trace IDs for backend correlation
-4. **Evidence Standard** — Require concrete artifacts before proposing a fix: error artifact + network artifact + specific code path + screenshot + Datadog trace + confidence score (1-5)
-5. **Fix Decision Tree** — Validate scenario realism first, then: test harness fix → product fix → both
-6. **Verification** — Lint and type-check touched files
+1. **Triage Snapshot** - Capture failing test + GitHub Actions URL, fetch LLM report
+2. **Quick Classification** - Categorize the flake (test-state leakage, data collision, backend stale data, frontend cache, silent network failure, render/hydration bug, environment/infra, locator/UX drift)
+3. **Analyze LLM Report** - Walk the unified timeline, compare pass vs fail attempts side-by-side, extract trace IDs for backend correlation
+4. **Evidence Standard** - Require concrete artifacts before proposing a fix: error artifact + network artifact + specific code path + screenshot + Datadog trace + confidence score (1-5)
+5. **Fix Decision Tree** - Validate scenario realism first, then: test harness fix → product fix → both
+6. **Verification** - Lint and type-check touched files
 
 Key design: **confidence score 2 or below = do not propose a code fix.** Instead, recommend instrumentation or reproduction steps. This prevents the agent from making speculative changes.
 
@@ -904,11 +904,11 @@ Drove E2E flake rate from 100% to under 15% in six weeks.
 
 > "When humans write code, flakes are annoying. When agents write code, flakes break the feedback loop that keeps them moving at full speed."
 
-This perfectly captures why our tool matters: **the agent's feedback loop depends on reliable, structured runtime data.** If the data is noisy, incomplete, or ambiguous, the agent can't iterate effectively — same problem as flaky tests, but for runtime errors.
+This perfectly captures why our tool matters: **the agent's feedback loop depends on reliable, structured runtime data.** If the data is noisy, incomplete, or ambiguous, the agent can't iterate effectively - same problem as flaky tests, but for runtime errors.
 
 ---
 
-## Appendix E: Chrome DevTools MCP — Deep Architecture Analysis & Borrowable Patterns
+## Appendix E: Chrome DevTools MCP - Deep Architecture Analysis & Borrowable Patterns
 
 **Source:** github.com/ChromeDevTools/chrome-devtools-mcp (v0.23.0, 37.4k★, Apache-2.0)
 **Stack:** TypeScript, Puppeteer (CDP bridge), MCP SDK, Rollup bundler
@@ -930,10 +930,10 @@ Chrome Browser (launched or connected)
 ```
 
 Key architectural choices:
-- **Puppeteer as the CDP bridge** — not raw CDP. Puppeteer handles connection management, auto-waiting, and browser lifecycle. This is why their automation feels smooth.
-- **Persistent Chrome profile** — browser state (cookies, storage, logins) persists across sessions by default. `--isolated` flag for clean sessions.
-- **Page selection model** — tools operate on the "currently selected page." `list_pages` → `select_page` → then all tools target that page. Simple mental model.
-- **Snapshot-based element targeting** — `take_snapshot` returns an a11y tree with `uid` per element. All interaction tools (`click`, `fill`, `hover`) take a `uid`, not a CSS selector. This is more stable than selectors.
+- **Puppeteer as the CDP bridge** - not raw CDP. Puppeteer handles connection management, auto-waiting, and browser lifecycle. This is why their automation feels smooth.
+- **Persistent Chrome profile** - browser state (cookies, storage, logins) persists across sessions by default. `--isolated` flag for clean sessions.
+- **Page selection model** - tools operate on the "currently selected page." `list_pages` → `select_page` → then all tools target that page. Simple mental model.
+- **Snapshot-based element targeting** - `take_snapshot` returns an a11y tree with `uid` per element. All interaction tools (`click`, `fill`, `hover`) take a `uid`, not a CSS selector. This is more stable than selectors.
 
 ### E.2 Tool Categories (34 tools across 8 categories)
 
@@ -950,17 +950,17 @@ Key architectural choices:
 
 ### E.3 Design Principles (from their docs)
 
-1. **Agent-Agnostic API** — MCP standard, no LLM lock-in
-2. **Token-Optimized** — Semantic summaries over raw data. "LCP was 3.2s" > 50K lines of JSON
-3. **Small, Deterministic Blocks** — Composable tools (click, screenshot), not magic buttons
-4. **Self-Healing Errors** — Actionable errors with context and potential fixes
-5. **Human-Agent Collaboration** — Output readable by machines (structured) AND humans (summaries)
-6. **Progressive Complexity** — Simple by default, advanced optional args for power users
-7. **Reference over Value** — Heavy assets (screenshots, traces) return file paths, not raw data
+1. **Agent-Agnostic API** - MCP standard, no LLM lock-in
+2. **Token-Optimized** - Semantic summaries over raw data. "LCP was 3.2s" > 50K lines of JSON
+3. **Small, Deterministic Blocks** - Composable tools (click, screenshot), not magic buttons
+4. **Self-Healing Errors** - Actionable errors with context and potential fixes
+5. **Human-Agent Collaboration** - Output readable by machines (structured) AND humans (summaries)
+6. **Progressive Complexity** - Simple by default, advanced optional args for power users
+7. **Reference over Value** - Heavy assets (screenshots, traces) return file paths, not raw data
 
 ### E.4 Skills System (How Agents Learn Debug Sequences)
 
-Chrome DevTools MCP ships with **6 skills** — SKILL.md files that teach agents structured debugging workflows. This is the "Kiro should know debug sequences" part.
+Chrome DevTools MCP ships with **6 skills** - SKILL.md files that teach agents structured debugging workflows. This is the "Kiro should know debug sequences" part.
 
 | Skill | What It Teaches |
 |---|---|
@@ -971,13 +971,13 @@ Chrome DevTools MCP ships with **6 skills** — SKILL.md files that teach agents
 | **troubleshooting** | Self-diagnosis when chrome-devtools-mcp itself has issues. |
 | **chrome-devtools-cli** | CLI-specific usage patterns (non-MCP). |
 
-**Key pattern:** Each skill is a structured recipe with numbered steps, tool call sequences, and decision trees. The agent doesn't have to figure out the workflow — the skill tells it exactly which tools to call in which order.
+**Key pattern:** Each skill is a structured recipe with numbered steps, tool call sequences, and decision trees. The agent doesn't have to figure out the workflow - the skill tells it exactly which tools to call in which order.
 
 ### E.5 What devwatch Should Borrow (Without Duplicating)
 
-Chrome DevTools MCP owns the browser. We own the backend. The overlap zone is **the moment after the agent makes a code change** — Chrome DevTools MCP can verify the frontend, we verify the backend. Here's what we should borrow:
+Chrome DevTools MCP owns the browser. We own the backend. The overlap zone is **the moment after the agent makes a code change** - Chrome DevTools MCP can verify the frontend, we verify the backend. Here's what we should borrow:
 
-#### Pattern 1: Skills as Debug Recipes (HIGH — adopt for devwatch)
+#### Pattern 1: Skills as Debug Recipes (HIGH - adopt for devwatch)
 
 Chrome DevTools MCP's skills are the reason agents use it smoothly. We need the same for backend debugging. Devwatch should ship with skills:
 
@@ -987,31 +987,31 @@ Chrome DevTools MCP's skills are the reason agents use it smoothly. We need the 
 | **edit-verify-loop** | Agent edits code → `watch_for_errors(15)` → if errors: `get_error_context` → fix → `watch_for_errors(10)` → if clean: done |
 | **full-stack-debug** | `get_errors` (backend) + Chrome DevTools `list_console_messages` (frontend) + Chrome DevTools `list_network_requests` (network) → correlate by timestamp and URL → identify which layer failed |
 
-The `full-stack-debug` skill is the **cross-tool orchestration** — it teaches the agent to use devwatch AND Chrome DevTools MCP together. This is the complement, not the duplicate.
+The `full-stack-debug` skill is the **cross-tool orchestration** - it teaches the agent to use devwatch AND Chrome DevTools MCP together. This is the complement, not the duplicate.
 
-#### Pattern 2: Snapshot-Based Interaction Model (MEDIUM — adapt concept)
+#### Pattern 2: Snapshot-Based Interaction Model (MEDIUM - adapt concept)
 
 Chrome DevTools MCP's `take_snapshot` → get `uid` → `click(uid)` pattern is elegant because the agent always works with a fresh, structured view of the current state. Our equivalent:
 
-- `get_errors` is our "snapshot" — a structured view of the current error state
-- `fingerprint` is our "uid" — a stable identifier for drilling into a specific error
-- `get_error_context(fingerprint)` is our "click" — deep interaction with a specific element
+- `get_errors` is our "snapshot" - a structured view of the current error state
+- `fingerprint` is our "uid" - a stable identifier for drilling into a specific error
+- `get_error_context(fingerprint)` is our "click" - deep interaction with a specific element
 
 We should make this explicit in our tool descriptions so agents recognize the pattern.
 
-#### Pattern 3: `includeSnapshot` Pattern (LOW — consider)
+#### Pattern 3: `includeSnapshot` Pattern (LOW - consider)
 
-Many Chrome DevTools MCP tools have an `includeSnapshot: boolean` parameter — after clicking a button, optionally return the updated page state in the same response. Our equivalent: `watch_for_errors` could have an `include_context: boolean` that, when true, automatically includes `get_error_context` data for any high-signal errors found. Saves a round-trip.
+Many Chrome DevTools MCP tools have an `includeSnapshot: boolean` parameter - after clicking a button, optionally return the updated page state in the same response. Our equivalent: `watch_for_errors` could have an `include_context: boolean` that, when true, automatically includes `get_error_context` data for any high-signal errors found. Saves a round-trip.
 
-#### Pattern 4: File Path for Heavy Assets (HIGH — adopt)
+#### Pattern 4: File Path for Heavy Assets (HIGH - adopt)
 
-Chrome DevTools MCP returns file paths for screenshots, traces, and heap snapshots instead of inline data. We should do the same for `get_timeline` when the output exceeds a threshold — write to a temp file and return the path. This prevents blowing up the agent's context window.
+Chrome DevTools MCP returns file paths for screenshots, traces, and heap snapshots instead of inline data. We should do the same for `get_timeline` when the output exceeds a threshold - write to a temp file and return the path. This prevents blowing up the agent's context window.
 
-#### Pattern 5: Category Flags (MEDIUM — adopt)
+#### Pattern 5: Category Flags (MEDIUM - adopt)
 
 Chrome DevTools MCP uses `--category-extensions`, `--category-performance`, etc. to enable/disable tool groups. We should support `--parsers=node,python` to enable only relevant framework parsers, reducing noise and tool surface.
 
-#### Pattern 6: Emulation for Reproduction (LOW — future)
+#### Pattern 6: Emulation for Reproduction (LOW - future)
 
 Chrome DevTools MCP's `emulate` tool (network throttling, CPU throttling, geolocation) helps reproduce conditions. Our future equivalent: `emulate_load` could simulate high-concurrency or slow-database conditions for the dev server. Very future, but the pattern is sound.
 
@@ -1043,13 +1043,13 @@ Agent makes a code change to a full-stack app
         └── request_capture → get_page_summary → audit_accessibility
 ```
 
-The agent uses all three in sequence: backend first (fastest feedback — no browser needed), then browser verification, then visual/a11y verification. The `full-stack-debug` skill teaches this exact sequence.
+The agent uses all three in sequence: backend first (fastest feedback - no browser needed), then browser verification, then visual/a11y verification. The `full-stack-debug` skill teaches this exact sequence.
 
 ---
 
 ## Appendix F: Source Documents
 
-1. `docs/ideas/Developer Pain Points in Agentic Coding.md` — Pain point analysis, 3 architectural models, ViewGraph complement strategy
-2. `docs/ideas/viewgraph-runtime-feedback-analysis.md` — ViewGraph-specific opportunity mapping, 8 enhancement opportunities, product boundary decisions
-3. `docs/ideas/research-agentic-runtime-feedback-loop.md` — Comprehensive research: tools, academic papers, 4 architectural patterns, 6-phase roadmap, concrete MCP tool designs
-4. Clipboard Health: "Agents Can't Iterate Against Tests That Lie" (April 2026) — Case study on agent feedback loops, `@clipboard-health/playwright-reporter-llm`, `flaky-test-debugger` skill. Source: clipboardworks.com/blog + github.com/ClipboardHealth/core-utils
+1. `docs/ideas/Developer Pain Points in Agentic Coding.md` - Pain point analysis, 3 architectural models, ViewGraph complement strategy
+2. `docs/ideas/viewgraph-runtime-feedback-analysis.md` - ViewGraph-specific opportunity mapping, 8 enhancement opportunities, product boundary decisions
+3. `docs/ideas/research-agentic-runtime-feedback-loop.md` - Comprehensive research: tools, academic papers, 4 architectural patterns, 6-phase roadmap, concrete MCP tool designs
+4. Clipboard Health: "Agents Can't Iterate Against Tests That Lie" (April 2026) - Case study on agent feedback loops, `@clipboard-health/playwright-reporter-llm`, `flaky-test-debugger` skill. Source: clipboardworks.com/blog + github.com/ClipboardHealth/core-utils

@@ -3,13 +3,13 @@
 **Author:** Sourjya  
 **Date:** April 27, 2026  
 **Status:** Research & Design Phase  
-**Goal:** Design a tool/extension/plugin that enables agentic coding IDEs/CLIs (like Kiro) to dynamically fetch frontend and backend runtime/debug issues, diagnose errors, and fix them — eliminating the manual log-reading cycle.
+**Goal:** Design a tool/extension/plugin that enables agentic coding IDEs/CLIs (like Kiro) to dynamically fetch frontend and backend runtime/debug issues, diagnose errors, and fix them - eliminating the manual log-reading cycle.
 
 ---
 
 ## 1. Executive Summary
 
-Modern agentic coding tools (Kiro, Cursor, Claude Code, Copilot) can write and refactor code at remarkable speed, but they are **blind to what happens after the code runs**. When a developer writes code and it fails at runtime — a React component throws an unhandled exception, an API returns a 500, a database query times out — the developer must manually:
+Modern agentic coding tools (Kiro, Cursor, Claude Code, Copilot) can write and refactor code at remarkable speed, but they are **blind to what happens after the code runs**. When a developer writes code and it fails at runtime - a React component throws an unhandled exception, an API returns a 500, a database query times out - the developer must manually:
 
 1. Switch to the browser console or terminal
 2. Read through logs to find the error
@@ -19,7 +19,7 @@ Modern agentic coding tools (Kiro, Cursor, Claude Code, Copilot) can write and r
 
 This manual loop is the single biggest friction point in AI-assisted development. It breaks flow, loses context, and wastes time on mechanical work that should be automated.
 
-This document presents a comprehensive research analysis of methodologies, existing tools, academic work, and architectural patterns for building a **runtime feedback loop** — a system that automatically captures runtime errors from both frontend (browser) and backend (server) environments, pipes them to the coding agent, and enables autonomous diagnosis and repair.
+This document presents a comprehensive research analysis of methodologies, existing tools, academic work, and architectural patterns for building a **runtime feedback loop** - a system that automatically captures runtime errors from both frontend (browser) and backend (server) environments, pipes them to the coding agent, and enables autonomous diagnosis and repair.
 
 The recommended architecture is an **MCP-based bridge** with runtime collectors (Chrome DevTools Protocol for frontend, log tailing for backend), a normalization/buffering layer, and an MCP server that exposes structured runtime data as tools the agent can call. This can be built incrementally, starting with a high-ROI MVP (backend log capture) and graduating to proactive monitoring and dynamic instrumentation.
 
@@ -46,7 +46,7 @@ Developer describes task
 Problems with this loop:
 
 - **Context loss**: By the time the developer pastes an error, the agent has lost the execution context. It doesn't know what happened before or after the error, what the HTTP request looked like, or what the server state was.
-- **Manual labor**: The developer is doing mechanical work — reading logs, selecting relevant lines, formatting them for the agent. This is exactly the kind of work AI should handle.
+- **Manual labor**: The developer is doing mechanical work - reading logs, selecting relevant lines, formatting them for the agent. This is exactly the kind of work AI should handle.
 - **Incomplete information**: Developers often paste only the error message, missing the stack trace, the network request that triggered it, the console warnings that preceded it, or the server-side logs that correlate with the client-side failure.
 - **Slow iteration**: Each round-trip through this manual loop takes 1-5 minutes. For complex bugs involving both frontend and backend, it can take dozens of iterations.
 - **No proactive detection**: The agent doesn't know something broke until the developer tells it. If the developer doesn't notice a console error or a silent network failure, it goes unaddressed.
@@ -72,7 +72,7 @@ This research covers:
 - **Frontend runtime**: Browser console errors, unhandled exceptions, network failures (4xx/5xx), React/Vue/Angular error boundaries, client-side crashes
 - **Backend runtime**: Server logs (stdout/stderr), framework-specific errors (Express, Django, Spring Boot, etc.), database errors, unhandled exceptions, crash dumps
 - **Build/compile errors**: TypeScript compiler errors, webpack/vite build failures, linting errors
-- **Development environment only**: This is not about production observability. The target is the local dev loop — `npm run dev`, `python manage.py runserver`, `docker-compose up`.
+- **Development environment only**: This is not about production observability. The target is the local dev loop - `npm run dev`, `python manage.py runserver`, `docker-compose up`.
 
 ---
 
@@ -88,12 +88,12 @@ Cursor introduced "Debug Mode" as a fundamentally different agent loop built aro
 2. Agent reads the codebase and generates **multiple hypotheses** about what could be wrong
 3. Agent **instruments the code with logging statements** designed to test these hypotheses
 4. Developer reproduces the bug while the agent collects runtime logs
-5. Agent sees variable states, execution paths, timing information — pinpoints root cause
+5. Agent sees variable states, execution paths, timing information - pinpoints root cause
 6. Agent generates a targeted fix (often 2-3 lines instead of hundreds of speculative lines)
 7. Developer reproduces again to verify the fix
 8. Agent removes all instrumentation, leaving a clean diff
 
-**Key insight**: The agent doesn't just read existing logs — it *adds its own observability* to test specific hypotheses. The human-in-the-loop verification step is critical for correctness.
+**Key insight**: The agent doesn't just read existing logs - it *adds its own observability* to test specific hypotheses. The human-in-the-loop verification step is critical for correctness.
 
 **Limitation**: Requires manual reproduction by the developer. The agent can't trigger the bug itself in most cases.
 
@@ -111,7 +111,7 @@ Google's official MCP server that bridges AI coding assistants with live Chrome 
 
 **Architecture**: Runs as a Node.js process locally, uses Puppeteer to control Chrome, wraps CDP behind named MCP tools (`navigate_page`, `list_console_messages`, `performance_start_trace`). Can launch its own Chrome session or connect to an existing instance via remote debugging.
 
-**Key insight**: The bridge pattern — MCP wraps CDP, any MCP-compatible agent can use it. No custom integration needed per-agent.
+**Key insight**: The bridge pattern - MCP wraps CDP, any MCP-compatible agent can use it. No custom integration needed per-agent.
 
 #### BrowserTools MCP (AgentDeskAI, 7.2k GitHub stars)
 
@@ -147,7 +147,7 @@ Lightrun launched an MCP-based solution that gives AI coding agents direct acces
 
 **Architecture**: Proprietary agent installed in the runtime environment, IDE plugin, and MCP server as the bridge. The agent can inject observability into running JVM/.NET/Node.js processes without restarting them.
 
-**Key insight**: Dynamic instrumentation without redeploy is extremely powerful. The agent doesn't need to modify source code to add logging — it injects it at the bytecode/runtime level. This is the most advanced approach but requires deep runtime integration.
+**Key insight**: Dynamic instrumentation without redeploy is extremely powerful. The agent doesn't need to modify source code to add logging - it injects it at the bytecode/runtime level. This is the most advanced approach but requires deep runtime integration.
 
 #### Abnormal AI's Claude Code Feedback Loop (November 2025)
 
@@ -159,7 +159,7 @@ Built by Shrivu Shankar at Abnormal AI to address a hidden problem: AI agents ge
 4. Provides actionable feedback
 5. Automates fixes by sending summarized issues back into Claude/Cursor
 
-**Key insight**: Treats the agent's own failures as a learning signal. Acts as a "manager for the swarm of agents" — monitoring what's breaking and feeding improvements back. Every run strengthens the next.
+**Key insight**: Treats the agent's own failures as a learning signal. Acts as a "manager for the swarm of agents" - monitoring what's breaking and feeding improvements back. Every run strengthens the next.
 
 #### Other Notable Tools
 
@@ -178,7 +178,7 @@ The first agentic program repair system that empowers LLMs to actively conduct d
 - **Program Inspector**: Manages breakpoints, targeted state inspection, and incremental runtime experimentation within stateful debugger sessions
 - **Patch Coder**: Synthesizes verified repairs based on the runtime information gathered by the Inspector
 
-The system enables strategic breakpoint placement and targeted state inspection — the agent doesn't just read logs, it actively controls a debugger to examine specific variables and execution paths.
+The system enables strategic breakpoint placement and targeted state inspection - the agent doesn't just read logs, it actively controls a debugger to examine specific variables and execution paths.
 
 **Key insight**: Separating the "investigation" agent from the "repair" agent improves both accuracy and reliability. The investigator gathers evidence; the repairer uses that evidence.
 
@@ -190,7 +190,7 @@ A hierarchical multi-agent framework for unified software debugging. Decomposes 
 - Root cause analysis agent
 - Patch generation agent
 
-Each agent is specialized and the hierarchy coordinates them. This mirrors how experienced human debuggers work — first find where, then understand why, then fix.
+Each agent is specialized and the hierarchy coordinates them. This mirrors how experienced human debuggers work - first find where, then understand why, then fix.
 
 #### Trace-Driven Multi-Agent Debugging (2025, arxiv 2602.06875)
 
@@ -216,7 +216,7 @@ A comprehensive methodology for designing observability that doubles as AI-frien
 
 1. **Structured events over free-text logs**: JSON Lines or protobuf, not `console.log("something broke")`
 2. **Trace context everywhere**: W3C Trace Context (`traceparent` header) propagated across HTTP, gRPC, queues, serverless
-3. **Redaction at source**: Allowlist fields, hash identifiers, scan for secrets — before logs leave the process
+3. **Redaction at source**: Allowlist fields, hash identifiers, scan for secrets - before logs leave the process
 4. **Error fingerprints**: Stable hash of (error_code + normalized_message + top_stack_frame) for deduplication and retrieval
 5. **Metrics as gates**: Only trigger AI triage when error_rate exceeds baseline + threshold
 6. **Deterministic prompt assembly**: Given an incident ID, reconstruct exactly what the AI saw
@@ -225,14 +225,14 @@ A comprehensive methodology for designing observability that doubles as AI-frien
 
 The five-stage pipeline: **Ingest → Sanitize/Redact → Correlate → Summarize/Prioritize → Prompt Build/Retrieve**
 
-**Key insight**: If you design telemetry for AI consumption from the start, the debugging agent becomes dramatically more accurate. Telemetry is not something you read after the fact — it's the runtime prompt that guides the AI.
+**Key insight**: If you design telemetry for AI consumption from the start, the debugging agent becomes dramatically more accurate. Telemetry is not something you read after the fact - it's the runtime prompt that guides the AI.
 
 
 ---
 
 ## 4. Architectural Patterns
 
-Four distinct architectural patterns emerge from the research. They are not mutually exclusive — a production system would combine elements of all four.
+Four distinct architectural patterns emerge from the research. They are not mutually exclusive - a production system would combine elements of all four.
 
 ### 4.1 Pattern A: The MCP Bridge (Foundation Pattern)
 
@@ -258,14 +258,14 @@ Four distinct architectural patterns emerge from the research. They are not mutu
    - Docker container log streams
 2. It **buffers, deduplicates, redacts secrets**, and structures events into a normalized format
 3. An **MCP server** exposes tools like `get_console_errors`, `get_network_failures`, `get_server_logs`, `get_recent_errors` that the agent can call on demand
-4. The agent calls these tools when it needs runtime context — either after making a code change or when investigating a reported issue
+4. The agent calls these tools when it needs runtime context - either after making a code change or when investigating a reported issue
 
 **Strengths:**
 - Works with any MCP-compatible agent (Kiro, Cursor, Claude Code, Copilot, etc.)
 - Clean separation of concerns (collection vs. exposure vs. consumption)
 - Agent controls when and how much context it consumes (pull-based)
 - No modification to the application code required
-- Incrementally buildable — start with one collector, add more over time
+- Incrementally buildable - start with one collector, add more over time
 
 **Weaknesses:**
 - Agent must know to ask for runtime data (doesn't get pushed automatically)
@@ -278,7 +278,7 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 
 ### 4.2 Pattern B: Observe-Hypothesize-Instrument-Verify Loop (Cursor Debug Mode Pattern)
 
-**Summary**: The agent doesn't just passively read logs — it actively instruments the code with targeted logging to test specific hypotheses, then reads the results.
+**Summary**: The agent doesn't just passively read logs - it actively instruments the code with targeted logging to test specific hypotheses, then reads the results.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -307,7 +307,7 @@ Four distinct architectural patterns emerge from the research. They are not mutu
    - Add timing measurements around suspected slow operations
    - Add assertions that will fail loudly if a hypothesis is correct
 4. Developer reproduces the bug (or the agent triggers it via automated test / browser automation)
-5. Agent **reads the instrumentation output** — now it has concrete data about variable states, execution paths, timing
+5. Agent **reads the instrumentation output** - now it has concrete data about variable states, execution paths, timing
 6. Agent identifies root cause based on evidence, generates a **targeted fix** (typically 2-3 lines, not hundreds of speculative lines)
 7. Verification step: reproduce again with the fix in place
 8. Agent **removes all instrumentation**, leaving only the clean fix
@@ -322,7 +322,7 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 - Requires reproduction of the bug (manual or automated)
 - Multiple instrument-reproduce-read cycles can be slow
 - Instrumentation injection requires careful handling to avoid breaking the app
-- Cleanup must be thorough — leftover `console.log` statements are a code smell
+- Cleanup must be thorough - leftover `console.log` statements are a code smell
 
 **When to use**: For **hard bugs** where the error message alone isn't sufficient to diagnose the root cause. Especially valuable for state-related bugs, race conditions, and issues involving multiple components.
 
@@ -375,10 +375,10 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 6. **Deterministic prompt assembly**: Given a `trace_id`, the same prompt is built every time. Structured JSON sections so the model can parse reliably
 
 **Strengths:**
-- Highest accuracy — the AI gets exactly the information it needs in a parseable format
+- Highest accuracy - the AI gets exactly the information it needs in a parseable format
 - Enables correlation across services (frontend request → backend trace → database query)
 - Error fingerprints enable learning from past fixes
-- Deterministic and reproducible — you can replay any diagnosis
+- Deterministic and reproducible - you can replay any diagnosis
 - Scales to complex microservice architectures
 
 **Weaknesses:**
@@ -387,7 +387,7 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 - Overhead of maintaining telemetry schemas
 - Overkill for simple single-service dev setups
 
-**When to use**: For **teams and projects that want the highest-quality debugging AI**. Best adopted incrementally — start with structured logs and error fingerprints, add trace context and correlation over time.
+**When to use**: For **teams and projects that want the highest-quality debugging AI**. Best adopted incrementally - start with structured logs and error fingerprints, add trace context and correlation over time.
 
 **Reference**: DebuggAI's "Telemetry as Prompt" methodology, OpenTelemetry, W3C Trace Context.
 
@@ -430,13 +430,13 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 6. Developer sees the proposed fix and approves, modifies, or dismisses
 
 **Strengths:**
-- Zero manual effort from the developer — errors are caught and diagnosed automatically
+- Zero manual effort from the developer - errors are caught and diagnosed automatically
 - Catches errors the developer might not notice (silent network failures, console warnings)
 - Correlation with `git diff` helps identify which recent change caused the error
 - Feels like having a pair programmer who's always watching the runtime
 
 **Weaknesses:**
-- Risk of noise — too many notifications can be distracting
+- Risk of noise - too many notifications can be distracting
 - Requires sophisticated filtering to avoid false positives
 - Push-based model means the agent might interrupt the developer at bad times
 - Harder to implement correctly than pull-based patterns
@@ -447,9 +447,9 @@ Four distinct architectural patterns emerge from the research. They are not mutu
 **Noise mitigation strategies:**
 - Only surface errors with new fingerprints (not repeats)
 - Require error to persist across 2+ occurrences before surfacing
-- Respect "focus mode" — batch notifications instead of interrupting
+- Respect "focus mode" - batch notifications instead of interrupting
 - Let the developer configure severity thresholds
-- Correlate with recent code changes — only surface errors likely caused by the developer's current work
+- Correlate with recent code changes - only surface errors likely caused by the developer's current work
 
 
 ---
@@ -460,7 +460,7 @@ This section describes the recommended architecture in implementation detail. Th
 
 ### 5.1 Layer 1: Runtime Collectors (Data Sources)
 
-#### 5.1.1 Frontend — Browser (Chrome DevTools Protocol)
+#### 5.1.1 Frontend - Browser (Chrome DevTools Protocol)
 
 Connect to Chrome via CDP WebSocket. Chrome must be launched with `--remote-debugging-port=9222` or the tool manages the browser lifecycle.
 
@@ -470,7 +470,7 @@ Connect to Chrome via CDP WebSocket. Chrome must be launched with `--remote-debu
 |---|---|---|
 | `Runtime` | `consoleAPICalled` | All `console.log/warn/error/info` calls |
 | `Runtime` | `exceptionThrown` | Unhandled JS exceptions with stack traces |
-| `Network` | `responseReceived` | HTTP responses — filter for 4xx/5xx status codes |
+| `Network` | `responseReceived` | HTTP responses - filter for 4xx/5xx status codes |
 | `Network` | `loadingFailed` | Failed network requests (DNS, CORS, timeout) |
 | `Network` | `requestWillBeSent` | Request details (URL, method, headers) for correlation |
 | `Log` | `entryAdded` | Browser-level log entries (security warnings, deprecations) |
@@ -479,7 +479,7 @@ Connect to Chrome via CDP WebSocket. Chrome must be launched with `--remote-debu
 **Implementation approach:**
 
 ```javascript
-// Conceptual — connect to Chrome CDP and subscribe to error events
+// Conceptual - connect to Chrome CDP and subscribe to error events
 const CDP = require('chrome-remote-interface');
 
 async function connectBrowser() {
@@ -513,11 +513,11 @@ async function connectBrowser() {
 ```
 
 **Optional capabilities:**
-- `Page.captureScreenshot` — capture visual state on error
-- `DOM.getDocument` + `DOM.querySelector` — inspect DOM state
-- `Performance.getMetrics` — runtime performance data
+- `Page.captureScreenshot` - capture visual state on error
+- `DOM.getDocument` + `DOM.querySelector` - inspect DOM state
+- `Performance.getMetrics` - runtime performance data
 
-#### 5.1.2 Backend — Server Logs
+#### 5.1.2 Backend - Server Logs
 
 Multiple strategies depending on the dev setup:
 
@@ -567,7 +567,7 @@ Pipe through the same parser as Strategy 1.
 
 **Strategy 4: Structured log stream (if app outputs JSON)**
 
-If the application outputs structured JSON logs (e.g., via `pino`, `structlog`, `logback` with JSON encoder), parse them directly — no regex needed:
+If the application outputs structured JSON logs (e.g., via `pino`, `structlog`, `logback` with JSON encoder), parse them directly - no regex needed:
 
 ```javascript
 function parseStructuredLog(line) {
@@ -778,7 +778,7 @@ Returns backend server logs. Filterable by level.
 get_build_errors() → RuntimeEvent[]
 ```
 
-Returns current build/compile errors. These are typically blocking — the app won't run until they're fixed.
+Returns current build/compile errors. These are typically blocking - the app won't run until they're fixed.
 
 #### Tool: `watch_for_errors`
 
@@ -789,7 +789,7 @@ watch_for_errors(duration_seconds: number, source?: string) → RuntimeEvent[]
 Starts a watch window. Returns all errors that occur within the specified duration. This is the key tool for the "edit → run → check" loop:
 
 1. Agent makes a code change
-2. Agent calls `watch_for_errors(15)` — "watch for 15 seconds"
+2. Agent calls `watch_for_errors(15)` - "watch for 15 seconds"
 3. Dev server hot-reloads, browser refreshes
 4. Tool collects any errors during the window
 5. Returns them to the agent
@@ -824,7 +824,7 @@ Resets the error buffer. Useful after fixing a batch of errors to get a clean ba
 get_runtime_status() → { browser_connected: boolean, server_connected: boolean, error_count: number, last_error_time: number }
 ```
 
-Health check — tells the agent what runtime sources are available and the current error state.
+Health check - tells the agent what runtime sources are available and the current error state.
 
 ### 5.4 Layer 4: Agent Workflow Integration
 
@@ -836,7 +836,7 @@ The agent explicitly checks for runtime errors as part of its workflow:
 Agent receives task: "Fix the login form"
   → Agent reads relevant code (login component, auth API)
   → Agent makes changes
-  → Agent calls get_runtime_status() — confirms browser + server connected
+  → Agent calls get_runtime_status() - confirms browser + server connected
   → Agent calls watch_for_errors(15)
   → [Dev server hot-reloads, browser refreshes]
   → watch_for_errors returns:
@@ -880,7 +880,7 @@ Combine both:
 
 ## 6. Implementation Roadmap
 
-### Phase 1: MVP — Backend Log Capture + MCP Server (Week 1-2)
+### Phase 1: MVP - Backend Log Capture + MCP Server (Week 1-2)
 
 **Goal**: Agent can read dev server errors without the developer copy-pasting.
 
@@ -930,7 +930,7 @@ Combine both:
 **Deliverables:**
 - Background watch daemon that continuously monitors all sources
 - New-fingerprint detection (only surface errors not seen before)
-- Correlation with `git diff` — identify if the error is likely caused by recent code changes
+- Correlation with `git diff` - identify if the error is likely caused by recent code changes
 - Cross-source correlation (frontend error + backend error in same time window)
 - Notification mechanism (MCP resource subscription or polling endpoint)
 - Configurable severity thresholds and "focus mode" (batch notifications)
@@ -971,12 +971,12 @@ Combine both:
 **Decision: Use MCP.**
 
 MCP (Model Context Protocol) is the emerging standard for connecting AI agents to external tools. It's supported by Kiro, Cursor, Claude Code, Copilot, Cline, Windsurf, and others. Building on MCP means:
-- Your tool works with any agent that supports MCP — build once, works everywhere
+- Your tool works with any agent that supports MCP - build once, works everywhere
 - You benefit from the ecosystem's tooling (MCP inspectors, registries, etc.)
 - No need to build custom integrations per-IDE
 - The protocol handles serialization, error handling, and tool discovery
 
-The alternative — a custom WebSocket or HTTP protocol — would require building client integrations for each IDE/agent. Not worth it.
+The alternative - a custom WebSocket or HTTP protocol - would require building client integrations for each IDE/agent. Not worth it.
 
 ### 7.2 Browser Extension vs. CDP Direct
 
@@ -995,7 +995,7 @@ Browser extension (like BrowserTools MCP):
 - Requires extension installation and maintenance
 - More complex architecture (extension → middleware → MCP)
 
-For a dev tool, CDP direct is simpler and sufficient. The developer is already running a dev server — asking them to launch Chrome with a flag is a small ask. An extension can be added later for users who want to capture from their regular browsing session.
+For a dev tool, CDP direct is simpler and sufficient. The developer is already running a dev server - asking them to launch Chrome with a flag is a small ask. An extension can be added later for users who want to capture from their regular browsing session.
 
 ### 7.3 Push vs. Pull
 
@@ -1008,7 +1008,7 @@ Pull (agent calls `get_errors` when it wants):
 - Works within the standard MCP tool-call model
 
 Push (tool notifies agent of new errors):
-- Zero-effort for the developer — errors surface automatically
+- Zero-effort for the developer - errors surface automatically
 - Can catch errors the developer doesn't notice
 - Risk of noise and interruption
 - Requires more sophisticated filtering
@@ -1097,21 +1097,21 @@ Over time, encourage adoption of structured logging by showing developers how mu
 
 ## 9. Conclusion
 
-The gap between "AI writes code" and "AI understands what the code does at runtime" is the single biggest bottleneck in agentic development workflows today. Every tool in this space — Cursor's Debug Mode, Google's Chrome DevTools MCP, Lightrun's Runtime Context, the academic work on InspectCoder and UniDebugger — is converging on the same insight: **the agent needs to see the runtime**.
+The gap between "AI writes code" and "AI understands what the code does at runtime" is the single biggest bottleneck in agentic development workflows today. Every tool in this space - Cursor's Debug Mode, Google's Chrome DevTools MCP, Lightrun's Runtime Context, the academic work on InspectCoder and UniDebugger - is converging on the same insight: **the agent needs to see the runtime**.
 
 The recommended path for building your automation tools:
 
-1. **Start with the MCP Bridge pattern** (Pattern A) — a daemon that tails your dev server logs and connects to Chrome via CDP, normalizing everything into structured events exposed as MCP tools. This is the foundation that everything else builds on.
+1. **Start with the MCP Bridge pattern** (Pattern A) - a daemon that tails your dev server logs and connects to Chrome via CDP, normalizing everything into structured events exposed as MCP tools. This is the foundation that everything else builds on.
 
-2. **Add watch mode** (Pattern A+) — the `watch_for_errors` tool that lets the agent make a change and immediately check for errors. This closes the basic feedback loop.
+2. **Add watch mode** (Pattern A+) - the `watch_for_errors` tool that lets the agent make a change and immediately check for errors. This closes the basic feedback loop.
 
-3. **Graduate to proactive monitoring** (Pattern D) — background daemon that pushes new errors to the agent. This is where the experience shifts from "agent helps when asked" to "agent catches problems you didn't notice."
+3. **Graduate to proactive monitoring** (Pattern D) - background daemon that pushes new errors to the agent. This is where the experience shifts from "agent helps when asked" to "agent catches problems you didn't notice."
 
-4. **Layer in instrumentation injection** (Pattern B) — for hard bugs, let the agent add its own logging to test hypotheses. This is the most powerful capability but also the most complex.
+4. **Layer in instrumentation injection** (Pattern B) - for hard bugs, let the agent add its own logging to test hypotheses. This is the most powerful capability but also the most complex.
 
-5. **Over time, adopt telemetry-as-prompt practices** (Pattern C) — as your projects grow, structured logging with trace context and error fingerprints will make the AI dramatically more accurate.
+5. **Over time, adopt telemetry-as-prompt practices** (Pattern C) - as your projects grow, structured logging with trace context and error fingerprints will make the AI dramatically more accurate.
 
-The architecture is: **Collectors → Normalizer/Buffer → MCP Server → Agent**. Build it incrementally, validate each phase with real usage, and iterate. The goal is not to build a perfect system on day one — it's to eliminate the manual log-reading loop as fast as possible and then improve from there.
+The architecture is: **Collectors → Normalizer/Buffer → MCP Server → Agent**. Build it incrementally, validate each phase with real usage, and iterate. The goal is not to build a perfect system on day one - it's to eliminate the manual log-reading loop as fast as possible and then improve from there.
 
 ---
 

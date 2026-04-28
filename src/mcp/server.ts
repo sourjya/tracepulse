@@ -59,7 +59,7 @@ function errorResult(message: string): CallToolResult {
 // ──────────────────────────────────────────────
 
 /**
- * Handle get_errors tool — returns recent error/warn events sorted by signal_score descending.
+ * Handle get_errors tool - returns recent error/warn events sorted by signal_score descending.
  *
  * Filters the buffer for events with level 'error' or 'warn', validates
  * input params via validateEventFilters, and sorts by signal_score (highest first).
@@ -113,7 +113,7 @@ export function handleGetErrors(
 }
 
 /**
- * Handle get_server_logs tool — returns recent log events at any severity, sorted by timestamp descending.
+ * Handle get_server_logs tool - returns recent log events at any severity, sorted by timestamp descending.
  *
  * Accepts an optional minimum level filter. Default limit is DEFAULT_LOG_LIMIT (50).
  * Results are sorted newest-first (timestamp descending) by the buffer's query method.
@@ -144,10 +144,10 @@ export function handleGetServerLogs(
 }
 
 /**
- * Handle get_runtime_status tool — quick health check returning connection state and error summary.
+ * Handle get_runtime_status tool - quick health check returning connection state and error summary.
  *
  * Counts error-level events and finds the most recent error timestamp.
- * No input params — reads directly from the buffer and connection state callback.
+ * No input params - reads directly from the buffer and connection state callback.
  *
  * @param buffer - The event buffer to query.
  * @param getConnected - Callback returning whether the child process is connected.
@@ -175,9 +175,9 @@ export function handleGetRuntimeStatus(
 }
 
 /**
- * Handle clear_errors tool — removes all events from the buffer.
+ * Handle clear_errors tool - removes all events from the buffer.
  *
- * Returns the count of cleared events. Idempotent — clearing an empty buffer returns 0.
+ * Returns the count of cleared events. Idempotent - clearing an empty buffer returns 0.
  *
  * @param buffer - The event buffer to clear.
  * @returns CallToolResult with JSON { cleared_count }.
@@ -223,7 +223,7 @@ export function createMcpServer(
     description:
       "Get recent error and warning events sorted by signal_score descending.",
     inputSchema: {
-      since: z.number().optional().describe("Unix ms — only events after this timestamp"),
+      since: z.number().optional().describe("Unix ms - only events after this timestamp"),
       source: z.string().optional().describe("Filter by event source"),
       service: z.string().optional().describe("Filter by service name"),
       limit: z.number().optional().describe("Maximum number of results (default 20)"),
@@ -243,7 +243,7 @@ export function createMcpServer(
       "Get recent log events at any severity level sorted by timestamp descending.",
     inputSchema: {
       level: z.string().optional().describe("Minimum log level filter"),
-      since: z.number().optional().describe("Unix ms — only events after this timestamp"),
+      since: z.number().optional().describe("Unix ms - only events after this timestamp"),
       limit: z.number().optional().describe("Maximum number of results (default 50)"),
       message_contains: z.string().optional().describe("Case-insensitive substring match on message or raw log line. Use for URL/path filtering (e.g., '/export', '500', 'error')."),
     },
@@ -257,7 +257,7 @@ export function createMcpServer(
 
   server.registerTool("get_runtime_status", {
     title: "Get Runtime Status",
-    description: "Quick health check — connection state, error count, last error time.",
+    description: "Quick health check - connection state, error count, last error time.",
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,

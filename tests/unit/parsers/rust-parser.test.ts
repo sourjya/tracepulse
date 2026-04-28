@@ -81,10 +81,10 @@ describe("rustParser.canParse", () => {
 });
 
 // ──────────────────────────────────────────────
-// parse — legacy format
+// parse - legacy format
 // ──────────────────────────────────────────────
 
-describe("rustParser.parse — legacy format", () => {
+describe("rustParser.parse - legacy format", () => {
   it("extracts panic message from legacy format", () => {
     const line =
       "thread 'main' panicked at 'index out of bounds: the len is 3 but the index is 5', src/main.rs:42:5";
@@ -121,10 +121,10 @@ describe("rustParser.parse — legacy format", () => {
 });
 
 // ──────────────────────────────────────────────
-// parse — newer format
+// parse - newer format
 // ──────────────────────────────────────────────
 
-describe("rustParser.parse — newer format", () => {
+describe("rustParser.parse - newer format", () => {
   it("extracts message from newer panic format", () => {
     const line =
       "thread 'main' panicked at src/main.rs:42:5:\nindex out of bounds: the len is 3 but the index is 5";
@@ -152,10 +152,10 @@ describe("rustParser.parse — newer format", () => {
 });
 
 // ──────────────────────────────────────────────
-// parse — RUST_BACKTRACE
+// parse - RUST_BACKTRACE
 // ──────────────────────────────────────────────
 
-describe("rustParser.parse — RUST_BACKTRACE", () => {
+describe("rustParser.parse - RUST_BACKTRACE", () => {
   it("extracts stack trace from backtrace output", () => {
     const line = [
       "thread 'main' panicked at 'assertion failed', src/main.rs:5:5",
@@ -192,7 +192,7 @@ describe("rustParser.parse — RUST_BACKTRACE", () => {
 
     expect(result).not.toBeNull();
     expect(result!.stack_trace).toBeDefined();
-    // Count frame entries — each frame is "N: function\n  at file:line"
+    // Count frame entries - each frame is "N: function\n  at file:line"
     const frameCount = (result!.stack_trace!.match(/^\s*\d+:/gm) ?? []).length;
     expect(frameCount).toBeLessThanOrEqual(MAX_STACK_FRAMES);
   });

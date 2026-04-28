@@ -44,11 +44,11 @@ Link errors to recent git changes. Focus on errors in files you recently modifie
 
 ### Step 7: Fix and Verify
 1. Edit the code to fix the root cause
-2. `watch_for_errors(15)` — wait for hot-reload
+2. `watch_for_errors(15)` - wait for hot-reload
 3. If errors persist, repeat from Step 3
 
 ## Decision Tree
 
-- **High signal (score ≥ 50)**: Investigate immediately — likely a crash or unhandled exception
+- **High signal (score ≥ 50)**: Investigate immediately - likely a crash or unhandled exception
 - **Medium signal (20-49)**: Check after high-signal errors are resolved
-- **Low signal (< 20)**: Usually informational — review if time permits
+- **Low signal (< 20)**: Usually informational - review if time permits

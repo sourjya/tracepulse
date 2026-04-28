@@ -79,7 +79,7 @@ describe("frontend-backend correlation engine", () => {
     expect(results[0].correlation_confidence).toBe(0.7);
   });
 
-  it("no match — timestamps >2s apart → no correlation", () => {
+  it("no match - timestamps >2s apart → no correlation", () => {
     const now = Date.now();
     const fe = [makeFE({ path: "/api/users", timestamp: now })];
     const be = [makeBE({ message: "Error at /api/users", timestamp: now + 5000 })];

@@ -1,18 +1,18 @@
-# Implementation Plan: Phase 2 — Watch Mode
+# Implementation Plan: Phase 2 - Watch Mode
 
 ## Overview
 
 Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools: `watch_for_errors`, `get_build_errors`, `get_error_context`, and `get_timeline`. It also adds hot-reload detection and build error parsing.
 
 **Architecture References:**
-- `docs/ideas/feature-architecture-analysis.md` — Decisions 6 (pull-first) and 7 (signal scoring)
-- `.kiro/specs/phase2-watch-mode/requirements.md` — US-1 through US-6
-- `.kiro/specs/phase2-watch-mode/design.md` — Component interactions, tool contracts
+- `docs/ideas/feature-architecture-analysis.md` - Decisions 6 (pull-first) and 7 (signal scoring)
+- `.kiro/specs/phase2-watch-mode/requirements.md` - US-1 through US-6
+- `.kiro/specs/phase2-watch-mode/design.md` - Component interactions, tool contracts
 
 **Key Principles:**
 - Phase 1 must be complete before starting Phase 2
 - All new modules follow the Phase 1 parser interface pattern
-- stdout is reserved for MCP JSON-RPC — all diagnostics to stderr
+- stdout is reserved for MCP JSON-RPC - all diagnostics to stderr
 - Every RuntimeEvent includes signal_score and signal_strength
 
 **Development Approach - TDD MANDATORY:**
@@ -30,7 +30,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 1: Constants & Event Buffer Subscription
 
-#### Step 1: Watch Mode Constants — TDD Cycle
+#### Step 1: Watch Mode Constants - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 1.1 Write unit tests for watch mode constants
@@ -47,7 +47,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Add comprehensive documentation per commenting standards
   - _Requirements: design.md constants section_
 
-#### Step 2: Event Buffer Subscription — TDD Cycle
+#### Step 2: Event Buffer Subscription - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 2.1 Write unit tests for event buffer subscription
@@ -86,7 +86,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 2: Hot-Reload Detection
 
-#### Step 3: Hot-Reload Patterns — TDD Cycle
+#### Step 3: Hot-Reload Patterns - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 3.1 Write unit tests for hot-reload patterns
@@ -104,7 +104,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Document each pattern with the tool it detects and example match
   - _Requirements: US-2 AC-1, AC-2, AC-5_
 
-#### Step 4: Hot-Reload Detector — TDD Cycle
+#### Step 4: Hot-Reload Detector - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 4.1 Write unit tests for hot-reload detector
@@ -143,7 +143,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 3: Build Error Parsers
 
-#### Step 5: TypeScript Compiler Parser — TDD Cycle
+#### Step 5: TypeScript Compiler Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 5.1 Write unit tests for TypeScript compiler parser
@@ -163,7 +163,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Set source='build-error', signal_score based on BUILD_ERROR_BASE_SIGNAL_SCORE + additive factors
   - _Requirements: US-3 AC-1_
 
-#### Step 6: ESLint Parser — TDD Cycle
+#### Step 6: ESLint Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 6.1 Write unit tests for ESLint parser
@@ -183,7 +183,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Set source='build-error' with appropriate signal scoring
   - _Requirements: US-3 AC-2_
 
-#### Step 7: Vite/webpack Build Error Parser — TDD Cycle
+#### Step 7: Vite/webpack Build Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 7.1 Write unit tests for Vite/webpack build error parser
@@ -222,7 +222,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 4: Watch Controller & Timeline Query
 
-#### Step 8: Timeline Query — TDD Cycle
+#### Step 8: Timeline Query - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 8.1 Write unit tests for timeline query
@@ -246,7 +246,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Create `src/query/index.ts` re-exporting public API
   - _Requirements: US-5, US-6_
 
-#### Step 9: Watch Controller — TDD Cycle
+#### Step 9: Watch Controller - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 9.1 Write unit tests for watch controller
@@ -293,7 +293,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 5: MCP Tool Handlers
 
-#### Step 10: watch_for_errors Tool Handler — TDD Cycle
+#### Step 10: watch_for_errors Tool Handler - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 10.1 Write integration tests for watch_for_errors MCP tool
@@ -312,7 +312,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Delegate to watch controller, format response as MCP content
   - _Requirements: US-1_
 
-#### Step 11: get_build_errors Tool Handler — TDD Cycle
+#### Step 11: get_build_errors Tool Handler - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 11.1 Write integration tests for get_build_errors MCP tool
@@ -331,7 +331,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Query buffer for source='build-error', deduplicate, sort, limit
   - _Requirements: US-4_
 
-#### Step 12: get_error_context Tool Handler — TDD Cycle
+#### Step 12: get_error_context Tool Handler - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 12.1 Write integration tests for get_error_context MCP tool
@@ -350,7 +350,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Use timeline query module for surrounding logs and occurrence count
   - _Requirements: US-5_
 
-#### Step 13: get_timeline Tool Handler — TDD Cycle
+#### Step 13: get_timeline Tool Handler - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 13.1 Write integration tests for get_timeline MCP tool
@@ -387,7 +387,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
 
 ### Phase 6: Integration & Pipeline Wiring
 
-#### Step 14: Pipeline Integration — TDD Cycle
+#### Step 14: Pipeline Integration - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 14.1 Write integration tests for full Phase 2 pipeline
@@ -414,7 +414,7 @@ Phase 2 closes the agent's edit → verify feedback loop with four new MCP tools
   - Ensure no Phase 1 behavior is broken (run full test suite)
   - Remove any temporary test scaffolding
 
-#### Checkpoint: Phase 6 Complete — Phase 2 Done
+#### Checkpoint: Phase 6 Complete - Phase 2 Done
 
 - [ ] All unit tests passing
 - [ ] All integration tests passing

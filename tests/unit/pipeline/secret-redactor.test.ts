@@ -1,7 +1,7 @@
 /**
  * Unit tests for the secret redactor pipeline stage.
  *
- * The secret redactor is the first stage in the pipeline — every raw log line
+ * The secret redactor is the first stage in the pipeline - every raw log line
  * passes through it before parsing or storage. These tests verify that common
  * credential formats are redacted while non-secret content is preserved.
  *

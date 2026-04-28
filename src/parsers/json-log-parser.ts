@@ -6,7 +6,7 @@
  * Extracts message, level, stack trace, and trace ID into a ParsedError.
  *
  * This parser is registered in the parser pipeline and tried against every
- * incoming log line. canParse is designed to be fast — a single JSON.parse
+ * incoming log line. canParse is designed to be fast - a single JSON.parse
  * with field existence checks.
  *
  * @see src/types/parsers.ts for ErrorParser interface
@@ -23,7 +23,7 @@ import type { LogLevel } from "@/types/events.js";
 /**
  * Maps pino's numeric log levels to TracePulse LogLevel strings.
  * Pino uses: 10=trace, 20=debug, 30=info, 40=warn, 50=error, 60=fatal.
- * TracePulse has no trace/fatal — 10/20 map to debug, 60 maps to error.
+ * TracePulse has no trace/fatal - 10/20 map to debug, 60 maps to error.
  */
 const PINO_LEVEL_MAP: Record<number, LogLevel> = {
   10: "debug",
@@ -52,7 +52,7 @@ const STRING_LEVEL_MAP: Record<string, LogLevel> = {
 
 /**
  * Attempt to parse a string as JSON. Returns null on any parse failure.
- * Designed to never throw — malformed/truncated JSON returns null.
+ * Designed to never throw - malformed/truncated JSON returns null.
  *
  * @param line - Raw log line to parse
  * @returns Parsed object or null if not valid JSON
@@ -151,7 +151,7 @@ function detectFramework(obj: Record<string, unknown>): string | undefined {
  * logback/bunyan/winston (level + message fields), and any JSON logger
  * that emits level/severity + msg/message/event fields.
  *
- * Implements the ErrorParser interface — registered in the parser pipeline
+ * Implements the ErrorParser interface - registered in the parser pipeline
  * and tried against each incoming log line in registration order.
  */
 export const jsonLogParser: ErrorParser = {

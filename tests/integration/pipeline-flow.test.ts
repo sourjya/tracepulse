@@ -4,7 +4,7 @@
  * Exercises the complete flow: raw log line → secret redaction → parser registry
  * → event normalization → signal scoring → ring buffer storage. Uses the real
  * createPipeline factory from cli.ts with a real ring buffer and default parser
- * registry — no mocks.
+ * registry - no mocks.
  *
  * @see src/cli.ts for createPipeline
  * @see src/store/ring-buffer.ts for EventBuffer

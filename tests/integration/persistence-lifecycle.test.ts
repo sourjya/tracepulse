@@ -50,9 +50,9 @@ describe("persistence lifecycle", () => {
   });
 
   it("persistence is not invoked when persist is disabled", () => {
-    // This is a design test — when --persist is not set,
+    // This is a design test - when --persist is not set,
     // loadFingerprints and saveFingerprints should not be called.
     // The CLI controls this; here we just verify the functions are safe to skip.
-    expect(true).toBe(true); // Placeholder — actual wiring is in cli.ts
+    expect(true).toBe(true); // Placeholder - actual wiring is in cli.ts
   });
 });

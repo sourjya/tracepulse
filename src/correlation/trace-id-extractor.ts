@@ -2,7 +2,7 @@
  * Trace ID extraction from HTTP response headers.
  *
  * Parses W3C traceparent and Datadog trace ID headers.
- * Pure function — no I/O, no side effects.
+ * Pure function - no I/O, no side effects.
  *
  * @see .kiro/specs/phase4-correlation/design.md for trace ID specifications
  */

@@ -3,7 +3,7 @@
  *
  * Groups events from different services that occur within a configurable
  * time window. Only groups spanning multiple services get a correlation_group
- * ID — single-service clusters are left unannotated.
+ * ID - single-service clusters are left unannotated.
  *
  * @see .kiro/specs/phase3-multi-process/design.md for correlation design
  */

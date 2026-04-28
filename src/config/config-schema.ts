@@ -13,7 +13,7 @@
 
 /** A single service to monitor via child process. */
 export interface ServiceConfig {
-  /** Unique service name — only [a-z0-9-] allowed. */
+  /** Unique service name - only [a-z0-9-] allowed. */
   readonly name: string;
   /** Shell command to spawn the service. */
   readonly command: string;

@@ -23,7 +23,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — positive matches
+  // canParse - positive matches
   // ──────────────────────────────────────────────
 
   it("detects TypeError with stack trace", () => {
@@ -65,7 +65,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — negative matches
+  // canParse - negative matches
   // ──────────────────────────────────────────────
 
   it("returns false for Python traceback", () => {
@@ -96,7 +96,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — TypeError with stack trace
+  // parse - TypeError with stack trace
   // ──────────────────────────────────────────────
 
   it("parses TypeError with stack trace", () => {
@@ -121,7 +121,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — ReferenceError
+  // parse - ReferenceError
   // ──────────────────────────────────────────────
 
   it("parses ReferenceError: x is not defined", () => {
@@ -134,7 +134,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — SyntaxError
+  // parse - SyntaxError
   // ──────────────────────────────────────────────
 
   it("parses SyntaxError: Unexpected token", () => {
@@ -146,7 +146,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — ENOENT
+  // parse - ENOENT
   // ──────────────────────────────────────────────
 
   it("parses Error: ENOENT: no such file or directory", () => {
@@ -158,7 +158,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — HTTP error pattern
+  // parse - HTTP error pattern
   // ──────────────────────────────────────────────
 
   it("parses HTTP error pattern", () => {
@@ -173,7 +173,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack frame extraction (skip node_modules and node:internal)
+  // parse - stack frame extraction (skip node_modules and node:internal)
   // ──────────────────────────────────────────────
 
   it("extracts file:line:col from first user-code frame, skipping node_modules", () => {
@@ -208,7 +208,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack trace truncation
+  // parse - stack trace truncation
   // ──────────────────────────────────────────────
 
   it("truncates stack traces beyond 15 frames", () => {
@@ -226,7 +226,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — unhandled exception detection
+  // parse - unhandled exception detection
   // ──────────────────────────────────────────────
 
   it("sets is_unhandled_exception for uncaught exception", () => {
@@ -256,7 +256,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — returns null for unparseable input
+  // parse - returns null for unparseable input
   // ──────────────────────────────────────────────
 
   it("returns null when canParse matched but no data extractable", () => {
@@ -267,7 +267,7 @@ describe("nodeParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack frame format: 'at file:line:col' (no parens)
+  // parse - stack frame format: 'at file:line:col' (no parens)
   // ──────────────────────────────────────────────
 
   it("parses 'at file:line:col' frames without parentheses", () => {

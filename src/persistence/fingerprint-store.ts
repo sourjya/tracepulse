@@ -13,7 +13,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { MAX_PERSISTED_FINGERPRINTS } from "@/constants/services.js";
 
-/** A single persisted fingerprint entry — no raw messages for security. */
+/** A single persisted fingerprint entry - no raw messages for security. */
 export interface PersistedFingerprintEntry {
   readonly fingerprint: string;
   readonly first_seen: number;

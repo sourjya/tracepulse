@@ -32,7 +32,7 @@ const CRASH_PATTERNS = [
 const HTTP_5XX = /\bHTTP\s*5\d{2}\b|\b5\d{2}\s+(Internal|Bad Gateway|Service Unavailable)/i;
 
 /**
- * Ordered classification rules — first match wins.
+ * Ordered classification rules - first match wins.
  * Crash rules are checked before error rules, etc.
  */
 const RULES: readonly ClassificationRule[] = [

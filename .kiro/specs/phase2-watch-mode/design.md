@@ -1,4 +1,4 @@
-# Phase 2: Watch Mode — Design
+# Phase 2: Watch Mode - Design
 
 > **Hardening Reference:** See [Collector Pitfalls & Hardening Guide](../../../docs/references/collector-pitfalls-hardening.md) for known failure modes. Phase 2 inherits all Phase 1 pipeline hardening (ANSI stripping, line length guard, PYTHONUNBUFFERED, EPIPE detection, global error handlers). Build error parsers receive pre-stripped input (NFR-7).
 
@@ -27,10 +27,10 @@ Dev Server ──stdout─┤  Secret Redactor        │              │  Hot-
 
 ### Component Interactions
 
-1. **Hot-Reload Detector** — Listens to the same stdout/stderr stream as the error parsers. Matches lines against a registry of hot-reload patterns. Injects synthetic `RuntimeEvent` markers into the event buffer.
-2. **Build Error Parsers** — New parsers added to the Phase 1 parser registry: TypeScript compiler, ESLint, Vite/webpack build errors. They produce `RuntimeEvent` objects with `source: 'build-error'`.
-3. **Watch Controller** — Internal module that manages the blocking behavior of `watch_for_errors`. Subscribes to the event buffer, collects events for the specified duration, then returns.
-4. **Timeline Query** — Internal module that queries the event buffer by time range. Used by `get_timeline` and `get_error_context`.
+1. **Hot-Reload Detector** - Listens to the same stdout/stderr stream as the error parsers. Matches lines against a registry of hot-reload patterns. Injects synthetic `RuntimeEvent` markers into the event buffer.
+2. **Build Error Parsers** - New parsers added to the Phase 1 parser registry: TypeScript compiler, ESLint, Vite/webpack build errors. They produce `RuntimeEvent` objects with `source: 'build-error'`.
+3. **Watch Controller** - Internal module that manages the blocking behavior of `watch_for_errors`. Subscribes to the event buffer, collects events for the specified duration, then returns.
+4. **Timeline Query** - Internal module that queries the event buffer by time range. Used by `get_timeline` and `get_error_context`.
 
 ---
 
@@ -130,7 +130,7 @@ When a hot-reload pattern matches, the detector creates:
   source: "server-stdout",
   service: "main",
   level: "info",
-  message: `Hot-reload detected: ${pattern.tool} — ${matchedLine}`,
+  message: `Hot-reload detected: ${pattern.tool} - ${matchedLine}`,
   fingerprint: `hotreload:${pattern.id}`,
   signal_score: 5,
   signal_strength: "low",
@@ -147,7 +147,7 @@ When a hot-reload pattern matches, the detector creates:
 
 ## Build Error Parsers
 
-> **ANSI Handling:** All build error parsers receive ANSI-stripped input — the Phase 1 pipeline strips escape codes before the parser registry runs (see [Pitfall 4.4](../../../docs/references/collector-pitfalls-hardening.md#44-ansi-escape-codes-in-output)). Parsers do not need to handle colored output internally.
+> **ANSI Handling:** All build error parsers receive ANSI-stripped input - the Phase 1 pipeline strips escape codes before the parser registry runs (see [Pitfall 4.4](../../../docs/references/collector-pitfalls-hardening.md#44-ansi-escape-codes-in-output)). Parsers do not need to handle colored output internally.
 
 ### TypeScript Compiler Parser
 
@@ -246,7 +246,7 @@ Module not found: Error: Can't resolve './missing' in '/home/user/project/src'
 }
 ```
 
-**Example response (no errors — fix worked):**
+**Example response (no errors - fix worked):**
 ```json
 {
   "content": [
@@ -317,7 +317,7 @@ The response includes `hot_reload_detected: boolean` so the agent knows whether 
   "content": [
     {
       "type": "text",
-      "text": "{\"error\":{\"id\":\"a1b2c3\",\"timestamp\":1714200015000,\"source\":\"server-stderr\",\"level\":\"error\",\"message\":\"TypeError: Cannot read property 'id' of undefined\",\"fingerprint\":\"fp:abc123\",\"signal_score\":75,\"signal_strength\":\"high\",\"context\":{\"file\":\"src/routes/users.ts\",\"line\":42,\"error_type\":\"TypeError\"},\"stack_trace\":\"TypeError: Cannot read property 'id' of undefined\\n    at getUser (src/routes/users.ts:42:15)\\n    at Layer.handle (node_modules/express/lib/router/layer.js:95:5)\",\"raw\":\"TypeError: Cannot read property 'id' of undefined\\n    at getUser ...\"},\"surrounding_logs\":[{\"id\":\"x1y2z3\",\"timestamp\":1714200012000,\"source\":\"server-stdout\",\"level\":\"info\",\"message\":\"GET /api/users/123\",\"signal_score\":5,\"signal_strength\":\"low\"},{\"id\":\"h7i8j9\",\"timestamp\":1714200016000,\"source\":\"server-stdout\",\"level\":\"info\",\"message\":\"Hot-reload detected: Vite — ✓ Compiled successfully\",\"signal_score\":5,\"signal_strength\":\"low\"}],\"occurrence_count\":3}"
+      "text": "{\"error\":{\"id\":\"a1b2c3\",\"timestamp\":1714200015000,\"source\":\"server-stderr\",\"level\":\"error\",\"message\":\"TypeError: Cannot read property 'id' of undefined\",\"fingerprint\":\"fp:abc123\",\"signal_score\":75,\"signal_strength\":\"high\",\"context\":{\"file\":\"src/routes/users.ts\",\"line\":42,\"error_type\":\"TypeError\"},\"stack_trace\":\"TypeError: Cannot read property 'id' of undefined\\n    at getUser (src/routes/users.ts:42:15)\\n    at Layer.handle (node_modules/express/lib/router/layer.js:95:5)\",\"raw\":\"TypeError: Cannot read property 'id' of undefined\\n    at getUser ...\"},\"surrounding_logs\":[{\"id\":\"x1y2z3\",\"timestamp\":1714200012000,\"source\":\"server-stdout\",\"level\":\"info\",\"message\":\"GET /api/users/123\",\"signal_score\":5,\"signal_strength\":\"low\"},{\"id\":\"h7i8j9\",\"timestamp\":1714200016000,\"source\":\"server-stdout\",\"level\":\"info\",\"message\":\"Hot-reload detected: Vite - ✓ Compiled successfully\",\"signal_score\":5,\"signal_strength\":\"low\"}],\"occurrence_count\":3}"
     }
   ]
 }
@@ -358,7 +358,7 @@ The response includes `hot_reload_detected: boolean` so the agent knows whether 
   "content": [
     {
       "type": "text",
-      "text": "{\"events\":[{\"timestamp\":1714200010000,\"level\":\"info\",\"message\":\"Server listening on port 3000\",\"signal_strength\":\"low\"},{\"timestamp\":1714200012000,\"level\":\"info\",\"message\":\"GET /api/users/123\",\"signal_strength\":\"low\"},{\"timestamp\":1714200015000,\"level\":\"error\",\"message\":\"TypeError: Cannot read property 'id' of undefined\",\"signal_strength\":\"high\",\"fingerprint\":\"fp:abc123\"},{\"timestamp\":1714200016000,\"level\":\"info\",\"message\":\"Hot-reload detected: Vite — ✓ Compiled successfully\",\"signal_strength\":\"low\"}],\"window\":{\"from\":1714200000000,\"to\":1714200020000},\"total_in_window\":4,\"capped\":false}"
+      "text": "{\"events\":[{\"timestamp\":1714200010000,\"level\":\"info\",\"message\":\"Server listening on port 3000\",\"signal_strength\":\"low\"},{\"timestamp\":1714200012000,\"level\":\"info\",\"message\":\"GET /api/users/123\",\"signal_strength\":\"low\"},{\"timestamp\":1714200015000,\"level\":\"error\",\"message\":\"TypeError: Cannot read property 'id' of undefined\",\"signal_strength\":\"high\",\"fingerprint\":\"fp:abc123\"},{\"timestamp\":1714200016000,\"level\":\"info\",\"message\":\"Hot-reload detected: Vite - ✓ Compiled successfully\",\"signal_strength\":\"low\"}],\"window\":{\"from\":1714200000000,\"to\":1714200020000},\"total_in_window\":4,\"capped\":false}"
     }
   ]
 }
@@ -373,17 +373,17 @@ Phase 2 adds these files to the `src/` tree:
 ```
 src/
 ├── parsers/
-│   ├── build/                    # New — build error parsers
+│   ├── build/                    # New - build error parsers
 │   │   ├── typescript-parser.ts  # TypeScript compiler error parser
 │   │   ├── eslint-parser.ts      # ESLint output parser
 │   │   ├── vite-webpack-parser.ts # Vite/webpack build error parser
 │   │   └── index.ts              # Re-exports all build parsers
-├── watch/                        # New — watch mode internals
+├── watch/                        # New - watch mode internals
 │   ├── watch-controller.ts       # Manages blocking watch_for_errors behavior
 │   ├── hot-reload-detector.ts    # Pattern matching for hot-reload events
 │   ├── hot-reload-patterns.ts    # Default pattern registry (constants)
 │   └── index.ts                  # Re-exports
-├── query/                        # New — buffer query utilities
+├── query/                        # New - buffer query utilities
 │   ├── timeline-query.ts         # Time-range queries on the event buffer
 │   └── index.ts
 ├── tools/
@@ -466,4 +466,4 @@ export const BUILD_ERROR_BASE_SIGNAL_SCORE = 40;
 | `get_timeline` with `since` in the future | Return empty events array with the window metadata |
 | Dev server exits during `watch_for_errors` | Return immediately with collected events + synthetic exit event |
 | Buffer is empty for any query | Return empty array, not an error |
-| Multiple concurrent `watch_for_errors` calls | Each gets its own subscription and timer — fully independent |
+| Multiple concurrent `watch_for_errors` calls | Each gets its own subscription and timer - fully independent |

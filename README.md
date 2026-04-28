@@ -4,11 +4,11 @@
 
 ViewGraph sees the UI. TracePulse feels the backend.
 
-TracePulse watches your dev server's stdout/stderr, parses errors into structured events with signal scoring, and exposes them as MCP tools that any AI coding agent can call. The agent edits code, calls `get_errors`, and instantly knows if the fix worked — no manual log reading, no copy-paste.
+TracePulse watches your dev server's stdout/stderr, parses errors into structured events with signal scoring, and exposes them as MCP tools that any AI coding agent can call. The agent edits code, calls `get_errors`, and instantly knows if the fix worked - no manual log reading, no copy-paste.
 
 ## Status
 
-🟡 **Alpha v0.6.1 — Phases 1–5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 10 error parsers, 13 MCP tools, 566 tests passing.
+🟡 **Alpha v0.6.1 - Phases 1–5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 10 error parsers, 13 MCP tools, 566 tests passing.
 
 ## Quick Start
 
@@ -28,7 +28,7 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 
 > ⚠️ **Common mistake:** Kiro CLI uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`. If TracePulse tools don't appear, check you're editing the right file.
 
-### Start mode — spawn and monitor your dev server
+### Start mode - spawn and monitor your dev server
 
 ```json
 {
@@ -41,7 +41,7 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 }
 ```
 
-### Attach mode — tail an existing log file
+### Attach mode - tail an existing log file
 
 Use this when your servers are already running (managed by scripts, Docker, process managers, etc.):
 
@@ -75,8 +75,8 @@ Point directly to the built CLI:
 
 | Situation | Mode |
 |-----------|------|
-| Simple `npm run dev` or `python manage.py runserver` | **start** — TracePulse spawns it |
-| Servers managed by scripts, Docker, tmux, pm2 | **attach** — TracePulse tails the log file |
+| Simple `npm run dev` or `python manage.py runserver` | **start** - TracePulse spawns it |
+| Servers managed by scripts, Docker, tmux, pm2 | **attach** - TracePulse tails the log file |
 | Multiple services (API + worker + frontend) | **start --service** or **config file** |
 | Docker Compose setup | **compose** |
 
@@ -125,18 +125,18 @@ Point directly to the built CLI:
 TracePulse parses errors from 10 sources out of the box:
 
 **Runtime errors:**
-- **Node.js** — TypeError, ReferenceError, SyntaxError, etc. with V8 stack traces
-- **Python** — Tracebacks with file:line extraction
-- **Go** — Panics with goroutine stack traces
-- **Java** — Exceptions with `at` frames and `Caused by:` chains
-- **Rust** — Panics with `RUST_BACKTRACE` output
-- **JSON** — Structured logs (pino, structlog JSON, logback) with level/message fields
-- **Structlog** — Python structlog key-value format (`[info]`, `[warning]`, `[error]` brackets)
+- **Node.js** - TypeError, ReferenceError, SyntaxError, etc. with V8 stack traces
+- **Python** - Tracebacks with file:line extraction
+- **Go** - Panics with goroutine stack traces
+- **Java** - Exceptions with `at` frames and `Caused by:` chains
+- **Rust** - Panics with `RUST_BACKTRACE` output
+- **JSON** - Structured logs (pino, structlog JSON, logback) with level/message fields
+- **Structlog** - Python structlog key-value format (`[info]`, `[warning]`, `[error]` brackets)
 
 **Build errors:**
-- **TypeScript** — `tsc` compiler errors (TS####)
-- **ESLint** — Lint errors with rule names
-- **Vite/webpack** — Build tool errors (module not found, transform failures)
+- **TypeScript** - `tsc` compiler errors (TS####)
+- **ESLint** - Lint errors with rule names
+- **Vite/webpack** - Build tool errors (module not found, transform failures)
 
 ## Signal Scoring
 
@@ -151,13 +151,13 @@ Every event gets a `signal_score` (0–100) and `signal_strength` (high/medium/l
 ## CLI Usage
 
 ```bash
-# Single process — spawn and monitor
+# Single process - spawn and monitor
 tracepulse start "npm run dev"
 
 # Attach to existing log file
 tracepulse attach --log-file ./server.log
 
-# Multi-process — monitor multiple services
+# Multi-process - monitor multiple services
 tracepulse start --service api="npm run dev:api" --service worker="npm run worker"
 
 # Config file
@@ -177,14 +177,14 @@ tracepulse start --http "npm run dev"
 
 TracePulse detects hot-reload events from 8 dev tools:
 
-- **Vite** — compilation success, HMR updates
-- **webpack** — compilation completed
-- **nodemon** — restart/starting events
-- **Next.js** — compilation, route compiling
-- **ts-node-dev** — restart, compilation complete
-- **uvicorn** — file change detection, reloader process
-- **Django** — file change watching, system checks
-- **Flask** — restart with stat/watchdog, change detection
+- **Vite** - compilation success, HMR updates
+- **webpack** - compilation completed
+- **nodemon** - restart/starting events
+- **Next.js** - compilation, route compiling
+- **ts-node-dev** - restart, compilation complete
+- **uvicorn** - file change detection, reloader process
+- **Django** - file change watching, system checks
+- **Flask** - restart with stat/watchdog, change detection
 
 When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true` in the response so the agent knows the server actually reloaded.
 
@@ -192,7 +192,7 @@ When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true
 
 - All log output is redacted for secrets (12 patterns: API keys, Bearer/JWT tokens, connection strings, PEM keys, GitHub/GitLab/Slack tokens) before entering the pipeline
 - No secrets in MCP responses, ring buffer, or diagnostic output
-- HTTP endpoints bind to `127.0.0.1` only — no external access
+- HTTP endpoints bind to `127.0.0.1` only - no external access
 - Fingerprint persistence stores only hashes, not raw error messages
 - No file system writes except optional fingerprint persistence
 
@@ -200,8 +200,8 @@ When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true
 
 TracePulse is designed to work alongside:
 
-- **[ViewGraph](https://github.com/sourjya/viewgraph)** — UI context layer (DOM, a11y, layout, annotations)
-- **[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)** — Browser debugging (console, network, performance)
+- **[ViewGraph](https://github.com/sourjya/viewgraph)** - UI context layer (DOM, a11y, layout, annotations)
+- **[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)** - Browser debugging (console, network, performance)
 
 Together: backend verification (TracePulse) → browser verification (Chrome DevTools MCP) → visual verification (ViewGraph).
 

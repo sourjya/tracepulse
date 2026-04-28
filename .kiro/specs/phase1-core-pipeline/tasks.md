@@ -2,19 +2,19 @@
 
 ## Overview
 
-Phase 1 delivers the MVP: "What broke?" — process spawning/attachment, error parsing, signal scoring, ring buffer, secret redaction, and 4 MCP tools. The agent can see dev server errors without manual copy-paste.
+Phase 1 delivers the MVP: "What broke?" - process spawning/attachment, error parsing, signal scoring, ring buffer, secret redaction, and 4 MCP tools. The agent can see dev server errors without manual copy-paste.
 
 **Architecture References:**
-- [Feature & Architecture Analysis](../../../docs/ideas/feature-architecture-analysis.md) — Decisions 1-7
+- [Feature & Architecture Analysis](../../../docs/ideas/feature-architecture-analysis.md) - Decisions 1-7
 - ADR-001 (to be created in Phase 1 Step 1)
 
 **Key Principles:**
-- stdout is reserved for MCP JSON-RPC — all diagnostics to stderr
-- Works with ANY MCP-compatible agent — no agent-specific code
+- stdout is reserved for MCP JSON-RPC - all diagnostics to stderr
+- Works with ANY MCP-compatible agent - no agent-specific code
 - Zero config for basic usage
-- Secret redaction before all storage — no secrets in MCP responses
+- Secret redaction before all storage - no secrets in MCP responses
 
-**Development Approach — TDD MANDATORY:**
+**Development Approach - TDD MANDATORY:**
 - **RED → GREEN → REFACTOR**: Write failing tests FIRST, then minimal implementation, then refactor
 - NEVER write implementation code before its test
 - Each phase below follows strict TDD ordering: tests before implementation
@@ -23,11 +23,11 @@ Phase 1 delivers the MVP: "What broke?" — process spawning/attachment, error p
 **Testing Strategy:**
 - Unit tests for every module (parsers, pipeline stages, ring buffer, MCP tools)
 - Integration tests for end-to-end pipeline flow and MCP tool calls
-- All tests in `tests/unit/` and `tests/integration/` — never co-located
+- All tests in `tests/unit/` and `tests/integration/` - never co-located
 
 ## Tasks
 
-### Phase 1: Foundation — Types, Constants, and Project Scaffolding
+### Phase 1: Foundation - Types, Constants, and Project Scaffolding
 
 #### Step 1: Project Setup and ADR
 
@@ -42,7 +42,7 @@ Phase 1 delivers the MVP: "What broke?" — process spawning/attachment, error p
   - Secret redaction patterns
   - Files: `src/constants/events.ts`, `src/constants/limits.ts`, `src/constants/scoring.ts`, `src/constants/redaction.ts`
 
-#### Step 2: Core Type Definitions — TDD Cycle
+#### Step 2: Core Type Definitions - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 2.1 Write unit tests for type validation helpers
@@ -74,11 +74,11 @@ Phase 1 delivers the MVP: "What broke?" — process spawning/attachment, error p
 
 ---
 
-### Phase 2: Secret Redaction — The First Pipeline Stage
+### Phase 2: Secret Redaction - The First Pipeline Stage
 
 Secret redaction must be built first because it runs before everything else in the pipeline. No raw data enters the system unredacted.
 
-#### Step 3: Secret Redactor — TDD Cycle
+#### Step 3: Secret Redactor - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 3.1 Write unit tests for secret redactor
@@ -100,7 +100,7 @@ Secret redaction must be built first because it runs before everything else in t
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 3.2 Implement secret redactor
   - Regex-based pattern matching using patterns from `src/constants/redaction.ts`
-  - `redact(line: string): string` — pure function, no side effects
+  - `redact(line: string): string` - pure function, no side effects
   - All patterns compiled once at module load, not per-call
   - File: `src/pipeline/secret-redactor.ts`
   - _Requirements: US-13_
@@ -120,9 +120,9 @@ Secret redaction must be built first because it runs before everything else in t
 
 ---
 
-### Phase 3: Error Parsers — Framework-Specific Extraction
+### Phase 3: Error Parsers - Framework-Specific Extraction
 
-#### Step 4: Node.js Error Parser — TDD Cycle
+#### Step 4: Node.js Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 4.1 Write unit tests for Node.js error parser
@@ -145,7 +145,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/node-parser.ts`
   - _Requirements: US-4_
 
-#### Step 5: Python Error Parser — TDD Cycle
+#### Step 5: Python Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 5.1 Write unit tests for Python error parser
@@ -163,7 +163,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/python-parser.ts`
   - _Requirements: US-5_
 
-#### Step 6: Go Error Parser — TDD Cycle
+#### Step 6: Go Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 6.1 Write unit tests for Go error parser
@@ -179,7 +179,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/go-parser.ts`
   - _Requirements: US-6_
 
-#### Step 7: Java Error Parser — TDD Cycle
+#### Step 7: Java Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 7.1 Write unit tests for Java error parser
@@ -196,7 +196,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/java-parser.ts`
   - _Requirements: US-7_
 
-#### Step 8: Rust Error Parser — TDD Cycle
+#### Step 8: Rust Error Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 8.1 Write unit tests for Rust error parser
@@ -212,7 +212,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/rust-parser.ts`
   - _Requirements: US-8_
 
-#### Step 9: JSON Structured Log Parser — TDD Cycle
+#### Step 9: JSON Structured Log Parser - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 9.1 Write unit tests for JSON log parser
@@ -232,7 +232,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/parsers/json-log-parser.ts`
   - _Requirements: US-9_
 
-#### Step 10: Parser Registry — TDD Cycle
+#### Step 10: Parser Registry - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 10.1 Write unit tests for parser registry
@@ -265,9 +265,9 @@ Secret redaction must be built first because it runs before everything else in t
 
 ---
 
-### Phase 4: Pipeline Core — Normalization, Scoring, Fingerprinting
+### Phase 4: Pipeline Core - Normalization, Scoring, Fingerprinting
 
-#### Step 11: Fingerprinter — TDD Cycle
+#### Step 11: Fingerprinter - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 11.1 Write unit tests for fingerprinter
@@ -287,7 +287,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/pipeline/fingerprinter.ts`
   - _Requirements: US-11_
 
-#### Step 12: Signal Scorer — TDD Cycle
+#### Step 12: Signal Scorer - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 12.1 Write unit tests for signal scorer
@@ -310,7 +310,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/pipeline/signal-scorer.ts`
   - _Requirements: US-14_
 
-#### Step 13: Event Normalizer — TDD Cycle
+#### Step 13: Event Normalizer - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 13.1 Write unit tests for event normalizer
@@ -346,9 +346,9 @@ Secret redaction must be built first because it runs before everything else in t
 
 ---
 
-### Phase 5: Ring Buffer — Bounded Event Storage
+### Phase 5: Ring Buffer - Bounded Event Storage
 
-#### Step 14: Ring Buffer — TDD Cycle
+#### Step 14: Ring Buffer - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 14.1 Write unit tests for ring buffer
@@ -394,9 +394,9 @@ Secret redaction must be built first because it runs before everything else in t
 
 ---
 
-### Phase 6: Collectors — Process Spawning and Log File Tailing
+### Phase 6: Collectors - Process Spawning and Log File Tailing
 
-#### Step 15: Process Spawner — TDD Cycle
+#### Step 15: Process Spawner - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 15.1 Write unit tests for process spawner
@@ -419,13 +419,13 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/collectors/process-spawner.ts`
   - _Requirements: US-1, US-3_
 
-#### Step 16: Log File Tailer — TDD Cycle
+#### Step 16: Log File Tailer - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 16.1 Write unit tests for log file tailer
-  - Test tailing a file that exists — reads only new lines appended after start
+  - Test tailing a file that exists - reads only new lines appended after start
   - Test waiting for file creation (file doesn't exist yet)
-  - Test file truncation detection (rotation) — continues from new beginning
+  - Test file truncation detection (rotation) - continues from new beginning
   - Test `isConnected()` returns true while tailing
   - Test `stop()` closes file handles
   - Test binary/non-UTF-8 data is skipped gracefully
@@ -440,7 +440,7 @@ Secret redaction must be built first because it runs before everything else in t
   - File: `src/collectors/log-file-tailer.ts`
   - _Requirements: US-2_
 
-#### Step 17: Graceful Shutdown — TDD Cycle
+#### Step 17: Graceful Shutdown - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 17.1 Write unit tests for graceful shutdown
@@ -473,9 +473,9 @@ Secret redaction must be built first because it runs before everything else in t
 
 ---
 
-### Phase 7: MCP Server — Tool Registration and Wiring
+### Phase 7: MCP Server - Tool Registration and Wiring
 
-#### Step 18: MCP Tool Handlers — TDD Cycle
+#### Step 18: MCP Tool Handlers - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 18.1 Write unit tests for MCP tool handlers
@@ -496,7 +496,7 @@ Secret redaction must be built first because it runs before everything else in t
 
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 18.2 Implement MCP tool handlers
-  - Pure functions that read from EventBuffer — no side effects
+  - Pure functions that read from EventBuffer - no side effects
   - Input validation for all parameters
   - JSON serialization of RuntimeEvent arrays
   - File: `src/mcp/server.ts`
@@ -518,7 +518,7 @@ Secret redaction must be built first because it runs before everything else in t
 
 ### Phase 8: CLI Entry Point and Integration
 
-#### Step 19: CLI Argument Parsing — TDD Cycle
+#### Step 19: CLI Argument Parsing - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 19.1 Write unit tests for CLI argument parsing
@@ -533,7 +533,7 @@ Secret redaction must be built first because it runs before everything else in t
 
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 19.2 Implement CLI argument parsing
-  - Manual `process.argv` parsing (no library — surface is small)
+  - Manual `process.argv` parsing (no library - surface is small)
   - Route to ProcessSpawner or LogFileTailer based on subcommand
   - Wire collector → pipeline → buffer → MCP server
   - All output to stderr except MCP JSON-RPC on stdout
@@ -615,36 +615,36 @@ Secret redaction must be built first because it runs before everything else in t
   - Regex: `/\x1b\[[0-9;]*m/g` applied in pipeline before secret redactor
   - Constant: `ANSI_ESCAPE_REGEX` in `src/constants/limits.ts`
   - Wired in `createPipeline()` in `src/cli.ts`
-  - _Hardening ref: Pitfall 4.4 — colored dev server output breaks regex parsers_
+  - _Hardening ref: Pitfall 4.4 - colored dev server output breaks regex parsers_
   - _Requirements: NFR-3.5, AC-10.6_
 
 - [x] 22.5.2 Line length guard (10KB max before parsing)
   - Constant: `MAX_PARSE_INPUT_LENGTH` (10,000) in `src/constants/limits.ts`
   - Truncation applied in `createPipeline()` before `registry.parse()`
-  - _Hardening ref: Pitfalls 1.8, 6.2 — prevents ReDoS on pathological input_
+  - _Hardening ref: Pitfalls 1.8, 6.2 - prevents ReDoS on pathological input_
   - _Requirements: NFR-3.6, AC-10.7_
 
 - [x] 22.5.3 Set `PYTHONUNBUFFERED=1` in spawner environment
   - Added to `env` object in `src/collectors/process-spawner.ts`
-  - _Hardening ref: Pitfall 1.1 — Python block-buffers stdout when piped_
+  - _Hardening ref: Pitfall 1.1 - Python block-buffers stdout when piped_
   - _Requirements: NFR-3.7, AC-1.5_
 
 - [x] 22.5.4 Global `uncaughtException` / `unhandledRejection` handlers
   - Added in `main()` in `src/cli.ts`
   - Logs to stderr, sets `process.exitCode = 1`
-  - _Hardening ref: Pitfall 3.2 — unhandled errors crash MCP server silently_
+  - _Hardening ref: Pitfall 3.2 - unhandled errors crash MCP server silently_
   - _Requirements: NFR-3.9_
 
 - [x] 22.5.5 Shutdown guard flag (prevent double shutdown)
   - `let shuttingDown = false` in `main()` in `src/cli.ts`
   - Subsequent SIGINT/SIGTERM ignored while shutdown in progress
-  - _Hardening ref: Pitfall 5.2 — rapid Ctrl+C causes race condition_
+  - _Hardening ref: Pitfall 5.2 - rapid Ctrl+C causes race condition_
   - _Requirements: NFR-3.8_
 
 - [x] 22.5.6 EPIPE detection on stdout
   - Error listener on `process.stdout` in `main()` in `src/cli.ts`
   - Triggers graceful shutdown when MCP client disconnects
-  - _Hardening ref: Pitfall 3.3 — broken pipe leaves TracePulse running blind_
+  - _Hardening ref: Pitfall 3.3 - broken pipe leaves TracePulse running blind_
   - _Requirements: NFR-3.10_
 
 #### Step 23: Documentation and Changelog
@@ -652,7 +652,7 @@ Secret redaction must be built first because it runs before everything else in t
 - [ ] 23.1 Update README.md with Phase 1 status and usage
   - Document `start` and `attach` commands
   - Document MCP tool surface (4 tools with descriptions)
-  - Update status from "Pre-alpha" to "Alpha — Phase 1 complete"
+  - Update status from "Pre-alpha" to "Alpha - Phase 1 complete"
 
 - [ ] 23.2 Update changelog
   - Add Phase 1 entries to `docs/changelogs/CHANGELOG.md`
@@ -662,7 +662,7 @@ Secret redaction must be built first because it runs before everything else in t
   - Mark Phase 1 as complete in `docs/roadmap/roadmap.md`
   - Link ADR-001
 
-#### Checkpoint: Phase 9 Complete — PHASE 1 DONE
+#### Checkpoint: Phase 9 Complete - PHASE 1 DONE
 
 - [ ] All unit tests passing
 - [ ] All integration tests passing

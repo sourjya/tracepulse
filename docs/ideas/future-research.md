@@ -1,7 +1,7 @@
 # Future Research & Ideas
 
 **Date:** 2026-04-27
-**Status:** Parked — items to research when relevant phases begin
+**Status:** Parked - items to research when relevant phases begin
 
 ---
 
@@ -13,8 +13,8 @@
 
 **What to measure:**
 - Pipeline throughput: lines/second before event loop saturation (redactor runs 12 regex patterns, parser tries 6 parsers, fingerprinter does SHA-256)
-- Ring buffer query performance: O(n log n) sort on every `get_errors` call — measurable at 500 events?
-- Memory footprint: 500 RuntimeEvents with stack traces — actual heap usage
+- Ring buffer query performance: O(n log n) sort on every `get_errors` call - measurable at 500 events?
+- Memory footprint: 500 RuntimeEvents with stack traces - actual heap usage
 - Regex performance per parser: which patterns are slowest on real-world input
 
 **How to measure:**
@@ -52,12 +52,12 @@
 **Why parked:** Need a working build first. Test after Phase 1 is published to npm.
 
 **Agents to test with:**
-- Claude Code (Anthropic) — most popular MCP client
-- Cursor — large user base, MCP support
-- Kiro CLI — our own environment
-- Windsurf — growing MCP adoption
-- Cline — open source, good for debugging integration issues
-- Gemini CLI — Google's agent
+- Claude Code (Anthropic) - most popular MCP client
+- Cursor - large user base, MCP support
+- Kiro CLI - our own environment
+- Windsurf - growing MCP adoption
+- Cline - open source, good for debugging integration issues
+- Gemini CLI - Google's agent
 
 **What to validate per agent:**
 - Does the agent discover TracePulse tools automatically?
@@ -72,7 +72,7 @@
 
 **Key issues:**
 - `process.kill(-pid)` (process group kill) doesn't work on Windows
-- SIGTERM is not a real signal on Windows — `TerminateProcess` is SIGKILL equivalent
+- SIGTERM is not a real signal on Windows - `TerminateProcess` is SIGKILL equivalent
 - `fs.watch` behavior differs on Windows (uses ReadDirectoryChangesW)
 - Need `taskkill /pid ${pid} /T /F` for process tree kill
 
@@ -101,7 +101,7 @@
 
 4. **Agents don't always know to call tools.** Anthropic's MCP tool search feature (2026) helps, but many agents still need explicit guidance. The SKILL.md we created addresses this.
 
-5. **Token budget for responses:** Default limits of 20 errors / 50 logs are reasonable. The Pydantic article recommends returning formatted markdown over raw JSON for readability — but our consumers are agents, not humans, so structured JSON is correct.
+5. **Token budget for responses:** Default limits of 20 errors / 50 logs are reasonable. The Pydantic article recommends returning formatted markdown over raw JSON for readability - but our consumers are agents, not humans, so structured JSON is correct.
 
 **Sources:**
 - [Pydantic: Engineering MCP Tools for Token Efficiency](https://pydantic.dev/articles/engineering-mcp-tools-for-token-efficiency)
@@ -135,10 +135,10 @@ interface ToolAnnotations {
 | `clear_errors` | `false` | `true` | `true` | `false` |
 
 Rationale:
-- All read tools are `readOnlyHint: true` — agents can auto-approve without confirmation
-- `clear_errors` is `destructiveHint: true` — agents should confirm before clearing
-- All tools are `idempotentHint: true` — safe to retry on failure
-- All tools are `openWorldHint: false` — they only read from the local ring buffer, no external data
+- All read tools are `readOnlyHint: true` - agents can auto-approve without confirmation
+- `clear_errors` is `destructiveHint: true` - agents should confirm before clearing
+- All tools are `idempotentHint: true` - safe to retry on failure
+- All tools are `openWorldHint: false` - they only read from the local ring buffer, no external data
 
 **Sources:**
 - [MCP Blog: Tool Annotations as Risk Vocabulary](https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/)
@@ -185,11 +185,11 @@ Chrome DevTools MCP ships 6 skills. The core skill teaches:
 | **Go (net/http)** | Custom (no standard message) | No hot-reload (manual restart) | stderr: `goroutine N [running]:` panic output |
 
 **Key observations:**
-1. **All frameworks use ANSI colors** — our ANSI stripping (Pitfall 4.4) is critical
-2. **Most errors go to stderr** — our stderr capture is correct
-3. **Hot-reload patterns are framework-specific** — Phase 2's pattern registry needs these exact strings
-4. **Python/Django needs PYTHONUNBUFFERED** — our spawner fix is correct
-5. **Go has no hot-reload** — `watch_for_errors` should handle "no restart detected" gracefully
+1. **All frameworks use ANSI colors** - our ANSI stripping (Pitfall 4.4) is critical
+2. **Most errors go to stderr** - our stderr capture is correct
+3. **Hot-reload patterns are framework-specific** - Phase 2's pattern registry needs these exact strings
+4. **Python/Django needs PYTHONUNBUFFERED** - our spawner fix is correct
+5. **Go has no hot-reload** - `watch_for_errors` should handle "no restart detected" gracefully
 
 ### npx Cold Start (Noted, not blocking)
 
@@ -198,5 +198,5 @@ Chrome DevTools MCP ships 6 skills. The core skill teaches:
 - MCP clients typically have 30-60 second timeout for server startup
 - Gemini CLI users reported 8-12 second startup with slow MCP servers
 - Zed users reported 32+ seconds waiting for MCP server initialization
-- Our bundle is small (547KB) with one dependency (@modelcontextprotocol/sdk) — should be fast
+- Our bundle is small (547KB) with one dependency (@modelcontextprotocol/sdk) - should be fast
 - Not a blocker, but worth measuring after npm publish

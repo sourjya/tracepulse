@@ -3,7 +3,7 @@
  *
  * Computes an additive signal_score (0-100) from ScoringHints, log level,
  * and occurrence count, then derives a signal_strength tier. Agents use
- * signal_strength for progressive disclosure — high-signal errors get
+ * signal_strength for progressive disclosure - high-signal errors get
  * immediate attention, low-signal events are background noise.
  *
  * Scoring factors are defined in constants/scoring.ts. Strength thresholds
@@ -31,7 +31,7 @@ import {
 } from "@/constants/scoring.js";
 import { SIGNAL_THRESHOLDS } from "@/constants/events.js";
 
-/** Return type for scoreSignal — the computed score and derived tier. */
+/** Return type for scoreSignal - the computed score and derived tier. */
 interface SignalResult {
   readonly signal_score: number;
   readonly signal_strength: SignalStrength;

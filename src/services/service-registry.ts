@@ -23,7 +23,7 @@ export interface ServiceEntry {
   readonly errorCount: number;
   /** Unix ms of the most recent event from this service. */
   readonly lastActivity: number;
-  /** Source type — process spawn or Docker container. */
+  /** Source type - process spawn or Docker container. */
   readonly sourceType: "process" | "docker";
 }
 
@@ -35,7 +35,7 @@ export interface ServiceRegistry {
   register(name: string, sourceType: "process" | "docker"): void;
   /** Update a service's lifecycle status. Throws if name not found. */
   updateStatus(name: string, status: ServiceStatus): void;
-  /** Record an event from a service — increments errorCount, updates lastActivity. */
+  /** Record an event from a service - increments errorCount, updates lastActivity. */
   recordEvent(name: string, timestamp: number): void;
   /** Get all registered services. */
   getServices(): readonly ServiceEntry[];

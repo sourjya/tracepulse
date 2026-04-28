@@ -132,7 +132,7 @@ Problem occurs
 
 ## Overlap Zones (Acceptable)
 
-Some capabilities exist in multiple tools. This is intentional — the agent picks the best one for context:
+Some capabilities exist in multiple tools. This is intentional - the agent picks the best one for context:
 
 | Capability | Available in | Preferred |
 |------------|-------------|-----------|

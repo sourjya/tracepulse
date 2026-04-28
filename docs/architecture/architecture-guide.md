@@ -4,7 +4,7 @@
 
 TracePulse is a **runtime feedback server** for AI coding agents. When you're using an AI assistant (like Kiro, Claude Code, Cursor, or Copilot) to write code, TracePulse watches your dev server's output, parses errors into structured data, and exposes them as tools the AI can call.
 
-**The problem it solves:** Without TracePulse, when your dev server crashes or throws an error, the AI agent has no way to know. You'd have to manually copy-paste error logs into the chat. TracePulse automates this — the agent calls `get_errors()` and instantly knows what broke.
+**The problem it solves:** Without TracePulse, when your dev server crashes or throws an error, the AI agent has no way to know. You'd have to manually copy-paste error logs into the chat. TracePulse automates this - the agent calls `get_errors()` and instantly knows what broke.
 
 **In plain English:** TracePulse sits between your dev server and your AI agent. It reads the server's logs, understands what went wrong, scores how important each error is, and serves that information to the agent through the MCP protocol.
 
@@ -99,20 +99,20 @@ Raw Log Line
 
 ## Core Data Model
 
-### RuntimeEvent — The Universal Error Format
+### RuntimeEvent - The Universal Error Format
 
 Every error, warning, or log line becomes a `RuntimeEvent`. This is the single data shape that flows through the entire system.
 
 ```
 RuntimeEvent
-├── id              (UUID — unique per event)
-├── timestamp       (Unix ms — when it happened)
+├── id              (UUID - unique per event)
+├── timestamp       (Unix ms - when it happened)
 ├── source          ("server-stdout" | "server-stderr" | "build-error" | "docker-log")
-├── service         ("main" | "api" | "worker" — which process)
+├── service         ("main" | "api" | "worker" - which process)
 ├── level           ("error" | "warn" | "info" | "debug")
 ├── message         (Normalized error text, max 500 chars)
 ├── stack_trace?    (Stack frames, max 15)
-├── fingerprint     (SHA-256 dedup key — same error = same fingerprint)
+├── fingerprint     (SHA-256 dedup key - same error = same fingerprint)
 ├── signal_score    (0-100 importance score)
 ├── signal_strength ("high" ≥50 | "medium" 20-49 | "low" <20)
 ├── context
@@ -127,7 +127,7 @@ RuntimeEvent
 └── occurrence_count (How many times this fingerprint has been seen)
 ```
 
-### Signal Scoring — How Important Is This Error?
+### Signal Scoring - How Important Is This Error?
 
 ```
 Score 0 ──────────────────────────────────────────── 100
@@ -155,7 +155,7 @@ Scoring is additive. Each matching condition adds points:
 
 ---
 
-## MCP Tools — What the Agent Can Call
+## MCP Tools - What the Agent Can Call
 
 TracePulse exposes tools via the Model Context Protocol. These are the tools currently **registered and wired** in the MCP server:
 
@@ -201,7 +201,7 @@ These handlers exist as standalone functions and will be registered in the MCP s
 
 ---
 
-## Error Parsers — What Languages Are Supported?
+## Error Parsers - What Languages Are Supported?
 
 TracePulse has 9 parsers that run in priority order. The first parser that matches a log line wins.
 
@@ -213,7 +213,7 @@ Log Line Arrives
 │                    Parser Registry                            │
 │                                                              │
 │  Priority 1: JSON Structured Logs                            │
-│              (pino, structlog, logback — any JSON with        │
+│              (pino, structlog, logback - any JSON with        │
 │               "level" and "message" fields)                   │
 │                                                              │
 │  Priority 2: Node.js (TypeError, ReferenceError + V8 stack)  │
@@ -232,7 +232,7 @@ Log Line Arrives
 
 ---
 
-## Storage — The Ring Buffer
+## Storage - The Ring Buffer
 
 All events live in an in-memory ring buffer. No database, no files (except optional fingerprint persistence).
 
@@ -540,7 +540,7 @@ tests/
 
 ## What's Left (M6: Stable Release)
 
-The remaining milestone is a release milestone — no new features:
+The remaining milestone is a release milestone - no new features:
 
 - Wire remaining 5 tool handlers into MCP server registration
 - Full test coverage audit (target ≥80%)

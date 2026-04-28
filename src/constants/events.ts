@@ -3,7 +3,7 @@
  *
  * Defines the fixed vocabularies for event sources, log levels, and signal
  * strength tiers used throughout the TracePulse pipeline. These are the
- * canonical values — all runtime validation checks against these sets.
+ * canonical values - all runtime validation checks against these sets.
  *
  * @see Decision 7 in docs/ideas/feature-architecture-analysis.md for signal tier rationale
  */
@@ -55,7 +55,7 @@ export const LOG_LEVEL_SEVERITY: Record<LogLevel, number> = {
 
 /**
  * Signal strength tiers derived from signal_score. Agents use these for
- * progressive disclosure — high-signal errors get full attention,
+ * progressive disclosure - high-signal errors get full attention,
  * low-signal events are background noise.
  */
 export const SIGNAL_STRENGTHS = ["high", "medium", "low"] as const;

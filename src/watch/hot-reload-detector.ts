@@ -39,7 +39,7 @@ export function detectHotReload(
         source: "server-stdout",
         service: "main",
         level: "info",
-        message: `Hot-reload detected: ${p.tool} — ${line}`,
+        message: `Hot-reload detected: ${p.tool} - ${line}`,
         fingerprint: `hotreload:${p.id}`,
         signal_score: HOT_RELOAD_SIGNAL_SCORE,
         signal_strength: "low",

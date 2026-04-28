@@ -1,5 +1,5 @@
 /**
- * Secret redactor — first stage of the TracePulse pipeline.
+ * Secret redactor - first stage of the TracePulse pipeline.
  *
  * Every raw log line passes through redact() before entering the parser
  * or storage layers. This ensures no secrets appear in MCP responses,
@@ -31,7 +31,7 @@ const COMPILED_PATTERNS = REDACTION_PATTERNS.map(
  * Redact secrets from a raw log line.
  *
  * Applies all redaction patterns in order, replacing matches with [REDACTED].
- * Pure function — no side effects, no state mutation.
+ * Pure function - no side effects, no state mutation.
  *
  * @param line - Raw log line to redact
  * @returns The line with all detected secrets replaced

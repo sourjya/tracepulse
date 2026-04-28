@@ -19,7 +19,7 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — positive cases
+  // canParse - positive cases
   // ──────────────────────────────────────────────
 
   describe("canParse", () => {
@@ -44,7 +44,7 @@ describe("jsonLogParser", () => {
     });
 
     // ──────────────────────────────────────────────
-    // canParse — negative cases
+    // canParse - negative cases
     // ──────────────────────────────────────────────
 
     it("returns false for non-JSON lines", () => {
@@ -72,10 +72,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — pino format
+  // parse - pino format
   // ──────────────────────────────────────────────
 
-  describe("parse — pino format", () => {
+  describe("parse - pino format", () => {
     it("parses pino error with numeric level 50", () => {
       const line = JSON.stringify({ level: 50, msg: "Connection refused", time: 1714200000000 });
       const result = jsonLogParser.parse(line);
@@ -105,10 +105,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — structlog format
+  // parse - structlog format
   // ──────────────────────────────────────────────
 
-  describe("parse — structlog format", () => {
+  describe("parse - structlog format", () => {
     it("parses structlog with event field as message", () => {
       const line = JSON.stringify({ event: "request_failed", level: "error", timestamp: "2026-04-27T00:00:00Z" });
       const result = jsonLogParser.parse(line);
@@ -121,10 +121,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — logback JSON format
+  // parse - logback JSON format
   // ──────────────────────────────────────────────
 
-  describe("parse — logback JSON format", () => {
+  describe("parse - logback JSON format", () => {
     it("parses logback with stack_trace", () => {
       const line = JSON.stringify({
         timestamp: "2026-04-27T00:00:00Z",
@@ -143,10 +143,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — level string mapping
+  // parse - level string mapping
   // ──────────────────────────────────────────────
 
-  describe("parse — level string mapping", () => {
+  describe("parse - level string mapping", () => {
     const cases: Array<[string, string]> = [
       ["ERROR", "error"],
       ["error", "error"],
@@ -169,10 +169,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — trace ID extraction
+  // parse - trace ID extraction
   // ──────────────────────────────────────────────
 
-  describe("parse — trace ID extraction", () => {
+  describe("parse - trace ID extraction", () => {
     it("extracts trace_id field", () => {
       const line = JSON.stringify({ level: "error", message: "fail", trace_id: "abc-123" });
       const result = jsonLogParser.parse(line);
@@ -193,10 +193,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack trace extraction
+  // parse - stack trace extraction
   // ──────────────────────────────────────────────
 
-  describe("parse — stack trace extraction", () => {
+  describe("parse - stack trace extraction", () => {
     it("extracts stack field", () => {
       const line = JSON.stringify({ level: "error", msg: "fail", stack: "Error: fail\n    at foo.js:1" });
       const result = jsonLogParser.parse(line);
@@ -219,10 +219,10 @@ describe("jsonLogParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — scoring hints
+  // parse - scoring hints
   // ──────────────────────────────────────────────
 
-  describe("parse — scoring hints", () => {
+  describe("parse - scoring hints", () => {
     it("sets is_unhandled_exception true for error level", () => {
       const line = JSON.stringify({ level: "error", message: "crash" });
       const result = jsonLogParser.parse(line);

@@ -1,8 +1,8 @@
-# Phase 4: Frontend-Backend Error Correlation — Requirements
+# Phase 4: Frontend-Backend Error Correlation - Requirements
 
 ## Overview
 
-Phase 4 bridges the gap between browser errors and server errors. When a frontend HTTP request fails (4xx/5xx), the agent currently sees only one side — either the browser network failure (via Chrome DevTools MCP) or the server stack trace (via TracePulse). This phase correlates both sides into a single view, giving the agent the full picture of a failed request.
+Phase 4 bridges the gap between browser errors and server errors. When a frontend HTTP request fails (4xx/5xx), the agent currently sees only one side - either the browser network failure (via Chrome DevTools MCP) or the server stack trace (via TracePulse). This phase correlates both sides into a single view, giving the agent the full picture of a failed request.
 
 **Prerequisite:** Phase 3 (Multi-Process & Docker) complete and merged to main.
 
@@ -45,9 +45,9 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 **Acceptance Criteria:**
 - AC-3.1: TracePulse starts and operates normally without any CDP connection configured.
 - AC-3.2: CDP connection is enabled via CLI flag (`--cdp-url ws://localhost:9222`) or config.
-- AC-3.3: When CDP is configured but Chrome is unreachable, TracePulse logs a warning to stderr and continues operating — all non-correlation tools work normally.
+- AC-3.3: When CDP is configured but Chrome is unreachable, TracePulse logs a warning to stderr and continues operating - all non-correlation tools work normally.
 - AC-3.4: When CDP connects successfully, TracePulse captures network responses with 4xx/5xx status codes.
-- AC-3.5: CDP disconnection mid-session is handled gracefully — a warning is logged, correlation tools return empty results, other tools are unaffected.
+- AC-3.5: CDP disconnection mid-session is handled gracefully - a warning is logged, correlation tools return empty results, other tools are unaffected.
 
 ### US-4: ViewGraph Integration (Preferred Over Raw CDP)
 
@@ -57,7 +57,7 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 
 **Acceptance Criteria:**
 - AC-4.1: When ViewGraph MCP server is detected (via configurable URL, default `http://localhost:9700`), TracePulse uses it as the network failure data source.
-- AC-4.2: ViewGraph is preferred over raw CDP — if both are available, ViewGraph wins.
+- AC-4.2: ViewGraph is preferred over raw CDP - if both are available, ViewGraph wins.
 - AC-4.3: If ViewGraph becomes unreachable, TracePulse falls back to raw CDP (if configured), then to no frontend data.
 - AC-4.4: The fallback chain is: ViewGraph → CDP → none. Each transition logs a warning to stderr.
 - AC-4.5: The data source currently in use is reported by `get_runtime_status()` in a `correlation_source` field (`"viewgraph"` | `"cdp"` | `"log-collector"` | `"none"`).
@@ -82,11 +82,11 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 **So that** cross-service correlation is possible when distributed tracing is enabled.
 
 **Acceptance Criteria:**
-- AC-6.1: `traceparent` header is parsed per W3C Trace Context spec — trace ID (32 hex chars) is extracted.
+- AC-6.1: `traceparent` header is parsed per W3C Trace Context spec - trace ID (32 hex chars) is extracted.
 - AC-6.2: `x-datadog-trace-id` header value is extracted as-is.
 - AC-6.3: Extracted trace IDs are stored on the `FrontendError` object and used for correlation matching.
 - AC-6.4: When both `traceparent` and `x-datadog-trace-id` are present, `traceparent` takes precedence.
-- AC-6.5: Missing or malformed trace headers are silently ignored — correlation falls back to URL+timestamp.
+- AC-6.5: Missing or malformed trace headers are silently ignored - correlation falls back to URL+timestamp.
 
 ### US-7: Internal Log Collector HTTP Server
 
@@ -96,11 +96,11 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 
 **Acceptance Criteria:**
 - AC-7.1: HTTP server listens on port 9801 (configurable via `--collector-port`).
-- AC-7.2: Server is disabled by default — enabled via `--enable-collector` flag.
+- AC-7.2: Server is disabled by default - enabled via `--enable-collector` flag.
 - AC-7.3: Accepts POST requests to `/api/v1/errors` with a JSON body conforming to the `FrontendError` schema.
-- AC-7.4: Validates incoming payloads — rejects malformed requests with 400 and a structured error response.
+- AC-7.4: Validates incoming payloads - rejects malformed requests with 400 and a structured error response.
 - AC-7.5: Accepted errors enter the correlation pipeline identically to CDP/ViewGraph-sourced errors.
-- AC-7.6: Server binds to `127.0.0.1` only — no external network exposure.
+- AC-7.6: Server binds to `127.0.0.1` only - no external network exposure.
 - AC-7.7: Rate-limited to 100 requests per second to prevent abuse.
 
 ### US-8: Frontend Error Ring Buffer
@@ -141,7 +141,7 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 - Secret redaction runs on all frontend error data before it enters the buffer (same pipeline as backend events).
 - Log collector server binds to localhost only.
 - Log collector validates Content-Type (`application/json` only).
-- No raw CDP data is exposed in MCP tool responses — only the structured `FrontendError` subset.
+- No raw CDP data is exposed in MCP tool responses - only the structured `FrontendError` subset.
 
 ### NFR-5: Observability
 
@@ -153,12 +153,12 @@ Phase 4 bridges the gap between browser errors and server errors. When a fronten
 
 ## Out of Scope
 
-- **Browser DOM inspection** — Chrome DevTools MCP and ViewGraph own this.
-- **Browser console log capture** — Chrome DevTools MCP's `list_console_messages` handles this.
-- **JavaScript error capture** — Only HTTP network failures (4xx/5xx) are captured, not JS runtime errors.
-- **CDP-based browser automation** — No clicking, navigating, or interacting with the browser.
-- **Production distributed tracing** — Trace ID extraction is opportunistic; TracePulse does not inject or propagate trace headers.
-- **WebSocket error correlation** — Only HTTP request/response failures. WebSocket monitoring is deferred.
-- **Custom correlation rules** — The correlation algorithm is fixed (URL + timestamp + trace ID). User-defined rules are deferred.
-- **Multi-browser support** — CDP targets Chrome/Chromium only. Firefox/Safari CDP equivalents are deferred.
-- **Persistent storage of frontend errors** — Frontend error buffer is ephemeral (same as backend buffer).
+- **Browser DOM inspection** - Chrome DevTools MCP and ViewGraph own this.
+- **Browser console log capture** - Chrome DevTools MCP's `list_console_messages` handles this.
+- **JavaScript error capture** - Only HTTP network failures (4xx/5xx) are captured, not JS runtime errors.
+- **CDP-based browser automation** - No clicking, navigating, or interacting with the browser.
+- **Production distributed tracing** - Trace ID extraction is opportunistic; TracePulse does not inject or propagate trace headers.
+- **WebSocket error correlation** - Only HTTP request/response failures. WebSocket monitoring is deferred.
+- **Custom correlation rules** - The correlation algorithm is fixed (URL + timestamp + trace ID). User-defined rules are deferred.
+- **Multi-browser support** - CDP targets Chrome/Chromium only. Firefox/Safari CDP equivalents are deferred.
+- **Persistent storage of frontend errors** - Frontend error buffer is ephemeral (same as backend buffer).

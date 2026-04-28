@@ -39,7 +39,7 @@ const env = { ...process.env, PYTHONUNBUFFERED: '1' };
 spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 ```
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — need to set `PYTHONUNBUFFERED=1` and `STDBUF` hints in the spawner environment.
+**Status:** ⚠️ NOT YET IMPLEMENTED - need to set `PYTHONUNBUFFERED=1` and `STDBUF` hints in the spawner environment.
 
 ### 1.2 Zombie and Orphan Processes
 
@@ -49,7 +49,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive patterns:**
 - `detached: true` + `process.kill(-pid, signal)` kills the entire process group (shell + children). **Already implemented.**
-- On Linux, `prctl(PR_SET_PDEATHSIG)` makes the child die when the parent dies — not available from Node.js directly.
+- On Linux, `prctl(PR_SET_PDEATHSIG)` makes the child die when the parent dies - not available from Node.js directly.
 - Fallback: on `beforeExit`, scan for child PIDs via `/proc` or `pgrep -P` and kill them.
 
 **Status:** ✅ Partially handled (process group kill). ⚠️ Edge case: if the dev server itself spawns background workers (e.g., webpack workers), those may escape the process group.
@@ -58,13 +58,13 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Root cause:** stdout and stderr are separate pipes with separate kernel buffers. The OS schedules reads from each pipe independently. When a child writes to both stdout and stderr in rapid succession, the parent may receive them in a different order than they were written.
 
-**Source:** [nodejs/node#26516](https://github.com/nodejs/node/issues/26516) — "Order of stdout and stderr events not maintained."
+**Source:** [nodejs/node#26516](https://github.com/nodejs/node/issues/26516) - "Order of stdout and stderr events not maintained."
 
 **How it manifests:** A stack trace that spans stdout and stderr (some frameworks write the error message to stderr and the stack trace to stdout, or vice versa) arrives interleaved. The parser sees partial data and fails to match.
 
 **Defensive pattern:** Timestamp each line on arrival and sort by arrival time when presenting to the agent. Accept that perfect ordering is impossible across two pipes.
 
-**Status:** ✅ Already handled — each line gets `Date.now()` timestamp on arrival. Ring buffer sorts by timestamp.
+**Status:** ✅ Already handled - each line gets `Date.now()` timestamp on arrival. Ring buffer sorts by timestamp.
 
 ### 1.4 Partial Lines at Stream Boundaries
 
@@ -74,7 +74,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Use `readline.createInterface()` which handles line splitting internally, buffering partial lines until a newline arrives.
 
-**Status:** ✅ Already implemented — using `readline.createInterface` on both stdout and stderr.
+**Status:** ✅ Already implemented - using `readline.createInterface` on both stdout and stderr.
 
 ### 1.5 maxBuffer Exceeded (exec, not spawn)
 
@@ -84,7 +84,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Use `spawn()` (streaming) instead of `exec()` (buffering). Never use `exec` for long-running processes.
 
-**Status:** ✅ Already correct — using `spawn()`.
+**Status:** ✅ Already correct - using `spawn()`.
 
 ### 1.6 Command Not Found Detection Race
 
@@ -94,7 +94,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Wait a short delay after `spawn` before resolving, giving the shell time to fail. Listen for `close` with code 127 during this window.
 
-**Status:** ✅ Implemented with 500ms delay. ⚠️ Could be more robust — consider listening for the first line of output as the "alive" signal instead of a fixed timeout.
+**Status:** ✅ Implemented with 500ms delay. ⚠️ Could be more robust - consider listening for the first line of output as the "alive" signal instead of a fixed timeout.
 
 ### 1.7 Shell Injection via Command String
 
@@ -104,17 +104,17 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** The command comes from the user's own MCP config (they control their own machine), so this is accepted risk. Document that the command is executed in a shell. Do NOT accept commands from MCP tool calls.
 
-**Status:** ✅ Acceptable — command comes from CLI args, not from agent input.
+**Status:** ✅ Acceptable - command comes from CLI args, not from agent input.
 
 ### 1.8 Very Long Lines (Binary Output, Minified JS)
 
-**Root cause:** Some dev servers output extremely long lines — minified JavaScript bundles, base64-encoded data, binary data that happens to not contain newlines.
+**Root cause:** Some dev servers output extremely long lines - minified JavaScript bundles, base64-encoded data, binary data that happens to not contain newlines.
 
 **How it manifests:** readline buffers the entire line in memory. A single 100MB line would consume 100MB of heap. The parser then tries to regex-match against this enormous string, potentially causing catastrophic backtracking.
 
 **Defensive pattern:** Impose a maximum line length. If a line exceeds the limit, truncate it before parsing.
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — need to add a line length guard in the pipeline before parsing. The `raw` field is truncated to 1000 chars, but the parser still receives the full line.
+**Status:** ⚠️ NOT YET IMPLEMENTED - need to add a line length guard in the pipeline before parsing. The `raw` field is truncated to 1000 chars, but the parser still receives the full line.
 
 ---
 
@@ -124,13 +124,13 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Root cause:** On macOS (FSEvents) and some Linux filesystems, `fs.watch` fires the callback twice for a single file modification. This is a known, documented Node.js behavior.
 
-**Source:** [StackOverflow: fs.watch fired twice](https://stackoverflow.com/questions/12978924/fs-watch-fired-twice-when-i-change-the-watched-file) — "The fs.watch api is unstable and has known 'behaviour' with regards repeated notifications."
+**Source:** [StackOverflow: fs.watch fired twice](https://stackoverflow.com/questions/12978924/fs-watch-fired-twice-when-i-change-the-watched-file) - "The fs.watch api is unstable and has known 'behaviour' with regards repeated notifications."
 
 **How it manifests:** The tailer reads the same new bytes twice, producing duplicate events in the ring buffer.
 
-**Defensive pattern:** Debounce the watch callback (e.g., 50ms). Or track the file position and only read bytes beyond the last known position — if position hasn't changed, skip.
+**Defensive pattern:** Debounce the watch callback (e.g., 50ms). Or track the file position and only read bytes beyond the last known position - if position hasn't changed, skip.
 
-**Status:** ⚠️ PARTIALLY HANDLED — we track file position, so re-reading the same position returns no new bytes. But rapid duplicate events could cause unnecessary I/O.
+**Status:** ⚠️ PARTIALLY HANDLED - we track file position, so re-reading the same position returns no new bytes. But rapid duplicate events could cause unnecessary I/O.
 
 ### 2.2 fs.watch Doesn't Work on Network Filesystems (NFS, SMB, Docker Volumes)
 
@@ -140,7 +140,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Fall back to polling (`fs.watchFile` or manual `stat()` polling at 1-second intervals) when `fs.watch` doesn't fire within a reasonable time. Or detect Docker/NFS mounts and use polling from the start.
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — current implementation relies solely on `fs.watch`. Should add polling fallback.
+**Status:** ⚠️ NOT YET IMPLEMENTED - current implementation relies solely on `fs.watch`. Should add polling fallback.
 
 ### 2.3 Log Rotation: rename vs copytruncate
 
@@ -154,7 +154,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Detect inode changes (the file at the path now has a different inode than the one we have open). Re-open the file when the inode changes.
 
-**Status:** ⚠️ PARTIALLY HANDLED — truncation detection works (size decrease). Rename-based rotation is NOT detected (inode change detection not implemented).
+**Status:** ⚠️ PARTIALLY HANDLED - truncation detection works (size decrease). Rename-based rotation is NOT detected (inode change detection not implemented).
 
 ### 2.4 File Doesn't Exist Yet on Start
 
@@ -174,7 +174,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Resolve symlinks on start and periodically re-resolve to detect target changes.
 
-**Status:** ❌ NOT IMPLEMENTED — symlink handling not considered.
+**Status:** ❌ NOT IMPLEMENTED - symlink handling not considered.
 
 ### 2.6 Rapid Writes Cause Read Amplification
 
@@ -184,7 +184,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Batch reads with a small debounce (10-50ms). Read all available data in one pass.
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — no debouncing on the watch callback.
+**Status:** ⚠️ NOT YET IMPLEMENTED - no debouncing on the watch callback.
 
 ---
 
@@ -202,11 +202,11 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 **How it manifests:** Agent connects, then immediately gets parse errors. All tool calls fail.
 
 **Defensive patterns:**
-1. Never use `console.log()` — only `console.error()` or `process.stderr.write()`.
+1. Never use `console.log()` - only `console.error()` or `process.stderr.write()`.
 2. Audit all dependencies for stdout writes. Some libraries (e.g., debug, pino with default config) write to stdout.
 3. Consider redirecting `process.stdout` to a no-op or stderr as a safety net.
 
-**Status:** ✅ All TracePulse diagnostic output goes to stderr. ⚠️ Third-party dependencies could still write to stdout — need to audit or add a stdout guard.
+**Status:** ✅ All TracePulse diagnostic output goes to stderr. ⚠️ Third-party dependencies could still write to stdout - need to audit or add a stdout guard.
 
 ### 3.2 Unhandled Exceptions Crash the MCP Server
 
@@ -231,7 +231,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Listen for `EPIPE` errors on `process.stdout`. On detection, initiate graceful shutdown (stop collector, kill child process, exit).
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — need to add EPIPE detection on stdout.
+**Status:** ⚠️ NOT YET IMPLEMENTED - need to add EPIPE detection on stdout.
 
 ### 3.4 Large MCP Responses Overwhelm Agent Context
 
@@ -241,7 +241,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Enforce default limits (20 for errors, 50 for logs). Cap maximum at 100. Truncate stack traces and raw lines.
 
-**Status:** ✅ Implemented — default limits and truncation in place.
+**Status:** ✅ Implemented - default limits and truncation in place.
 
 ---
 
@@ -261,13 +261,13 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 3. Impose a per-line timeout: if parsing takes >10ms, skip the line.
 4. Limit input length before regex matching.
 
-**Status:** ⚠️ PARTIALLY HANDLED — patterns are reviewed but no per-line timeout guard. Need to add input length limit before parsing.
+**Status:** ⚠️ PARTIALLY HANDLED - patterns are reviewed but no per-line timeout guard. Need to add input length limit before parsing.
 
 ### 4.2 Multi-Line Stack Trace Grouping
 
 **Root cause:** Stack traces span multiple lines. When processing line-by-line from a stream, the parser sees the error message on one line and the stack frames on subsequent lines. Without a grouping mechanism, each line is parsed independently.
 
-**Source:** This is the #1 challenge in log aggregation — Logstash, Fluent Bit, Promtail, and Splunk all have dedicated multi-line handling configurations.
+**Source:** This is the #1 challenge in log aggregation - Logstash, Fluent Bit, Promtail, and Splunk all have dedicated multi-line handling configurations.
 
 **How it manifests:** A Python traceback produces 10+ separate info-level events instead of one error-level event with a complete stack trace.
 
@@ -276,7 +276,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 - Java: lines starting with `\tat ` or `Caused by:` following an exception line.
 - Node.js: lines starting with `    at ` following an error line.
 
-**Status:** ⚠️ PARTIALLY HANDLED — parsers handle multi-line input when the full block is passed as a single string. But the pipeline currently processes line-by-line. Need a line accumulator/grouper between the collector and the parser.
+**Status:** ⚠️ PARTIALLY HANDLED - parsers handle multi-line input when the full block is passed as a single string. But the pipeline currently processes line-by-line. Need a line accumulator/grouper between the collector and the parser.
 
 ### 4.3 Mixed Output (Structured + Unstructured)
 
@@ -284,9 +284,9 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **How it manifests:** The JSON parser matches some lines, the Node parser matches others, and some lines match neither. Inconsistent parsing quality.
 
-**Defensive pattern:** Try JSON parser first (it's unambiguous — either valid JSON or not). Fall back to framework-specific parsers. This is already the parser registry order.
+**Defensive pattern:** Try JSON parser first (it's unambiguous - either valid JSON or not). Fall back to framework-specific parsers. This is already the parser registry order.
 
-**Status:** ✅ Implemented — JSON parser is first in the registry.
+**Status:** ✅ Implemented - JSON parser is first in the registry.
 
 ### 4.4 ANSI Escape Codes in Output
 
@@ -296,7 +296,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Strip ANSI escape codes from each line before parsing. Regex: `/\x1b\[[0-9;]*m/g`.
 
-**Status:** ❌ NOT IMPLEMENTED — ANSI stripping not in the pipeline. This is a significant gap.
+**Status:** ❌ NOT IMPLEMENTED - ANSI stripping not in the pipeline. This is a significant gap.
 
 ---
 
@@ -306,13 +306,13 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Root cause:** Windows doesn't have POSIX signals. `process.on('SIGTERM')` works on Windows but `process.kill(pid, 'SIGTERM')` sends a different signal. `process.kill(-pid)` (process group kill) doesn't work on Windows at all.
 
-**Source:** [StackOverflow](https://stackoverflow.com/questions/61655836/sigterm-in-node-js-on-windows): "SIGTERM in node.js on Windows" — Windows uses `TerminateProcess` which is equivalent to SIGKILL (no graceful shutdown).
+**Source:** [StackOverflow](https://stackoverflow.com/questions/61655836/sigterm-in-node-js-on-windows): "SIGTERM in node.js on Windows" - Windows uses `TerminateProcess` which is equivalent to SIGKILL (no graceful shutdown).
 
 **How it manifests:** On Windows, `stop()` kills the shell but the dev server grandchild survives.
 
 **Defensive pattern:** On Windows, use `taskkill /pid ${pid} /T /F` to kill the process tree. Detect platform with `process.platform`.
 
-**Status:** ❌ NOT IMPLEMENTED — Windows process tree kill not handled. Documented as out of scope for Phase 1.
+**Status:** ❌ NOT IMPLEMENTED - Windows process tree kill not handled. Documented as out of scope for Phase 1.
 
 ### 5.2 Double Signal Handling
 
@@ -320,11 +320,11 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Source:** [StackOverflow](https://stackoverflow.com/questions/46908853/process-onsigint-multiple-termination-signals): "process.on('SIGINT') multiple termination signals."
 
-**How it manifests:** Race condition in shutdown — double SIGTERM to child, double close on MCP server, potential crash.
+**How it manifests:** Race condition in shutdown - double SIGTERM to child, double close on MCP server, potential crash.
 
 **Defensive pattern:** Use a `shuttingDown` flag. Ignore subsequent signals while shutdown is in progress.
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — need to add a shutdown guard flag.
+**Status:** ⚠️ NOT YET IMPLEMENTED - need to add a shutdown guard flag.
 
 ### 5.3 process.exit() Prevents Cleanup
 
@@ -348,7 +348,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** When evicting an event from the ring buffer (FIFO), also remove its fingerprint from the map. This is already implemented but needs verification for edge cases (stale pointers).
 
-**Status:** ✅ Implemented — eviction removes old fingerprint from map.
+**Status:** ✅ Implemented - eviction removes old fingerprint from map.
 
 ### 6.2 Event Loop Blocking from Synchronous Regex
 
@@ -358,7 +358,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Limit line length before parsing (e.g., 10KB max). Consider using `worker_threads` for parsing if performance becomes an issue.
 
-**Status:** ⚠️ NOT YET IMPLEMENTED — no line length limit before parsing.
+**Status:** ⚠️ NOT YET IMPLEMENTED - no line length limit before parsing.
 
 ### 6.3 High-Frequency Output Floods the Ring Buffer
 
@@ -368,7 +368,7 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 **Defensive pattern:** Rate-limit the pipeline. If more than N lines/second arrive, start sampling (process every Nth line) or batch processing. Log a warning when rate limiting kicks in.
 
-**Status:** ❌ NOT IMPLEMENTED — no rate limiting.
+**Status:** ❌ NOT IMPLEMENTED - no rate limiting.
 
 ---
 
@@ -376,35 +376,35 @@ spawn(command, { shell: true, env, stdio: ['ignore', 'pipe', 'pipe'] });
 
 Priority-ordered list of defensive improvements to implement:
 
-### P0 — Must Fix (Data Correctness / Crash Prevention)
+### P0 - Must Fix (Data Correctness / Crash Prevention)
 
 | # | Issue | Section | Effort |
 |---|-------|---------|--------|
-| 1 | Strip ANSI escape codes before parsing | 4.4 | Small — one regex replace in pipeline |
-| 2 | Add global uncaughtException/unhandledRejection handlers | 3.2 | Small — 10 lines in cli.ts |
-| 3 | Add shutdown guard flag (prevent double shutdown) | 5.2 | Small — boolean flag in cli.ts |
-| 4 | Add EPIPE detection on stdout for broken pipe | 3.3 | Small — error listener on process.stdout |
-| 5 | Set PYTHONUNBUFFERED=1 in spawner environment | 1.1 | Small — one line in process-spawner.ts |
-| 6 | Add line length limit before parsing (10KB) | 1.8, 6.2 | Small — truncate in pipeline |
+| 1 | Strip ANSI escape codes before parsing | 4.4 | Small - one regex replace in pipeline |
+| 2 | Add global uncaughtException/unhandledRejection handlers | 3.2 | Small - 10 lines in cli.ts |
+| 3 | Add shutdown guard flag (prevent double shutdown) | 5.2 | Small - boolean flag in cli.ts |
+| 4 | Add EPIPE detection on stdout for broken pipe | 3.3 | Small - error listener on process.stdout |
+| 5 | Set PYTHONUNBUFFERED=1 in spawner environment | 1.1 | Small - one line in process-spawner.ts |
+| 6 | Add line length limit before parsing (10KB) | 1.8, 6.2 | Small - truncate in pipeline |
 
-### P1 — Should Fix (Reliability)
-
-| # | Issue | Section | Effort |
-|---|-------|---------|--------|
-| 7 | Multi-line stack trace accumulator | 4.2 | Medium — line buffer with timeout flush |
-| 8 | fs.watch polling fallback for Docker/NFS | 2.2 | Medium — detect and fall back |
-| 9 | Log rotation inode change detection | 2.3 | Small — stat() check on watch event |
-| 10 | Debounce fs.watch callbacks | 2.1, 2.6 | Small — 50ms debounce |
-| 11 | stdout guard (intercept accidental stdout writes) | 3.1 | Small — override process.stdout.write |
-
-### P2 — Nice to Have (Performance / Edge Cases)
+### P1 - Should Fix (Reliability)
 
 | # | Issue | Section | Effort |
 |---|-------|---------|--------|
-| 12 | Rate limiting for high-frequency output | 6.3 | Medium — sampling/batching |
-| 13 | Symlink target change detection | 2.5 | Small — periodic readlink |
-| 14 | Windows process tree kill | 5.1 | Medium — platform-specific code |
-| 15 | ReDoS timeout guard per regex | 4.1 | Medium — worker thread or timeout |
+| 7 | Multi-line stack trace accumulator | 4.2 | Medium - line buffer with timeout flush |
+| 8 | fs.watch polling fallback for Docker/NFS | 2.2 | Medium - detect and fall back |
+| 9 | Log rotation inode change detection | 2.3 | Small - stat() check on watch event |
+| 10 | Debounce fs.watch callbacks | 2.1, 2.6 | Small - 50ms debounce |
+| 11 | stdout guard (intercept accidental stdout writes) | 3.1 | Small - override process.stdout.write |
+
+### P2 - Nice to Have (Performance / Edge Cases)
+
+| # | Issue | Section | Effort |
+|---|-------|---------|--------|
+| 12 | Rate limiting for high-frequency output | 6.3 | Medium - sampling/batching |
+| 13 | Symlink target change detection | 2.5 | Small - periodic readlink |
+| 14 | Windows process tree kill | 5.1 | Medium - platform-specific code |
+| 15 | ReDoS timeout guard per regex | 4.1 | Medium - worker thread or timeout |
 
 ---
 

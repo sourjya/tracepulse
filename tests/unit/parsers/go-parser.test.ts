@@ -19,7 +19,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — positive cases
+  // canParse - positive cases
   // ──────────────────────────────────────────────
 
   it("detects goroutine panic header", () => {
@@ -39,7 +39,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — negative cases
+  // canParse - negative cases
   // ──────────────────────────────────────────────
 
   it("returns false for Node.js errors", () => {
@@ -57,7 +57,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — goroutine panic with stack trace
+  // parse - goroutine panic with stack trace
   // ──────────────────────────────────────────────
 
   it("parses goroutine panic with full stack trace", () => {
@@ -82,7 +82,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — runtime error: index out of range
+  // parse - runtime error: index out of range
   // ──────────────────────────────────────────────
 
   it("parses panic: runtime error: index out of range", () => {
@@ -105,7 +105,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — file path and line extraction
+  // parse - file path and line extraction
   // ──────────────────────────────────────────────
 
   it("extracts file:line from Go stack frame without hex offset", () => {
@@ -139,7 +139,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — simple panic without goroutine header
+  // parse - simple panic without goroutine header
   // ──────────────────────────────────────────────
 
   it("parses simple panic without goroutine header", () => {
@@ -155,7 +155,7 @@ describe("goParser", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack frame limit
+  // parse - stack frame limit
   // ──────────────────────────────────────────────
 
   it("limits stack trace to MAX_STACK_FRAMES", () => {

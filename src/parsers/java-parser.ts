@@ -58,7 +58,7 @@ const FRAME_DETAIL_RE =
   /^\s*at\s+([\w.]+)\(([\w.]+):(\d+)\)/;
 
 /**
- * JDK internal package prefixes — frames from these packages are skipped
+ * JDK internal package prefixes - frames from these packages are skipped
  * when determining user code file:line. They still appear in the stack trace
  * string but don't influence context.file or scoring_hints.is_user_code.
  */
@@ -138,7 +138,7 @@ export const javaParser: ErrorParser = {
    *
    * Strategy:
    * 1. Split input into lines
-   * 2. Find exception lines and "Caused by:" lines — use the last (root cause)
+   * 2. Find exception lines and "Caused by:" lines - use the last (root cause)
    * 3. Collect stack frames, capped at MAX_STACK_FRAMES
    * 4. Find the first user-code frame (non-JDK) for file:line context
    *
@@ -148,7 +148,7 @@ export const javaParser: ErrorParser = {
   parse(line: string): ParsedError | null {
     const lines = line.split("\n");
 
-    // Collect all exception declarations — the last "Caused by:" is root cause
+    // Collect all exception declarations - the last "Caused by:" is root cause
     let errorClass = "";
     let errorMessage = "";
     let isUnhandled = false;
@@ -162,7 +162,7 @@ export const javaParser: ErrorParser = {
     for (const raw of lines) {
       const trimmed = raw.trim();
 
-      // Check for "Caused by:" — overrides previous exception as root cause
+      // Check for "Caused by:" - overrides previous exception as root cause
       if (CAUSED_BY_RE.test(trimmed)) {
         const causedMatch = trimmed
           .replace(/^Caused by:\s*/, "")

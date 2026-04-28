@@ -122,7 +122,7 @@ describe("watch controller", () => {
 
     const fp = "fp:dup";
     buffer.push(makeEvent({ fingerprint: fp, level: "error", message: "first" }));
-    // Second push with same fingerprint — buffer deduplicates, subscriber not called
+    // Second push with same fingerprint - buffer deduplicates, subscriber not called
     // So we use a different fingerprint to test the watch controller's own dedup
     buffer.push(makeEvent({ fingerprint: "fp:other", level: "error" }));
 

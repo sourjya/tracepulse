@@ -1,5 +1,5 @@
 /**
- * TracePulse — Runtime feedback MCP server for AI coding agents.
+ * TracePulse - Runtime feedback MCP server for AI coding agents.
  *
  * This is the main entry point for the MCP server. It initializes the server,
  * registers MCP tools, and connects the event pipeline:

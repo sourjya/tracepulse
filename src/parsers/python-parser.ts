@@ -69,7 +69,7 @@ const EXCEPTION_LINE_RE = new RegExp(
 const FRAME_RE = /^\s*File "(.+)", line (\d+), in (.+)$/;
 
 /**
- * Patterns that indicate a Node.js error — used to reject false positives
+ * Patterns that indicate a Node.js error - used to reject false positives
  * on generic exception types like TypeError that exist in both languages.
  * These patterns appear in the message portion AFTER the colon, not in
  * the exception type prefix itself.
@@ -141,7 +141,7 @@ function extractErrorType(line: string): string | undefined {
  * user-code frame (skipping site-packages).
  *
  * Collaborates with the parser registry (Phase 1) which tries parsers
- * in order — this parser should be registered alongside the Node parser.
+ * in order - this parser should be registered alongside the Node parser.
  */
 export const pythonParser: ErrorParser = {
   name: "python",
@@ -157,7 +157,7 @@ export const pythonParser: ErrorParser = {
     if (line.includes(TRACEBACK_HEADER)) return true;
     const lastLine = (line.trim().split("\n").pop() ?? "").trim();
     if (!EXCEPTION_LINE_RE.test(lastLine)) return false;
-    // Matched a Python exception type — reject if the message is Node.js-specific
+    // Matched a Python exception type - reject if the message is Node.js-specific
     return !isNodeError(lastLine);
   },
 
@@ -173,7 +173,7 @@ export const pythonParser: ErrorParser = {
     const lines = line.split("\n");
     const hasTraceback = line.includes(TRACEBACK_HEADER);
 
-    // Find the exception message — last non-empty line
+    // Find the exception message - last non-empty line
     const messageLine = lines
       .map((l) => l.trim())
       .filter((l) => l.length > 0)
@@ -216,7 +216,7 @@ export const pythonParser: ErrorParser = {
         userLine = lastUserLine;
         hasUserCode = true;
       } else if (frames.length > 0) {
-        // All frames are site-packages — use the last frame anyway
+        // All frames are site-packages - use the last frame anyway
         const lastMatch = FRAME_RE.exec(frames[frames.length - 1]);
         if (lastMatch) {
           userFile = lastMatch[1];

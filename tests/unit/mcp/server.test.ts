@@ -4,7 +4,7 @@
  * Tests the pure handler functions (handleGetErrors, handleGetServerLogs,
  * handleGetRuntimeStatus, handleClearErrors) that back the MCP tools.
  * Each handler reads from an EventBuffer and returns a CallToolResult.
- * Transport-level MCP behavior is NOT tested here — only the data logic.
+ * Transport-level MCP behavior is NOT tested here - only the data logic.
  *
  * @see src/mcp/server.ts for implementation
  * @see src/types/collectors.ts for the EventBuffer interface

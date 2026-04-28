@@ -1,4 +1,4 @@
-# Phase 3: Multi-Process & Docker — Design
+# Phase 3: Multi-Process & Docker - Design
 
 > **Hardening Reference:** See [Collector Pitfalls & Hardening Guide](../../../docs/references/collector-pitfalls-hardening.md) for known failure modes. Phase 3 adds process group kill for zombie prevention (Pitfall 1.2), inherits PYTHONUNBUFFERED (Pitfall 1.1), and uses Docker Engine API instead of fs.watch for container logs (avoiding Pitfall 2.2).
 
@@ -75,7 +75,7 @@ interface ServiceEntry {
   errorCount: number;
   /** Unix ms timestamp of the most recent event from this service */
   lastActivity: number;
-  /** Source type — determines which collector manages this service */
+  /** Source type - determines which collector manages this service */
   readonly sourceType: "process" | "docker";
 }
 
@@ -107,18 +107,18 @@ type ServiceStatus = "running" | "stopped" | "crashed" | "restarting";
 ```
 
 The registry exposes:
-- `register(name, sourceType)` — add a service
-- `updateStatus(name, status)` — transition state
-- `recordEvent(name)` — increment error count, update lastActivity
-- `getServices()` — return all ServiceEntry objects (for `list_services` tool)
-- `getService(name)` — return a single entry or undefined
+- `register(name, sourceType)` - add a service
+- `updateStatus(name, status)` - transition state
+- `recordEvent(name)` - increment error count, update lastActivity
+- `getServices()` - return all ServiceEntry objects (for `list_services` tool)
+- `getService(name)` - return a single entry or undefined
 
 ### 2. Multi-Process Collector (`src/collectors/multi-process-collector.ts`)
 
 Extends the existing single-process spawner (from Phase 1) to manage multiple child processes. Each process gets its own stdout/stderr listeners that tag events with the service name.
 
 **Design decisions:**
-- Each child process is spawned with `{ stdio: ['ignore', 'pipe', 'pipe'] }` — stdin is ignored, stdout/stderr are piped
+- Each child process is spawned with `{ stdio: ['ignore', 'pipe', 'pipe'] }` - stdin is ignored, stdout/stderr are piped
 - Each child process is spawned with `detached: true` and killed via `process.kill(-pid, signal)` to ensure the entire process group is terminated, including background workers spawned by the dev server (e.g., webpack workers, esbuild threads). _(Pitfall 1.2 from [Collector Pitfalls Guide](../../../docs/references/collector-pitfalls-hardening.md))_
 - The spawner sets `PYTHONUNBUFFERED=1` in each child's environment (inherited from Phase 1 hardening, Pitfall 1.1)
 - Process exit events update the service registry status
@@ -134,14 +134,14 @@ Connects to the Docker Engine API via the local Unix socket to tail container lo
 GET /containers/{id}/logs?follow=true&stdout=true&stderr=true&timestamps=true&since={unix_ts}
 ```
 
-- Uses Node.js `node:http` with a Unix socket connection (`{ socketPath: '/var/run/docker.sock' }`) — no external Docker client library needed
+- Uses Node.js `node:http` with a Unix socket connection (`{ socketPath: '/var/run/docker.sock' }`) - no external Docker client library needed
 - Parses the Docker multiplexed stream format (8-byte header: stream type + frame size)
 - Each log line is tagged with the compose service name (from container labels `com.docker.compose.service`)
 - On container restart, the collector detects the new container ID via Docker events API and re-attaches
 
 **Compose file parsing:**
 - Reads `docker-compose.yml` (or `--file` path) to discover service names
-- Uses a YAML parser to extract the `services` key — only service names are needed, not the full compose config
+- Uses a YAML parser to extract the `services` key - only service names are needed, not the full compose config
 - Maps compose service names to running container IDs via `GET /containers/json?filters={"label":["com.docker.compose.service={name}"]}`
 
 ### 4. Config Schema (`src/config/config-schema.ts`)
@@ -170,7 +170,7 @@ interface TracePulseConfig {
 }
 
 interface ServiceConfig {
-  /** Unique service name — used in event tagging and MCP tool filters */
+  /** Unique service name - used in event tagging and MCP tool filters */
   name: string;
   /** Shell command to spawn the service */
   command: string;
@@ -211,7 +211,7 @@ interface TransportConfig {
 - `services[].command` must be non-empty
 - `correlation_window_ms` must be 100–10000
 - `transport.http_port` must be 1024–65535
-- If both `services` and `compose` are specified, error — they are mutually exclusive modes
+- If both `services` and `compose` are specified, error - they are mutually exclusive modes
 
 ### 5. Config Loader (`src/config/config-loader.ts`)
 
@@ -224,7 +224,7 @@ The loader validates the merged config against the schema and returns a typed, f
 
 ### 6. Cross-Service Correlation Engine (`src/correlation/correlation-engine.ts`)
 
-Computes temporal correlation groups on read — no stored state.
+Computes temporal correlation groups on read - no stored state.
 
 **Algorithm:**
 1. Sort events by timestamp
@@ -257,9 +257,9 @@ Uses `@modelcontextprotocol/sdk`'s built-in Streamable HTTP transport support.
 interface PersistedFingerprintEntry {
   /** The fingerprint hash string */
   fingerprint: string;
-  /** Unix ms — first time this fingerprint was ever seen */
+  /** Unix ms - first time this fingerprint was ever seen */
   first_seen: number;
-  /** Unix ms — most recent occurrence */
+  /** Unix ms - most recent occurrence */
   last_seen: number;
   /** Total occurrences across all sessions */
   total_count: number;
@@ -280,7 +280,7 @@ interface FingerprintFile {
 - On graceful shutdown: write current fingerprint index to `.tracepulse/fingerprints.json`
 - If file is corrupted/unreadable: log warning to stderr, start with empty history
 - Cap at 5,000 entries; evict least-recently-seen entries when full
-- File contains only hashes, timestamps, and counts — never raw error messages (security: NFR-4)
+- File contains only hashes, timestamps, and counts - never raw error messages (security: NFR-4)
 
 ---
 
@@ -290,7 +290,7 @@ interface FingerprintFile {
 
 ```typescript
 /**
- * get_errors — retrieve recent runtime errors from the event buffer.
+ * get_errors - retrieve recent runtime errors from the event buffer.
  *
  * Phase 3 adds the `service` filter parameter and `correlation_group`
  * annotation on returned events.
@@ -317,7 +317,7 @@ interface RuntimeEventWithCorrelation extends RuntimeEvent {
 
 ```typescript
 /**
- * list_services — return the status of all monitored services.
+ * list_services - return the status of all monitored services.
  *
  * Gives the agent a topology view of the dev environment before
  * drilling into specific errors.
@@ -346,7 +346,7 @@ interface ListServicesResult {
 npx tracepulse compose [--file <path>] [--http] [--http-port <port>] [--persist]
 ```
 
-- `--file` — path to docker-compose.yml (default: `docker-compose.yml` in cwd)
+- `--file` - path to docker-compose.yml (default: `docker-compose.yml` in cwd)
 - Discovers services from the compose file, tails their container logs
 
 ### Extended: `start` subcommand
@@ -355,12 +355,12 @@ npx tracepulse compose [--file <path>] [--http] [--http-port <port>] [--persist]
 npx tracepulse start [command] [--service name=command ...] [--config <path>] [--http] [--http-port <port>] [--persist]
 ```
 
-- Positional `command` — single-process mode (Phase 1/2 behavior, unchanged)
-- `--service name=command` — multi-process mode (repeatable flag)
-- `--config <path>` — load config file (default: `tracepulse.config.json` in cwd if it exists)
-- `--http` — enable Streamable HTTP transport
-- `--http-port <port>` — HTTP transport port (default: 9800)
-- `--persist` — enable fingerprint persistence
+- Positional `command` - single-process mode (Phase 1/2 behavior, unchanged)
+- `--service name=command` - multi-process mode (repeatable flag)
+- `--config <path>` - load config file (default: `tracepulse.config.json` in cwd if it exists)
+- `--http` - enable Streamable HTTP transport
+- `--http-port <port>` - HTTP transport port (default: 9800)
+- `--persist` - enable fingerprint persistence
 
 ### Mutual exclusivity
 
@@ -421,23 +421,23 @@ docker-compose.yml
 ```
 src/
 ├── collectors/
-│   ├── multi-process-collector.ts    # NEW — spawns and manages multiple child processes
-│   └── docker-log-collector.ts       # NEW — tails Docker container logs via Engine API
+│   ├── multi-process-collector.ts    # NEW - spawns and manages multiple child processes
+│   └── docker-log-collector.ts       # NEW - tails Docker container logs via Engine API
 ├── config/
-│   ├── config-schema.ts              # NEW — TypeScript interfaces + validation
-│   └── config-loader.ts              # NEW — reads config file, merges CLI flags, validates
+│   ├── config-schema.ts              # NEW - TypeScript interfaces + validation
+│   └── config-loader.ts              # NEW - reads config file, merges CLI flags, validates
 ├── correlation/
-│   └── correlation-engine.ts         # NEW — temporal cross-service event grouping
+│   └── correlation-engine.ts         # NEW - temporal cross-service event grouping
 ├── persistence/
-│   └── fingerprint-store.ts          # NEW — read/write .tracepulse/fingerprints.json
+│   └── fingerprint-store.ts          # NEW - read/write .tracepulse/fingerprints.json
 ├── services/
-│   └── service-registry.ts           # NEW — tracks service state, error counts, activity
+│   └── service-registry.ts           # NEW - tracks service state, error counts, activity
 ├── transport/
-│   └── http-transport.ts             # NEW — Streamable HTTP MCP transport on port 9800
+│   └── http-transport.ts             # NEW - Streamable HTTP MCP transport on port 9800
 ├── constants/
-│   └── services.ts                   # NEW — service-related constants (status values, defaults)
-├── cli.ts                            # MODIFIED — add compose subcommand, --service, --config, --http, --persist flags
-└── index.ts                          # MODIFIED — wire up registry, multi-process, transports
+│   └── services.ts                   # NEW - service-related constants (status values, defaults)
+├── cli.ts                            # MODIFIED - add compose subcommand, --service, --config, --http, --persist flags
+└── index.ts                          # MODIFIED - wire up registry, multi-process, transports
 
 tests/
 ├── unit/
@@ -473,9 +473,9 @@ tests/
 
 | Concern | Approach |
 |---|---|
-| Docker Engine API | `node:http` with Unix socket — no Docker client library needed |
+| Docker Engine API | `node:http` with Unix socket - no Docker client library needed |
 | HTTP transport | `@modelcontextprotocol/sdk` has built-in Streamable HTTP support |
-| Config file reading | `node:fs` + `JSON.parse` — config is JSON, not YAML |
+| Config file reading | `node:fs` + `JSON.parse` - config is JSON, not YAML |
 | Fingerprint persistence | `node:fs` + `JSON.parse`/`JSON.stringify` |
 | Child process management | `node:child_process` (already used in Phase 1) |
 

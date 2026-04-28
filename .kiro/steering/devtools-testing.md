@@ -9,7 +9,7 @@ Rules for using Chrome DevTools MCP tools during development and testing session
 
 ## When to Use Chrome DevTools MCP
 
-- **After code changes**: Verify the result in the browser — take a snapshot or screenshot to confirm the UI updated correctly.
+- **After code changes**: Verify the result in the browser - take a snapshot or screenshot to confirm the UI updated correctly.
 - **Debugging runtime errors**: Check `list_console_messages` for browser-side errors after TracePulse reports backend errors.
 - **Network verification**: Use `list_network_requests` and `get_network_request` to inspect API calls, status codes, and response bodies.
 - **Accessibility checks**: Run `lighthouse_audit` on pages to catch a11y issues early.
@@ -18,10 +18,10 @@ Rules for using Chrome DevTools MCP tools during development and testing session
 
 ## Tool Selection Priority
 
-1. **`take_snapshot`** — Prefer over screenshots. Faster, structured, gives element uids for interaction.
-2. **`take_screenshot`** — Use when visual appearance matters (layout, colors, images).
-3. **`evaluate_script`** — Use for extracting specific data or state that snapshots don't capture.
-4. **`wait_for`** — Use before snapshots/screenshots to ensure the page has finished loading or updating.
+1. **`take_snapshot`** - Prefer over screenshots. Faster, structured, gives element uids for interaction.
+2. **`take_screenshot`** - Use when visual appearance matters (layout, colors, images).
+3. **`evaluate_script`** - Use for extracting specific data or state that snapshots don't capture.
+4. **`wait_for`** - Use before snapshots/screenshots to ensure the page has finished loading or updating.
 
 ## Workflow Patterns
 
@@ -66,9 +66,9 @@ wait_for + take_snapshot → verify browser
 3. **Use `includeSnapshot: true`** on interaction tools (click, fill, etc.) when you need to see the result immediately.
 4. **Check console messages after navigation** to catch silent JavaScript errors.
 5. **Use `--headless` mode** in CI and automated testing. The project config already sets this.
-6. **Save artifacts to files** when needed for comparison — use `filePath` parameter on screenshots, traces, and snapshots.
+6. **Save artifacts to files** when needed for comparison - use `filePath` parameter on screenshots, traces, and snapshots.
 7. **Use isolated contexts** (`isolatedContext` on `new_page`) when testing requires clean state without shared cookies/storage.
-8. **Handle dialogs explicitly** — if a page might show alerts/confirms, use `handle_dialog` or pass `dialogAction` to `evaluate_script`.
+8. **Handle dialogs explicitly** - if a page might show alerts/confirms, use `handle_dialog` or pass `dialogAction` to `evaluate_script`.
 
 ## Capability Reference
 

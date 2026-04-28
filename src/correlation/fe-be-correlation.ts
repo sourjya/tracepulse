@@ -5,7 +5,7 @@
  * 1. Trace ID matching (highest confidence)
  * 2. URL path + timestamp proximity (heuristic fallback)
  *
- * Pure function — reads from provided arrays, no I/O.
+ * Pure function - reads from provided arrays, no I/O.
  *
  * @see src/correlation/types.ts for CorrelatedError interface
  * @see src/constants/correlation.ts for confidence scores and thresholds
@@ -33,7 +33,7 @@ const PATH_IN_MESSAGE = /(?:GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+(\/\S+)/i;
 function extractPath(event: RuntimeEvent): string | undefined {
   // Check context first
   if (event.context.file && event.context.file.startsWith("/")) {
-    // file is a source file path, not a URL path — skip
+    // file is a source file path, not a URL path - skip
   }
 
   // Check message for HTTP path patterns

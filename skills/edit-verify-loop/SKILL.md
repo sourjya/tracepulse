@@ -29,7 +29,7 @@ Block for 15 seconds to collect any new errors after hot-reload. Check `hot_relo
 - Go to Step 4 (Fix)
 
 **If no errors:**
-- Fix is clean — go to Step 6 (Confirm)
+- Fix is clean - go to Step 6 (Confirm)
 
 ### Step 4: Fix Errors
 Edit the code to address the reported errors.
@@ -56,4 +56,4 @@ Quick check that no new errors appeared.
 - **Errors found + hot-reload detected**: Fix the errors, re-watch
 - **Errors found + no hot-reload**: Server may need manual restart
 - **No errors + hot-reload detected**: Fix is clean ✓
-- **No errors + no hot-reload**: Inconclusive — check server status
+- **No errors + no hot-reload**: Inconclusive - check server status

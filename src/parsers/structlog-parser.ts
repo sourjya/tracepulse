@@ -38,7 +38,7 @@ const LEVEL_MAP: Record<string, LogLevel> = {
 /**
  * Structlog key-value format parser.
  *
- * Matches lines containing [level] brackets — the signature of structlog's
+ * Matches lines containing [level] brackets - the signature of structlog's
  * ConsoleRenderer. Extracts the log level and event message.
  */
 export const structlogParser: ErrorParser = {

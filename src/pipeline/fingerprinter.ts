@@ -1,5 +1,5 @@
 /**
- * Fingerprinter — generates stable dedup keys for RuntimeEvents.
+ * Fingerprinter - generates stable dedup keys for RuntimeEvents.
  *
  * Produces a SHA-256 hex digest from source + normalized message + file:line.
  * Message normalization strips volatile content (timestamps, PIDs, memory
@@ -20,7 +20,7 @@ import { createHash } from "node:crypto";
 
 /**
  * Patterns stripped from messages before hashing.
- * Order matters — timestamps must be stripped before the generic
+ * Order matters - timestamps must be stripped before the generic
  * Unix-timestamp pattern to avoid partial matches.
  */
 const NORMALIZATION_PATTERNS: readonly RegExp[] = [

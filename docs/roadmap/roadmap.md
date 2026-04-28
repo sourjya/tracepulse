@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.6.0 (alpha — Phases 1–5 complete)
+v0.6.0 (alpha - Phases 1–5 complete)
 
 ## Milestones
 
@@ -15,7 +15,7 @@ v0.6.0 (alpha — Phases 1–5 complete)
 | M5: Proactive Monitoring | Phase 5 | v0.6.0 | ✅ Complete |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 
-## M6: Stable Release — Remaining Work
+## M6: Stable Release - Remaining Work
 
 - [ ] Wire `get_errors` response as structured object (TD-001)
 - [ ] Fix multi-process service name tagging (TD-003)
@@ -31,16 +31,16 @@ v0.6.0 (alpha — Phases 1–5 complete)
 - [ ] Maintainability review
 - [ ] GitHub release with changelog
 
-## Post-v1.0 — Agent-Driven Improvements
+## Post-v1.0 - Agent-Driven Improvements
 
 Items identified from real agent feedback during PlanIQ testing.
 See `docs/feedback/feature-request-analysis-session3.md` for full analysis of session 3 requests.
 
 ### Quick Wins (pre-v1.0 candidates)
 
-- [ ] **Investigate structlog JSON parsing** — Agent reports all events as `level: "info"`. JSON log parser exists but may not match structlog format. Highest ROI fix.
-- [ ] **Add `message_contains` filter** to `get_errors` and `get_server_logs` — enables path/URL filtering without a new tool
-- [ ] **Update SKILL.md** — teach agent to use `since` param as a cursor, and to bridge FE errors manually via Chrome DevTools MCP
+- [ ] **Investigate structlog JSON parsing** - Agent reports all events as `level: "info"`. JSON log parser exists but may not match structlog format. Highest ROI fix.
+- [ ] **Add `message_contains` filter** to `get_errors` and `get_server_logs` - enables path/URL filtering without a new tool
+- [ ] **Update SKILL.md** - teach agent to use `since` param as a cursor, and to bridge FE errors manually via Chrome DevTools MCP
 
 ### Attach Mode Visibility
 
@@ -102,7 +102,7 @@ Background task that pings a configurable endpoint. Low effort, nice-to-have.
 
 Agent feedback: "`get_correlated_errors` always returns empty because no browser source feeds the frontend buffer."
 
-Auto-connect to Chrome via CDP and capture failed network requests. This is the Phase 4 CDP listener — designed but not wired. High effort, high value.
+Auto-connect to Chrome via CDP and capture failed network requests. This is the Phase 4 CDP listener - designed but not wired. High effort, high value.
 
 ### Test Runner Integration
 

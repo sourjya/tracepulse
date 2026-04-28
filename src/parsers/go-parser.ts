@@ -21,10 +21,10 @@ import { MAX_STACK_FRAMES } from "@/constants/limits.js";
 // Detection Patterns
 // ──────────────────────────────────────────────
 
-/** Matches `goroutine N [running]:` — the header of a Go stack trace. */
+/** Matches `goroutine N [running]:` - the header of a Go stack trace. */
 const GOROUTINE_RE = /goroutine \d+ \[running\]:/;
 
-/** Matches `panic: <message>` — the panic trigger line. */
+/** Matches `panic: <message>` - the panic trigger line. */
 const PANIC_RE = /^panic: /m;
 
 /**
@@ -93,7 +93,7 @@ export const goParser: ErrorParser = {
       }
     }
 
-    // Extract stack frames — lines starting with \t that match .go:N
+    // Extract stack frames - lines starting with \t that match .go:N
     const frameLines: string[] = [];
     let firstFile: string | undefined;
     let firstLine: number | undefined;
@@ -111,7 +111,7 @@ export const goParser: ErrorParser = {
           firstLine = parseInt(fileMatch[2], 10);
         }
       } else if (l.startsWith("\t")) {
-        // Non-file frame line (e.g., function signature) — skip
+        // Non-file frame line (e.g., function signature) - skip
       } else if (frameCount > 0 || GOROUTINE_RE.test(l)) {
         // Include goroutine headers and function names in trace
         if (frameCount < MAX_STACK_FRAMES) {

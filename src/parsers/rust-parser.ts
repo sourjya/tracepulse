@@ -6,7 +6,7 @@
  * (thread 'name' panicked at file:line:col:\nmsg). Also extracts stack
  * frames from RUST_BACKTRACE output when present.
  *
- * Fits into the parser registry as a pluggable ErrorParser — the registry
+ * Fits into the parser registry as a pluggable ErrorParser - the registry
  * calls canParse() on each line, and if it matches, calls parse() to
  * produce a ParsedError for the normalizer.
  *
@@ -87,7 +87,7 @@ function extractBacktrace(input: string): string | undefined {
  * Rust error parser. Detects thread panics and RUST_BACKTRACE output,
  * extracts panic message, source location, and stack frames.
  *
- * Exported as a singleton — the parser registry imports this directly.
+ * Exported as a singleton - the parser registry imports this directly.
  * Stateless: all methods are pure functions operating on the input string.
  */
 export const rustParser: ErrorParser = {
@@ -95,7 +95,7 @@ export const rustParser: ErrorParser = {
 
   /**
    * Returns true if the line contains a Rust panic or RUST_BACKTRACE output.
-   * Fast regex test — no allocations beyond the regex engine.
+   * Fast regex test - no allocations beyond the regex engine.
    *
    * @param line - Raw log line(s) from the process collector
    * @returns True if this parser should attempt to parse the line

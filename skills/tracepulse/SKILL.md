@@ -1,6 +1,6 @@
 ---
 name: tracepulse
-description: Uses TracePulse MCP server for backend runtime error monitoring. Use after ANY backend code change to check for errors, verify fixes, and triage crashes. TracePulse watches dev server logs (stdout/stderr or log files) and exposes parsed, scored errors as MCP tools. Works with any language — Node.js, Python, Go, Java, Rust, TypeScript.
+description: Uses TracePulse MCP server for backend runtime error monitoring. Use after ANY backend code change to check for errors, verify fixes, and triage crashes. TracePulse watches dev server logs (stdout/stderr or log files) and exposes parsed, scored errors as MCP tools. Works with any language - Node.js, Python, Go, Java, Rust, TypeScript.
 ---
 
 ## Core Concepts
@@ -9,7 +9,7 @@ description: Uses TracePulse MCP server for backend runtime error monitoring. Us
 
 **Two modes**:
 - **Start mode**: TracePulse spawns your dev server and captures its output
-- **Attach mode**: TracePulse tails an existing log file — use this when servers are already running, managed by scripts, Docker, or process managers
+- **Attach mode**: TracePulse tails an existing log file - use this when servers are already running, managed by scripts, Docker, or process managers
 
 **Signal scoring**: Every error gets a `signal_score` (0-100) and `signal_strength` (high/medium/low). High-signal errors (≥50) have clear stack traces pointing to your code. Low-signal events (<20) are warnings or noise. Always triage high-signal errors first.
 
@@ -22,9 +22,9 @@ description: Uses TracePulse MCP server for backend runtime error monitoring. Us
 This is the core loop. Do this every time you edit a backend file:
 
 1. Edit the backend file (Python, Node.js, etc.)
-2. `get_errors(limit: 5)` — check for import errors, syntax errors, startup crashes
+2. `get_errors(limit: 5)` - check for import errors, syntax errors, startup crashes
 3. If the app serves HTTP, navigate to the affected page in the browser
-4. `get_errors(limit: 5)` — check for runtime errors (500s, exceptions from the request)
+4. `get_errors(limit: 5)` - check for runtime errors (500s, exceptions from the request)
 5. If errors: read `context.file` at `context.line`, fix, repeat from step 1
 6. If clean: move on
 
@@ -33,67 +33,67 @@ This is the core loop. Do this every time you edit a backend file:
 If the dev server supports hot-reload (Vite, nodemon, Next.js, webpack, ts-node-dev):
 
 1. Edit the file
-2. `watch_for_errors(duration_seconds: 15)` — blocks for 15 seconds, collects new errors
-3. Check `hot_reload_detected` in the response — confirms the server actually reloaded
+2. `watch_for_errors(duration_seconds: 15)` - blocks for 15 seconds, collects new errors
+3. Check `hot_reload_detected` in the response - confirms the server actually reloaded
 4. If `events` is empty and `hot_reload_detected` is true: fix is clean ✓
 5. If errors found: read the error details, fix, call `watch_for_errors(10)` again
 
 **Important caveat about `hot_reload_detected`:**
-- In **start mode**, TracePulse owns the process and sees all stdout/stderr — hot-reload detection is reliable.
-- In **attach mode** (tailing a log file), TracePulse only sees what's written to that specific log file. If your frontend (Vite) and backend (Python/Node) are separate processes, TracePulse tailing the backend log will NOT see Vite's HMR messages. `hot_reload_detected: false` in attach mode means "no reload seen in this log file" — not "no reload happened anywhere."
+- In **start mode**, TracePulse owns the process and sees all stdout/stderr - hot-reload detection is reliable.
+- In **attach mode** (tailing a log file), TracePulse only sees what's written to that specific log file. If your frontend (Vite) and backend (Python/Node) are separate processes, TracePulse tailing the backend log will NOT see Vite's HMR messages. `hot_reload_detected: false` in attach mode means "no reload seen in this log file" - not "no reload happened anywhere."
 - When `hot_reload_detected` is `false` in attach mode, don't assume the change wasn't picked up. Use `get_errors` or `get_build_errors` as the reliable check instead.
 
 ### Investigating a specific error
 
 When you see an error in `get_errors` and need more context:
 
-1. `get_error_context(fingerprint: "<fingerprint>")` — returns:
+1. `get_error_context(fingerprint: "<fingerprint>")` - returns:
    - The full error with untruncated details
    - Surrounding log events ±5 seconds (what happened before/after)
    - Total occurrence count
 2. Read the source file at `context.file:context.line`
-3. Check `get_error_trends(fingerprint: "<fingerprint>")` — is this new or recurring?
+3. Check `get_error_trends(fingerprint: "<fingerprint>")` - is this new or recurring?
 
 ### Checking build/compilation errors
 
 For TypeScript, ESLint, or bundler errors specifically:
 
-1. `get_build_errors(limit: 10)` — returns only compilation errors
+1. `get_build_errors(limit: 10)` - returns only compilation errors
 2. Each error has `context.file`, `context.line`, `context.error_type` (e.g., "TS2345")
-3. Fix the build errors first — they block the dev server from serving updated code
+3. Fix the build errors first - they block the dev server from serving updated code
 
 ### Correlating errors with your recent changes
 
 When you're not sure which of your changes caused an error:
 
-1. `correlate_with_diff()` — compares errors with your uncommitted git changes
+1. `correlate_with_diff()` - compares errors with your uncommitted git changes
 2. Returns errors matched to changed files, sorted by signal score
 3. Focus on errors in files you recently modified
 
 ### When the dev server crashes
 
-1. `get_runtime_status()` — `connected: false` confirms the crash
-2. `get_errors(limit: 3)` — the last errors before the crash are usually the cause
-3. Look for `signal_strength: "high"` — these are crashes and unhandled exceptions
+1. `get_runtime_status()` - `connected: false` confirms the crash
+2. `get_errors(limit: 3)` - the last errors before the crash are usually the cause
+3. Look for `signal_strength: "high"` - these are crashes and unhandled exceptions
 4. After fixing, the server should restart (or you restart it manually)
-5. `get_runtime_status()` — verify `connected: true`
+5. `get_runtime_status()` - verify `connected: true`
 
 ### Full-stack debugging (with Chrome DevTools MCP)
 
 When a frontend page shows errors and you suspect a backend cause:
 
-1. `get_errors(limit: 5)` — check backend for 500s or exceptions
-2. Use Chrome DevTools MCP: `list_console_messages(types: ["error"])` — check browser
-3. Use Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` — find failed API calls
-4. `get_correlated_errors(url: "/api/endpoint")` — match browser failures with backend traces
+1. `get_errors(limit: 5)` - check backend for 500s or exceptions
+2. Use Chrome DevTools MCP: `list_console_messages(types: ["error"])` - check browser
+3. Use Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` - find failed API calls
+4. `get_correlated_errors(url: "/api/endpoint")` - match browser failures with backend traces
 5. Fix the backend error, then verify both sides
 
 ### Starting a fresh debugging session
 
-1. `clear_errors()` — reset the buffer for a clean slate
+1. `clear_errors()` - reset the buffer for a clean slate
 2. Trigger the failing action
-3. `get_errors()` — see only errors from this action
-4. `get_new_errors()` — if persistence is enabled, shows only errors never seen before
+3. `get_errors()` - see only errors from this action
+4. `get_new_errors()` - if persistence is enabled, shows only errors never seen before
 
 ## Tool Reference (13 tools)
 
@@ -108,7 +108,7 @@ When a frontend page shows errors and you suspect a backend cause:
 
 | Tool | When to use | Cost |
 |------|-------------|------|
-| `watch_for_errors(duration_seconds?, source?)` | After editing code — blocks N seconds, returns new errors. Best with hot-reload servers. | ~1,000 tokens |
+| `watch_for_errors(duration_seconds?, source?)` | After editing code - blocks N seconds, returns new errors. Best with hot-reload servers. | ~1,000 tokens |
 | `get_build_errors(limit?)` | Check TypeScript/ESLint/Vite/webpack compilation errors specifically. | ~1,500 tokens |
 
 ### Deep investigation
@@ -116,7 +116,7 @@ When a frontend page shows errors and you suspect a backend cause:
 | Tool | When to use | Cost |
 |------|-------------|------|
 | `get_error_context(fingerprint)` | Deep-dive into one error: full details + surrounding logs ±5s + occurrence count. | ~3,000 tokens |
-| `get_timeline(since, duration_seconds?, limit?)` | See everything that happened in a time window — all levels, chronological. | ~5,000 tokens |
+| `get_timeline(since, duration_seconds?, limit?)` | See everything that happened in a time window - all levels, chronological. | ~5,000 tokens |
 | `get_server_logs(level?, since?, limit?)` | Full server output at any severity level. | ~2,000 tokens |
 
 ### Cross-reference
@@ -149,7 +149,7 @@ When a frontend page shows errors and you suspect a backend cause:
 }
 ```
 
-If `session_started_at` is recent and `errors` is empty, the server is genuinely clean. If `session_started_at` is hours old, the data may be stale — consider restarting TracePulse.
+If `session_started_at` is recent and `errors` is empty, the server is genuinely clean. If `session_started_at` is hours old, the data may be stale - consider restarting TracePulse.
 
 Fields on each error in the `errors` array:
 
@@ -158,17 +158,17 @@ Fields on each error in the `errors` array:
 - **`context.error_type`**: Exception class (e.g., "TypeError", "ImportError", "TS2345").
 - **`fingerprint`**: Stable dedup ID. Pass to `get_error_context` or `get_error_trends`.
 - **`occurrence_count`**: How many times this exact error has occurred.
-- **`source`**: Where the line came from — `server-stdout`, `server-stderr`, or `build-error`.
-- **`service`**: Which process (in multi-service mode) — `main`, `api`, `worker`, etc.
+- **`source`**: Where the line came from - `server-stdout`, `server-stderr`, or `build-error`.
+- **`service`**: Which process (in multi-service mode) - `main`, `api`, `worker`, etc.
 
 ## Progressive Disclosure (save tokens)
 
 Start cheap, drill down only when needed:
 
-1. **`get_runtime_status`** (~100 tokens) — is the server running? any errors?
-2. **`get_errors`** (~1,000 tokens) — what broke? sorted by severity
-3. **`get_error_context`** (~3,000 tokens) — full details on one specific error
-4. **`get_timeline`** (~5,000 tokens) — everything that happened in a time window
+1. **`get_runtime_status`** (~100 tokens) - is the server running? any errors?
+2. **`get_errors`** (~1,000 tokens) - what broke? sorted by severity
+3. **`get_error_context`** (~3,000 tokens) - full details on one specific error
+4. **`get_timeline`** (~5,000 tokens) - everything that happened in a time window
 
 Don't call `get_timeline` or `get_server_logs` unless you need the full picture. `get_errors` is almost always enough.
 
@@ -176,9 +176,9 @@ Don't call `get_timeline` or `get_server_logs` unless you need the full picture.
 
 ### Use `message_contains` to filter by URL path
 Instead of scanning all logs, filter directly:
-- `get_errors(message_contains: "/api/export")` — only errors mentioning this path
-- `get_server_logs(message_contains: "500")` — only lines with "500"
-- `get_server_logs(message_contains: "/export", level: "error")` — combine filters
+- `get_errors(message_contains: "/api/export")` - only errors mentioning this path
+- `get_server_logs(message_contains: "500")` - only lines with "500"
+- `get_server_logs(message_contains: "/export", level: "error")` - combine filters
 
 ### Use `since` as a cursor to avoid re-reading old events
 Save the timestamp from your last call and pass it next time:
@@ -198,48 +198,48 @@ This is 2 calls instead of the automated correlation, but works in any setup.
 - Does not set breakpoints or step through code (use mcp-debugger for that)
 - Does not inspect the browser DOM or console (use Chrome DevTools MCP for that)
 - Does not inspect the visual UI (use ViewGraph for that)
-- Does not modify code or fix errors — it only reports what the dev server outputs
-- Does not run type checkers — but it parses TypeScript compiler output if your dev server runs `tsc`
+- Does not modify code or fix errors - it only reports what the dev server outputs
+- Does not run type checkers - but it parses TypeScript compiler output if your dev server runs `tsc`
 
 ## When to Use TracePulse vs Chrome DevTools MCP
 
 Use this decision tree when debugging. The right tool depends on where the problem is.
 
 ### "Did my code change break anything?"
-→ **TracePulse**: `get_build_errors()` — instant compilation check
-→ **TracePulse**: `get_errors()` — runtime errors from the server
+→ **TracePulse**: `get_build_errors()` - instant compilation check
+→ **TracePulse**: `get_errors()` - runtime errors from the server
 
 ### "The page shows a blank state / error / spinner that won't stop"
-→ **Chrome DevTools MCP**: `list_network_requests(resourceTypes: ["fetch", "xhr"])` — find failed API calls
-→ **Chrome DevTools MCP**: `list_console_messages(types: ["error"])` — find JS errors
-→ Then **TracePulse**: `get_errors()` — check if the backend has matching errors
+→ **Chrome DevTools MCP**: `list_network_requests(resourceTypes: ["fetch", "xhr"])` - find failed API calls
+→ **Chrome DevTools MCP**: `list_console_messages(types: ["error"])` - find JS errors
+→ Then **TracePulse**: `get_errors()` - check if the backend has matching errors
 
 ### "I got a 401/403 Unauthorized"
-→ **Chrome DevTools MCP**: `get_network_request(reqid)` — see the full request headers, auth token, response body
+→ **Chrome DevTools MCP**: `get_network_request(reqid)` - see the full request headers, auth token, response body
 → This is a browser-side problem (wrong token, expired session). TracePulse won't see it unless the backend logs the rejection.
 
 ### "I got a 500 Internal Server Error"
-→ **TracePulse**: `get_errors()` — the backend exception with stack trace
-→ **TracePulse**: `get_error_context(fingerprint)` — surrounding logs for context
-→ **Chrome DevTools MCP**: `get_network_request(reqid)` — see what request triggered it
+→ **TracePulse**: `get_errors()` - the backend exception with stack trace
+→ **TracePulse**: `get_error_context(fingerprint)` - surrounding logs for context
+→ **Chrome DevTools MCP**: `get_network_request(reqid)` - see what request triggered it
 
 ### "I need to see the request/response body"
-→ **Chrome DevTools MCP**: `get_network_request(reqid)` — full request and response bodies
+→ **Chrome DevTools MCP**: `get_network_request(reqid)` - full request and response bodies
 → TracePulse only sees what the server prints to stdout/stderr. It doesn't capture HTTP bodies.
 
 ### "A request is slow"
-→ **Chrome DevTools MCP**: `list_network_requests()` — check response times
-→ **Chrome DevTools MCP**: `performance_start_trace()` — detailed performance profile
+→ **Chrome DevTools MCP**: `list_network_requests()` - check response times
+→ **Chrome DevTools MCP**: `performance_start_trace()` - detailed performance profile
 → TracePulse doesn't track request timing (yet).
 
 ### "I want to verify my fix worked end-to-end"
-1. **TracePulse**: `watch_for_errors(15)` or `get_build_errors()` — backend clean?
-2. **Chrome DevTools MCP**: `navigate_page(type: "reload")` — reload the page
-3. **Chrome DevTools MCP**: `wait_for("expected content")` — page renders correctly?
-4. **Chrome DevTools MCP**: `list_console_messages(types: ["error"])` — no JS errors?
+1. **TracePulse**: `watch_for_errors(15)` or `get_build_errors()` - backend clean?
+2. **Chrome DevTools MCP**: `navigate_page(type: "reload")` - reload the page
+3. **Chrome DevTools MCP**: `wait_for("expected content")` - page renders correctly?
+4. **Chrome DevTools MCP**: `list_console_messages(types: ["error"])` - no JS errors?
 
 ### "I want to correlate frontend and backend errors"
-→ **TracePulse**: `get_correlated_errors(url: "/api/endpoint")` — if correlation is configured
+→ **TracePulse**: `get_correlated_errors(url: "/api/endpoint")` - if correlation is configured
 → Or manually: **Chrome DevTools MCP** `list_network_requests()` to find the failed request, then **TracePulse** `get_errors()` to find the matching backend exception
 
 ### Quick reference

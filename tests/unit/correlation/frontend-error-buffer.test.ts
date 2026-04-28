@@ -24,7 +24,7 @@ function makeFrontendError(overrides: Partial<FrontendError> = {}): FrontendErro
 }
 
 describe("frontend error buffer", () => {
-  it("push and retrieve — pushed errors appear in getAll()", () => {
+  it("push and retrieve - pushed errors appear in getAll()", () => {
     const buf = createFrontendErrorBuffer(10);
     const err = makeFrontendError();
     buf.push(err);
@@ -32,7 +32,7 @@ describe("frontend error buffer", () => {
     expect(buf.getAll()[0].id).toBe(err.id);
   });
 
-  it("max size eviction — oldest evicted when full", () => {
+  it("max size eviction - oldest evicted when full", () => {
     const buf = createFrontendErrorBuffer(3);
     const now = Date.now();
     buf.push(makeFrontendError({ id: "a", timestamp: now - 3000 }));
@@ -46,7 +46,7 @@ describe("frontend error buffer", () => {
     expect(ids).toContain("d");
   });
 
-  it("TTL eviction — old errors cleaned on push", () => {
+  it("TTL eviction - old errors cleaned on push", () => {
     const buf = createFrontendErrorBuffer(10, 1000); // 1s TTL
     buf.push(makeFrontendError({ timestamp: Date.now() - 2000 })); // expired
     buf.push(makeFrontendError({ timestamp: Date.now() })); // fresh
@@ -54,7 +54,7 @@ describe("frontend error buffer", () => {
     expect(buf.size()).toBe(1);
   });
 
-  it("getByUrl — case-insensitive partial URL matching", () => {
+  it("getByUrl - case-insensitive partial URL matching", () => {
     const buf = createFrontendErrorBuffer(10);
     buf.push(makeFrontendError({ url: "http://localhost:3000/API/Users" }));
     buf.push(makeFrontendError({ url: "http://localhost:3000/api/products" }));
@@ -63,7 +63,7 @@ describe("frontend error buffer", () => {
     expect(results).toHaveLength(1);
   });
 
-  it("clear — empties the buffer", () => {
+  it("clear - empties the buffer", () => {
     const buf = createFrontendErrorBuffer(10);
     buf.push(makeFrontendError());
     buf.push(makeFrontendError());
@@ -72,14 +72,14 @@ describe("frontend error buffer", () => {
     expect(buf.getAll()).toEqual([]);
   });
 
-  it("size — returns current count", () => {
+  it("size - returns current count", () => {
     const buf = createFrontendErrorBuffer(10);
     expect(buf.size()).toBe(0);
     buf.push(makeFrontendError());
     expect(buf.size()).toBe(1);
   });
 
-  it("getAll — returns newest first", () => {
+  it("getAll - returns newest first", () => {
     const buf = createFrontendErrorBuffer(10);
     const now = Date.now();
     buf.push(makeFrontendError({ timestamp: now - 2000 }));

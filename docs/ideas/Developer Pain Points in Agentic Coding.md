@@ -14,7 +14,7 @@ Several emerging tools aim to give AI agents **“eyes” on the runtime**:
 
 - **Frontman (Browser/Framework Agent)** – An open-source AI agent that runs *inside* your dev server. Frontman hooks into the frontend framework (e.g. Next.js, Astro, Vite) and gains full visibility: it sees the rendered DOM, CSS styles, layout geometry and console output on the client side, and even server routes, module graph, and server logs on the backend【37†L78-L86】. The agent maps clicked page elements back to source code and applies fixes with hot reload, effectively collapsing the feedback loop. Its creator emphasizes: “Frontman installs as actual middleware inside your framework’s dev server… the dev server already knows everything about both sides of your application”【37†L136-L144】, eliminating guesswork. 
 
-These examples illustrate two broad patterns: (1) **External Observability** via browser hooks or middleware (like DevTools MCP and Frontman), and (2) **Logging-driven Debug** (like Cursor’s approach). They show it’s possible to feed live runtime data—DOM state, network calls, console errors, backend traces—back to the AI agent, so it can reason with real context rather than “hallucinated” guesses.
+These examples illustrate two broad patterns: (1) **External Observability** via browser hooks or middleware (like DevTools MCP and Frontman), and (2) **Logging-driven Debug** (like Cursor’s approach). They show it’s possible to feed live runtime data-DOM state, network calls, console errors, backend traces-back to the AI agent, so it can reason with real context rather than “hallucinated” guesses.
 
 # Architectural Models for Runtime-Feedback Tools
 

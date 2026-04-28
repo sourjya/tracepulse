@@ -1,4 +1,4 @@
-# Implementation Plan: Phase 4 — Frontend-Backend Error Correlation
+# Implementation Plan: Phase 4 - Frontend-Backend Error Correlation
 
 ## Overview
 
@@ -7,18 +7,18 @@ Phase 4 adds frontend error ingestion (CDP, ViewGraph, HTTP collector), a correl
 **Prerequisite:** Phase 3 (Multi-Process & Docker) complete and merged to main.
 
 **Architecture References:**
-- `docs/ideas/feature-architecture-analysis.md` — Phase 4 feature set, Decision 7 (signal scoring), Appendix D (Clipboard Health trace ID pattern), Appendix E (Chrome DevTools MCP architecture)
-- `.kiro/specs/phase4-correlation/design.md` — component design, correlation algorithm, data model
-- `.kiro/specs/phase4-correlation/requirements.md` — user stories US-1 through US-8, NFRs
+- `docs/ideas/feature-architecture-analysis.md` - Phase 4 feature set, Decision 7 (signal scoring), Appendix D (Clipboard Health trace ID pattern), Appendix E (Chrome DevTools MCP architecture)
+- `.kiro/specs/phase4-correlation/design.md` - component design, correlation algorithm, data model
+- `.kiro/specs/phase4-correlation/requirements.md` - user stories US-1 through US-8, NFRs
 
 **Key Principles:**
-- CDP connection is OPTIONAL — TracePulse works without it
+- CDP connection is OPTIONAL - TracePulse works without it
 - ViewGraph preferred over raw CDP when available
 - All frontend data goes through secret redaction before buffering
-- Correlation engine is stateless — reads both buffers on each call
-- stdout reserved for MCP JSON-RPC — all diagnostic output to stderr
+- Correlation engine is stateless - reads both buffers on each call
+- stdout reserved for MCP JSON-RPC - all diagnostic output to stderr
 
-**Development Approach — TDD MANDATORY:**
+**Development Approach - TDD MANDATORY:**
 - **RED → GREEN → REFACTOR**: Write failing tests FIRST, then minimal implementation, then refactor
 - NEVER write implementation code before its test
 - Each phase below follows strict TDD ordering: tests before implementation
@@ -33,9 +33,9 @@ Phase 4 adds frontend error ingestion (CDP, ViewGraph, HTTP collector), a correl
 
 ### Phase 1: Data Model, Constants & Frontend Error Buffer
 
-Foundation layer — types, constants, and the frontend ring buffer.
+Foundation layer - types, constants, and the frontend ring buffer.
 
-#### Step 1: Types and Constants — TDD Cycle
+#### Step 1: Types and Constants - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 1.1 Write unit tests for trace ID extraction
@@ -50,11 +50,11 @@ Foundation layer — types, constants, and the frontend ring buffer.
 
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 1.2 Create Phase 4 types
-  - Create `src/correlation/types.ts` — `FrontendError`, `CorrelatedError`, `CorrelationSourceType`, `CorrelationConfig` interfaces
+  - Create `src/correlation/types.ts` - `FrontendError`, `CorrelatedError`, `CorrelationSourceType`, `CorrelationConfig` interfaces
   - _Requirements: US-1 (AC-1.1 through AC-1.3), US-4 (AC-4.5)_
 
 - [ ] 1.3 Create Phase 4 constants
-  - Create `src/constants/correlation.ts` — all constants from design.md (buffer sizes, TTLs, confidence scores, ports, intervals)
+  - Create `src/constants/correlation.ts` - all constants from design.md (buffer sizes, TTLs, confidence scores, ports, intervals)
   - _Requirements: US-5 (AC-5.5), US-7 (AC-7.1), US-8 (AC-8.1, AC-8.4)_
 
 - [ ] 1.4 Implement trace ID extractor
@@ -65,17 +65,17 @@ Foundation layer — types, constants, and the frontend ring buffer.
   - All tests from 1.1 pass
   - _Requirements: US-6 (AC-6.1 through AC-6.5)_
 
-#### Step 2: Frontend Error Buffer — TDD Cycle
+#### Step 2: Frontend Error Buffer - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 2.1 Write unit tests for frontend error buffer
-  - Test push and retrieve — pushed errors appear in `getAll()`
-  - Test max size eviction — 201st push evicts the oldest entry
-  - Test TTL eviction — errors older than 5 minutes are cleaned on next push
-  - Test `getByUrl(url)` — case-insensitive partial URL matching
-  - Test `clear()` — empties the buffer, `size()` returns 0
-  - Test `size()` — returns current count
-  - Test ordering — `getAll()` returns newest first
+  - Test push and retrieve - pushed errors appear in `getAll()`
+  - Test max size eviction - 201st push evicts the oldest entry
+  - Test TTL eviction - errors older than 5 minutes are cleaned on next push
+  - Test `getByUrl(url)` - case-insensitive partial URL matching
+  - Test `clear()` - empties the buffer, `size()` returns 0
+  - Test `size()` - returns current count
+  - Test ordering - `getAll()` returns newest first
   - File: `tests/unit/correlation/test-frontend-error-buffer.test.ts`
   - _Requirements: US-8 (AC-8.1 through AC-8.4)_
 
@@ -106,21 +106,21 @@ Foundation layer — types, constants, and the frontend ring buffer.
 
 ### Phase 2: Correlation Engine
 
-The core matching algorithm — pure logic, no I/O.
+The core matching algorithm - pure logic, no I/O.
 
-#### Step 3: Correlation Engine — TDD Cycle
+#### Step 3: Correlation Engine - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 3.1 Write unit tests for correlation engine
-  - Test trace ID match — frontend and backend share trace ID → confidence 1.0, method "trace-id"
+  - Test trace ID match - frontend and backend share trace ID → confidence 1.0, method "trace-id"
   - Test exact path + close timestamp (<500ms) → confidence 0.9
   - Test exact path + far timestamp (<2000ms) → confidence 0.7
   - Test partial path + close timestamp → confidence 0.6
   - Test partial path + far timestamp → confidence 0.4
-  - Test no match — timestamps >2s apart → no correlation returned
-  - Test URL filter — only matching frontend errors are considered
+  - Test no match - timestamps >2s apart → no correlation returned
+  - Test URL filter - only matching frontend errors are considered
   - Test URL filter case-insensitivity
-  - Test multiple backend candidates — closest timestamp wins
+  - Test multiple backend candidates - closest timestamp wins
   - Test empty buffers → returns empty array
   - Test results ordered by timestamp descending
   - Test trace ID match takes priority over URL+timestamp match
@@ -162,7 +162,7 @@ The core matching algorithm — pure logic, no I/O.
 
 Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP server.
 
-#### Step 4: CDP Listener — TDD Cycle
+#### Step 4: CDP Listener - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 4.1 Write unit tests for CDP listener
@@ -180,7 +180,7 @@ Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP s
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 4.2 Implement CDP listener
   - Create `src/correlation/sources/cdp-listener.ts`
-  - Connect to Chrome via `chrome-remote-interface` (add dependency — ask user first)
+  - Connect to Chrome via `chrome-remote-interface` (add dependency - ask user first)
   - Enable `Network` domain, listen for `responseReceived` events
   - Filter for 4xx/5xx status codes
   - Normalize to `FrontendError` with trace ID extraction
@@ -188,7 +188,7 @@ Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP s
   - All tests from 4.1 pass
   - _Requirements: US-3_
 
-#### Step 5: ViewGraph Bridge — TDD Cycle
+#### Step 5: ViewGraph Bridge - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 5.1 Write unit tests for ViewGraph bridge
@@ -211,7 +211,7 @@ Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP s
   - All tests from 5.1 pass
   - _Requirements: US-4_
 
-#### Step 6: Log Collector HTTP Server — TDD Cycle
+#### Step 6: Log Collector HTTP Server - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 6.1 Write unit tests for log collector
@@ -231,8 +231,8 @@ Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP s
 - [ ] 6.2 Implement log collector HTTP server
   - Create `src/correlation/sources/log-collector.ts`
   - `node:http` server on `127.0.0.1:9801` (configurable)
-  - Route: POST `/api/v1/errors` — validate, normalize to `FrontendError`, emit
-  - Route: GET `/api/v1/health` — return `{ status: "ok" }`
+  - Route: POST `/api/v1/errors` - validate, normalize to `FrontendError`, emit
+  - Route: GET `/api/v1/health` - return `{ status: "ok" }`
   - Content-Type check, body size limit (64KB), payload validation
   - Token bucket rate limiter (100 req/s)
   - All tests from 6.1 pass
@@ -258,7 +258,7 @@ Three data source adapters: CDP listener, ViewGraph bridge, log collector HTTP s
 
 Wire everything together: source manager orchestrates adapters, MCP tool exposes correlation.
 
-#### Step 7: Source Manager — TDD Cycle
+#### Step 7: Source Manager - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 7.1 Write unit tests for source manager
@@ -283,7 +283,7 @@ Wire everything together: source manager orchestrates adapters, MCP tool exposes
   - All tests from 7.1 pass
   - _Requirements: US-4_
 
-#### Step 8: MCP Tool Handler — TDD Cycle
+#### Step 8: MCP Tool Handler - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 8.1 Write unit tests for `get_correlated_errors` MCP tool handler
@@ -314,7 +314,7 @@ Wire everything together: source manager orchestrates adapters, MCP tool exposes
   - All tests from 8.2 pass
   - _Requirements: US-4 (AC-4.5)_
 
-#### Step 9: Wire Up — Integration
+#### Step 9: Wire Up - Integration
 
 - [ ] 9.1 Integrate source manager with frontend buffer and correlation engine
   - Source manager `onError` → secret redaction → `frontendBuffer.push()`
@@ -380,7 +380,7 @@ End-to-end validation and security review.
   - No API keys in source files
   - CDP URL read from CLI args only
 
-#### Checkpoint: Phase 5 Complete — Phase 4 Done
+#### Checkpoint: Phase 5 Complete - Phase 4 Done
 
 - [ ] All unit tests passing
 - [ ] Integration test passing

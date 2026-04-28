@@ -23,11 +23,11 @@ import {
 // Test Helpers
 // ──────────────────────────────────────────────
 
-/** UUID v4 regex — validates format including the version nibble and variant bits. */
+/** UUID v4 regex - validates format including the version nibble and variant bits. */
 const UUID_V4_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
-/** SHA-256 hex digest regex — 64 lowercase hex characters. */
+/** SHA-256 hex digest regex - 64 lowercase hex characters. */
 const HEX_64_REGEX = /^[0-9a-f]{64}$/;
 
 /** Builds a fully-populated ParsedError for testing. */

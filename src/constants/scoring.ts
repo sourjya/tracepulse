@@ -40,7 +40,7 @@ export const SCORE_FIRST_OCCURRENCE = 10;
 /** Points subtracted when an error has been seen 3+ times (noise reduction). */
 export const SCORE_RECURRENCE_PENALTY = -5;
 
-/** Threshold for recurrence penalty — applied at this many occurrences. */
+/** Threshold for recurrence penalty - applied at this many occurrences. */
 export const RECURRENCE_THRESHOLD = 3;
 
 /** Minimum possible signal score. */

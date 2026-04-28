@@ -73,13 +73,13 @@ export function loadConfig(options: ConfigOptions): ConfigValidationResult {
   // Load config file
   const configPath = options.configPath;
   if (configPath) {
-    // Explicit path — must exist
+    // Explicit path - must exist
     if (!existsSync(configPath)) {
       return { valid: false, error: `Config file not found: ${configPath}` };
     }
     fileConfig = JSON.parse(readFileSync(configPath, "utf-8")) as Record<string, unknown>;
   } else {
-    // Default path — optional
+    // Default path - optional
     if (existsSync(DEFAULT_CONFIG_FILE)) {
       fileConfig = JSON.parse(readFileSync(DEFAULT_CONFIG_FILE, "utf-8")) as Record<string, unknown>;
     }

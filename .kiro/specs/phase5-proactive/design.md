@@ -1,4 +1,4 @@
-# Phase 5: Proactive Monitoring — Design
+# Phase 5: Proactive Monitoring - Design
 
 > **Hardening Reference:** See [Collector Pitfalls & Hardening Guide](../../../docs/references/collector-pitfalls-hardening.md) for known failure modes. Phase 5 git operations use `execFile` (not `exec`) to prevent shell injection (Pitfall 5.3). File paths are validated before passing to git commands.
 
@@ -54,10 +54,10 @@ Severity is assigned during event ingestion, immediately after signal scoring. I
  * Severity tiers for runtime events.
  * Ordered by impact: crash > error > warning > info.
  *
- * - crash: process-ending or unhandled — requires immediate attention
- * - error: caught but significant — likely needs a fix
- * - warning: non-fatal degradation — may need attention
- * - info: normal operational output — context only
+ * - crash: process-ending or unhandled - requires immediate attention
+ * - error: caught but significant - likely needs a fix
+ * - warning: non-fatal degradation - may need attention
+ * - info: normal operational output - context only
  */
 type Severity = "crash" | "error" | "warning" | "info";
 ```
@@ -90,8 +90,8 @@ Event → Parser → Signal Scorer (base score) → Severity Classifier (adds bo
 ### Module Location
 
 ```
-src/scoring/severity-classifier.ts   — classification logic (pure function)
-src/types/events.ts                  — updated RuntimeEvent with severity field
+src/scoring/severity-classifier.ts   - classification logic (pure function)
+src/types/events.ts                  - updated RuntimeEvent with severity field
 ```
 
 ---
@@ -118,9 +118,9 @@ interface FingerprintHistory {
 }
 
 interface FingerprintRecord {
-  /** Unix ms — first time this fingerprint was ever seen. */
+  /** Unix ms - first time this fingerprint was ever seen. */
   readonly first_seen: number;
-  /** Unix ms — most recent occurrence. */
+  /** Unix ms - most recent occurrence. */
   readonly last_seen: number;
   /** Cumulative count across all sessions. */
   readonly total_occurrences: number;
@@ -133,7 +133,7 @@ interface FingerprintRecord {
 interface SessionRecord {
   /** Unique session ID (UUID, generated on TracePulse start). */
   readonly session_id: string;
-  /** Unix ms — when this session started. */
+  /** Unix ms - when this session started. */
   readonly started_at: number;
   /** Fingerprints seen during this session. */
   readonly fingerprints_seen: string[];
@@ -158,8 +158,8 @@ interface SessionRecord {
 ### Module Location
 
 ```
-src/persistence/fingerprint-history.ts  — load, save, query, merge logic
-src/constants/persistence.ts            — file paths, caps, defaults
+src/persistence/fingerprint-history.ts  - load, save, query, merge logic
+src/constants/persistence.ts            - file paths, caps, defaults
 ```
 
 ---
@@ -189,7 +189,7 @@ A diff hunk is considered "near" an error line if the hunk's range overlaps with
 
 ### Git Command Execution
 
-> **Security:** Uses `node:child_process.execFile` (not `exec`) to prevent shell injection. The git binary path is resolved directly, not passed through a shell. File paths from error context are validated before being passed as git arguments — no path traversal (`../`), no null bytes. _(Pitfall 5.3 from [Collector Pitfalls Guide](../../../docs/references/collector-pitfalls-hardening.md))_
+> **Security:** Uses `node:child_process.execFile` (not `exec`) to prevent shell injection. The git binary path is resolved directly, not passed through a shell. File paths from error context are validated before being passed as git arguments - no path traversal (`../`), no null bytes. _(Pitfall 5.3 from [Collector Pitfalls Guide](../../../docs/references/collector-pitfalls-hardening.md))_
 
 ```typescript
 /**
@@ -218,8 +218,8 @@ Truncated to 200 characters.
 ### Module Location
 
 ```
-src/correlation/git-diff-correlator.ts  — diff parsing, file matching, summary generation
-src/constants/correlation.ts            — timeout, proximity window, summary max length
+src/correlation/git-diff-correlator.ts  - diff parsing, file matching, summary generation
+src/constants/correlation.ts            - timeout, proximity window, summary max length
 ```
 
 ---
@@ -236,7 +236,7 @@ src/constants/correlation.ts            — timeout, proximity window, summary m
  *   after the current session started. Default: false (check all in buffer).
  * @param severity - Optional filter by severity tier.
  * @param limit - Max events to return. Default: 10.
- * @returns RuntimeEvent[] — only events with novel fingerprints.
+ * @returns RuntimeEvent[] - only events with novel fingerprints.
  */
 interface GetNewErrorsParams {
   readonly since_session_start?: boolean;
@@ -347,8 +347,8 @@ Notifications are gated behind `TRACEPULSE_NOTIFICATIONS=true` environment varia
 ### Module Location
 
 ```
-src/notifications/notification-dispatcher.ts  — internal event listener, dedup, payload construction
-src/constants/notifications.ts                — feature flag name, payload limits
+src/notifications/notification-dispatcher.ts  - internal event listener, dedup, payload construction
+src/constants/notifications.ts                - feature flag name, payload limits
 ```
 
 ---
@@ -364,7 +364,7 @@ skills/
 └── full-stack-debug.md
 ```
 
-Skills are shipped as static markdown files in the npm package. They are not executable — agents read them as documentation.
+Skills are shipped as static markdown files in the npm package. They are not executable - agents read them as documentation.
 
 ### Skill File Format
 
@@ -395,28 +395,28 @@ Each skill follows a consistent structure:
 ### Skill Summaries
 
 **backend-error-triage.md:**
-1. `get_runtime_status()` — check if server is running
-2. `get_new_errors(limit=5)` — get recent novel errors
-3. For each high-signal error: `get_error_context(fingerprint)` — get full stack trace
-4. Read source file at `file:line` — understand the code
-5. `get_error_trends(fingerprint)` — check if this is chronic
-6. `correlate_with_diff()` — check if a recent change caused it
+1. `get_runtime_status()` - check if server is running
+2. `get_new_errors(limit=5)` - get recent novel errors
+3. For each high-signal error: `get_error_context(fingerprint)` - get full stack trace
+4. Read source file at `file:line` - understand the code
+5. `get_error_trends(fingerprint)` - check if this is chronic
+6. `correlate_with_diff()` - check if a recent change caused it
 7. Propose fix based on evidence
 
 **edit-verify-loop.md:**
 1. Agent edits code
-2. `watch_for_errors(15)` — wait for hot-reload
-3. If errors: `get_error_context(fingerprint)` — understand what broke
+2. `watch_for_errors(15)` - wait for hot-reload
+3. If errors: `get_error_context(fingerprint)` - understand what broke
 4. Fix and repeat from step 1
-5. If clean: `get_new_errors(since_session_start=true)` — confirm no regressions
+5. If clean: `get_new_errors(since_session_start=true)` - confirm no regressions
 6. Done
 
 **full-stack-debug.md:**
-1. `get_errors(limit=5)` — check backend
-2. Chrome DevTools MCP: `list_console_messages` — check browser console
-3. Chrome DevTools MCP: `list_network_requests` — check network
-4. Correlate by timestamp and URL — identify which layer failed
-5. `correlate_with_diff()` — link to recent changes
+1. `get_errors(limit=5)` - check backend
+2. Chrome DevTools MCP: `list_console_messages` - check browser console
+3. Chrome DevTools MCP: `list_network_requests` - check network
+4. Correlate by timestamp and URL - identify which layer failed
+5. `correlate_with_diff()` - link to recent changes
 6. Fix the root cause layer first
 
 ---
@@ -464,23 +464,23 @@ interface RuntimeEvent {
 ```
 src/
 ├── scoring/
-│   └── severity-classifier.ts       — severity classification logic
+│   └── severity-classifier.ts       - severity classification logic
 ├── persistence/
-│   └── fingerprint-history.ts       — load, save, query fingerprint history
+│   └── fingerprint-history.ts       - load, save, query fingerprint history
 ├── correlation/
-│   └── git-diff-correlator.ts       — git diff parsing and file matching
+│   └── git-diff-correlator.ts       - git diff parsing and file matching
 ├── notifications/
-│   └── notification-dispatcher.ts   — notification payload + dedup (future wiring)
+│   └── notification-dispatcher.ts   - notification payload + dedup (future wiring)
 ├── tools/
-│   ├── get-new-errors.ts            — MCP tool handler
-│   ├── get-error-trends.ts          — MCP tool handler
-│   └── correlate-with-diff.ts       — MCP tool handler
+│   ├── get-new-errors.ts            - MCP tool handler
+│   ├── get-error-trends.ts          - MCP tool handler
+│   └── correlate-with-diff.ts       - MCP tool handler
 ├── constants/
-│   ├── persistence.ts               — fingerprint file paths, session cap
-│   ├── correlation.ts               — git timeout, proximity window
-│   └── notifications.ts             — feature flag, payload limits
+│   ├── persistence.ts               - fingerprint file paths, session cap
+│   ├── correlation.ts               - git timeout, proximity window
+│   └── notifications.ts             - feature flag, payload limits
 └── types/
-    └── events.ts                    — updated with Severity type
+    └── events.ts                    - updated with Severity type
 
 skills/
 ├── backend-error-triage.md

@@ -6,7 +6,7 @@
  *
  * Each indented line is a separate lint finding. The file path comes from
  * a preceding non-indented header line, but this parser handles individual
- * finding lines — the pipeline provides file context separately.
+ * finding lines - the pipeline provides file context separately.
  *
  * @see src/types/parsers.ts for the ErrorParser interface
  * @see .kiro/specs/phase2-watch-mode/design.md for parser specifications
@@ -26,7 +26,7 @@ const ESLINT_LINE_PATTERN =
  * ESLint output parser.
  *
  * Handles individual ESLint finding lines (indented with line:col).
- * Does not handle the file header line — that's a plain path without
+ * Does not handle the file header line - that's a plain path without
  * the indented pattern.
  */
 export const eslintParser: ErrorParser = {

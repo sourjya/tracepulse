@@ -36,7 +36,7 @@ export interface ParserRegistry {
 }
 
 // ──────────────────────────────────────────────
-// Factory — Custom Registry
+// Factory - Custom Registry
 // ──────────────────────────────────────────────
 
 /**
@@ -55,7 +55,7 @@ export function createParserRegistry(parsers: readonly ErrorParser[]): ParserReg
           const result = parser.parse(line);
           if (result !== null) return result;
         } catch (err) {
-          // Log to stderr — stdout is reserved for MCP JSON-RPC protocol messages
+          // Log to stderr - stdout is reserved for MCP JSON-RPC protocol messages
           const msg = err instanceof Error ? err.message : String(err);
           process.stderr.write(`[tracepulse] parser "${parser.name}" threw: ${msg}\n`);
         }
@@ -66,7 +66,7 @@ export function createParserRegistry(parsers: readonly ErrorParser[]): ParserReg
 }
 
 // ──────────────────────────────────────────────
-// Factory — Default Registry (all 6 parsers)
+// Factory - Default Registry (all 6 parsers)
 // ──────────────────────────────────────────────
 
 /**

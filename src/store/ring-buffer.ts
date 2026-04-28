@@ -29,7 +29,7 @@ import { LOG_LEVEL_SEVERITY } from "@/constants/events.js";
  * @returns An EventBuffer backed by a circular array.
  */
 export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventBuffer {
-  /** Pre-allocated sparse array — slots are undefined until written. */
+  /** Pre-allocated sparse array - slots are undefined until written. */
   const slots: (RuntimeEvent | undefined)[] = new Array<RuntimeEvent | undefined>(maxSize);
   /** Fingerprint → buffer index for O(1) dedup lookup. */
   const fpMap = new Map<string, number>();
@@ -140,7 +140,7 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
 
       writePtr = (writePtr + 1) % maxSize;
 
-      // Notify subscribers — only for new events, not dedup updates.
+      // Notify subscribers - only for new events, not dedup updates.
       // Each callback is isolated so one failure doesn't break others.
       for (const cb of subscribers) {
         try {
@@ -161,7 +161,7 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
       if (!filters) {
         return count;
       }
-      // Count without collecting — skip limit since we want total matching count
+      // Count without collecting - skip limit since we want total matching count
       let total = 0;
       for (let i = 0; i < count; i++) {
         if (matches(slots[i]!, filters)) {
@@ -206,7 +206,7 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
 
     subscribe(callback: (event: RuntimeEvent) => void): () => void {
       subscribers.add(callback);
-      /** Idempotent unsubscribe — safe to call multiple times. */
+      /** Idempotent unsubscribe - safe to call multiple times. */
       return () => { subscribers.delete(callback); };
     },
   };

@@ -1,4 +1,4 @@
-# Chrome DevTools MCP — Capability Inventory & Testing Use Cases
+# Chrome DevTools MCP - Capability Inventory & Testing Use Cases
 
 Reference document for using Chrome DevTools MCP as a testing and verification tool during TracePulse development.
 
@@ -8,7 +8,7 @@ Reference document for using Chrome DevTools MCP as a testing and verification t
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `list_pages` | List all open browser pages | — |
+| `list_pages` | List all open browser pages | - |
 | `select_page` | Switch active page context | `pageId`, `bringToFront` |
 | `new_page` | Open a new tab with URL | `url`, `background`, `isolatedContext` |
 | `close_page` | Close a page by ID | `pageId` |
@@ -212,6 +212,6 @@ Current project config (`.kiro/settings/mcp.json`):
 ```
 
 Key flags:
-- `--headless` — no visible browser window
-- `--isolated` — temp user-data-dir, cleaned up on close
-- `--executable-path` — explicit Chrome binary path
+- `--headless` - no visible browser window
+- `--isolated` - temp user-data-dir, cleaned up on close
+- `--executable-path` - explicit Chrome binary path

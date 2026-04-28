@@ -1,21 +1,21 @@
-# Implementation Plan: Phase 3 — Multi-Process & Docker
+# Implementation Plan: Phase 3 - Multi-Process & Docker
 
 ## Overview
 
 Extend TracePulse from single-process monitoring to multi-service dev environments. Adds multi-process spawning, Docker Compose log tailing, service registry, cross-service correlation, Streamable HTTP transport, and optional fingerprint persistence.
 
 **Architecture References:**
-- `docs/ideas/feature-architecture-analysis.md` — Phase 3 feature set, architecture decisions
-- `.kiro/specs/phase3-multi-process/design.md` — component design, data flow, file structure
-- `.kiro/specs/phase3-multi-process/requirements.md` — user stories US-1 through US-8, NFRs
+- `docs/ideas/feature-architecture-analysis.md` - Phase 3 feature set, architecture decisions
+- `.kiro/specs/phase3-multi-process/design.md` - component design, data flow, file structure
+- `.kiro/specs/phase3-multi-process/requirements.md` - user stories US-1 through US-8, NFRs
 
 **Key Principles:**
 - All Phase 1/2 behavior must remain unchanged (NFR-5: backward compatibility)
-- Single-process mode is unaffected — all Phase 3 features are opt-in
+- Single-process mode is unaffected - all Phase 3 features are opt-in
 - stdout is reserved for MCP JSON-RPC; all diagnostic output goes to stderr
 - Secret redaction applies to ALL services and Docker logs before buffer entry
 
-**Development Approach — TDD MANDATORY:**
+**Development Approach - TDD MANDATORY:**
 - **RED → GREEN → REFACTOR**: Write failing tests FIRST, then minimal implementation, then refactor
 - NEVER write implementation code before its test
 - Each phase below follows strict TDD ordering: tests before implementation
@@ -30,7 +30,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 1: Service Registry & Constants
 
-#### Step 1: Service Constants — TDD Cycle
+#### Step 1: Service Constants - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 1.1 Write unit tests for service constants
@@ -47,7 +47,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Define `ServiceStatus` enum, correlation defaults, persistence limits, transport defaults
   - _Requirements: US-5, US-6, US-7, US-8_
 
-#### Step 2: Service Registry — TDD Cycle
+#### Step 2: Service Registry - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 2.1 Write unit tests for ServiceRegistry
@@ -87,7 +87,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 2: Configuration System
 
-#### Step 3: Config Schema & Validation — TDD Cycle
+#### Step 3: Config Schema & Validation - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 3.1 Write unit tests for config schema validation
@@ -111,7 +111,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Implement `validateConfig(config: unknown): TracePulseConfig` with detailed error messages
   - _Requirements: US-1, US-6, US-7_
 
-#### Step 4: Config Loader — TDD Cycle
+#### Step 4: Config Loader - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 4.1 Write unit tests for config loader
@@ -130,7 +130,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 4.2 Implement config loader
   - Create `src/config/config-loader.ts`
-  - Implement `loadConfig(cliArgs): TracePulseConfig` — reads file, merges CLI flags, validates
+  - Implement `loadConfig(cliArgs): TracePulseConfig` - reads file, merges CLI flags, validates
   - Handle precedence: CLI flags > config file > defaults
   - _Requirements: US-1, US-2_
 
@@ -151,7 +151,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 3: Multi-Process Collector
 
-#### Step 5: Multi-Process Collector — TDD Cycle
+#### Step 5: Multi-Process Collector - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 5.1 Write unit tests for MultiProcessCollector
@@ -164,7 +164,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Test child process exit injects synthetic error event with exit code
   - Test `shutdown()` sends SIGTERM to all child processes
   - Test `shutdown()` sends SIGKILL after 5-second timeout if process doesn't exit
-  - Test `shutdown()` kills entire process group (not just direct child) — verify grandchild processes are also terminated _(Pitfall 1.2)_
+  - Test `shutdown()` kills entire process group (not just direct child) - verify grandchild processes are also terminated _(Pitfall 1.2)_
   - File: `tests/unit/collectors/test-multi-process-collector.ts`
   - _Requirements: US-1, US-2, US-4_
 
@@ -178,7 +178,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Implement `shutdown()` with SIGTERM → 5s timeout → SIGKILL
   - _Requirements: US-1, US-2, US-4_
 
-#### Step 6: CLI Integration for Multi-Process — TDD Cycle
+#### Step 6: CLI Integration for Multi-Process - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 6.1 Write unit tests for CLI multi-process argument parsing
@@ -193,7 +193,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 6.2 Extend CLI to support multi-process flags
-  - Modify `src/cli.ts` — add `--service`, `--config`, `--http`, `--http-port`, `--persist` flags
+  - Modify `src/cli.ts` - add `--service`, `--config`, `--http`, `--http-port`, `--persist` flags
   - Wire CLI args into config loader
   - _Requirements: US-2, US-7, US-8_
 
@@ -215,7 +215,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 4: Docker Compose Integration
 
-#### Step 7: Docker Log Collector — TDD Cycle
+#### Step 7: Docker Log Collector - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 7.1 Write unit tests for DockerLogCollector
@@ -241,7 +241,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Register services in ServiceRegistry, handle container restart re-attachment
   - _Requirements: US-3, US-4_
 
-#### Step 8: Compose CLI Subcommand — TDD Cycle
+#### Step 8: Compose CLI Subcommand - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 8.1 Write unit tests for `compose` subcommand parsing
@@ -253,7 +253,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 **GREEN Phase: Implement to Pass Tests**
 - [ ] 8.2 Implement `compose` CLI subcommand
-  - Modify `src/cli.ts` — add `compose` subcommand with `--file` flag
+  - Modify `src/cli.ts` - add `compose` subcommand with `--file` flag
   - Wire into DockerLogCollector via config loader
   - _Requirements: US-3_
 
@@ -274,7 +274,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 5: Cross-Service Correlation
 
-#### Step 9: Correlation Engine — TDD Cycle
+#### Step 9: Correlation Engine - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 9.1 Write unit tests for CorrelationEngine
@@ -297,7 +297,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Only annotate groups that span multiple services
   - _Requirements: US-6_
 
-#### Step 10: Wire Correlation into `get_errors` — TDD Cycle
+#### Step 10: Wire Correlation into `get_errors` - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 10.1 Write integration test for `get_errors` with correlation
@@ -325,7 +325,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 6: MCP Tool Extensions
 
-#### Step 11: `list_services` MCP Tool — TDD Cycle
+#### Step 11: `list_services` MCP Tool - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 11.1 Write unit tests for `list_services` tool handler
@@ -344,7 +344,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Write self-documenting tool description for agent consumption
   - _Requirements: US-5_
 
-#### Step 12: Extend `get_errors` with `service` Filter — TDD Cycle
+#### Step 12: Extend `get_errors` with `service` Filter - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 12.1 Write unit tests for `get_errors` service filter
@@ -374,7 +374,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 7: Streamable HTTP Transport
 
-#### Step 13: HTTP Transport — TDD Cycle
+#### Step 13: HTTP Transport - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 13.1 Write unit tests for HTTP transport setup
@@ -418,7 +418,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
 
 ### Phase 8: Fingerprint Persistence
 
-#### Step 14: Fingerprint Store — TDD Cycle
+#### Step 14: Fingerprint Store - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 14.1 Write unit tests for FingerprintStore
@@ -442,7 +442,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - Handle missing directory creation, corrupted file recovery, LRU eviction
   - _Requirements: US-8_
 
-#### Step 15: Wire Persistence into Lifecycle — TDD Cycle
+#### Step 15: Wire Persistence into Lifecycle - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 15.1 Write integration test for persistence lifecycle
@@ -502,7 +502,7 @@ Extend TracePulse from single-process monitoring to multi-service dev environmen
   - File: `tests/integration/test-security-phase3.ts`
   - _Requirements: NFR-4_
 
-#### Checkpoint: Phase 9 Complete — Phase 3 Done
+#### Checkpoint: Phase 9 Complete - Phase 3 Done
 
 - [ ] All unit tests passing
 - [ ] All integration tests passing

@@ -62,7 +62,7 @@ describe("pythonParser.canParse", () => {
 });
 
 // ──────────────────────────────────────────────
-// parse — full traceback
+// parse - full traceback
 // ──────────────────────────────────────────────
 
 describe("pythonParser.parse", () => {

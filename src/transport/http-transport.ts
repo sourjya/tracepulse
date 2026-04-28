@@ -5,7 +5,7 @@
  * via the Streamable HTTP transport. This is opt-in via --http flag and
  * runs alongside the primary stdio transport.
  *
- * Binds to 127.0.0.1 only for security — no external access.
+ * Binds to 127.0.0.1 only for security - no external access.
  *
  * @see .kiro/specs/phase3-multi-process/design.md for transport design
  */

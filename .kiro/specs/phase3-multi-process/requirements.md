@@ -1,4 +1,4 @@
-# Phase 3: Multi-Process & Docker — Requirements
+# Phase 3: Multi-Process & Docker - Requirements
 
 ## Overview
 
@@ -50,7 +50,7 @@ Phase 3 extends TracePulse from single-process monitoring to real-world multi-se
 4. Each log line is tagged with the container's service name
 5. If a container restarts, TracePulse re-attaches to the new container's log stream automatically
 6. If Docker is not running or the compose file is invalid, TracePulse exits with a clear error to stderr
-7. TracePulse does NOT start/stop containers — it only observes running ones
+7. TracePulse does NOT start/stop containers - it only observes running ones
 
 ### US-4: Service Labeling on Events
 
@@ -87,7 +87,7 @@ Phase 3 extends TracePulse from single-process monitoring to real-world multi-se
 
 **Acceptance Criteria:**
 1. When `get_errors` returns events, events from different services within a configurable time window (default: 2 seconds) are annotated with a shared `correlation_group` ID
-2. The correlation is based on temporal proximity — errors within the window get the same group ID
+2. The correlation is based on temporal proximity - errors within the window get the same group ID
 3. Correlation groups are computed on read (not stored), so the window can be adjusted
 4. The `correlation_window_ms` is configurable in `tracepulse.config.json` (default: 2000)
 5. Single-service mode is unaffected (no correlation needed with only one service)
@@ -146,15 +146,15 @@ If one service in a multi-process setup crashes, TracePulse continues monitoring
 
 - Secret redaction (from Phase 1) applies to ALL services and Docker container logs before events enter the ring buffer
 - HTTP transport binds to localhost only; no TLS required for localhost-only binding
-- Fingerprint persistence file must not contain raw error messages — only fingerprint hashes, timestamps, and counts
-- Docker API access uses the local socket (`/var/run/docker.sock`) — no remote Docker hosts
+- Fingerprint persistence file must not contain raw error messages - only fingerprint hashes, timestamps, and counts
+- Docker API access uses the local socket (`/var/run/docker.sock`) - no remote Docker hosts
 
 ### NFR-5: Backward Compatibility
 
 - Single-process mode (`npx tracepulse start "npm run dev"`) must work identically to Phase 2
 - All Phase 1/2 MCP tools must continue working without changes
 - The `service` field on `RuntimeEvent` defaults to `"main"` in single-process mode
-- No new required configuration — all Phase 3 features are opt-in
+- No new required configuration - all Phase 3 features are opt-in
 
 ### NFR-6: Agent Compatibility
 
@@ -168,13 +168,13 @@ Streamable HTTP transport must handle at least 10 concurrent client connections 
 
 ## Out of Scope
 
-1. **Container lifecycle management** — TracePulse does NOT start, stop, or restart Docker containers. It only observes.
-2. **Remote Docker hosts** — Only local Docker socket is supported. No TCP/TLS Docker connections.
-3. **Kubernetes / Docker Swarm** — Only Docker Compose is supported. Orchestrator-level monitoring is deferred.
-4. **Service dependency graphs** — No automatic detection of which service calls which. Correlation is temporal only.
-5. **Custom Docker log drivers** — Only the default JSON-file log driver is supported. Syslog, fluentd, etc. are not parsed.
-6. **Authentication on HTTP transport** — Localhost-only binding is the security model. No auth tokens or TLS for Phase 3.
-7. **Config file hot-reload** — Changing `tracepulse.config.json` requires restarting TracePulse. Live config reload is deferred.
-8. **Service health checks** — TracePulse does not ping services or check HTTP endpoints. Status is derived from process/container state only.
-9. **Frontend-backend HTTP correlation** — This is Phase 4 scope. Phase 3 correlation is temporal proximity only.
-10. **MCP push notifications** — Phase 5 scope. Phase 3 is pull-only.
+1. **Container lifecycle management** - TracePulse does NOT start, stop, or restart Docker containers. It only observes.
+2. **Remote Docker hosts** - Only local Docker socket is supported. No TCP/TLS Docker connections.
+3. **Kubernetes / Docker Swarm** - Only Docker Compose is supported. Orchestrator-level monitoring is deferred.
+4. **Service dependency graphs** - No automatic detection of which service calls which. Correlation is temporal only.
+5. **Custom Docker log drivers** - Only the default JSON-file log driver is supported. Syslog, fluentd, etc. are not parsed.
+6. **Authentication on HTTP transport** - Localhost-only binding is the security model. No auth tokens or TLS for Phase 3.
+7. **Config file hot-reload** - Changing `tracepulse.config.json` requires restarting TracePulse. Live config reload is deferred.
+8. **Service health checks** - TracePulse does not ping services or check HTTP endpoints. Status is derived from process/container state only.
+9. **Frontend-backend HTTP correlation** - This is Phase 4 scope. Phase 3 correlation is temporal proximity only.
+10. **MCP push notifications** - Phase 5 scope. Phase 3 is pull-only.

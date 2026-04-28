@@ -91,7 +91,7 @@ describe("createRingBuffer", () => {
     const buffer = createRingBuffer(500);
     const events: RuntimeEvent[] = [];
 
-    // Push 501 events — the first should be evicted
+    // Push 501 events - the first should be evicted
     for (let i = 0; i < 501; i++) {
       const evt = makeEvent({ timestamp: 1000 + i });
       events.push(evt);
@@ -166,7 +166,7 @@ describe("createRingBuffer", () => {
       buffer.push(makeEvent({ timestamp: 2000 + i }));
     }
 
-    // Now push with the same fingerprint — should be treated as new
+    // Now push with the same fingerprint - should be treated as new
     buffer.push(makeEvent({ fingerprint: staleFp, timestamp: 9000 }));
 
     const results = buffer.query({});
@@ -211,7 +211,7 @@ describe("createRingBuffer", () => {
   // Query: level filter (minimum severity)
   // ──────────────────────────────────────────────
 
-  it("filters by minimum level — warn returns error+warn but not info/debug", () => {
+  it("filters by minimum level - warn returns error+warn but not info/debug", () => {
     const buffer = createRingBuffer(10);
     buffer.push(makeEvent({ level: "error" }));
     buffer.push(makeEvent({ level: "warn" }));

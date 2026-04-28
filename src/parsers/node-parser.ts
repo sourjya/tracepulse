@@ -5,7 +5,7 @@
  * SyntaxError, etc.) from raw log output and extracts structured data:
  * error message, stack trace frames, source file location, and scoring hints.
  *
- * Input is a single multi-line string — the full error block joined with \n.
+ * Input is a single multi-line string - the full error block joined with \n.
  * The parser skips node_modules and node:internal frames when determining
  * the user-code file:line:column for EventContext.
  *
@@ -44,7 +44,7 @@ const FRAME_WITH_PARENS = /^\s+at\s+(?:.+?)\s+\((.+?):(\d+):(\d+)\)/;
 const FRAME_WITHOUT_PARENS = /^\s+at\s+(.+?):(\d+):(\d+)$/;
 
 /**
- * Detects stack frame lines — any line with leading whitespace followed by "at ".
+ * Detects stack frame lines - any line with leading whitespace followed by "at ".
  * Used by canParse for quick detection without full parsing.
  */
 const STACK_FRAME_LINE = /^\s+at\s+/m;
@@ -67,7 +67,7 @@ const UNHANDLED_PATTERNS = [
 const HTTP_STATUS_PATTERN = /status\s+(?:code\s+)?(\d{3})/i;
 
 /**
- * Patterns that indicate non-Node.js errors — used to reject input early.
+ * Patterns that indicate non-Node.js errors - used to reject input early.
  * Python tracebacks start with "Traceback", Go panics with "goroutine".
  */
 const NON_NODE_PATTERNS = [/^Traceback\s/m, /^goroutine\s/m];

@@ -8,14 +8,14 @@ Known shortcuts and items to fix before v1.0.0.
 
 **Added:** 2026-04-28
 **Resolved:** 2026-04-28
-**Severity:** HIGH — agent requested freshness metadata on `get_errors` three times in one session
+**Severity:** HIGH - agent requested freshness metadata on `get_errors` three times in one session
 **Affects:** `get_errors` MCP tool
 
 **Resolution:** Changed `get_errors` to return `{ errors: [...], total_matching, session_started_at, oldest_event_at, buffer_cleared_at }`. Updated all 7 test files (20 assertions). SKILL.md updated to document the new response format.
 
 **Current state:** `get_errors` returns a raw JSON array of RuntimeEvents. All other tools (`get_build_errors`, `get_runtime_status`, `get_timeline`, etc.) return structured objects with metadata fields.
 
-**Problem:** The agent can't get freshness context (session start time, buffer cleared time, oldest event timestamp) from `get_errors` without making a separate `get_runtime_status` call. This is a workaround — the agent has to call two tools instead of one.
+**Problem:** The agent can't get freshness context (session start time, buffer cleared time, oldest event timestamp) from `get_errors` without making a separate `get_runtime_status` call. This is a workaround - the agent has to call two tools instead of one.
 
 **Why it's like this:** Many existing tests (7+ test files) parse the `get_errors` response as a plain array. Wrapping it in `{ errors: [...], session_started_at, oldest_event_at, buffer_cleared_at }` would break all of them.
 
@@ -45,7 +45,7 @@ Known shortcuts and items to fix before v1.0.0.
 **Severity:** Medium
 **Affects:** `src/collectors/multi-process-collector.ts`
 
-**Current state:** The multi-process collector passes the service name as a third argument to the `onLine` callback, but the pipeline's `createPipeline` function in `cli.ts` ignores it — it only takes `(source, line)`. Events enter the buffer with `service: "main"` regardless of which service produced them.
+**Current state:** The multi-process collector passes the service name as a third argument to the `onLine` callback, but the pipeline's `createPipeline` function in `cli.ts` ignores it - it only takes `(source, line)`. Events enter the buffer with `service: "main"` regardless of which service produced them.
 
 **Fix:** Extend `createPipeline` to accept and forward the service name, or have the multi-process collector set the service name on the RuntimeEvent after normalization.
 
@@ -83,7 +83,7 @@ Known shortcuts and items to fix before v1.0.0.
 **Severity:** Medium
 **Affects:** `watch_for_errors` MCP tool
 
-**Current state:** `hot_reload_detected` is always `true` or `false`. In attach mode (tailing a log file), TracePulse may not see hot-reload messages because they go to a different process's stdout (e.g., Vite frontend vs Python backend). The agent gets `false` and thinks "no reload happened" when the truth is "I don't know — I can't see that process."
+**Current state:** `hot_reload_detected` is always `true` or `false`. In attach mode (tailing a log file), TracePulse may not see hot-reload messages because they go to a different process's stdout (e.g., Vite frontend vs Python backend). The agent gets `false` and thinks "no reload happened" when the truth is "I don't know - I can't see that process."
 
 **Problem:** `false` means "definitely no reload" but the actual state is "unknown." This misleads the agent.
 

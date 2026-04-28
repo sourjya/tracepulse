@@ -9,27 +9,27 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-## [0.6.1] — 2026-04-28
+## [0.6.1] - 2026-04-28
 
 ### Added
 
-- **`message_contains` filter** on `get_errors` and `get_server_logs` — case-insensitive substring match on message/raw fields for URL/path filtering
-- **Structlog key-value parser** — parses Python structlog ConsoleRenderer `[level]` format, preserving actual log levels (10th parser)
-- **Freshness metadata** on `get_errors` response — `session_started_at`, `oldest_event_at`, `buffer_cleared_at`, `total_matching`
-- **Freshness metadata** on `get_build_errors` response — `oldest_event_at`, `buffer_cleared_at`
+- **`message_contains` filter** on `get_errors` and `get_server_logs` - case-insensitive substring match on message/raw fields for URL/path filtering
+- **Structlog key-value parser** - parses Python structlog ConsoleRenderer `[level]` format, preserving actual log levels (10th parser)
+- **Freshness metadata** on `get_errors` response - `session_started_at`, `oldest_event_at`, `buffer_cleared_at`, `total_matching`
+- **Freshness metadata** on `get_build_errors` response - `oldest_event_at`, `buffer_cleared_at`
 - **`session_started_at`** on `get_runtime_status` response
-- **5 tools wired into MCP server** — `list_services`, `get_correlated_errors`, `get_new_errors`, `get_error_trends`, `correlate_with_diff` (13 total)
-- **CLI wired for Phase 3-5** — multi-process (`--service`), persistence (`--persist`), all dependencies passed to MCP server
-- **SKILL.md rewritten** — 13 tools documented, decision tree for TracePulse vs Chrome DevTools MCP, pro tips for `message_contains`, `since` cursor, manual FE-BE bridging
-- **Architecture docs** — full architecture guide, Mermaid diagrams, tool responsibility matrix
+- **5 tools wired into MCP server** - `list_services`, `get_correlated_errors`, `get_new_errors`, `get_error_trends`, `correlate_with_diff` (13 total)
+- **CLI wired for Phase 3-5** - multi-process (`--service`), persistence (`--persist`), all dependencies passed to MCP server
+- **SKILL.md rewritten** - 13 tools documented, decision tree for TracePulse vs Chrome DevTools MCP, pro tips for `message_contains`, `since` cursor, manual FE-BE bridging
+- **Architecture docs** - full architecture guide, Mermaid diagrams, tool responsibility matrix
 
 ### Changed
 
-- **`get_errors` response format** — now returns `{ errors: [...], total_matching, session_started_at, oldest_event_at, buffer_cleared_at }` instead of plain array (breaking change, pre-1.0)
+- **`get_errors` response format** - now returns `{ errors: [...], total_matching, session_started_at, oldest_event_at, buffer_cleared_at }` instead of plain array (breaking change, pre-1.0)
 
 ### Fixed
 
-- **TD-001** — agent-reported data freshness gap resolved with metadata fields
+- **TD-001** - agent-reported data freshness gap resolved with metadata fields
 
 _Work in progress toward v0.6.0 (Phase 5: Proactive Monitoring)._
 
@@ -71,18 +71,18 @@ _Work in progress toward v0.6.0 (Phase 5: Proactive Monitoring)._
 
 ### Added
 
-- **Watch mode:** `watch_for_errors(duration_seconds, source?)` — blocks for N seconds, collects new error/warn events, detects hot-reload
-- **Hot-reload detection:** 8 patterns for Vite, webpack, nodemon, Next.js, ts-node-dev — injects synthetic info-level markers into the buffer
-- **Build error parsers:** TypeScript compiler (`tsc`), ESLint, Vite/webpack build errors — all produce `source: 'build-error'` events
-- **Error context:** `get_error_context(fingerprint)` — deep-dive with surrounding logs (±5s), occurrence count
-- **Timeline query:** `get_timeline(since, duration_seconds?, limit?)` — unified chronological event stream
-- **Build errors tool:** `get_build_errors(limit?)` — dedicated tool for compilation/build failures
+- **Watch mode:** `watch_for_errors(duration_seconds, source?)` - blocks for N seconds, collects new error/warn events, detects hot-reload
+- **Hot-reload detection:** 8 patterns for Vite, webpack, nodemon, Next.js, ts-node-dev - injects synthetic info-level markers into the buffer
+- **Build error parsers:** TypeScript compiler (`tsc`), ESLint, Vite/webpack build errors - all produce `source: 'build-error'` events
+- **Error context:** `get_error_context(fingerprint)` - deep-dive with surrounding logs (±5s), occurrence count
+- **Timeline query:** `get_timeline(since, duration_seconds?, limit?)` - unified chronological event stream
+- **Build errors tool:** `get_build_errors(limit?)` - dedicated tool for compilation/build failures
 - **Event buffer subscription:** real-time event delivery via subscribe/unsubscribe for watch controller
 - **11 watch mode constants:** duration bounds, context windows, query limits, signal scores
 
 ---
 
-## [0.2.0] — 2026-04-27
+## [0.2.0] - 2026-04-27
 
 ### Added
 
@@ -94,7 +94,7 @@ _Work in progress toward v0.6.0 (Phase 5: Proactive Monitoring)._
 - **Signal scoring:** additive 0–100 scoring (unhandled exception +40, stack trace +20, user code +15, etc.) with high/medium/low tiers
 - **Fingerprinting:** SHA-256 dedup keys with message normalization (strips timestamps, PIDs, addresses, UUIDs)
 - **Ring buffer:** bounded circular store (500 events), FIFO eviction, O(1) fingerprint dedup
-- **Secret redaction:** 12 patterns (API keys, Bearer/Basic auth, JWTs, connection strings, PEM keys, GitHub/GitLab/Slack tokens) — runs before all storage
+- **Secret redaction:** 12 patterns (API keys, Bearer/Basic auth, JWTs, connection strings, PEM keys, GitHub/GitLab/Slack tokens) - runs before all storage
 - **4 MCP tools:** get_errors (signal score sort), get_server_logs (timestamp sort), get_runtime_status (health check), clear_errors (reset buffer)
 - **Graceful shutdown:** SIGINT/SIGTERM forwarding to child process with 5s timeout before SIGKILL
 - **CLI:** `start` and `attach` subcommands, `--version`, `--help`
@@ -102,12 +102,12 @@ _Work in progress toward v0.6.0 (Phase 5: Proactive Monitoring)._
 
 ---
 
-## [0.1.0] — 2026-04-27
+## [0.1.0] - 2026-04-27
 
 ### Added
 
 - **Project scaffolding:** package.json, tsconfig.json, tsup.config.ts, vitest.config.ts, eslint, prettier
-- **Architecture decision:** [ADR-001 Tech Stack & Architecture](../decisions/ADR-001-tech-stack.md) — TypeScript/Node.js 22+, stdio transport, spawn+attach process management, framework-specific error parsers, salience-scored RuntimeEvents, pull-first MCP model
+- **Architecture decision:** [ADR-001 Tech Stack & Architecture](../decisions/ADR-001-tech-stack.md) - TypeScript/Node.js 22+, stdio transport, spawn+attach process management, framework-specific error parsers, salience-scored RuntimeEvents, pull-first MCP model
 - **Kiro specs:** 5 phase specs under `.kiro/specs/` with requirements, design, and TDD task breakdowns (48 user stories, 83 TDD tasks total)
   - Phase 1: Core Pipeline MVP (19 stories, 23 tasks)
   - Phase 2: Watch Mode (6 stories, 14 tasks)

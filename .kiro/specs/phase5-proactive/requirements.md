@@ -1,4 +1,4 @@
-# Phase 5: Proactive Monitoring — Requirements
+# Phase 5: Proactive Monitoring - Requirements
 
 ## Overview
 
@@ -51,7 +51,7 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 4. `diff_summary` is a human-readable summary of the change (e.g., `"+15 -3 lines in handleAuth()"`) truncated to 200 characters.
 5. If no git repository is detected, the tool returns an empty array with a warning message.
 6. If an error has no `context.file`, it is excluded from correlation results.
-7. Correlation is best-effort — the tool matches file paths, not semantic causation.
+7. Correlation is best-effort - the tool matches file paths, not semantic causation.
 
 ### US-4: Severity Classification
 
@@ -65,7 +65,7 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 3. `error` is assigned when: caught exception logged, HTTP 5xx status, or explicit error-level log.
 4. `warning` is assigned when: deprecation notice, non-fatal warning, or HTTP 4xx status.
 5. `info` is assigned when: startup message, configuration log, or informational output.
-6. Severity classification integrates with the existing `signal_score` system — `crash` adds +40, `error` adds +10, `warning` adds +5, `info` adds +0.
+6. Severity classification integrates with the existing `signal_score` system - `crash` adds +40, `error` adds +10, `warning` adds +5, `info` adds +0.
 7. Existing MCP tools (`get_errors`, `get_new_errors`) accept an optional `severity` filter parameter.
 
 ### US-5: MCP Notifications (Polling Fallback)
@@ -76,10 +76,10 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 
 **Acceptance Criteria:**
 1. When the MCP protocol supports server-initiated notifications, TracePulse pushes `notifications/tracepulse/new_error` with the `RuntimeEvent` payload for errors with `signal_strength === 'high'` and a new fingerprint.
-2. Until server-initiated notifications are available, `get_new_errors` serves as the polling fallback — agents call it periodically.
+2. Until server-initiated notifications are available, `get_new_errors` serves as the polling fallback - agents call it periodically.
 3. The notification mechanism is behind a feature flag (`TRACEPULSE_NOTIFICATIONS=true` in environment) so it can be enabled when protocol support lands.
-4. Notifications are deduplicated — the same fingerprint is only pushed once per session.
-5. The notification payload is token-efficient: `{ fingerprint, severity, message, file, line, signal_score }` — not the full `RuntimeEvent`.
+4. Notifications are deduplicated - the same fingerprint is only pushed once per session.
+5. The notification payload is token-efficient: `{ fingerprint, severity, message, file, line, signal_score }` - not the full `RuntimeEvent`.
 
 ### US-6: Error Frequency Stats Across Sessions
 
@@ -90,7 +90,7 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 **Acceptance Criteria:**
 1. Fingerprint history tracks per-session occurrence: `{ sessions: [{ session_id, timestamp, count }] }`.
 2. `get_error_trends` includes a `recent_sessions` field: `{ appeared_in: number, out_of: number }` for the last N sessions (N defaults to 10, configurable).
-3. Session boundaries are defined by TracePulse process start/stop — each `tracepulse start` is a new session.
+3. Session boundaries are defined by TracePulse process start/stop - each `tracepulse start` is a new session.
 4. Session history is capped at 50 sessions to bound storage.
 5. Old sessions beyond the cap are pruned on startup (FIFO).
 
@@ -105,8 +105,8 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 2. Required skills: `backend-error-triage.md`, `edit-verify-loop.md`, `full-stack-debug.md`.
 3. Each skill file contains: a title, a description of when to use it, numbered steps with exact MCP tool calls, decision trees for branching logic, and expected outputs at each step.
 4. `full-stack-debug.md` references Chrome DevTools MCP tools for the browser verification step.
-5. Skills are included in the npm package (`"files": ["dist", "skills"]` in package.json — already configured).
-6. Skills use no TracePulse-internal jargon — they are readable by any MCP-compatible agent.
+5. Skills are included in the npm package (`"files": ["dist", "skills"]` in package.json - already configured).
+6. Skills use no TracePulse-internal jargon - they are readable by any MCP-compatible agent.
 
 ---
 
@@ -114,7 +114,7 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 
 ### NFR-1: Fingerprint History Performance
 - Loading `.tracepulse/fingerprints.json` must complete in < 100ms for files up to 1MB.
-- Fingerprint lookup (is-this-new?) must be O(1) — use a `Set` or `Map` in memory.
+- Fingerprint lookup (is-this-new?) must be O(1) - use a `Set` or `Map` in memory.
 
 ### NFR-2: Git Diff Latency
 - `correlate_with_diff()` must complete in < 2 seconds for repositories with up to 500 changed files.
@@ -132,7 +132,7 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 
 ### NFR-5: Backward Compatibility
 - Phase 5 additions do not break existing Phase 1–4 MCP tool contracts.
-- The `severity` field is additive — existing `RuntimeEvent` consumers that don't read it are unaffected.
+- The `severity` field is additive - existing `RuntimeEvent` consumers that don't read it are unaffected.
 
 ### NFR-6: Zero Config
 - All Phase 5 features work without a config file.
@@ -143,10 +143,10 @@ Phase 5 shifts TracePulse from a pull model (agent queries for errors) to a push
 
 ## Out of Scope
 
-1. **Server-initiated MCP notifications implementation** — the protocol doesn't support this yet. We implement the polling fallback and the notification payload design. Actual push is deferred until MCP SDK adds support.
-2. **Semantic diff analysis** — `correlate_with_diff` matches file paths, not AST-level causation. No "this function call changed" analysis.
-3. **Cross-repository correlation** — git diff is scoped to the current repository only.
-4. **Skill execution engine** — skills are documentation files, not executable workflows. The agent reads and follows them; TracePulse does not orchestrate skill steps.
-5. **Custom user-defined skills** — only the 3 built-in skills ship in Phase 5. User-extensible skills are a future enhancement.
-6. **Fingerprint history migration** — if the schema of `fingerprints.json` changes between versions, no automatic migration is provided. The file is reset.
-7. **Real-time streaming of errors** — Phase 5 uses polling (`get_new_errors`), not WebSocket/SSE streaming.
+1. **Server-initiated MCP notifications implementation** - the protocol doesn't support this yet. We implement the polling fallback and the notification payload design. Actual push is deferred until MCP SDK adds support.
+2. **Semantic diff analysis** - `correlate_with_diff` matches file paths, not AST-level causation. No "this function call changed" analysis.
+3. **Cross-repository correlation** - git diff is scoped to the current repository only.
+4. **Skill execution engine** - skills are documentation files, not executable workflows. The agent reads and follows them; TracePulse does not orchestrate skill steps.
+5. **Custom user-defined skills** - only the 3 built-in skills ship in Phase 5. User-extensible skills are a future enhancement.
+6. **Fingerprint history migration** - if the schema of `fingerprints.json` changes between versions, no automatic migration is provided. The file is reset.
+7. **Real-time streaming of errors** - Phase 5 uses polling (`get_new_errors`), not WebSocket/SSE streaming.

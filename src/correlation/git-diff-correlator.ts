@@ -2,7 +2,7 @@
  * Git diff correlator for linking errors to recent code changes.
  *
  * Parses git diff output, matches changed files to error locations,
- * and generates human-readable summaries. Best-effort — never fails
+ * and generates human-readable summaries. Best-effort - never fails
  * if git is unavailable.
  *
  * @see .kiro/specs/phase5-proactive/design.md for git correlation design

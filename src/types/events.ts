@@ -3,7 +3,7 @@
  *
  * Defines RuntimeEvent (the canonical event schema), EventContext,
  * EventFilters, and runtime type guards for validating MCP tool parameters.
- * These types flow through every pipeline stage — collectors produce raw lines,
+ * These types flow through every pipeline stage - collectors produce raw lines,
  * parsers extract structure, normalizers create RuntimeEvents, and MCP tools
  * query them via EventFilters.
  *
@@ -29,7 +29,7 @@ export type { EventSource, LogLevel, SignalStrength };
 
 /**
  * Structured context extracted from parsed errors.
- * All fields are optional — parsers populate what they can extract.
+ * All fields are optional - parsers populate what they can extract.
  */
 export interface EventContext {
   /** Source file path where the error originated. */
@@ -57,9 +57,9 @@ export interface EventContext {
  * Immutable after creation except for occurrence_count and timestamp on dedup.
  */
 export interface RuntimeEvent {
-  /** UUIDv4 — unique per first occurrence. */
+  /** UUIDv4 - unique per first occurrence. */
   readonly id: string;
-  /** Unix milliseconds — updated to latest occurrence on dedup. */
+  /** Unix milliseconds - updated to latest occurrence on dedup. */
   readonly timestamp: number;
   /** Where the log line came from. */
   readonly source: EventSource;
@@ -81,7 +81,7 @@ export interface RuntimeEvent {
   readonly context: EventContext;
   /** Original raw log line(s), truncated to 1000 chars. */
   readonly raw: string;
-  /** Unix ms — when this fingerprint was first seen. Never changes on dedup. */
+  /** Unix ms - when this fingerprint was first seen. Never changes on dedup. */
   readonly first_seen: number;
   /** How many times this fingerprint has been seen. Increments on dedup. */
   readonly occurrence_count: number;
@@ -93,10 +93,10 @@ export interface RuntimeEvent {
 
 /**
  * Filters for querying the event buffer via MCP tools.
- * All fields are optional — omitted fields mean "no filter".
+ * All fields are optional - omitted fields mean "no filter".
  */
 export interface EventFilters {
-  /** Unix ms — only events after this timestamp. */
+  /** Unix ms - only events after this timestamp. */
   readonly since?: number;
   /** Filter by event source. */
   readonly source?: EventSource;

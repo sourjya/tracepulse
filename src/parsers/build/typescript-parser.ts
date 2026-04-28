@@ -26,7 +26,7 @@ const TS_ERROR_PATTERN =
  *
  * Handles single-line tsc errors/warnings. Multi-line continuation
  * (type mismatch details) is captured in the raw line but not parsed
- * into separate fields — the message from the first line is sufficient
+ * into separate fields - the message from the first line is sufficient
  * for agent triage.
  */
 export const typescriptParser: ErrorParser = {

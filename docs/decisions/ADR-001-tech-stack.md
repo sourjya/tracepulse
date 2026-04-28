@@ -8,7 +8,7 @@
 
 ## Context
 
-TracePulse is a runtime feedback MCP server for AI coding agents. It watches dev server stdout/stderr, parses errors into structured events with signal scoring, and exposes them as MCP tools that any agent can call. The agent edits code, calls `watch_for_errors(15)`, and instantly knows if the fix worked — no manual log reading, no copy-paste.
+TracePulse is a runtime feedback MCP server for AI coding agents. It watches dev server stdout/stderr, parses errors into structured events with signal scoring, and exposes them as MCP tools that any agent can call. The agent edits code, calls `watch_for_errors(15)`, and instantly knows if the fix worked - no manual log reading, no copy-paste.
 
 This ADR captures the foundational technology and architecture decisions made during the planning phase, based on competitive landscape analysis of 40+ tools (April 2026), the MCP ecosystem's current state, and the product's positioning as a passive runtime observer for local development.
 
@@ -16,12 +16,12 @@ The full analysis is in `docs/ideas/feature-architecture-analysis.md`.
 
 ## Decision Drivers
 
-- **Zero-config adoption** — `npx tracepulse start "npm run dev"` must work without setup
-- **Agent-agnostic** — must work with any MCP-compatible client (Kiro, Claude Code, Cursor, Copilot, Cline, Windsurf)
-- **MCP ecosystem alignment** — the MCP SDK, Chrome DevTools MCP, mcp-debugger, and agentic-debugger are all TypeScript
-- **Token efficiency** — agents have limited context windows; every response must be structured and scored for relevance
-- **Complementary positioning** — Chrome DevTools MCP owns the browser, mcp-debugger owns step-through debugging, we own passive backend observation
-- **Simplicity** — fewer moving parts means easier adoption and maintenance
+- **Zero-config adoption** - `npx tracepulse start "npm run dev"` must work without setup
+- **Agent-agnostic** - must work with any MCP-compatible client (Kiro, Claude Code, Cursor, Copilot, Cline, Windsurf)
+- **MCP ecosystem alignment** - the MCP SDK, Chrome DevTools MCP, mcp-debugger, and agentic-debugger are all TypeScript
+- **Token efficiency** - agents have limited context windows; every response must be structured and scored for relevance
+- **Complementary positioning** - Chrome DevTools MCP owns the browser, mcp-debugger owns step-through debugging, we own passive backend observation
+- **Simplicity** - fewer moving parts means easier adoption and maintenance
 
 ## Considered Options
 
@@ -104,15 +104,15 @@ stdio is the standard transport for local MCP servers spawned by agents. Every M
 
 ### Decision 3: Spawn OR Attach
 
-Spawn mode starts the dev server as a child process — this is the zero-config default (`npx tracepulse start "npm run dev"`). Attach mode tails log files for developers who can't or don't want to change how they start their server. Both are supported from Phase 1. Spawn is the recommended path.
+Spawn mode starts the dev server as a child process - this is the zero-config default (`npx tracepulse start "npm run dev"`). Attach mode tails log files for developers who can't or don't want to change how they start their server. Both are supported from Phase 1. Spawn is the recommended path.
 
 ### Decision 4: Framework-specific regex + JSON fallback
 
-Most dev servers output unstructured text. Regex parsers for Node.js, Python, Go, Java, and Rust stack traces handle the common cases. If a line is valid JSON (pino, structlog, logback JSON), it's parsed directly. The parser registry is extensible — users can add custom patterns via config. LLM-based parsing was rejected as overkill for well-known error formats.
+Most dev servers output unstructured text. Regex parsers for Node.js, Python, Go, Java, and Rust stack traces handle the common cases. If a line is valid JSON (pino, structlog, logback JSON), it's parsed directly. The parser registry is extensible - users can add custom patterns via config. LLM-based parsing was rejected as overkill for well-known error formats.
 
 ### Decision 5: No browser extension
 
-Chrome DevTools MCP already bridges the browser to agents. ViewGraph already provides UI context via a browser extension. TracePulse is backend-focused. Adding a browser extension would duplicate existing tools and add installation friction. Phase 4 optionally connects to Chrome via CDP for HTTP correlation — no extension needed.
+Chrome DevTools MCP already bridges the browser to agents. ViewGraph already provides UI context via a browser extension. TracePulse is backend-focused. Adding a browser extension would duplicate existing tools and add installation friction. Phase 4 optionally connects to Chrome via CDP for HTTP correlation - no extension needed.
 
 ### Decision 6: Pull-first, push later
 
@@ -137,7 +137,7 @@ This enables progressive disclosure: `get_runtime_status` (~100 tokens) → `get
 
 ### Supporting Decisions
 
-**In-memory ring buffer (500 events):** Fully ephemeral. No persistence for MVP. Stale errors from previous sessions would mislead agents. The dev server's output is the source of truth — we're a window into it, not a database. Fingerprint history persistence (`.tracepulse/fingerprints.json`) is parked for Phase 3+.
+**In-memory ring buffer (500 events):** Fully ephemeral. No persistence for MVP. Stale errors from previous sessions would mislead agents. The dev server's output is the source of truth - we're a window into it, not a database. Fingerprint history persistence (`.tracepulse/fingerprints.json`) is parked for Phase 3+.
 
 **Build tool: tsup.** esbuild-based bundler that produces a zero-dependency distribution bundle. Fast builds, tree-shaking, and ESM/CJS dual output.
 
@@ -149,20 +149,20 @@ This enables progressive disclosure: `get_runtime_status` (~100 tokens) → `get
 
 ### Positive
 
-- **Zero-config adoption** — `npx tracepulse start "npm run dev"` works without installation or configuration
-- **Agent-agnostic** — stdio transport works with every MCP client; no vendor lock-in
-- **Ecosystem alignment** — TypeScript + MCP SDK means first-class protocol support and community compatibility
-- **Token efficiency** — signal scoring and progressive disclosure prevent context window bloat
-- **Clear scope boundary** — no overlap with Chrome DevTools MCP (browser) or mcp-debugger (step-through debugging)
-- **Simple mental model** — spawn your server, agent queries errors, done
-- **Extensible parsing** — new framework parsers are isolated modules implementing a common interface
+- **Zero-config adoption** - `npx tracepulse start "npm run dev"` works without installation or configuration
+- **Agent-agnostic** - stdio transport works with every MCP client; no vendor lock-in
+- **Ecosystem alignment** - TypeScript + MCP SDK means first-class protocol support and community compatibility
+- **Token efficiency** - signal scoring and progressive disclosure prevent context window bloat
+- **Clear scope boundary** - no overlap with Chrome DevTools MCP (browser) or mcp-debugger (step-through debugging)
+- **Simple mental model** - spawn your server, agent queries errors, done
+- **Extensible parsing** - new framework parsers are isolated modules implementing a common interface
 
 ### Negative
 
-- **Node.js runtime overhead** — heavier than a Go/Rust binary for a CLI tool, though startup time is acceptable for a long-running server process
-- **Regex parser maintenance** — framework-specific parsers need updates as error formats evolve across framework versions
-- **No cross-session memory (MVP)** — the agent can't ask "was this error present yesterday?" until fingerprint persistence is added
-- **stdio is single-client** — only one agent can connect at a time until Streamable HTTP is added
+- **Node.js runtime overhead** - heavier than a Go/Rust binary for a CLI tool, though startup time is acceptable for a long-running server process
+- **Regex parser maintenance** - framework-specific parsers need updates as error formats evolve across framework versions
+- **No cross-session memory (MVP)** - the agent can't ask "was this error present yesterday?" until fingerprint persistence is added
+- **stdio is single-client** - only one agent can connect at a time until Streamable HTTP is added
 
 ### Risks
 
@@ -170,13 +170,13 @@ This enables progressive disclosure: `get_runtime_status` (~100 tokens) → `get
 |------|------------|
 | MCP SDK breaking changes | Pin to stable SDK version; stdio transport is the most stable layer |
 | Regex parsers miss errors in new framework versions | JSON fallback catches structured logs; parser registry is extensible; community can contribute parsers |
-| IDE vendors build this natively (Cursor, Kiro) | Ship fast; agent-agnostic design is the moat — works with ANY MCP client, not just one IDE |
+| IDE vendors build this natively (Cursor, Kiro) | Ship fast; agent-agnostic design is the moat - works with ANY MCP client, not just one IDE |
 | Agents don't know to call tools after edits | Ship skills (SKILL.md) that teach agents the edit-verify loop; `watch_for_errors` is self-documenting via its MCP tool description |
 | Signal scoring heuristics produce false rankings | Scoring factors are configurable; start conservative; tune based on real-world usage |
 
 ## Links
 
-- [Roadmap M1](../roadmap/roadmap.md) — milestone where this decision was made
-- [Feature & Architecture Analysis](../ideas/feature-architecture-analysis.md) — full competitive landscape, gap analysis, and design rationale
-- [ViewGraph](https://github.com/sourjya/viewgraph) — companion UI context tool whose salience model inspired Decision 7
-- Clipboard Health case study (Appendix D of architecture analysis) — confidence scoring pattern that informed signal scoring
+- [Roadmap M1](../roadmap/roadmap.md) - milestone where this decision was made
+- [Feature & Architecture Analysis](../ideas/feature-architecture-analysis.md) - full competitive landscape, gap analysis, and design rationale
+- [ViewGraph](https://github.com/sourjya/viewgraph) - companion UI context tool whose salience model inspired Decision 7
+- Clipboard Health case study (Appendix D of architecture analysis) - confidence scoring pattern that informed signal scoring

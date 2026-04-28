@@ -1,21 +1,21 @@
-# Implementation Plan: Phase 5 — Proactive Monitoring
+# Implementation Plan: Phase 5 - Proactive Monitoring
 
 ## Overview
 
 Phase 5 shifts TracePulse from pull to push. The agent gets notified of new errors, can correlate them with git changes, and follows structured debugging skills.
 
 **Architecture References:**
-- `docs/ideas/feature-architecture-analysis.md` — Phase 5 feature set, Decision 6 (pull-first, push later), Decision 7 (signal scoring)
-- `.kiro/specs/phase5-proactive/design.md` — notification architecture, git integration, fingerprint persistence, skills system
-- `.kiro/specs/phase5-proactive/requirements.md` — US-1 through US-7, NFRs
+- `docs/ideas/feature-architecture-analysis.md` - Phase 5 feature set, Decision 6 (pull-first, push later), Decision 7 (signal scoring)
+- `.kiro/specs/phase5-proactive/design.md` - notification architecture, git integration, fingerprint persistence, skills system
+- `.kiro/specs/phase5-proactive/requirements.md` - US-1 through US-7, NFRs
 
 **Key Principles:**
-- Fingerprint history is the foundation — build it first, everything else depends on it
-- Git correlation is best-effort — never fail if git is unavailable
-- Skills are static documentation — no execution engine
-- Notifications are designed now, wired later — polling fallback is the Phase 5 deliverable
+- Fingerprint history is the foundation - build it first, everything else depends on it
+- Git correlation is best-effort - never fail if git is unavailable
+- Skills are static documentation - no execution engine
+- Notifications are designed now, wired later - polling fallback is the Phase 5 deliverable
 
-**Development Approach — TDD MANDATORY:**
+**Development Approach - TDD MANDATORY:**
 - **RED → GREEN → REFACTOR**: Write failing tests FIRST, then minimal implementation, then refactor
 - NEVER write implementation code before its test
 - Each phase below follows strict TDD ordering: tests before implementation
@@ -30,7 +30,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 ### Phase 1: Severity Classification
 
-#### Step 1: Severity Constants & Types — TDD Cycle
+#### Step 1: Severity Constants & Types - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 1.1 Write unit tests for severity types and constants
@@ -45,7 +45,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Create `src/constants/scoring.ts` with severity bonus map
   - _Requirements: US-4.1_
 
-#### Step 2: Severity Classifier — TDD Cycle
+#### Step 2: Severity Classifier - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 2.1 Write unit tests for severity classification rules
@@ -76,7 +76,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Ensure classification rules are data-driven (array of rule objects), not a long if/else chain
   - Verify all tests still pass
 
-#### Step 3: Severity Filter on Existing Tools — TDD Cycle
+#### Step 3: Severity Filter on Existing Tools - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 3.1 Write unit tests for severity filter parameter
@@ -105,7 +105,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 ### Phase 2: Fingerprint History & Persistence
 
-#### Step 4: Persistence Constants — TDD Cycle
+#### Step 4: Persistence Constants - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 4.1 Write unit tests for persistence constants
@@ -121,7 +121,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Define `FINGERPRINT_FILE_PATH`, `SESSION_CAP`, `SCHEMA_VERSION`
   - _Requirements: US-6.4_
 
-#### Step 5: Fingerprint History Manager — TDD Cycle
+#### Step 5: Fingerprint History Manager - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 5.1 Write unit tests for fingerprint history manager
@@ -160,7 +160,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Ensure load/save are cleanly separated from in-memory operations
   - Verify all tests still pass
 
-#### Step 6: Integration Test — Fingerprint Persistence
+#### Step 6: Integration Test - Fingerprint Persistence
 
 - [ ] 6.1 Write integration test for fingerprint file I/O
   - Test full lifecycle: create dir → save → load → verify contents
@@ -183,7 +183,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 ### Phase 3: New Error Detection & Trends
 
-#### Step 7: `get_new_errors` Tool — TDD Cycle
+#### Step 7: `get_new_errors` Tool - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 7.1 Write unit tests for `get_new_errors` tool handler
@@ -204,7 +204,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Query ring buffer, filter by fingerprint history, apply severity/limit
   - _Requirements: US-1_
 
-#### Step 8: `get_error_trends` Tool — TDD Cycle
+#### Step 8: `get_error_trends` Tool - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 8.1 Write unit tests for `get_error_trends` tool handler
@@ -242,7 +242,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 ### Phase 4: Git Diff Correlation
 
-#### Step 9: Git Command Executor — TDD Cycle
+#### Step 9: Git Command Executor - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 9.1 Write unit tests for git command executor
@@ -263,7 +263,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Create `src/constants/correlation.ts` with timeout (5s), proximity window (10 lines), summary max length (200 chars)
   - _Requirements: US-3.5, NFR-2_
 
-#### Step 10: Diff Parser & File Matcher — TDD Cycle
+#### Step 10: Diff Parser & File Matcher - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 10.1 Write unit tests for diff parsing and file matching
@@ -288,7 +288,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
     - `generateDiffSummary(hunks: DiffHunk[]): string`
   - _Requirements: US-3.2, US-3.3, US-3.4, US-3.6_
 
-#### Step 11: `correlate_with_diff` Tool — TDD Cycle
+#### Step 11: `correlate_with_diff` Tool - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 11.1 Write unit tests for `correlate_with_diff` tool handler
@@ -307,7 +307,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Orchestrate: get errors from buffer → detect git root → get changed files → match → build response
   - _Requirements: US-3_
 
-#### Step 12: Integration Test — Git Correlation
+#### Step 12: Integration Test - Git Correlation
 
 - [ ] 12.1 Write integration test with a real git repo
   - Create a temp git repo with a known diff
@@ -331,7 +331,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 ### Phase 5: Notification Dispatcher (Future-Ready)
 
-#### Step 13: Notification Payload & Dispatcher — TDD Cycle
+#### Step 13: Notification Payload & Dispatcher - TDD Cycle
 
 **RED Phase: Write Tests First**
 - [ ] 13.1 Write unit tests for notification dispatcher
@@ -357,7 +357,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
 
 **REFACTOR Phase: Clean Up**
 - [ ] 13.3 Refactor notification dispatcher if needed
-  - Ensure the dispatcher is cleanly separable — when MCP adds notification support, wiring is a one-line change
+  - Ensure the dispatcher is cleanly separable - when MCP adds notification support, wiring is a one-line change
   - Verify all tests still pass
 
 #### Checkpoint: Phase 5 Complete
@@ -442,7 +442,7 @@ Phase 5 shifts TracePulse from pull to push. The agent gets notified of new erro
   - Errors surfaced by `get_new_errors` have already passed through the secret redactor
   - `correlate_with_diff` diff summaries contain no secret values (diff output is code, not config)
 
-#### Checkpoint: Phase 7 Complete — Phase 5 Done
+#### Checkpoint: Phase 7 Complete - Phase 5 Done
 
 - [ ] All unit tests passing
 - [ ] All integration tests passing

@@ -1,4 +1,4 @@
-# Phase 4: Frontend-Backend Error Correlation — Design
+# Phase 4: Frontend-Backend Error Correlation - Design
 
 > **Hardening Reference:** See [Collector Pitfalls & Hardening Guide](../../../docs/references/collector-pitfalls-hardening.md) for known failure modes. Phase 4's CDP/ViewGraph/HTTP collector error handling is already comprehensive. All inherited pipeline hardening (ANSI stripping, line length guard, secret redaction) applies to frontend error data as well.
 
@@ -20,7 +20,7 @@ Phase 4 adds a frontend error ingestion layer and a correlation engine that sits
                 ┌─────────▼──────┐  ┌────▼─────────────▼──┐
                 │ Backend Event  │  │ Frontend Error       │
                 │ Buffer (500)   │  │ Buffer (200)         │
-                │ (Phase 1-3)    │  │ (NEW — Phase 4)      │
+                │ (Phase 1-3)    │  │ (NEW - Phase 4)      │
                 └────────────────┘  └──────────┬───────────┘
                                                │
                                     ┌──────────┼──────────┐
@@ -94,7 +94,7 @@ interface FrontendError {
   /** HTTP status text (e.g., "Internal Server Error"). */
   readonly statusText: string;
 
-  /** Selected response headers — only trace-related and content-type. */
+  /** Selected response headers - only trace-related and content-type. */
   readonly responseHeaders: Readonly<Record<string, string>>;
 
   /** Extracted W3C trace ID from traceparent header, if present. 32 hex chars. */
@@ -131,7 +131,7 @@ interface CorrelatedError {
   /** Confidence score (0–1) indicating match quality. See correlation algorithm. */
   readonly correlation_confidence: number;
 
-  /** How the match was made — trace ID is definitive, URL+time is heuristic. */
+  /** How the match was made - trace ID is definitive, URL+time is heuristic. */
   readonly match_method: "trace-id" | "url-timestamp";
 }
 ```
@@ -196,11 +196,11 @@ interface FrontendErrorSourceManager {
 
 ### 3. CDP Listener (`src/correlation/sources/cdp-listener.ts`)
 
-Connects to Chrome via Puppeteer's CDP client (not full Puppeteer — just the `chrome-remote-interface` style connection) to capture network response events.
+Connects to Chrome via Puppeteer's CDP client (not full Puppeteer - just the `chrome-remote-interface` style connection) to capture network response events.
 
 **CDP Events Used:**
-- `Network.responseReceived` — capture status code, URL, headers
-- `Network.loadingFailed` — capture failed requests (DNS, connection refused)
+- `Network.responseReceived` - capture status code, URL, headers
+- `Network.loadingFailed` - capture failed requests (DNS, connection refused)
 
 **Connection Management:**
 - Connects to `ws://localhost:9222` (configurable via `--cdp-url`)
@@ -212,7 +212,7 @@ Connects to Chrome via Puppeteer's CDP client (not full Puppeteer — just the `
 
 ### 4. ViewGraph Bridge (`src/correlation/sources/viewgraph-bridge.ts`)
 
-Polls ViewGraph's MCP server for network failure data. ViewGraph already captures network requests as part of its page context — this bridge extracts the failure subset.
+Polls ViewGraph's MCP server for network failure data. ViewGraph already captures network requests as part of its page context - this bridge extracts the failure subset.
 
 **Integration Approach:**
 - HTTP polling to ViewGraph's API endpoint (default `http://localhost:9700`)
@@ -228,13 +228,13 @@ ViewGraph exposes network data via its own MCP tools, but TracePulse can't call 
 A minimal HTTP server that accepts frontend error reports pushed by browser extensions or custom scripts.
 
 **Endpoints:**
-- `POST /api/v1/errors` — accept a `FrontendError` payload
-- `GET /api/v1/health` — health check (returns `{ status: "ok" }`)
+- `POST /api/v1/errors` - accept a `FrontendError` payload
+- `GET /api/v1/health` - health check (returns `{ status: "ok" }`)
 
 **Server Details:**
 - Uses Node.js built-in `node:http` module (no Express, no framework)
 - Binds to `127.0.0.1:9801` (configurable port)
-- Disabled by default — enabled via `--enable-collector`
+- Disabled by default - enabled via `--enable-collector`
 - Content-Type validation: rejects non-`application/json`
 - Payload validation: checks required fields, rejects malformed with 400
 - Rate limiting: token bucket, 100 req/s, returns 429 when exceeded
@@ -277,24 +277,24 @@ function extractTraceIds(headers: Record<string, string>): TraceIds;
 
 **traceparent format:** `{version}-{trace-id}-{parent-id}-{trace-flags}`
 - Version: 2 hex chars (must be "00")
-- Trace ID: 32 hex chars — this is what we extract
+- Trace ID: 32 hex chars - this is what we extract
 - Parent ID: 16 hex chars
 - Trace flags: 2 hex chars
 
 ### 7. CorrelationEngine (`src/correlation/correlation-engine.ts`)
 
-The core matching algorithm. Stateless — reads from both buffers on each call.
+The core matching algorithm. Stateless - reads from both buffers on each call.
 
 ```typescript
 /**
  * Matches frontend HTTP failures with backend RuntimeEvents.
  *
  * Correlation strategy (in priority order):
- * 1. Trace ID match — if both sides have the same trace ID, confidence = 1.0
- * 2. URL path + timestamp proximity — heuristic matching with scored confidence
+ * 1. Trace ID match - if both sides have the same trace ID, confidence = 1.0
+ * 2. URL path + timestamp proximity - heuristic matching with scored confidence
  *
  * The engine is stateless: it reads both buffers on each invocation.
- * No pre-computed indexes — buffer sizes (500 + 200) make brute-force fast enough.
+ * No pre-computed indexes - buffer sizes (500 + 200) make brute-force fast enough.
  */
 interface CorrelationEngine {
   correlate(options?: { url?: string }): CorrelatedError[];
@@ -521,7 +521,7 @@ tests/
 | Log collector receives malformed JSON | Return 400 with `{ error: "Invalid JSON", details: "<parse error>" }`. Do not crash. |
 | Log collector receives oversized body | Return 413 with `{ error: "Payload too large", max_bytes: 65536 }`. |
 | Log collector rate limit exceeded | Return 429 with `{ error: "Rate limit exceeded", retry_after_ms: <computed> }`. |
-| `get_correlated_errors` called with no frontend source | Return empty array. No error — this is expected when correlation is not configured. |
+| `get_correlated_errors` called with no frontend source | Return empty array. No error - this is expected when correlation is not configured. |
 | traceparent header malformed | Silently ignore. Fall back to URL+timestamp correlation. Log debug-level message. |
 
 ---

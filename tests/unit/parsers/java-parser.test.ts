@@ -14,7 +14,7 @@ import { javaParser } from "@/parsers/java-parser";
 import { MAX_STACK_FRAMES } from "@/constants/limits";
 
 // ──────────────────────────────────────────────
-// canParse — positive matches
+// canParse - positive matches
 // ──────────────────────────────────────────────
 
 describe("javaParser.canParse", () => {
@@ -62,7 +62,7 @@ describe("javaParser.canParse", () => {
   });
 
   // ──────────────────────────────────────────────
-  // canParse — negative matches
+  // canParse - negative matches
   // ──────────────────────────────────────────────
 
   it("returns false for Node.js errors", () => {
@@ -100,7 +100,7 @@ describe("javaParser.canParse", () => {
 });
 
 // ──────────────────────────────────────────────
-// parse — exception extraction
+// parse - exception extraction
 // ──────────────────────────────────────────────
 
 describe("javaParser.parse", () => {
@@ -130,7 +130,7 @@ describe("javaParser.parse", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — stack frame extraction
+  // parse - stack frame extraction
   // ──────────────────────────────────────────────
 
   it("extracts file and line from user code stack frames", () => {
@@ -160,7 +160,7 @@ describe("javaParser.parse", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — JDK internal frame skipping
+  // parse - JDK internal frame skipping
   // ──────────────────────────────────────────────
 
   it("skips JDK internal frames when determining user code", () => {
@@ -173,7 +173,7 @@ describe("javaParser.parse", () => {
     const result = javaParser.parse(line);
 
     expect(result).not.toBeNull();
-    // No user code frames — only JDK internals
+    // No user code frames - only JDK internals
     expect(result!.scoring_hints.is_user_code).toBe(false);
     // file/line should not be set from JDK frames
     expect(result!.context.file).toBeUndefined();
@@ -195,7 +195,7 @@ describe("javaParser.parse", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — Caused by: chained exceptions
+  // parse - Caused by: chained exceptions
   // ──────────────────────────────────────────────
 
   it("uses root cause from 'Caused by:' chain", () => {
@@ -210,7 +210,7 @@ describe("javaParser.parse", () => {
     const result = javaParser.parse(line);
 
     expect(result).not.toBeNull();
-    // Root cause is the last "Caused by:" — ConnectException
+    // Root cause is the last "Caused by:" - ConnectException
     expect(result!.context.error_type).toBe("ConnectException");
     expect(result!.message).toContain("ConnectException");
     expect(result!.message).toContain("Connection refused");
@@ -231,7 +231,7 @@ describe("javaParser.parse", () => {
   });
 
   // ──────────────────────────────────────────────
-  // parse — standalone patterns
+  // parse - standalone patterns
   // ──────────────────────────────────────────────
 
   it("parses a standalone exception class line", () => {
@@ -255,7 +255,7 @@ describe("javaParser.parse", () => {
     const line = "\tat com.example.MyClass.myMethod(MyClass.java:42)";
     const result = javaParser.parse(line);
 
-    // A bare stack frame with no exception line — parser extracts what it can
+    // A bare stack frame with no exception line - parser extracts what it can
     // but there's no exception message to extract
     expect(result).not.toBeNull();
     expect(result!.context.file).toBe("MyClass.java");

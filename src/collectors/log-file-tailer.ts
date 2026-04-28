@@ -85,7 +85,7 @@ export function createLogFileTailer(
         }
       }
     } catch {
-      // File may have been deleted or become inaccessible — ignore
+      // File may have been deleted or become inaccessible - ignore
     }
   }
 

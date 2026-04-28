@@ -1,5 +1,5 @@
 /**
- * Watch mode module — hot-reload detection and watch controller.
+ * Watch mode module - hot-reload detection and watch controller.
  *
  * Re-exports the public API for Phase 2 watch functionality.
  *

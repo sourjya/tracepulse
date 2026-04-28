@@ -50,7 +50,7 @@ describe("correlation engine", () => {
 
     const result = correlateEvents(events, 2000);
     const withGroup = result.filter((e) => e.correlation_group);
-    // Events too far apart — no cross-service group
+    // Events too far apart - no cross-service group
     expect(withGroup).toHaveLength(0);
   });
 
@@ -95,11 +95,11 @@ describe("correlation engine", () => {
       makeEvent({ service: "worker", timestamp: base + 150 }),
     ];
 
-    // Window of 100ms — events 150ms apart should NOT correlate
+    // Window of 100ms - events 150ms apart should NOT correlate
     const result = correlateEvents(events, 100);
     expect(result.every((e) => !e.correlation_group)).toBe(true);
 
-    // Window of 200ms — events 150ms apart SHOULD correlate
+    // Window of 200ms - events 150ms apart SHOULD correlate
     const result2 = correlateEvents(events, 200);
     const withGroup = result2.filter((e) => e.correlation_group);
     expect(withGroup).toHaveLength(2);

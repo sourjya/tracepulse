@@ -1,5 +1,5 @@
 /**
- * Process spawner collector — spawns a dev server as a child process and
+ * Process spawner collector - spawns a dev server as a child process and
  * captures stdout/stderr line by line.
  *
  * This is the primary collector for TracePulse's "start" mode. It spawns the
@@ -113,7 +113,7 @@ export function createProcessSpawner(command: string): Collector {
          * Track child exit. Creates a promise that stop() can await.
          * Emits a synthetic exit event so the pipeline knows the process ended.
          * If the process exits with code 127 before we've resolved start(),
-         * that indicates command-not-found — reject the start() promise.
+         * that indicates command-not-found - reject the start() promise.
          */
         exitPromise = new Promise<void>((exitResolve) => {
           child!.on("close", (code) => {
@@ -188,13 +188,13 @@ export function createProcessSpawner(command: string): Collector {
 
       const pid = child.pid;
 
-      /** Force-kill timer — escalates to SIGKILL if SIGTERM is ignored. */
+      /** Force-kill timer - escalates to SIGKILL if SIGTERM is ignored. */
       const killTimer = setTimeout(() => {
         if (pid) {
           try {
             process.kill(-pid, "SIGKILL");
           } catch {
-            // Process already gone — ignore
+            // Process already gone - ignore
           }
         }
       }, GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS * 1000);
