@@ -29,6 +29,7 @@ import { handleGetNewErrors } from "@/tools/get-new-errors.js";
 import { handleGetErrorTrends } from "@/tools/get-error-trends.js";
 import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
 import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
+import { handleVerifyFix } from "@/tools/verify-fix.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -422,6 +423,16 @@ export function createMcpServer(
       "One-line health check: error count, warning count, total events, uptime. Use instead of calling get_runtime_status + get_errors + get_server_logs separately.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetHealthSummary(buffer, getConnected));
+
+  server.registerTool("verify_fix", {
+    title: "Verify Fix",
+    description:
+      "All-in-one post-fix verification: watches for N seconds, checks build errors, reports pass/fail verdict. Use after editing code instead of calling watch_for_errors + get_build_errors + get_errors separately.",
+    inputSchema: {
+      duration_seconds: z.number().optional().describe("How long to watch (default 15 seconds)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>));
 
   return server;
 }
