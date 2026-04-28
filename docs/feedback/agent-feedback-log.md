@@ -219,6 +219,12 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 | `get_error_context` | **Unused** | 0x | No errors to investigate |
 | `get_error_trends` | **Unused** | 0x | No errors to investigate |
 
+### First real debugging use case - transient crash detection
+
+Agent was editing user.py when uvicorn's file watcher triggered a reload mid-write, causing a brief crash. Agent used `watch_for_errors(10)` after restart to confirm the server was healthy again. Agent's assessment: "Zero events after restart. Server is healthy. The previous errors were transient from a mid-write reload."
+
+**Status:** ✅ This is the first time TracePulse was used for actual debugging (not just build checking). The watch_for_errors -> restart -> watch_for_errors pattern worked as designed.
+
 **Key metric:** 20 minutes saved (build checks) vs 15 minutes lost (export bug TP couldn't see). Net +5 minutes, but ceiling is "much higher" per agent.
 
 ### Agent feature requests - session 3 (detailed debugging gaps)
