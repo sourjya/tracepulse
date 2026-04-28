@@ -1,6 +1,6 @@
 {
   "name": "tracepulse",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "Runtime feedback MCP server for AI coding agents. ViewGraph sees the UI - TracePulse feels the backend.",
   "type": "module",
   "license": "MIT",

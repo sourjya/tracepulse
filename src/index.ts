@@ -10,4 +10,4 @@
  * @see docs/ideas/feature-architecture-analysis.md for architecture decisions
  */
 
-export const VERSION = "0.7.2";
+export const VERSION = "0.8.0";
