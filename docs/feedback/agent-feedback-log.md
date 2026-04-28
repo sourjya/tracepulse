@@ -4,7 +4,7 @@ Real-world feedback from AI coding agents using TracePulse. Used to prioritize i
 
 ---
 
-## 2026-04-28 - Kiro CLI agent on PlanIQ project
+## 2026-04-28 - Kiro CLI agent on Acme App project
 
 **Setup:** Attach mode, tailing Python backend log file. Kiro CLI with Chrome DevTools MCP and ViewGraph also active.
 
@@ -68,7 +68,7 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 ---
 
-## 2026-04-28 (session 2) - Kiro CLI agent on PlanIQ project
+## 2026-04-28 (session 2) - Kiro CLI agent on Acme App project
 
 **Setup:** Attach mode, tailing Python backend log file. Vite frontend running as separate process.
 
@@ -170,7 +170,7 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 ### Session Report - Full Day Usage (2026-04-28 evening)
 
-The agent produced a comprehensive session report after ~35 tool invocations across a full day of PlanIQ development.
+The agent produced a comprehensive session report after ~35 tool invocations across a full day of Acme App development.
 
 **Usage stats:** `get_build_errors` ~15x, `watch_for_errors` ~8x, `get_errors` ~5x, `get_runtime_status` ~3x, `get_server_logs` ~2x, `get_new_errors` ~1x, `get_error_trends` 0x, `get_error_context` 0x.
 
@@ -191,7 +191,7 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 - `correlate_with_diff`: "15 changed files, 0 correlations. Untested in real debugging."
 
 **Two debugging failures TracePulse missed:**
-1. Export bug: wrong localStorage key (access_token vs planiq_access_token). Request got 401 but never reached backend. Pure frontend issue - TP was blind.
+1. Export bug: wrong localStorage key (access_token vs acme-app_access_token). Request got 401 but never reached backend. Pure frontend issue - TP was blind.
 2. Saved views API: hook expected {items, total} but API returned flat array. Frontend silently got undefined. No error, no 4xx, just broken UI.
 
 **Agent's priority list:**

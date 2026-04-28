@@ -2,7 +2,7 @@
 
 ## Overview
 
-Features driven by real agent feedback from PlanIQ testing and competitive research. Three sub-milestones, each independently shippable.
+Features driven by real agent feedback from Acme App testing and competitive research. Three sub-milestones, each independently shippable.
 
 ## M7a: Multi-File Attach + Status Code Filter (v0.7.0)
 

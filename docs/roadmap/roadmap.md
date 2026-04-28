@@ -20,7 +20,7 @@ v0.6.0 (alpha - Phases 1–5 complete)
 
 ## M7: Agent-Driven Enhancements
 
-Features driven by real agent feedback (PlanIQ) and competitive research (CyberAgent, BrowserTools, Sentry).
+Features driven by real agent feedback (Acme App) and competitive research (CyberAgent, BrowserTools, Sentry).
 
 **Spec:** [`.kiro/specs/m7-agent-enhancements/`](../../.kiro/specs/m7-agent-enhancements/)
 - [requirements.md](../../.kiro/specs/m7-agent-enhancements/requirements.md) - 10 user stories
@@ -51,7 +51,7 @@ Features driven by real agent feedback (PlanIQ) and competitive research (CyberA
 
 ## Post-v1.0 - Agent-Driven Improvements
 
-Items identified from real agent feedback during PlanIQ testing.
+Items identified from real agent feedback during Acme App testing.
 See `docs/feedback/feature-request-analysis-session3.md` for full analysis of session 3 requests.
 
 ### Quick Wins (pre-v1.0 candidates)

@@ -4,11 +4,11 @@ Structured session reports from AI coding agents using TracePulse. Raw research 
 
 ---
 
-## Report #1 - PlanIQ Session 1
+## Report #1 - Acme App Session 1
 
 **Date:** 2026-04-28 (afternoon)
 **Agent:** Kiro CLI
-**Project:** PlanIQ (Python FastAPI backend + Vite React frontend)
+**Project:** Acme App (Python FastAPI backend + Vite React frontend)
 **Mode:** Attach (tailing backend log file)
 **TracePulse version:** v0.6.0 -> v0.6.1 (upgraded mid-session)
 **Session duration:** ~3 hours
@@ -42,11 +42,11 @@ None - clean coding session. All tools returned zero errors.
 
 ---
 
-## Report #2 - PlanIQ Session 2
+## Report #2 - Acme App Session 2
 
 **Date:** 2026-04-28 (evening)
 **Agent:** Kiro CLI
-**Project:** PlanIQ
+**Project:** Acme App
 **Mode:** Attach (tailing backend log file)
 **TracePulse version:** v0.6.1 -> v0.7.0 (upgraded mid-session)
 **Session duration:** ~4 hours
@@ -78,7 +78,7 @@ None - clean coding session. All tools returned zero errors.
 ### Bugs Encountered
 
 **Export "Failed to save" bug:**
-- Root cause: wrong localStorage key (access_token vs planiq_access_token)
+- Root cause: wrong localStorage key (access_token vs acme-app_access_token)
 - Request got 401 but never reached backend
 - TracePulse was blind - pure frontend issue
 - Agent had to read source code manually
@@ -116,11 +116,11 @@ None - clean coding session. All tools returned zero errors.
 
 ---
 
-## Report #3 - PlanIQ Session 3 (late evening)
+## Report #3 - Acme App Session 3 (late evening)
 
 **Date:** 2026-04-28 (late evening)
 **Agent:** Kiro CLI
-**Project:** PlanIQ
+**Project:** Acme App
 **Mode:** Attach (tailing backend log file)
 **TracePulse version:** v0.7.1
 **Session duration:** ~1 hour

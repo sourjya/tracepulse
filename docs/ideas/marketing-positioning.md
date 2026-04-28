@@ -61,7 +61,7 @@ Time to feedback:  SECONDS          SECONDS           MINUTES
 
 ## Proof Points
 
-### From real agent usage (PlanIQ project, 2026-04-28)
+### From real agent usage (Acme App project, 2026-04-28)
 
 **Trust earned in one session:**
 - Agent went from "I need to run `vite build` manually to be sure" to calling `get_build_errors` reflexively after every change
@@ -101,7 +101,7 @@ Time to feedback:  SECONDS          SECONDS           MINUTES
 
 ### Blog posts
 1. **"The Blind Spot in Agentic Coding"** - Expand on Sentry's thesis. LLMs can't see runtime. TracePulse fixes this at dev time.
-2. **"From 5 Steps to 1: How an AI Agent Learned to Trust TracePulse"** - Real story from PlanIQ. Agent went from manual verification to habitual `get_build_errors`.
+2. **"From 5 Steps to 1: How an AI Agent Learned to Trust TracePulse"** - Real story from Acme App. Agent went from manual verification to habitual `get_build_errors`.
 3. **"The Three-Layer Debugging Stack"** - TracePulse + Chrome DevTools MCP + ViewGraph. How they complement each other.
 4. **"Signal Scoring: Teaching AI Agents to Triage Like Senior Devs"** - Deep dive into the 0-100 scoring system and why it matters.
 5. **"Zero to 566 Tests: Building an MCP Server with AI"** - Meta story about building TracePulse itself with Kiro.
@@ -143,4 +143,4 @@ Time to feedback:  SECONDS          SECONDS           MINUTES
 2. **Signal scoring algorithm** - Calibrated from real-world usage. Not trivial to get right.
 3. **Agent skill files** - First-mover in teaching agents HOW to use debugging tools, not just providing them.
 4. **Three-layer companion design** - Architectural decision that makes TracePulse more valuable alongside Chrome DevTools MCP and ViewGraph, not less.
-5. **Real agent feedback loop** - We're iterating based on actual agent behavior (PlanIQ), not hypothetical use cases.
+5. **Real agent feedback loop** - We're iterating based on actual agent behavior (Acme App), not hypothetical use cases.

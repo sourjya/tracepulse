@@ -1,6 +1,6 @@
 # Feature Request Analysis - Agent Session 3
 
-Analysis of 6 feature requests from the Kiro agent during PlanIQ debugging. Each assessed for scope, effort, and architectural fit.
+Analysis of 6 feature requests from the Kiro agent during Acme App debugging. Each assessed for scope, effort, and architectural fit.
 
 ---
 
@@ -109,7 +109,7 @@ TracePulse has a JSON log parser (`src/parsers/json-log-parser.ts`) that extract
 
 **This needs investigation, not new code.** The parser exists - it may just need a fix or the structlog output format needs to be JSON.
 
-**Recommendation:** Investigate the JSON log parser against actual PlanIQ structlog output. Likely a quick fix. This is the highest-ROI item - if log levels work correctly, `get_server_logs(level="warning")` immediately becomes useful.
+**Recommendation:** Investigate the JSON log parser against actual Acme App structlog output. Likely a quick fix. This is the highest-ROI item - if log levels work correctly, `get_server_logs(level="warning")` immediately becomes useful.
 
 ---
 
