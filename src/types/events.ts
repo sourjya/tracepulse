@@ -44,6 +44,8 @@ export interface EventContext {
   readonly error_type?: string;
   /** Distributed trace ID extracted from headers or structured logs. */
   readonly trace_id?: string;
+  /** HTTP status code from access log lines. */
+  readonly http_status?: number;
 }
 
 // ──────────────────────────────────────────────
@@ -106,6 +108,8 @@ export interface EventFilters {
   readonly limit?: number;
   /** Case-insensitive substring match on message or raw fields. */
   readonly message_contains?: string;
+  /** Minimum HTTP status code to include (e.g., 400 for 4xx+, 500 for 5xx only). */
+  readonly status_code_min?: number;
 }
 
 /** Result of validating EventFilters from untrusted MCP input. */
@@ -190,6 +194,12 @@ export function validateEventFilters(
   if (filters.message_contains !== undefined) {
     if (typeof filters.message_contains !== "string" || filters.message_contains.length === 0) {
       return { valid: false, error: "message_contains must be a non-empty string" };
+    }
+  }
+
+  if (filters.status_code_min !== undefined) {
+    if (typeof filters.status_code_min !== "number" || filters.status_code_min < 100 || filters.status_code_min > 599) {
+      return { valid: false, error: "status_code_min must be a number between 100 and 599" };
     }
   }
 

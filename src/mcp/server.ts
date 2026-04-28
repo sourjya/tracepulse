@@ -86,6 +86,7 @@ export function handleGetErrors(
     source: args.source as import("@/types/events.js").EventSource | undefined,
     level: "warn",
     message_contains: args.message_contains as string | undefined,
+    status_code_min: args.status_code_min as number | undefined,
   });
 
   // Filter by service if provided
@@ -109,6 +110,7 @@ export function handleGetErrors(
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
     buffer_cleared_at: buffer.bufferClearedAt,
+    last_event_timestamp: correlated.length > 0 ? correlated[0].timestamp : null,
   });
 }
 
@@ -138,6 +140,7 @@ export function handleGetServerLogs(
     level: args.level as import("@/types/events.js").LogLevel | undefined,
     limit,
     message_contains: args.message_contains as string | undefined,
+    status_code_min: args.status_code_min as number | undefined,
   });
 
   return jsonResult(events);
@@ -228,6 +231,7 @@ export function createMcpServer(
       service: z.string().optional().describe("Filter by service name"),
       limit: z.number().optional().describe("Maximum number of results (default 20)"),
       message_contains: z.string().optional().describe("Case-insensitive substring match on message or raw log line. Use for URL/path filtering (e.g., '/api/export')."),
+      status_code_min: z.number().optional().describe("Minimum HTTP status code (e.g., 400 for all errors, 500 for server errors only)."),
     },
     annotations: {
       readOnlyHint: true,
@@ -246,6 +250,7 @@ export function createMcpServer(
       since: z.number().optional().describe("Unix ms - only events after this timestamp"),
       limit: z.number().optional().describe("Maximum number of results (default 50)"),
       message_contains: z.string().optional().describe("Case-insensitive substring match on message or raw log line. Use for URL/path filtering (e.g., '/export', '500', 'error')."),
+      status_code_min: z.number().optional().describe("Minimum HTTP status code (e.g., 400 for all errors, 500 for server errors only)."),
     },
     annotations: {
       readOnlyHint: true,

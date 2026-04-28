@@ -13,6 +13,7 @@
 import type { ErrorParser, ParsedError } from '@/types/parsers.js';
 import { jsonLogParser } from '@/parsers/json-log-parser.js';
 import { structlogParser } from '@/parsers/structlog-parser.js';
+import { httpAccessLogParser } from '@/parsers/http-access-log-parser.js';
 import { nodeParser } from '@/parsers/node-parser.js';
 import { pythonParser } from '@/parsers/python-parser.js';
 import { goParser } from '@/parsers/go-parser.js';
@@ -82,6 +83,7 @@ export function createDefaultRegistry(): ParserRegistry {
   return createParserRegistry([
     jsonLogParser,
     structlogParser,
+    httpAccessLogParser,
     nodeParser,
     pythonParser,
     goParser,

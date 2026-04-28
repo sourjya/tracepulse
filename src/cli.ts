@@ -54,7 +54,7 @@ interface StartArgs {
 /** Parsed CLI arguments for the "attach" command. */
 interface AttachArgs {
   readonly command: "attach";
-  readonly logFile: string;
+  readonly logFiles: Array<{ name: string; path: string }>;
 }
 
 /** Parsed CLI arguments for the "compose" command. */
@@ -168,9 +168,23 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
   }
 
   if (subcommand === "attach") {
-    const logFileIdx = args.indexOf("--log-file");
-    if (logFileIdx === -1 || !args[logFileIdx + 1]) return null;
-    return { command: "attach", logFile: args[logFileIdx + 1] };
+    const logFiles: Array<{ name: string; path: string }> = [];
+    for (let i = 1; i < args.length; i++) {
+      if (args[i] === "--log-file" && args[i + 1]) {
+        const val = args[i + 1];
+        const eqIdx = val.indexOf("=");
+        if (eqIdx > 0) {
+          logFiles.push({ name: val.slice(0, eqIdx), path: val.slice(eqIdx + 1) });
+        } else {
+          // Derive name from filename
+          const base = val.split("/").pop()?.replace(/\.\w+$/, "") ?? "main";
+          logFiles.push({ name: base, path: val });
+        }
+        i++;
+      }
+    }
+    if (logFiles.length === 0) return null;
+    return { command: "attach", logFiles };
   }
 
   if (subcommand === "compose") {
@@ -341,8 +355,29 @@ async function main(): Promise<void> {
       return process.exit(1);
     }
   } else if (parsed.command === "attach") {
-    serviceRegistry.register("main", "process");
-    collector = createLogFileTailer(parsed.logFile);
+    for (const lf of parsed.logFiles) {
+      serviceRegistry.register(lf.name, "process");
+    }
+    if (parsed.logFiles.length === 1) {
+      collector = createLogFileTailer(parsed.logFiles[0].path);
+    } else {
+      // Multi-file: create a composite collector
+      const tailers = parsed.logFiles.map((lf) => ({
+        name: lf.name,
+        tailer: createLogFileTailer(lf.path),
+      }));
+      collector = {
+        async start(onLine: (source: EventSource, line: string) => void) {
+          await Promise.all(tailers.map((t) => t.tailer.start(onLine)));
+        },
+        async stop() {
+          await Promise.all(tailers.map((t) => t.tailer.stop()));
+        },
+        isConnected() {
+          return tailers.some((t) => t.tailer.isConnected());
+        },
+      };
+    }
   } else {
     process.stderr.write(`[tracepulse] Unknown command: ${(parsed as ParsedArgs).command}\n`);
     return process.exit(1);

@@ -74,6 +74,12 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
         return false;
       }
     }
+    if (filters.status_code_min !== undefined) {
+      const status = event.context.http_status;
+      if (status === undefined || status < filters.status_code_min) {
+        return false;
+      }
+    }
     return true;
   }
 
