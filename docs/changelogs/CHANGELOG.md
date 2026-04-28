@@ -9,6 +9,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added (post-v0.8.1)
+
+- **`get_requests` tool** (19th tool) - filter HTTP requests by path and status code
+- **Debounced build errors** - opt-in 2s persistence filter on `get_build_errors(debounce: true)`
+- **File change tracker** - correlates hot-reload events with file paths
+- **Previous session error details** - `last_message` stored in fingerprint persistence
+- **20/20 agent wishlist items shipped**
+
 ## [0.8.0] - 2026-04-29
 
 ### Added

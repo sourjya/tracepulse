@@ -21,14 +21,14 @@ graph LR
     (Kiro, Cursor, Claude Code)"]
 
     Dev -->|stdout / stderr| TP
-    TP -->|"18 MCP tools
+    TP -->|"19 MCP tools
     (JSON-RPC over stdio)"| Agent
     Agent -->|"get_errors()
     verify_fix()
     run_and_watch()"| TP
 ```
 
-TracePulse watches your dev server's output, parses errors from [18 sources](features/parsers.md) ([Node.js](https://nodejs.org), [Python](https://python.org), [Go](https://go.dev), [Java](https://dev.java), [Rust](https://www.rust-lang.org), [TypeScript](https://www.typescriptlang.org), and more), [scores them by importance](features/signal-scoring.md), and serves them to your AI coding agent through [18 MCP tools](features/mcp-tools.md).
+TracePulse watches your dev server's output, parses errors from [18 sources](features/parsers.md) ([Node.js](https://nodejs.org), [Python](https://python.org), [Go](https://go.dev), [Java](https://dev.java), [Rust](https://www.rust-lang.org), [TypeScript](https://www.typescriptlang.org), and more), [scores them by importance](features/signal-scoring.md), and serves them to your AI coding agent through [19 MCP tools](features/mcp-tools.md).
 
 The agent edits code, calls `get_errors()`, and instantly knows if the fix worked.
 

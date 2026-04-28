@@ -16,7 +16,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.8.0 - Phases 1-5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 17 error parsers, 15 MCP tools, 617 tests passing.
+🟡 **Alpha v0.8.1 - Phases 1-5 complete.** Core pipeline, watch mode, multi-process support, frontend-backend correlation, proactive monitoring. 18 error parsers, 19 MCP tools, 630 tests passing.
 
 ## Quick Start
 
@@ -128,9 +128,20 @@ Point directly to the built CLI:
 | `get_error_trends(fingerprint)` | Cross-session frequency and history for a fingerprint | ~500 |
 | `correlate_with_diff()` | Link errors to recent uncommitted git changes | ~1,000 |
 
+### Execution & Health
+
+| Tool | Description | Tokens |
+|------|-------------|--------|
+| `run_and_watch(command, timeout_seconds?)` | Run tests/linter/typechecker, get parsed results | ~1,000 |
+| `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status | ~1,000 |
+| `get_health_summary()` | One-line health check: errors, warnings, uptime | ~100 |
+| `verify_fix(duration_seconds?)` | All-in-one post-fix verification with pass/fail verdict | ~500 |
+| `wait_for_build(timeout_seconds?)` | Block until next build completes (event-driven) | ~200 |
+| `wait_for_event(type?, timeout_seconds?)` | Block until next error/warning/build/crash event | ~200 |
+
 ## Error Parsers
 
-TracePulse parses errors from 10 sources out of the box:
+TracePulse parses errors from 18 sources out of the box:
 
 **Runtime errors:**
 - **Node.js** - TypeError, ReferenceError, SyntaxError, etc. with V8 stack traces
@@ -145,6 +156,17 @@ TracePulse parses errors from 10 sources out of the box:
 - **TypeScript** - `tsc` compiler errors (TS####)
 - **ESLint** - Lint errors with rule names
 - **Vite/webpack** - Build tool errors (module not found, transform failures)
+- **Build Stats** - Module count, build time from Vite/webpack
+
+**Test runners:**
+- **pytest** - FAILED, ERROR, summary lines
+- **Jest** - FAIL header, assertion details
+- **vitest** - FAIL file, Expected/Received
+- **Go test** - `--- FAIL`, error with file:line
+
+**Infrastructure:**
+- **HTTP Access Log** - uvicorn, express/morgan, nginx with status and duration
+- **Migration** - alembic and Django migration output
 
 ## Signal Scoring
 

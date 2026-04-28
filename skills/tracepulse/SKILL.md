@@ -95,7 +95,7 @@ When a frontend page shows errors and you suspect a backend cause:
 3. `get_errors()` - see only errors from this action
 4. `get_new_errors()` - if persistence is enabled, shows only errors never seen before
 
-## Tool Reference (15 tools)
+## Tool Reference (19 tools)
 
 ### Quick checks (start here)
 

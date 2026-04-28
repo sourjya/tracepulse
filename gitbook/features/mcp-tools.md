@@ -1,4 +1,4 @@
-# 18 MCP Tools
+# 19 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
@@ -25,6 +25,7 @@ Every tool the agent can call, organized by workflow.
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `run_and_watch(command, timeout_seconds?)` | Run tests/linter/typechecker, get parsed results | ~1,000 tokens |
+| `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status | ~1,000 tokens |
 
 ## Deep Investigation
 

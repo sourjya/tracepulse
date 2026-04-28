@@ -19,7 +19,7 @@
 
 ## Features
 
-* [18 MCP Tools](features/mcp-tools.md)
+* [19 MCP Tools](features/mcp-tools.md)
 * [18 Error Parsers](features/parsers.md)
 * [Signal Scoring](features/signal-scoring.md)
 * [Hot-Reload Detection](features/hot-reload.md)
