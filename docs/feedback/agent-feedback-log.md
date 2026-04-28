@@ -162,6 +162,12 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 **Status:** ✅ Freshness metadata fully adopted by agent.
 
+### Feedback on `watch_for_errors` - uvicorn reload (repeat, already fixed)
+
+> "Zero events. Same `hot_reload_detected: false` gap. If TP could parse uvicorn's 'Detected changes in...' stdout line, this field would actually be useful."
+
+**Status:** ✅ Already fixed in v0.6.1 - uvicorn/Django/Flask patterns added to hot-reload detector. Agent is on a pre-fix session. Will work after session restart.
+
 ## Adoption Summary
 
 | Tool | Agent Trust Level | Usage Pattern |
