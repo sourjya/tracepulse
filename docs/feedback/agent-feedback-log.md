@@ -219,6 +219,16 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 | `get_error_context` | **Unused** | 0x | No errors to investigate |
 | `get_error_trends` | **Unused** | 0x | No errors to investigate |
 
+### get_errors caught live bug with 42 occurrences
+
+Agent called `get_errors(limit: 3)` and found `AttributeError: 'EntityMeta' object has no attribute 'get'` with 42 occurrences on the activity endpoint.
+
+> "**Win** - caught a live bug! AttributeError with 42 occurrences. This is the activity endpoint still crashing."
+
+> "**Wishlist**: if the error included the file + line number in the `context` field, I wouldn't need to grep for it."
+
+**Status:** ✅ Bug caught. The occurrence_count (42) told the agent this was a persistent issue, not transient. The Python parser should extract file:line from tracebacks - needs investigation why `context.file` was empty for this error (likely uvicorn logs the error message without the full traceback on a single line).
+
 ### Wishlist: bundle size delta in get_build_errors
 
 > "I wish this tool also returned the Vite module count or bundle size delta so I could track if my changes are bloating the bundle. Something like `"modules": 910, "delta": +2` would be useful for awareness without running a full build."
