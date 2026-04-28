@@ -219,6 +219,12 @@ The agent produced a comprehensive session report after ~35 tool invocations acr
 | `get_error_context` | **Unused** | 0x | No errors to investigate |
 | `get_error_trends` | **Unused** | 0x | No errors to investigate |
 
+### Wishlist: bundle size delta in get_build_errors
+
+> "I wish this tool also returned the Vite module count or bundle size delta so I could track if my changes are bloating the bundle. Something like `"modules": 910, "delta": +2` would be useful for awareness without running a full build."
+
+**Status:** 🔲 Interesting idea. Vite prints module count and build time in its output (`910 modules transformed`, `built in 1.06s`). TracePulse could parse these from the Vite build output and include them in `get_build_errors` response. Low effort if the dev server prints build stats to stdout. Add to post-v1.0 roadmap.
+
 ### First real error caught by filtering - 500 on activity endpoint
 
 Agent reported "nothing shows" on the activity page. Used `get_server_logs(limit: 10, message_contains: "/activity")` and **immediately found the 500 error** on line 50 of activity.py.
