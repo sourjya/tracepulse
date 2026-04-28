@@ -32,6 +32,7 @@ import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import { handleVerifyFix } from "@/tools/verify-fix.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
+import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -457,6 +458,17 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleWaitForEvent(buffer, args as Record<string, unknown>));
+
+  server.registerTool("run_and_watch", {
+    title: "Run And Watch",
+    description:
+      "Run a shell command (tests, linter, type checker), parse its output through TracePulse parsers, and return structured results with pass/fail, error count, and parsed error details.",
+    inputSchema: {
+      command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
+      timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  }, (args) => handleRunAndWatch(args as Record<string, unknown>));
 
   return server;
 }
