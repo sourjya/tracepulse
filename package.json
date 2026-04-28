@@ -1,6 +1,6 @@
 {
   "name": "tracepulse",
-  "version": "0.1.0",
+  "version": "0.6.1",
   "description": "Runtime feedback MCP server for AI coding agents. ViewGraph sees the UI — TracePulse feels the backend.",
   "type": "module",
   "license": "MIT",
@@ -51,12 +51,14 @@
     "@modelcontextprotocol/sdk": "^1.12.1"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
     "eslint": "^9.26.0",
     "prettier": "^3.5.3",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^3.1.3"
   }
 }

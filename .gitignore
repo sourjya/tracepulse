@@ -9,3 +9,7 @@ logs/
 .DS_Store
 coverage/
 .tracepulse/
+
+# ViewGraph - captures, tokens, local config
+.viewgraph/
+.kiro/settings/
