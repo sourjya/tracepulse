@@ -2,7 +2,7 @@
 
 **TracePulse - Runtime feedback MCP server.**
 
-ViewGraph sees the UI. TracePulse feels the backend.
+[ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse feels the backend.
 
 > "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark."
 > - Sentry Engineering
