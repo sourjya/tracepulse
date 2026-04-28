@@ -11,7 +11,7 @@ TracePulse closes this loop at dev time - seconds after the code change, not min
 
 ## What It Does
 
-TracePulse watches your dev server's output, parses errors from 18 sources (Node.js, Python, Go, Java, Rust, TypeScript, and more), scores them by importance, and serves them to your AI coding agent through MCP tools.
+TracePulse watches your dev server's output, parses errors from [18 sources](features/parsers.md) ([Node.js](https://nodejs.org), [Python](https://python.org), [Go](https://go.dev), [Java](https://dev.java), [Rust](https://www.rust-lang.org), [TypeScript](https://www.typescriptlang.org), and more), [scores them by importance](features/signal-scoring.md), and serves them to your AI coding agent through [18 MCP tools](features/mcp-tools.md).
 
 The agent edits code, calls `get_errors()`, and instantly knows if the fix worked.
 
