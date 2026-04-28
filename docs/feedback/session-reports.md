@@ -116,22 +116,60 @@ None - clean coding session. All tools returned zero errors.
 
 ---
 
+## Report #3 - PlanIQ Session 3 (late evening)
+
+**Date:** 2026-04-28 (late evening)
+**Agent:** Kiro CLI
+**Project:** PlanIQ
+**Mode:** Attach (tailing backend log file)
+**TracePulse version:** v0.7.1
+**Session duration:** ~1 hour
+**Companion tools:** Chrome DevTools MCP
+
+### Key Event: First Real 500 Error Caught
+
+User reported "nothing shows" on the activity page. Agent used:
+```
+get_server_logs(limit: 10, message_contains: "/activity")
+```
+
+**Result:** Immediately found the 500 error on line 50 of `activity.py`. Agent went from "page is blank" to "line 50 is crashing" in one tool call.
+
+Agent's feedback:
+> "**Win** - immediately found the 500 error on the project activity endpoint. Line 50 of `activity.py` is crashing. The `message_contains` filter worked perfectly to scope to activity-related requests."
+
+### Significance
+
+This is the **first time TracePulse caught a real runtime error** (not just a build check). The `message_contains` filter - requested by the agent earlier the same day, built and shipped within hours - directly enabled this catch.
+
+Without TracePulse: agent would have opened the backend log, scanned 10+ lines, found the 500 manually. ~2-3 minutes.
+With TracePulse: one tool call, instant result. ~5 seconds.
+
+### Tool Used
+
+| Tool | Calls | Result |
+|------|-------|--------|
+| get_server_logs | 1x | Found 500 error on /activity endpoint, activity.py:50 |
+
+---
+
 ## Aggregate Metrics
 
 ### Across all sessions
 
 | Metric | Value |
 |--------|-------|
-| Total sessions | 2 |
-| Total tool invocations | ~70 |
+| Total sessions | 3 |
+| Total tool invocations | ~71 |
 | Most used tool | get_build_errors (~23x total) |
 | Least used tools | get_error_context, get_error_trends (0x) |
-| Bugs TP caught | 1 (transient uvicorn crash) |
+| Bugs TP caught | 2 (transient uvicorn crash, activity endpoint 500) |
 | Bugs TP missed | 2 (both frontend-only) |
-| Time saved | ~22 minutes (build checks + crash verification) |
+| Time saved | ~25 minutes (build checks + crash verification + 500 catch) |
 | Time lost | ~15 minutes (export bug TP couldn't see) |
-| Net time impact | +7 minutes saved |
+| Net time impact | +10 minutes saved |
 | Features shipped from feedback | 6 (message_contains, status_code_min, freshness metadata, uvicorn patterns, structlog parser, last_event_timestamp) |
+| Feature request -> catch latency | Same day (message_contains requested -> shipped -> caught real bug) |
 
 ### Tool adoption curve
 
