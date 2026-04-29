@@ -18,7 +18,7 @@ run_and_watch("aws logs tail API-Gateway-Execution-Logs_abc123/prod --follow", t
 tracepulse attach --log-file <(aws logs tail /aws/lambda/my-function --follow)
 ```
 
-Requires: `aws` CLI installed and configured (`aws configure`).
+Requires: [`aws` CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured (`aws configure`).
 
 ## Google Cloud (GCP)
 
@@ -36,7 +36,7 @@ run_and_watch("kubectl logs -f deployment/my-app --tail=100", timeout_seconds: 6
 run_and_watch("gcloud app logs tail", timeout_seconds: 60)
 ```
 
-Requires: `gcloud` CLI installed and authenticated (`gcloud auth login`).
+Requires: [`gcloud` CLI](https://cloud.google.com/sdk/docs/install) installed and authenticated (`gcloud auth login`).
 
 ## Microsoft Azure
 
@@ -51,7 +51,7 @@ run_and_watch("az containerapp logs show --name my-app --resource-group my-rg --
 run_and_watch("kubectl logs -f deployment/my-app --tail=100", timeout_seconds: 60)
 ```
 
-Requires: `az` CLI installed and authenticated (`az login`).
+Requires: [`az` CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed and authenticated (`az login`).
 
 ## Kubernetes (any provider)
 
@@ -66,7 +66,7 @@ run_and_watch("kubectl logs -f -l app=my-service --all-containers --tail=50", ti
 run_and_watch("kubectl logs -f my-pod -c my-container", timeout_seconds: 60)
 ```
 
-Requires: `kubectl` configured with cluster access.
+Requires: [`kubectl`](https://kubernetes.io/docs/tasks/tools/) configured with cluster access.
 
 ## Docker (local or remote)
 
@@ -91,7 +91,7 @@ run_and_watch("heroku logs --tail --app my-app", timeout_seconds: 60)
 run_and_watch("heroku logs --tail --dyno web.1 --app my-app", timeout_seconds: 60)
 ```
 
-Requires: `heroku` CLI installed and authenticated.
+Requires: [`heroku` CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and authenticated.
 
 ## Vercel
 
@@ -100,7 +100,7 @@ Requires: `heroku` CLI installed and authenticated.
 run_and_watch("vercel logs my-project --follow", timeout_seconds: 60)
 ```
 
-Requires: `vercel` CLI installed and authenticated.
+Requires: [`vercel` CLI](https://vercel.com/docs/cli) installed and authenticated.
 
 ## Railway
 
@@ -109,7 +109,7 @@ Requires: `vercel` CLI installed and authenticated.
 run_and_watch("railway logs --follow", timeout_seconds: 60)
 ```
 
-Requires: `railway` CLI installed and linked to project.
+Requires: [`railway` CLI](https://docs.railway.com/guides/cli) installed and linked to project.
 
 ## Fly.io
 
@@ -118,7 +118,7 @@ Requires: `railway` CLI installed and linked to project.
 run_and_watch("fly logs --app my-app", timeout_seconds: 60)
 ```
 
-Requires: `fly` CLI installed and authenticated.
+Requires: [`fly` CLI](https://fly.io/docs/flyctl/install/) installed and authenticated.
 
 ## How It Works
 

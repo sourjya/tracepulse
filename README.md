@@ -209,13 +209,13 @@ Monitor cloud service logs with zero additional dependencies - uses your existin
 
 | Platform | Command |
 |----------|---------|
-| **AWS CloudWatch** | `run_and_watch("aws logs tail /aws/lambda/my-fn --follow")` |
-| **Google Cloud** | `run_and_watch("gcloud logging tail '...'")` |
-| **Azure** | `run_and_watch("az webapp log tail --name my-app")` |
-| **Kubernetes** | `run_and_watch("kubectl logs -f deployment/my-app")` |
-| **Docker** | `run_and_watch("docker logs -f my-container")` |
-| **Heroku** | `run_and_watch("heroku logs --tail --app my-app")` |
-| **Vercel / Railway / Fly.io** | Same pattern with their CLIs |
+| **[AWS CloudWatch](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)** | `run_and_watch("aws logs tail /aws/lambda/my-fn --follow")` |
+| **[Google Cloud](https://cloud.google.com/sdk/docs/install)** | `run_and_watch("gcloud logging tail '...'")` |
+| **[Azure](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)** | `run_and_watch("az webapp log tail --name my-app")` |
+| **[Kubernetes](https://kubernetes.io/docs/tasks/tools/)** | `run_and_watch("kubectl logs -f deployment/my-app")` |
+| **[Docker](https://docs.docker.com/get-started/get-docker/)** | `run_and_watch("docker logs -f my-container")` |
+| **[Heroku](https://devcenter.heroku.com/articles/heroku-cli)** | `run_and_watch("heroku logs --tail --app my-app")` |
+| **[Vercel](https://vercel.com/docs/cli)** / **[Railway](https://docs.railway.com/guides/cli)** / **[Fly.io](https://fly.io/docs/flyctl/install/)** | Same pattern with their CLIs |
 
 The same 20 parsers that catch local dev server errors catch cloud errors too.
 
