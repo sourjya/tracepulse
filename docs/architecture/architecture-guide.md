@@ -44,6 +44,8 @@ TracePulse is a **runtime feedback server** for AI coding agents. When you're us
 
 Every line your dev server prints goes through this pipeline before the AI agent can see it:
 
+> **Source:** [`src/cli.ts` - `createPipeline()`](../../src/cli.ts) | [`src/pipeline/`](../../src/pipeline/)
+
 ```
 Raw Log Line
     │
@@ -101,6 +103,8 @@ Raw Log Line
 
 ### RuntimeEvent - The Universal Error Format
 
+> **Source:** [`src/types/events.ts`](../../src/types/events.ts)
+
 Every error, warning, or log line becomes a `RuntimeEvent`. This is the single data shape that flows through the entire system.
 
 ```
@@ -129,6 +133,8 @@ RuntimeEvent
 
 ### Signal Scoring - How Important Is This Error?
 
+> **Source:** [`src/pipeline/signal-scorer.ts`](../../src/pipeline/signal-scorer.ts) | [`src/constants/scoring.ts`](../../src/constants/scoring.ts) | [`src/scoring/infra-patterns.ts`](../../src/scoring/infra-patterns.ts)
+
 ```
 Score 0 ──────────────────────────────────────────── 100
   │                    │                    │
@@ -156,6 +162,8 @@ Scoring is additive. Each matching condition adds points:
 ---
 
 ## MCP Tools - What the Agent Can Call
+
+> **Source:** [`src/mcp/server.ts`](../../src/mcp/server.ts) | [`src/tools/`](../../src/tools/)
 
 TracePulse exposes tools via the Model Context Protocol. These are the tools currently **registered and wired** in the MCP server:
 
@@ -203,6 +211,8 @@ These handlers exist as standalone functions and will be registered in the MCP s
 
 ## Error Parsers - What Languages Are Supported?
 
+> **Source:** [`src/parsers/`](../../src/parsers/) | [`src/pipeline/parser-registry.ts`](../../src/pipeline/parser-registry.ts)
+
 TracePulse has 9 parsers that run in priority order. The first parser that matches a log line wins.
 
 ```
@@ -234,6 +244,8 @@ Log Line Arrives
 
 ## Storage - The Ring Buffer
 
+> **Source:** [`src/store/ring-buffer.ts`](../../src/store/ring-buffer.ts) | [`src/types/collectors.ts`](../../src/types/collectors.ts)
+
 All events live in an in-memory ring buffer. No database, no files (except optional fingerprint persistence).
 
 ```
@@ -256,6 +268,8 @@ Features:
 ---
 
 ## Multi-Process Architecture (Phase 3)
+
+> **Source:** [`src/collectors/multi-process-collector.ts`](../../src/collectors/multi-process-collector.ts) | [`src/services/service-registry.ts`](../../src/services/service-registry.ts)
 
 TracePulse can monitor multiple services simultaneously:
 
@@ -293,6 +307,8 @@ TracePulse can monitor multiple services simultaneously:
 ---
 
 ## Frontend-Backend Correlation (Phase 4)
+
+> **Source:** [`src/correlation/fe-be-correlation.ts`](../../src/correlation/fe-be-correlation.ts) | [`src/correlation/frontend-error-buffer.ts`](../../src/correlation/frontend-error-buffer.ts) | [`src/correlation/trace-id-extractor.ts`](../../src/correlation/trace-id-extractor.ts)
 
 TracePulse can match browser HTTP failures with backend stack traces:
 
@@ -336,6 +352,8 @@ Browser (Chrome)                    Dev Server (Node/Python/etc.)
 
 ## Security Model
 
+> **Source:** [`src/pipeline/secret-redactor.ts`](../../src/pipeline/secret-redactor.ts) | [`src/constants/redaction.ts`](../../src/constants/redaction.ts)
+
 TracePulse handles potentially sensitive log output. Here's how it stays safe:
 
 ```
@@ -371,6 +389,8 @@ TracePulse handles potentially sensitive log output. Here's how it stays safe:
 ---
 
 ## Configuration
+
+> **Source:** [`src/config/config-schema.ts`](../../src/config/config-schema.ts) | [`src/config/config-loader.ts`](../../src/config/config-loader.ts) | [`src/cli.ts`](../../src/cli.ts)
 
 ### Zero-Config (Single Process)
 
