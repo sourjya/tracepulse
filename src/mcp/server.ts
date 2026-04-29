@@ -34,6 +34,7 @@ import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import { handleGetRequests } from "@/tools/get-requests.js";
+import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -226,6 +227,7 @@ export function createMcpServer(
     cwd?: string;
     correlationSource?: string;
     isAttachMode?: boolean;
+    restartFn?: RestartFn;
   },
 ): McpServer {
   const server = new McpServer({
@@ -482,6 +484,13 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleGetRequests(buffer, args as Record<string, unknown>));
+
+  server.registerTool("restart_server", {
+    title: "Restart Server",
+    description:
+      "Kill and respawn the dev server process. Only works in start mode. Use after installing dependencies, changing config, or when the server is stuck.",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  }, () => handleRestartServer(options?.restartFn ?? null));
 
   return server;
 }

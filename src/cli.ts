@@ -436,12 +436,29 @@ async function main(): Promise<void> {
   }
 
   // Create and connect MCP server over stdio
+  // Build restart function for start mode
+  const restartFn = (parsed.command === "start" && parsed.target) ? async () => {
+    try {
+      await collector.stop();
+      const newCollector = createProcessSpawner(parsed.target!);
+      await newCollector.start(processLine);
+      // Update collector reference for isConnected and shutdown
+      (collector as any).stop = () => newCollector.stop();
+      (collector as any).isConnected = () => newCollector.isConnected();
+      return { success: true, message: `Server restarted: ${parsed.target}` };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, message: `Restart failed: ${msg}` };
+    }
+  } : undefined;
+
   const server = createMcpServer(buffer, () => collector.isConnected(), {
     registry: serviceRegistry,
     frontendBuffer,
     fingerprintHistory,
     cwd: process.cwd(),
     isAttachMode: parsed.command === "attach",
+    restartFn,
   });
   const transport = new StdioServerTransport();
 
