@@ -95,7 +95,7 @@ When a frontend page shows errors and you suspect a backend cause:
 3. `get_errors()` - see only errors from this action
 4. `get_new_errors()` - if persistence is enabled, shows only errors never seen before
 
-## Tool Reference (19 tools)
+## Tool Reference (24 tools)
 
 ### Quick checks (start here)
 
@@ -136,6 +136,64 @@ When a frontend page shows errors and you suspect a backend cause:
 | `list_services()` | Multi-service mode: which services are running/crashed? | ~200 tokens |
 | `get_health_summary()` | One-line health check: error count, warnings, uptime. Replaces 3 separate calls. | ~100 tokens |
 | `verify_fix(duration_seconds?)` | All-in-one post-fix check: watches for errors + checks build + reports pass/fail verdict. | ~500 tokens |
+| `restart_server()` | Kill and respawn the dev server (start mode only). | ~100 tokens |
+
+### Infrastructure & project health
+
+| Tool | When to use | Cost |
+|------|-------------|------|
+| `get_project_health()` | **Start here for any session.** Composite: server + infra + errors + build in one call. | ~200 tokens |
+| `get_infra_status()` | Summary of all backend services (DB, Redis, etc.) with connectivity status. | ~200 tokens |
+| `get_infra_detail(name)` | Per-service detail with probe history. Use after get_infra_status shows something unreachable. | ~200 tokens |
+| `check_port(port)` | Is a port available or in use? Use before starting a server. | ~50 tokens |
+| `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status. | ~1,000 tokens |
+
+## Workflow Examples
+
+### Starting a new session
+```
+get_project_health()
+```
+One call tells you: is the server running? Any errors? Are databases/Redis reachable? Any build failures?
+
+### "Something is broken but I don't know what"
+```
+1. get_project_health()     -> see if server, infra, or code is the problem
+2. If infra unreachable:    -> get_infra_detail("PostgreSQL") -> check connection
+3. If runtime errors:       -> get_errors(limit: 3) -> get_error_context(fingerprint)
+4. If build errors:         -> get_build_errors() -> fix code
+```
+
+### "Is the database connected?"
+```
+get_infra_status()
+```
+Shows all services discovered from .env with reachable/unreachable status and latency.
+
+### "Check dependencies and security"
+```
+run_and_watch("npm audit")       -> parsed vulnerability count
+run_and_watch("npm outdated")    -> outdated packages
+run_and_watch("pip audit")       -> Python security scan
+```
+
+### "Run tests with coverage"
+```
+run_and_watch("npx vitest --coverage")   -> parsed test results + coverage %
+run_and_watch("pytest --cov")            -> parsed test results + coverage %
+```
+
+### "Server won't start - port in use"
+```
+check_port(3000)                 -> "Port 3000 is in use"
+```
+
+### "Restart after installing a dependency"
+```
+run_and_watch("pip install flask")
+restart_server()
+verify_fix(10)
+```
 
 ## Key Fields in Error Responses
 
@@ -167,12 +225,13 @@ Fields on each error in the `errors` array:
 
 Start cheap, drill down only when needed:
 
-1. **`get_runtime_status`** (~100 tokens) - is the server running? any errors?
+1. **`get_project_health`** (~200 tokens) - server + infra + errors + build in one call. **Start here.**
 2. **`get_errors`** (~1,000 tokens) - what broke? sorted by severity
 3. **`get_error_context`** (~3,000 tokens) - full details on one specific error
-4. **`get_timeline`** (~5,000 tokens) - everything that happened in a time window
+4. **`get_infra_detail`** (~200 tokens) - per-service connectivity detail
+5. **`get_timeline`** (~5,000 tokens) - everything that happened in a time window
 
-Don't call `get_timeline` or `get_server_logs` unless you need the full picture. `get_errors` is almost always enough.
+Don't call `get_timeline` or `get_server_logs` unless you need the full picture. `get_project_health` -> `get_errors` covers 90% of cases.
 
 ## Pro Tips
 
