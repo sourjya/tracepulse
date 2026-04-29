@@ -39,6 +39,7 @@ import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-st
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import { handleCheckPort } from "@/tools/check-port.js";
 import { handleGetProjectHealth } from "@/tools/get-project-health.js";
+import { handleRegisterProbe, handleListProbes, createProbeManager, type ProbeManager } from "@/tools/register-probe.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -233,6 +234,7 @@ export function createMcpServer(
     isAttachMode?: boolean;
     restartFn?: RestartFn;
     infraMonitor?: InfraMonitor;
+    probeManager?: ProbeManager;
   },
 ): McpServer {
   const server = new McpServer({
@@ -534,6 +536,31 @@ export function createMcpServer(
     getConnected,
     options?.infraMonitor ?? null,
   ));
+
+  const probeManager = options?.probeManager ?? createProbeManager();
+
+  server.registerTool("register_probe", {
+    title: "Register Probe",
+    description:
+      "Register a health probe for a critical endpoint. TP will check it periodically and alert on failure. Use after building a new API route.",
+    inputSchema: {
+      name: z.string().describe("Probe name (e.g., 'login', 'health')."),
+      method: z.string().optional().describe("HTTP method (default GET)."),
+      url: z.string().describe("Full URL to probe (e.g., 'http://localhost:8000/api/health')."),
+      body: z.any().optional().describe("Request body for POST/PUT (JSON object)."),
+      expect_status: z.number().optional().describe("Expected HTTP status (default 200)."),
+      expect_body_contains: z.string().optional().describe("String that must appear in response body."),
+      interval_seconds: z.number().optional().describe("Check interval (default 60s)."),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+  }, (args) => handleRegisterProbe(probeManager, args as Record<string, unknown>));
+
+  server.registerTool("list_probes", {
+    title: "List Probes",
+    description:
+      "List all registered health probes with their latest results (pass/fail/error).",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleListProbes(probeManager));
 
   return server;
 }
