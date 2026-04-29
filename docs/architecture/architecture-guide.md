@@ -451,11 +451,11 @@ src/
 │   ├── get-build-errors.ts         # MCP tool handler
 │   ├── get-error-context.ts        # MCP tool handler
 │   ├── get-timeline.ts             # MCP tool handler
-│   ├── list-services.ts            # MCP tool handler (not yet wired)
-│   ├── get-correlated-errors.ts    # MCP tool handler (not yet wired)
-│   ├── get-new-errors.ts           # MCP tool handler (not yet wired)
-│   ├── get-error-trends.ts         # MCP tool handler (not yet wired)
-│   └── correlate-with-diff.ts      # MCP tool handler (not yet wired)
+│   ├── list-services.ts            # MCP tool handler 
+│   ├── get-correlated-errors.ts    # MCP tool handler 
+│   ├── get-new-errors.ts           # MCP tool handler 
+│   ├── get-error-trends.ts         # MCP tool handler 
+│   └── correlate-with-diff.ts      # MCP tool handler 
 ├── services/
 │   └── service-registry.ts         # Multi-service lifecycle tracking
 ├── config/

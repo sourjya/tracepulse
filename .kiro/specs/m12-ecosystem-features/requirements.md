@@ -45,3 +45,11 @@
 - [ ] 10. **Schema drift detection** - compare TS interfaces with API response shapes
 - [ ] 11. **Parallel conflict detection** - cross-service file path collision alerts
 - [ ] 12. **New SKILL.md decision trees** - project startup, pre-commit, debug blank page, perf investigation
+
+### Phase 5: Infrastructure Hardening (post-v1.0)
+
+- [ ] 13. **Stdout guard** - intercept/redirect third-party dep stdout writes that break MCP JSON-RPC
+- [ ] 14. **Inactivity detector** - "no server activity for 30s after file change" suggests restart for Go/Java/Rust
+- [ ] 15. **Stdin pipe mode** - `tracepulse pipe` reads from stdin for `tail -f | tracepulse pipe` workflows
+- [ ] 16. **Log directory watching** - `--log-dir ./logs/` auto-discovers and tails all .log files
+- [ ] 17. **MCP push notifications** - wire notification dispatcher when MCP protocol supports push

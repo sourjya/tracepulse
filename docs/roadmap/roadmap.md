@@ -13,13 +13,13 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M3: Multi-Process & Docker | Phase 3 | v0.4.0 | ✅ Complete |
 | M4: Frontend-Backend Correlation | Phase 4 | v0.5.0 | ✅ Complete |
 | M5: Proactive Monitoring | Phase 5 | v0.6.0 | ✅ Complete |
-| M7a: Multi-File Attach + Filters | Agent Feedback | v0.7.0 | 🔲 Not Started |
-| M7b: Test Runner Integration | Agent Feedback | v0.7.1 | 🔲 Not Started |
-| M7c: Agent Workflow Skills | Competitive Research | v0.7.2 | 🔲 Not Started |
-| M8: Dev Infrastructure Awareness | Agent Feedback + Research | v0.8.0 | 🔲 Not Started |
-| M9: Infrastructure Discovery & Health | Research | v0.9.0 | 🔲 Not Started |
-| M10: Project Health & Dependency Awareness | Gap Analysis | v0.9.1 | 🔲 Not Started |
-| M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | 🔲 Not Started |
+| M7a: Multi-File Attach + Filters | Agent Feedback | v0.7.0 | ✅ Complete |
+| M7b: Test Runner Integration | Agent Feedback | v0.7.1 | ✅ Complete |
+| M7c: Agent Workflow Skills | Competitive Research | v0.7.2 | ✅ Complete |
+| M8: Dev Infrastructure Awareness | Agent Feedback + Research | v0.8.0 | ✅ Complete |
+| M9: Infrastructure Discovery & Health | Research | v0.9.0 | ✅ Complete |
+| M10: Project Health & Dependency Awareness | Gap Analysis | v0.9.1 | ✅ Complete |
+| M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | ✅ Complete |
 | M12: Ecosystem Research Features | Research | v0.9.3-v1.0 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 

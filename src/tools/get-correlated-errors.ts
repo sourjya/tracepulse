@@ -38,11 +38,18 @@ export function handleGetCorrelatedErrors(
 
   const correlations = correlateFrontendBackend(frontendErrors, backendEvents);
 
+  const result: Record<string, unknown> = { correlations };
+  if (correlations.length === 0) {
+    result.diagnostics = frontendErrors.length === 0
+      ? "No frontend errors in buffer. No browser-side error source is configured. Use Chrome DevTools MCP list_console_messages(types: ['error']) to check browser errors directly, or inject the error catcher from skills/browser-errors/SKILL.md."
+      : `${frontendErrors.length} frontend error(s) found but none matched backend errors. Try get_errors(message_contains: '/path') to search backend logs directly.`;
+  }
+
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify({ correlations }),
+        text: JSON.stringify(result),
       },
     ],
   };
