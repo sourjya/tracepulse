@@ -36,6 +36,7 @@ import { loadFingerprints, saveFingerprints } from "@/persistence/fingerprint-st
 import { createMultiProcessCollector } from "@/collectors/multi-process-collector.js";
 import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
+import { createInfraMonitor } from "@/infra/infra-monitor.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -436,6 +437,10 @@ async function main(): Promise<void> {
   }
 
   // Create and connect MCP server over stdio
+  // Start infrastructure monitor (discovers services from .env, probes connectivity)
+  const infraMonitor = createInfraMonitor();
+  infraMonitor.start();
+
   // Build restart function for start mode
   const restartFn = (parsed.command === "start" && parsed.target) ? async () => {
     try {
@@ -459,6 +464,7 @@ async function main(): Promise<void> {
     cwd: process.cwd(),
     isAttachMode: parsed.command === "attach",
     restartFn,
+    infraMonitor,
   });
   const transport = new StdioServerTransport();
 
@@ -470,6 +476,7 @@ async function main(): Promise<void> {
     shuttingDown = true;
     process.stderr.write("[tracepulse] Shutting down...\n");
     if (healthProber) healthProber.stop();
+    infraMonitor.stop();
     if (persistEnabled) {
       saveFingerprints(FINGERPRINT_PERSISTENCE_PATH, fingerprintHistory.exportEntries());
       process.stderr.write("[tracepulse] Fingerprints saved to disk\n");

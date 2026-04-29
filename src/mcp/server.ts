@@ -35,6 +35,8 @@ import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import { handleGetRequests } from "@/tools/get-requests.js";
 import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
+import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-status.js";
+import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -228,6 +230,7 @@ export function createMcpServer(
     correlationSource?: string;
     isAttachMode?: boolean;
     restartFn?: RestartFn;
+    infraMonitor?: InfraMonitor;
   },
 ): McpServer {
   const server = new McpServer({
@@ -491,6 +494,26 @@ export function createMcpServer(
       "Kill and respawn the dev server process. Only works in start mode. Use after installing dependencies, changing config, or when the server is stuck.",
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
   }, () => handleRestartServer(options?.restartFn ?? null));
+
+  server.registerTool("get_infra_status", {
+    title: "Get Infrastructure Status",
+    description:
+      "Summary of all discovered backend services (databases, Redis, queues) with connectivity status. Reads from .env files, probes every 60s.",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetInfraStatus(options?.infraMonitor ?? { getAll: () => [], getByName: () => undefined, getSummary: () => "Infrastructure monitoring not configured" } as any));
+
+  server.registerTool("get_infra_detail", {
+    title: "Get Infrastructure Detail",
+    description:
+      "Detailed status for a specific infrastructure service including connection history. Use after get_infra_status to investigate an unreachable service.",
+    inputSchema: {
+      name: z.string().describe("Service name (e.g., 'PostgreSQL', 'Redis')."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleGetInfraDetail(
+    options?.infraMonitor ?? { getAll: () => [], getByName: () => undefined, getSummary: () => "" } as any,
+    args as Record<string, unknown>,
+  ));
 
   return server;
 }

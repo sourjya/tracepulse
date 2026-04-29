@@ -17,6 +17,7 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M7b: Test Runner Integration | Agent Feedback | v0.7.1 | 🔲 Not Started |
 | M7c: Agent Workflow Skills | Competitive Research | v0.7.2 | 🔲 Not Started |
 | M8: Dev Infrastructure Awareness | Agent Feedback + Research | v0.8.0 | 🔲 Not Started |
+| M9: Infrastructure Discovery & Health | Research | v0.9.0 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 
 ## M7: Agent-Driven Enhancements
