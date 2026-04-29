@@ -255,6 +255,17 @@ Agent called `get_errors(limit: 3)` and found `AttributeError: 'EntityMeta' obje
 
 **Status:** 🔲 Known limitation. Multi-file attach (shipped v0.7.0) solves this if agent tails both backend + frontend logs. Agent hasn't tried multi-file attach yet.
 
+### "Pinned errors" gap - errors age out of buffer
+
+> "Error not found - the buffer was likely cleared or the error aged out. This is the 'pinned errors' gap - once an error leaves the buffer, it's gone."
+
+Agent had the fingerprint from a previous `get_errors` call but by the time it called `get_error_context`, the error had been evicted from the 500-event ring buffer. Had to fall back to reading the source file directly.
+
+**Status:** 🔲 New gap. Options:
+1. Increase ring buffer size (simple but uses more memory)
+2. "Pin" high-signal errors so they survive eviction
+3. Store last N error details in fingerprint persistence (already has `last_message` field)
+
 ### "HMR completed for N files" in watch_for_errors
 
 > "Would be useful if watch_for_errors could report 'HMR completed successfully for N files' rather than just silence. Silence means either 'nothing happened' or 'everything is fine' - can't distinguish."
