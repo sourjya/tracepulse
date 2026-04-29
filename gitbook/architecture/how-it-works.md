@@ -38,7 +38,7 @@ graph TD
     D --> F["Check hot-reload patterns"]
     E --> F
     F -->|"Match (e.g. Vite compiled)"| G["Inject reload marker"]
-    F -->|No match| H["Try 18 parsers"]
+    F -->|No match| H["Try 20 parsers"]
     G --> H
     H -->|"Parser matched
     (e.g. Python traceback)"| I["Extract file, line,
@@ -50,7 +50,7 @@ graph TD
     K --> L["Store in ring buffer
     (500 events max)"]
     L --> M["Available via
-    18 MCP tools"]
+    24 MCP tools"]
 
     style A fill:#f96
     style L fill:#6af
@@ -106,5 +106,5 @@ sequenceDiagram
 
 - [Data Pipeline (10 stages)](pipeline.md)
 - [Signal Scoring](../features/signal-scoring.md)
-- [18 Error Parsers](../features/parsers.md)
+- [20 Error Parsers](../features/parsers.md)
 - [The Three-Layer Stack](three-layer-stack.md)

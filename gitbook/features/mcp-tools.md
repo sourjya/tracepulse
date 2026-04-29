@@ -1,4 +1,4 @@
-# 19 MCP Tools
+# 24 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
@@ -50,3 +50,15 @@ Every tool the agent can call, organized by workflow.
 |------|-------------|------|
 | `clear_errors(fingerprint?)` | Clear all or specific errors | ~50 tokens |
 | `list_services()` | Service names, statuses, error counts | ~200 tokens |
+| `get_health_summary()` | One-line health check replacing 3 calls | ~100 tokens |
+| `verify_fix(duration_seconds?)` | All-in-one post-fix: watch + build + pass/fail | ~500 tokens |
+| `restart_server()` | Kill and respawn dev server (start mode only) | ~100 tokens |
+
+## Infrastructure & Project Health
+
+| Tool | What it does | Cost |
+|------|-------------|------|
+| `get_project_health()` | **Start here.** Server + infra + errors + build in one call | ~200 tokens |
+| `get_infra_status()` | All backend services (DB, Redis, etc.) with connectivity | ~200 tokens |
+| `get_infra_detail(name)` | Per-service detail with probe history | ~200 tokens |
+| `check_port(port)` | Is a TCP port available or in use? | ~50 tokens |

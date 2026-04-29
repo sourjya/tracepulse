@@ -12,10 +12,10 @@ graph TB
     subgraph "Layer 1: Backend (TracePulse)"
         direction LR
         TP1["Error Detection
-        18 parsers"]
+        20 parsers"]
         TP2["Signal Scoring
         0-100"]
-        TP3["18 MCP Tools"]
+        TP3["24 MCP Tools"]
     end
 
     subgraph "Layer 2: Browser (Chrome DevTools MCP)"

@@ -6,7 +6,7 @@ TracePulse ships 8 skill files that teach AI agents structured debugging workflo
 
 | Skill | File | What it teaches |
 |-------|------|----------------|
-| **TracePulse** | `skills/tracepulse/SKILL.md` | All 18 tools, when to use each, pro tips |
+| **TracePulse** | `skills/tracepulse/SKILL.md` | All 24 tools, when to use each, pro tips |
 | **Backend Error Triage** | `skills/backend-error-triage/SKILL.md` | 7-step debugging workflow |
 | **Edit-Verify Loop** | `skills/edit-verify-loop/SKILL.md` | Edit -> verify -> fix -> verify cycle |
 | **Full-Stack Debug** | `skills/full-stack-debug/SKILL.md` | TracePulse + Chrome DevTools MCP |

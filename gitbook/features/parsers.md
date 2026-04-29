@@ -1,6 +1,6 @@
-# 18 Error Parsers
+# 20 Error Parsers
 
-TracePulse parses errors from 18 sources. Parsers run in priority order - first match wins.
+TracePulse parses errors from 20 sources. Parsers run in priority order - first match wins.
 
 ## Runtime Parsers
 
@@ -38,6 +38,8 @@ TracePulse parses errors from 18 sources. Parsers run in priority order - first 
 | Parser | Detects | Example |
 |--------|---------|---------|
 | **Migration** | alembic + Django migration output | `Running upgrade abc123 -> def456` |
+| **npm audit** | Vulnerability summary | `6 vulnerabilities (2 critical, 1 high)` |
+| **Coverage** | Istanbul/pytest-cov percentages | `Statements: 85.23%`, `TOTAL 1234 567 54%` |
 
 ## Unmatched Lines
 

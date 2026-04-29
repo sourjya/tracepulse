@@ -9,7 +9,7 @@ They're complementary, not competitive.
 | Network requests | No | Yes |
 | Request/response bodies | No | Yes |
 | Screenshots | No | Yes |
-| Error parsing | Yes (18 parsers) | No (raw text) |
+| Error parsing | Yes (20 parsers) | No (raw text) |
 | Signal scoring | Yes | No |
 | Requires browser | No | Yes |
 

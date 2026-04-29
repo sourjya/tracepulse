@@ -13,7 +13,7 @@ Match against 11 dev tool patterns. Inject synthetic marker events.
 Buffer consecutive lines that form a traceback block (Python, Go, Java). Feed as single string to parsers.
 
 ## Stage 5: Parser Registry
-Try 18 parsers in priority order. First match wins. Unmatched lines become raw info events.
+Try 20 parsers in priority order. First match wins. Unmatched lines become raw info events.
 
 ## Stage 6: Normalization
 Convert to RuntimeEvent: truncate message (500 chars), stack trace (15 frames), raw (1000 chars).

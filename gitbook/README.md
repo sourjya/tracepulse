@@ -21,14 +21,14 @@ graph LR
     (Kiro, Cursor, Claude Code)"]
 
     Dev -->|stdout / stderr| TP
-    TP -->|"19 MCP tools
+    TP -->|"24 MCP tools
     (JSON-RPC over stdio)"| Agent
     Agent -->|"get_errors()
     verify_fix()
     run_and_watch()"| TP
 ```
 
-TracePulse watches your dev server's output, parses errors from [18 sources](features/parsers.md) ([Node.js](https://nodejs.org), [Python](https://python.org), [Go](https://go.dev), [Java](https://dev.java), [Rust](https://www.rust-lang.org), [TypeScript](https://www.typescriptlang.org), and more), [scores them by importance](features/signal-scoring.md), and serves them to your AI coding agent through [19 MCP tools](features/mcp-tools.md).
+TracePulse watches your dev server's output, parses errors from [20 sources](features/parsers.md) ([Node.js](https://nodejs.org), [Python](https://python.org), [Go](https://go.dev), [Java](https://dev.java), [Rust](https://www.rust-lang.org), [TypeScript](https://www.typescriptlang.org), and more), [scores them by importance](features/signal-scoring.md), and serves them to your AI coding agent through [24 MCP tools](features/mcp-tools.md).
 
 The agent edits code, calls `get_errors()`, and instantly knows if the fix worked.
 
@@ -42,13 +42,13 @@ graph TD
     C --> D["Hot-Reload Detection
     (11 dev tools)"]
     D --> E["Parser Registry
-    (18 parsers)"]
+    (20 parsers)"]
     E --> F["Signal Scoring
     (0-100)"]
     F --> G["Ring Buffer
     (500 events)"]
     G --> H["MCP Tools
-    (18 tools)"]
+    (24 tools)"]
     H --> I["AI Agent"]
 
     style A fill:#f96,stroke:#333
@@ -114,8 +114,8 @@ sequenceDiagram
 ## Quick Links
 
 - [Quick Start (2 minutes) ->](getting-started/quick-start.md)
-- [18 MCP Tools ->](features/mcp-tools.md)
-- [18 Error Parsers ->](features/parsers.md)
+- [24 MCP Tools ->](features/mcp-tools.md)
+- [20 Error Parsers ->](features/parsers.md)
 - [How It Works ->](architecture/how-it-works.md)
 - [Feature Matrix vs Competitors ->](comparison/feature-matrix.md)
 
