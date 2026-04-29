@@ -37,6 +37,8 @@ import { handleGetRequests } from "@/tools/get-requests.js";
 import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
 import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-status.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
+import { handleCheckPort } from "@/tools/check-port.js";
+import { handleGetProjectHealth } from "@/tools/get-project-health.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
 import type { FrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -513,6 +515,24 @@ export function createMcpServer(
   }, (args) => handleGetInfraDetail(
     options?.infraMonitor ?? { getAll: () => [], getByName: () => undefined, getSummary: () => "" } as any,
     args as Record<string, unknown>,
+  ));
+
+  server.registerTool("check_port", {
+    title: "Check Port",
+    description: "Check if a TCP port is available or in use on localhost.",
+    inputSchema: { port: z.number().describe("Port number to check.") },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleCheckPort(args as Record<string, unknown>));
+
+  server.registerTool("get_project_health", {
+    title: "Get Project Health",
+    description:
+      "Composite health check: server status + infrastructure connectivity + error count + build status in one call. Use as the first call in any debugging session.",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetProjectHealth(
+    buffer,
+    getConnected,
+    options?.infraMonitor ?? null,
   ));
 
   return server;

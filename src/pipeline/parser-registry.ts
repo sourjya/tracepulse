@@ -28,6 +28,8 @@ import { jestParser } from '@/parsers/test/jest-parser.js';
 import { vitestParser } from '@/parsers/test/vitest-parser.js';
 import { goTestParser } from '@/parsers/test/go-test-parser.js';
 import { migrationParser } from '@/parsers/migration-parser.js';
+import { npmAuditParser } from '@/parsers/npm-audit-parser.js';
+import { coverageParser } from '@/parsers/coverage-parser.js';
 
 // ──────────────────────────────────────────────
 // Parser Registry Interface
@@ -104,5 +106,7 @@ export function createDefaultRegistry(): ParserRegistry {
     vitestParser,
     goTestParser,
     migrationParser,
+    npmAuditParser,
+    coverageParser,
   ]);
 }
