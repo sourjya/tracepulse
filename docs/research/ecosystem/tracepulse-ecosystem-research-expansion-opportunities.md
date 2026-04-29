@@ -41,7 +41,7 @@ The pattern is consistent: **anything that never touches server stdout/stderr is
 
 ### 2.1 The Token Problem Is Structural
 
-Research from Morph (2026), Cognition's internal measurements, and SWE-Pruner (arXiv 2601.16746) all converge on the same finding: **agents spend 60-80% of their token budget on orientation and retrieval, not problem-solving**. One developer reported Claude Code reading 25 files to answer a question that required 3. The answer needed ~800 tokens; the retrieval burned ~12,000.
+Research from Morph (2026), Cognition's internal measurements, and SWE-Pruner (arXiv 2601.16746) all converge on the same finding: **agents spend 60-80% of their token budget on orientation and retrieval, not problem-solving**. One developer [tracked every token](https://ide.com/i-tracked-every-token-my-ai-coding-agent-consumed-for-a-week-70-was-waste/) across 42 Claude Code sessions and found 70% waste - an average of 23 file-read tool calls per prompt, with only 50K of 180K tokens relevant to the question.
 
 TracePulse already attacks this with signal scoring, fingerprint deduplication, progressive disclosure, and `message_contains` filtering.
 

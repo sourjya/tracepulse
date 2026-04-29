@@ -3,7 +3,7 @@
 ## Token Efficiency USPs
 
 **USP-1: "Agents spend 60-80% of tokens on orientation, not problem-solving"**
-> Research from Morph (2026), Cognition, and SWE-Pruner (arXiv 2601.16746): agents burn 12,000 tokens reading 25 files to answer a question that needed 800 tokens from 3 files.
+> Research from Morph (2026), Cognition, and SWE-Pruner (arXiv 2601.16746). One developer [tracked 42 sessions](https://ide.com/i-tracked-every-token-my-ai-coding-agent-consumed-for-a-week-70-was-waste/) and found 70% waste: 23 file-read calls per prompt, 180K tokens consumed, only 50K relevant.
 > TracePulse: one `get_errors()` call returns the exact file:line in ~1,000 tokens.
 
 **USP-2: "26% reduction in agent interaction rounds with focused context"**

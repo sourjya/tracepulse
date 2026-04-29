@@ -31,13 +31,13 @@ These problems cost 15-30 minutes per debugging session. TracePulse eliminates t
 
 ## Your Agent Is Wasting Tokens
 
-Research from [Morph](https://www.morphllm.com) (2026), [Cognition](https://cognition.ai) internal measurements, and [SWE-Pruner](https://arxiv.org/abs/2601.16746) (arXiv 2601.16746) shows AI agents spend **60-80% of their token budget** on orientation and retrieval, not problem-solving. One developer reported Claude Code reading 25 files to answer a question that needed 3.
+Research from [Morph](https://www.morphllm.com) (2026), [Cognition](https://cognition.ai) internal measurements, and [SWE-Pruner](https://arxiv.org/abs/2601.16746) (arXiv 2601.16746) shows AI agents spend **60-80% of their token budget** on orientation and retrieval, not problem-solving. One developer [tracked every token](https://ide.com/i-tracked-every-token-my-ai-coding-agent-consumed-for-a-week-70-was-waste/) across 42 Claude Code sessions on a real codebase and found **70% waste** - an average of 23 file-read tool calls per prompt, with only 50K of 180K tokens actually relevant to the question.
 
 <figure><img src=".gitbook/assets/tracepulse-token-efficiency.svg" alt="Token comparison: 12,000 down to 1,000 per error" width="960"></figure>
 
 TracePulse pre-parses, scores, and deduplicates. The agent gets the exact file:line in one call instead of scanning raw logs.
 
-**That's 12,000 tokens down to 1,000. Per error. Per session.**
+**That's 12,000 tokens down to 1,000. Per error. Per session.** (Measured in live debugging sessions - see [TracePulse in Action](tutorials/tracepulse-in-action.md))
 
 ---
 
@@ -72,7 +72,7 @@ From 3 agent sessions on a production project:
 | Time saved (build checks) | 20+ minutes |
 | Real bugs caught | 3 |
 | Feature request to bug catch | Same day |
-| Agent wishlist items shipped | 21/22 (95%) |
+| Agent wishlist items shipped | [15/20 (75%)](https://github.com/sourjya/tracepulse/blob/main/docs/research/agent-feedback/agent-wishlist.md) |
 
 ---
 
