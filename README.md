@@ -183,25 +183,44 @@ Every event gets a `signal_score` (0–100) and `signal_strength` (high/medium/l
 ```bash
 # Single process - spawn and monitor
 tracepulse start "npm run dev"
+```
+Spawns your dev server as a child process, captures its stdout/stderr, and monitors for errors. TracePulse manages the process lifecycle - forwards SIGTERM/SIGKILL on shutdown.
 
+```bash
 # Attach to existing log file
 tracepulse attach --log-file ./server.log
+```
+Tails an existing log file without spawning any process. Use when your servers are already running - managed by Docker, tmux, pm2, systemd, or custom scripts.
 
+```bash
 # Multi-process - monitor multiple services
 tracepulse start --service api="npm run dev:api" --service worker="npm run worker"
+```
+Spawns multiple services simultaneously. Each service's output is tagged with its name - filter with `get_errors(service: "api")` or see all with `list_services()`.
 
+```bash
 # Config file
 tracepulse start --config tracepulse.config.json
+```
+Reads service definitions, transport settings, and persistence options from a JSON config file instead of CLI flags. See [Configuration](docs/architecture/architecture-guide.md) for the schema.
 
+```bash
 # Docker Compose
 tracepulse compose --file docker-compose.yml
+```
+Discovers services from a Docker Compose file and tails their container logs via the Docker Engine API. Each container's output is tagged with its compose service name.
 
+```bash
 # With persistence (saves fingerprints across sessions)
 tracepulse start --persist "npm run dev"
+```
+Saves error fingerprints to `.tracepulse/fingerprints.json` on shutdown, loads them on startup. Enables `get_new_errors()` (only unseen fingerprints) and `get_error_trends()` (cross-session history).
 
+```bash
 # With HTTP transport (for multi-client scenarios)
 tracepulse start --http "npm run dev"
 ```
+Starts a Streamable HTTP server on `127.0.0.1:9800` alongside the default stdio transport. Allows multiple MCP clients to connect to the same TracePulse instance simultaneously.
 
 ## Cloud Log Monitoring
 
