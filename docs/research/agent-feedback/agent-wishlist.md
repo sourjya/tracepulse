@@ -27,5 +27,7 @@ Last updated: 2026-04-29
 | 19 | File-change correlation with TS errors | 🔲 Roadmap |
 | 20 | Previous session error details | 🔲 Roadmap |
 | 21 | `verify_fix` should report HMR status with changed filename | 🔲 Roadmap |
+| 22 | `verify_fix(duration_seconds: 2)` for quick HMR checks | ✅ Already supported (discoverability issue) |
+| 23 | Instant composite: build errors + last HMR status + last error (no wait) | 🔲 Roadmap |
 
-**15 of 21 wishlist items shipped.** 1 buildable now, 5 on roadmap.
+**16 of 23 wishlist items shipped.** 1 buildable now, 6 on roadmap.

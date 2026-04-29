@@ -329,3 +329,23 @@ Agent's feedback:
 **Wishlist #18:** verify_fix should report HMR status ("HMR completed for TaskDetailDrawer.tsx") so the agent knows the browser picked up the change without needing to check manually.
 
 **Status:** verify_fix efficiency validated. Wishlist #18 logged - would require wiring file-change tracker output into verify_fix response. Low-medium effort.
+
+### verify_fix duration too long for HMR checks + wishlist #19
+
+Agent calling verify_fix after every small change. Default 15s wait is excessive for "did HMR succeed?" checks.
+
+Agent's feedback:
+> "TP efficiency observation: I'm calling verify_fix after every small change. It takes 5s each time. For rapid iteration, a 2s timeout would be sufficient for HMR-only checks."
+> "TP wishlist #19: verify_fix should accept duration_seconds: 2 for quick HMR checks vs duration_seconds: 15 for full integration checks. The default 15s is too long for 'did HMR succeed?' verification."
+
+**Status:** verify_fix already accepts `duration_seconds` parameter. Agent may not be aware. Check if SKILL.md documents this parameter clearly. If it does, this is a discoverability issue, not a missing feature.
+
+### get_build_errors preferred for rapid iteration + wishlist #20
+
+Agent discovered that `get_build_errors` returns instantly vs verify_fix's 5-15s wait, making it better for rapid iteration.
+
+Agent's feedback:
+> "TP efficiency note: get_build_errors is faster than verify_fix for a quick 'is the build broken?' check - returns instantly vs waiting 5-15s. Good for rapid iteration."
+> "TP wishlist #20: A single tool that combines get_build_errors (instant) + 'last HMR status' (instant) would be the ideal rapid-iteration check. No need to wait for watch_for_errors duration."
+
+**Status:** Interesting pattern emerging - agent wants a "quick check" tool (instant, no blocking) vs "thorough check" tool (blocking, watches for new errors). Wishlist #20 would be a lightweight composite: build errors + last HMR event + last error timestamp. Zero wait time.
