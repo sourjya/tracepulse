@@ -52,6 +52,18 @@ export async function handleRunAndWatch(
     };
   }
 
+  // Security: reject shell metacharacters to prevent command chaining
+  const SHELL_META = /[;&|`$(){}!<>]/;
+  if (SHELL_META.test(command)) {
+    return {
+      content: [{
+        type: "text",
+        text: "Command contains shell metacharacters (;, &, |, `, $, etc.) which are not allowed. Run one command at a time.",
+      }],
+      isError: true,
+    };
+  }
+
   const timeout = ((args.timeout_seconds as number | undefined) ?? 60) * 1000;
   const tempBuffer = createRingBuffer(200);
   const registry = createDefaultRegistry();

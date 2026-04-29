@@ -15,7 +15,7 @@ graph TB
         20 parsers"]
         TP2["Signal Scoring
         0-100"]
-        TP3["24 MCP Tools"]
+        TP3["26 MCP Tools"]
     end
 
     subgraph "Layer 2: Browser (Chrome DevTools MCP)"

@@ -50,7 +50,7 @@ graph TD
     K --> L["Store in ring buffer
     (500 events max)"]
     L --> M["Available via
-    24 MCP tools"]
+    26 MCP tools"]
 
     style A fill:#f96
     style L fill:#6af

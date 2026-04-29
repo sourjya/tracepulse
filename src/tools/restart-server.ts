@@ -18,6 +18,9 @@ import type { EventBuffer } from "@/types/collectors.js";
 /** Restart callback set by the CLI when in start mode. */
 export type RestartFn = () => Promise<{ success: boolean; message: string }>;
 
+const RESTART_COOLDOWN_MS = 5000;
+let lastRestartAt = 0;
+
 /**
  * Handle restart_server MCP tool call.
  * Auto-clears the error buffer on successful restart.
@@ -38,6 +41,22 @@ export async function handleRestartServer(
       isError: true,
     };
   }
+
+  // Cooldown to prevent restart loops
+  const elapsed = Date.now() - lastRestartAt;
+  if (elapsed < RESTART_COOLDOWN_MS) {
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify({
+          success: false,
+          message: `Restart cooldown: wait ${Math.ceil((RESTART_COOLDOWN_MS - elapsed) / 1000)}s before restarting again.`,
+        }),
+      }],
+      isError: true,
+    };
+  }
+  lastRestartAt = Date.now();
 
   const result = await restartFn();
   const cleared = buffer ? buffer.clear() : 0;

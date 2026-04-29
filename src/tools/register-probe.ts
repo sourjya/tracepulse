@@ -165,6 +165,17 @@ export function handleRegisterProbe(
 
   if (!probe.url) return { content: [{ type: "text", text: "url is required" }], isError: true };
 
+  // Security: restrict probes to localhost only (prevent SSRF)
+  try {
+    const parsed = new URL(probe.url);
+    const host = parsed.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1" && host !== "::1") {
+      return { content: [{ type: "text", text: "Probes are restricted to localhost URLs only (127.0.0.1, localhost, ::1)." }], isError: true };
+    }
+  } catch {
+    return { content: [{ type: "text", text: "Invalid URL format" }], isError: true };
+  }
+
   manager.register(probe);
 
   return {

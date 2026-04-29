@@ -11,11 +11,34 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added (post-v0.8.1)
 
-- **`get_requests` tool** (19th tool) - filter HTTP requests by path and status code
-- **Debounced build errors** - opt-in 2s persistence filter on `get_build_errors(debounce: true)`
+- **`register_probe` + `list_probes` tools** (25th, 26th tools) - agent-generated health probes
+- **`get_infra_status` + `get_infra_detail` tools** - infrastructure discovery from .env with TCP/HTTP probing
+- **`get_project_health` tool** - composite: server + infra + errors + build in one call
+- **`check_port` tool** - TCP port availability check
+- **`restart_server` tool** - kill and respawn dev server with auto-clear and cooldown
+- **`get_requests` tool** - HTTP request query by path and status
+- **npm audit parser, coverage parser** (19th, 20th parsers)
+- **vitest parser, Go test parser** (17th, 18th parsers)
+- **Build stats parser** - Vite module count, build time
+- **Crash loop detector** - 3+ restarts in 60s = alert
+- **Infrastructure error patterns** - 27 patterns (DB, network, memory, disk, Redis, TLS, DNS, migration)
+- **Pinned errors** - high-signal errors survive ring buffer eviction
+- **Debounced build errors** - opt-in 2s persistence filter
 - **File change tracker** - correlates hot-reload events with file paths
-- **Previous session error details** - `last_message` stored in fingerprint persistence
-- **20/20 agent wishlist items shipped**
+- **Previous session error details** - last_message in fingerprint persistence
+- **Browser error capture skill** (10th skill)
+- **Server management skill** (9th skill)
+- **Auto-clear buffer on restart_server**
+- **Pre-existing error count** in watch_for_errors response
+- **Old vs new error distinction** in get_health_summary
+- **Migration error suggestions** - "Run pending migrations"
+- **Debugging loop** documented in SKILL.md and GitBook
+
+### Security
+
+- **SRR-002:** SSRF fix on register_probe (localhost-only URLs)
+- **SRR-002:** Shell chaining fix on run_and_watch (metacharacter rejection)
+- **SRR-002:** Restart cooldown (5s between restarts)
 
 ## [0.8.0] - 2026-04-29
 
