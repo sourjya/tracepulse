@@ -45,6 +45,10 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
   let bufferClearedAt: number | null = null;
   /** When the last hot-reload/build-success event was seen. */
   let lastBuildAt: number | null = null;
+  /** Pinned high-signal errors that survive ring buffer eviction. Max 50. */
+  const pinnedErrors = new Map<string, RuntimeEvent>();
+  const MAX_PINNED = 50;
+  const PIN_THRESHOLD = 50;
 
   /**
    * Check whether an event passes all provided filters.
@@ -94,9 +98,17 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
    */
   function collectMatching(filters: EventFilters): RuntimeEvent[] {
     const results: RuntimeEvent[] = [];
+    const seenFps = new Set<string>();
     for (let i = 0; i < count; i++) {
       const event = slots[i]!;
       if (matches(event, filters)) {
+        results.push(event);
+        seenFps.add(event.fingerprint);
+      }
+    }
+    // Include pinned errors not already in results (survived eviction)
+    for (const [fp, event] of pinnedErrors) {
+      if (!seenFps.has(fp) && matches(event, filters)) {
         results.push(event);
       }
     }
@@ -153,6 +165,16 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
         lastBuildAt = event.timestamp;
       }
 
+      // Pin high-signal errors so they survive eviction
+      if (event.signal_score >= PIN_THRESHOLD) {
+        pinnedErrors.set(event.fingerprint, event);
+        // Evict oldest pinned if over limit
+        if (pinnedErrors.size > MAX_PINNED) {
+          const oldest = [...pinnedErrors.entries()].sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+          if (oldest) pinnedErrors.delete(oldest[0]);
+        }
+      }
+
       // Notify subscribers - only for new events, not dedup updates.
       // Each callback is isolated so one failure doesn't break others.
       for (const cb of subscribers) {
@@ -188,6 +210,7 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
       const removed = count;
       slots.fill(undefined);
       fpMap.clear();
+      pinnedErrors.clear();
       writePtr = 0;
       count = 0;
       bufferClearedAt = Date.now();
