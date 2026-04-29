@@ -17,6 +17,7 @@
 * [Run Tests Through TracePulse](tutorials/test-runner.md)
 * [Multi-Service Monitoring](tutorials/multi-service.md)
 * [Audit All API Endpoints](tutorials/audit-endpoints.md)
+* [Cloud Log Monitoring](tutorials/cloud-logs.md)
 
 ## Features
 
