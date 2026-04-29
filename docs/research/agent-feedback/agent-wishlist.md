@@ -26,5 +26,6 @@ Last updated: 2026-04-29
 | 18 | Debounced build errors (2s persistence) | 🔲 Roadmap |
 | 19 | File-change correlation with TS errors | 🔲 Roadmap |
 | 20 | Previous session error details | 🔲 Roadmap |
+| 21 | `verify_fix` should report HMR status with changed filename | 🔲 Roadmap |
 
-**15 of 20 wishlist items shipped.** 1 buildable now, 4 on roadmap.
+**15 of 21 wishlist items shipped.** 1 buildable now, 5 on roadmap.

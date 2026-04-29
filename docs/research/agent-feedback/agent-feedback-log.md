@@ -318,3 +318,14 @@ When an agent provides feedback about TracePulse tools, add an entry here with:
 2. The exact feedback quote
 3. Status: ✅ Fixed, 🔲 Planned, ⬜ Not in scope
 4. What was done (or why it's out of scope)
+
+### verify_fix efficiency confirmed + wishlist #18
+
+Agent used `verify_fix` after a code change. Result: PASS, 0 new errors, 4 stale in buffer.
+
+Agent's feedback:
+> "TP efficiency note: verify_fix is the fastest way to confirm a change is clean - one call instead of three (watch + build + errors)."
+
+**Wishlist #18:** verify_fix should report HMR status ("HMR completed for TaskDetailDrawer.tsx") so the agent knows the browser picked up the change without needing to check manually.
+
+**Status:** verify_fix efficiency validated. Wishlist #18 logged - would require wiring file-change tracker output into verify_fix response. Low-medium effort.
