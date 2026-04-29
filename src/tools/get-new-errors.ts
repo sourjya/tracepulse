@@ -41,6 +41,11 @@ export function handleGetNewErrors(
         text: JSON.stringify({
           errors: novel.slice(0, limit),
           total_new: novel.length,
+          diagnostics: novel.length === 0
+            ? events.length === 0
+              ? "No errors in buffer. Server may be running cleanly or no log output received yet."
+              : `No new fingerprints. All ${events.length} error(s) in buffer have been seen in previous sessions.`
+            : undefined,
         }),
       },
     ],

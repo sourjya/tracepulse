@@ -521,8 +521,11 @@ export function createMcpServer(
 
   server.registerTool("check_port", {
     title: "Check Port",
-    description: "Check if a TCP port is available or in use on localhost.",
-    inputSchema: { port: z.number().describe("Port number to check.") },
+    description: "Check if TCP port(s) are available or in use on localhost. Accepts single port or array.",
+    inputSchema: {
+      port: z.number().optional().describe("Single port to check."),
+      ports: z.array(z.number()).optional().describe("Array of ports to check (e.g., [3000, 5432, 8080])."),
+    },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleCheckPort(args as Record<string, unknown>));
 

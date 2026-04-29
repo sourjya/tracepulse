@@ -108,6 +108,11 @@ export async function handleCorrelateWithDiff(
         text: JSON.stringify({
           correlations,
           changed_files: changedFiles.length,
+          diagnostics: correlations.length === 0
+            ? errors.length === 0
+              ? "No errors in buffer to correlate with git changes."
+              : `${errors.length} error(s) found but none have context.file matching the ${changedFiles.length} changed file(s). Errors may lack file:line info (e.g., HTTP access log events).`
+            : undefined,
         }),
       },
     ],

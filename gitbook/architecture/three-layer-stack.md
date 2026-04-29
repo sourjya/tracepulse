@@ -1,5 +1,7 @@
 # The Three-Layer Stack
 
+<figure><img src="../.gitbook/assets/tracepulse-three-layer-stack.svg" alt="The Three-Layer Debugging Stack" width="960"></figure>
+
 The complete agentic debugging stack has three layers. Each tool owns its layer.
 
 ## The Stack

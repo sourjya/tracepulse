@@ -1,5 +1,7 @@
 # The Edit-Verify Loop
 
+<figure><img src="../.gitbook/assets/tracepulse-edit-verify-loop.svg" alt="The Edit-Verify Loop" width="960"></figure>
+
 The core workflow: edit code, verify it works, repeat.
 
 ## The Pattern
