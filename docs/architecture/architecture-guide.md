@@ -13,29 +13,29 @@ TracePulse is a **runtime feedback server** for AI coding agents. When you're us
 ## How It Works (The Big Picture)
 
 ```
-┌──────────────┐     stdout/stderr      ┌──────────────────────────────────┐
-│              │ ─────────────────────►  │          TracePulse              │
-│  Your Dev    │                         │                                  │
-│  Server      │  (npm run dev,          │  1. Reads log output             │
-│              │   python manage.py,     │  2. Strips ANSI colors           │
-│  (any lang)  │   go run main.go)       │  3. Redacts secrets              │
-│              │                         │  4. Parses errors                │
-└──────────────┘                         │  5. Scores importance            │
-                                         │  6. Stores in ring buffer        │
-                                         │                                  │
-                                         └──────────┬───────────────────────┘
-                                                     │
+┌──────────────┐     stdout/stderr      ┌─────────────────────────────────┐
+│              │ ────────────────────►   │         TracePulse              │
+│  Your Dev    │                         │                                 │
+│  Server      │  (npm run dev,          │  1. Reads log output            │
+│              │   python manage.py,     │  2. Strips ANSI colors          │
+│  (any lang)  │   go run main.go)       │  3. Redacts secrets             │
+│              │                         │  4. Parses errors               │
+└──────────────┘                         │  5. Scores importance           │
+                                         │  6. Stores in ring buffer       │
+                                         │                                 │
+                                         └───────────────┬─────────────────┘
+                                                         │
                                               MCP Protocol (JSON-RPC)
-                                                     │
-                                         ┌───────────▼───────────────────────┐
-                                         │        AI Coding Agent            │
-                                         │                                    │
-                                         │  Calls: get_errors()               │
-                                         │         watch_for_errors(15)       │
-                                         │         get_build_errors()         │
-                                         │         get_error_context(fp)      │
-                                         │         ...                        │
-                                         └────────────────────────────────────┘
+                                                         │
+                                         ┌───────────────▼─────────────────┐
+                                         │       AI Coding Agent           │
+                                         │                                 │
+                                         │  Calls: get_errors()            │
+                                         │         watch_for_errors(15)    │
+                                         │         get_build_errors()      │
+                                         │         get_error_context(fp)   │
+                                         │         ...                     │
+                                         └─────────────────────────────────┘
 ```
 
 ---
@@ -159,7 +159,7 @@ Scoring is additive. Each matching condition adds points:
 
 TracePulse exposes tools via the Model Context Protocol. These are the tools currently **registered and wired** in the MCP server:
 
-### Registered Tools (8 tools)
+### Registered Tools (26 tools)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -187,7 +187,7 @@ TracePulse exposes tools via the Model Context Protocol. These are the tools cur
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Implemented but Not Yet Wired (5 tool handlers)
+### All Tools Wired
 
 These handlers exist as standalone functions and will be registered in the MCP server during final integration:
 
@@ -542,7 +542,7 @@ tests/
 
 The remaining milestone is a release milestone - no new features:
 
-- Wire remaining 5 tool handlers into MCP server registration
+- All 26 tool handlers wired into MCP server
 - Full test coverage audit (target ≥80%)
 - Performance benchmarks
 - npm package publish (`npx tracepulse`)
