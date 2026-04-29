@@ -2,7 +2,7 @@
 
 ## Secret Redaction
 
-All log output is redacted before entering the pipeline. 13 patterns:
+All log output is redacted before entering the pipeline. 16 patterns:
 
 - PEM private keys
 - AWS access keys
@@ -11,9 +11,12 @@ All log output is redacted before entering the pipeline. 13 patterns:
 - Stripe keys (sk_live_, pk_live_)
 - npm tokens
 - OpenAI/Anthropic API keys (sk-)
+- GCP service account private keys
+- Azure storage connection strings (AccountKey)
+- Datadog API/app keys (DD_API_KEY, DD_APP_KEY)
 - Bearer/Basic auth tokens
 - Connection string credentials
-- Key-value secrets (password=, token=, etc.)
+- Key-value secrets (password=, token=, secret=, etc.) including quoted values
 
 ## Localhost Only
 

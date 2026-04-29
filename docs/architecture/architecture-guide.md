@@ -57,7 +57,7 @@ Raw Log Line
          ▼
 ┌─────────────────┐
 │ Secret Redaction │  Replace API keys, tokens, passwords with [REDACTED]
-└────────┬────────┘  (12 patterns: Bearer tokens, JWTs, AWS keys, etc.)
+└────────┬────────┘  (16 patterns: Bearer tokens, JWTs, AWS keys, etc.)
          │
          ▼
 ┌─────────────────┐
@@ -361,7 +361,7 @@ TracePulse handles potentially sensitive log output. Here's how it stays safe:
 │                    Security Layers                           │
 │                                                             │
 │  1. SECRET REDACTION (runs on ALL input before storage)     │
-│     12 patterns: API keys, Bearer tokens, JWTs,            │
+│     16 patterns: API keys, Bearer tokens, JWTs,            │
 │     connection strings, PEM keys, GitHub/GitLab/Slack       │
 │     tokens, AWS keys, passwords in URLs                     │
 │                                                             │
@@ -437,7 +437,7 @@ src/
 ├── mcp/
 │   └── server.ts                   # MCP server with 8 registered tools
 ├── pipeline/
-│   ├── secret-redactor.ts          # 12-pattern secret redaction
+│   ├── secret-redactor.ts          # 16-pattern secret redaction
 │   ├── parser-registry.ts          # Ordered parser dispatch (9 parsers)
 │   ├── event-normalizer.ts         # Raw → RuntimeEvent conversion
 │   ├── fingerprinter.ts            # SHA-256 dedup key generation

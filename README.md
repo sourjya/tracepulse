@@ -255,7 +255,7 @@ When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true
 
 ## Security
 
-- All log output is redacted for secrets (12 patterns: API keys, Bearer/JWT tokens, connection strings, PEM keys, GitHub/GitLab/Slack tokens) before entering the pipeline
+- All log output is redacted for secrets (16 patterns: API keys, Bearer/JWT tokens, connection strings, PEM keys, GitHub/GitLab/Slack tokens, GCP service accounts, Azure connection strings, Datadog keys) before entering the pipeline
 - No secrets in MCP responses, ring buffer, or diagnostic output
 - HTTP endpoints bind to `127.0.0.1` only - no external access
 - Fingerprint persistence stores only hashes, not raw error messages
