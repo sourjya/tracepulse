@@ -29,6 +29,8 @@ export interface WatchResult {
   readonly hot_reload_detected: boolean | null;
   /** Total events seen during window (all levels, not just errors). */
   readonly total_events_seen: number;
+  /** Number of pre-existing error/warn events already in buffer. */
+  readonly pre_existing_errors: number;
 }
 
 /**
@@ -87,11 +89,13 @@ export function watchForErrors(
 
     const timer = setTimeout(() => {
       unsubscribe();
+      const preExisting = buffer.query({ level: "warn" }).length;
       resolve({
         events: collected,
         watch_duration_ms: Date.now() - startTime,
         hot_reload_detected: hotReloadDetected ? true : (isAttachMode ? null : false),
         total_events_seen: totalEventsSeen,
+        pre_existing_errors: preExisting,
       });
     }, durationSeconds * 1000);
 

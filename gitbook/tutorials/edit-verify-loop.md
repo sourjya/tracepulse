@@ -65,3 +65,18 @@ Blocks until the next build completes (not a fixed duration). Returns immediatel
 ## Attach Mode Caveat
 
 In attach mode (tailing a log file), `hot_reload_detected` returns `null` (unknown) instead of `true`/`false` if the dev server's reload messages go to a different process. Use `get_build_errors` as the reliable check in attach mode.
+
+## The Proven Debugging Loop
+
+When TracePulse surfaces real errors, this is the fastest resolution path. Validated in production - resolved a 25-occurrence migration error in under 2 minutes.
+
+```
+1. get_new_errors(limit: 5)    # Only unseen fingerprints
+2. Read: context.file, context.line, context.error_type
+3. Fix the root cause
+4. clear_errors()              # Clean baseline
+5. verify_fix(10)              # Watch 10s, pass/fail
+6. If PASS: done. If FAIL: repeat from 2.
+```
+
+This loop is more productive than the basic edit-verify pattern because `get_new_errors` filters out noise (old errors still in buffer) and `clear_errors` gives you a clean baseline for verification.

@@ -22,14 +22,20 @@ export function handleGetHealthSummary(
   getConnected: () => boolean,
 ): CallToolResult {
   const connected = getConnected();
-  const errorCount = buffer.query({ level: "error" }).length;
-  const warnCount = buffer.query({ level: "warn" }).length;
+  const allErrors = buffer.query({ level: "error" });
+  const errorCount = allErrors.length;
+  const warnCount = buffer.query({ level: "warn" }).length - errorCount;
   const totalEvents = buffer.size;
   const uptimeMs = Date.now() - buffer.sessionStartedAt;
   const uptimeMin = Math.round(uptimeMs / 60000);
 
+  // Count errors since last clear as "new"
+  const baseline = buffer.bufferClearedAt ?? buffer.sessionStartedAt;
+  const newErrors = allErrors.filter((e) => e.timestamp > baseline).length;
+  const oldErrors = errorCount - newErrors;
+
   const summary = connected
-    ? `${errorCount} errors, ${warnCount} warnings, ${totalEvents} total events, uptime ${uptimeMin}min`
+    ? `${errorCount} errors (${newErrors} new, ${oldErrors} pre-existing), ${warnCount} warnings, uptime ${uptimeMin}min`
     : `DISCONNECTED - ${errorCount} errors before disconnect`;
 
   return {
@@ -40,6 +46,8 @@ export function handleGetHealthSummary(
           summary,
           connected,
           error_count: errorCount,
+          new_errors: newErrors,
+          old_errors: oldErrors,
           warning_count: warnCount,
           total_events: totalEvents,
           uptime_minutes: uptimeMin,

@@ -495,7 +495,7 @@ export function createMcpServer(
     description:
       "Kill and respawn the dev server process. Only works in start mode. Use after installing dependencies, changing config, or when the server is stuck.",
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
-  }, () => handleRestartServer(options?.restartFn ?? null));
+  }, () => handleRestartServer(options?.restartFn ?? null, buffer));
 
   server.registerTool("get_infra_status", {
     title: "Get Infrastructure Status",

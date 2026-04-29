@@ -13,17 +13,18 @@
  */
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import type { EventBuffer } from "@/types/collectors.js";
 
 /** Restart callback set by the CLI when in start mode. */
 export type RestartFn = () => Promise<{ success: boolean; message: string }>;
 
 /**
  * Handle restart_server MCP tool call.
- *
- * @param restartFn - Callback that kills and respawns the server. null in attach mode.
+ * Auto-clears the error buffer on successful restart.
  */
 export async function handleRestartServer(
   restartFn: RestartFn | null,
+  buffer?: EventBuffer,
 ): Promise<CallToolResult> {
   if (!restartFn) {
     return {
@@ -39,10 +40,11 @@ export async function handleRestartServer(
   }
 
   const result = await restartFn();
+  const cleared = buffer ? buffer.clear() : 0;
   return {
     content: [{
       type: "text",
-      text: JSON.stringify(result),
+      text: JSON.stringify({ ...result, cleared_errors: cleared }),
     }],
   };
 }

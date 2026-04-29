@@ -12,6 +12,7 @@ export interface InfraPattern {
   readonly pattern: RegExp;
   readonly category: string;
   readonly score_boost: number;
+  readonly suggestion?: string;
 }
 
 /** Infrastructure patterns detected from log messages. */
@@ -51,11 +52,11 @@ export const INFRA_PATTERNS: readonly InfraPattern[] = [
   { pattern: /NXDOMAIN|getaddrinfo.*ENOTFOUND/i, category: "dns", score_boost: 15 },
 
   // Database schema / migration issues
-  { pattern: /column.*does not exist/i, category: "migration", score_boost: 25 },
-  { pattern: /table.*does not exist/i, category: "migration", score_boost: 25 },
-  { pattern: /relation.*does not exist/i, category: "migration", score_boost: 25 },
-  { pattern: /no such table/i, category: "migration", score_boost: 25 },
-  { pattern: /Unknown column/i, category: "migration", score_boost: 25 },
+  { pattern: /column.*does not exist/i, category: "migration", score_boost: 25, suggestion: "Run pending migrations (e.g., alembic upgrade head)" },
+  { pattern: /table.*does not exist/i, category: "migration", score_boost: 25, suggestion: "Run pending migrations" },
+  { pattern: /relation.*does not exist/i, category: "migration", score_boost: 25, suggestion: "Run pending migrations" },
+  { pattern: /no such table/i, category: "migration", score_boost: 25, suggestion: "Run pending migrations" },
+  { pattern: /Unknown column/i, category: "migration", score_boost: 25, suggestion: "Run pending migrations" },
 ];
 
 /**
