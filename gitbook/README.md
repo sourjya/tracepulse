@@ -11,6 +11,8 @@ TracePulse closes this loop at dev time - seconds after the code change, not min
 
 [![npm](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse) [![GitHub](https://img.shields.io/github/stars/sourjya/tracepulse)](https://github.com/sourjya/tracepulse)
 
+<figure><img src=".gitbook/assets/tracepulse-overview.svg" alt="Why your AI agent needs TracePulse" width="960"></figure>
+
 ---
 
 ## The Problem
@@ -27,125 +29,15 @@ These problems cost 15-30 minutes per debugging session. TracePulse eliminates t
 
 ---
 
-## How It Works
-
-```mermaid
-graph LR
-    subgraph Your Machine
-        Server["Dev Server\n(Node, Python, Go,\nJava, Rust)"]
-        TP["TracePulse\nMCP Server"]
-        Agent["AI Coding Agent\n(Kiro, Cursor,\nClaude Code)"]
-    end
-
-    Server -->|"stdout\nstderr"| TP
-    TP -->|"26 MCP tools\n(JSON-RPC)"| Agent
-    Agent -->|"get_errors()\nverify_fix()\nrun_and_watch()"| TP
-
-    style Server fill:#ff9966,stroke:#333,color:#000
-    style TP fill:#6699ff,stroke:#333,color:#fff
-    style Agent fill:#66cc66,stroke:#333,color:#000
-```
-
----
-
-## Your Agent Is Wasting Tokens on Log Reading
+## Your Agent Is Wasting Tokens
 
 Research shows AI agents spend **60-80% of their token budget** on orientation and retrieval, not problem-solving. One study found an agent reading 25 files to answer a question that needed 3.
 
-```mermaid
-xychart-beta
-    title "Tokens per backend error investigation"
-    x-axis ["Manual\nlog reading", "Shell +\ngrep + parse", "TracePulse\nget_errors", "TracePulse\nverify_fix"]
-    y-axis "Tokens" 0 --> 14000
-    bar [12000, 10000, 1000, 500]
-```
+<figure><img src=".gitbook/assets/tracepulse-token-efficiency.svg" alt="Token comparison: 12,000 down to 1,000 per error" width="960"></figure>
 
 TracePulse pre-parses, scores, and deduplicates. The agent gets the exact file:line in one call instead of scanning raw logs.
 
 **That's 12,000 tokens down to 1,000. Per error. Per session.**
-
----
-
-## The Data Pipeline
-
-Every log line goes through 10 stages before the agent sees it:
-
-```mermaid
-graph TD
-    A["Raw Log Line"] --> B["ANSI Strip"]
-    B --> C["Secret Redaction\n(13 patterns)"]
-    C --> D["Hot-Reload Detection\n(11 dev tools)"]
-    D --> E["Multi-Line Accumulator\n(tracebacks)"]
-    E --> F["Parser Registry\n(20 parsers)"]
-    F --> G["Signal Scoring\n(0-100)"]
-    G --> H["Fingerprint Dedup"]
-    H --> I["Ring Buffer\n(500 events)"]
-    I --> J["26 MCP Tools"]
-    J --> K["AI Agent"]
-
-    style A fill:#ff6644,stroke:#333,color:#fff
-    style F fill:#ffaa44,stroke:#333,color:#000
-    style G fill:#ffcc44,stroke:#333,color:#000
-    style I fill:#4488ff,stroke:#333,color:#fff
-    style K fill:#44cc44,stroke:#333,color:#000
-```
-
----
-
-## The Three-Layer Debugging Stack
-
-```mermaid
-graph TB
-    Agent["AI Coding Agent"]
-
-    subgraph "Layer 1: Backend"
-        TP["TracePulse\n26 tools\nerrors, logs, builds,\ntests, infrastructure"]
-    end
-
-    subgraph "Layer 2: Browser"
-        CDT["Chrome DevTools MCP\nconsole, network,\nperformance, DOM"]
-    end
-
-    subgraph "Layer 3: Visual UI"
-        VG["ViewGraph\nDOM capture, a11y,\nlayout, annotations"]
-    end
-
-    Agent <--> TP
-    Agent <--> CDT
-    Agent <--> VG
-
-    style TP fill:#ff9966,stroke:#333,color:#000
-    style CDT fill:#6699ff,stroke:#333,color:#fff
-    style VG fill:#66cc99,stroke:#333,color:#000
-    style Agent fill:#fff,stroke:#333,stroke-width:2px,color:#000
-```
-
-Each tool owns its layer. Together they give the agent complete visibility.
-
----
-
-## The Edit-Verify Loop
-
-```mermaid
-sequenceDiagram
-    participant Agent as AI Agent
-    participant TP as TracePulse
-    participant Server as Dev Server
-
-    Agent->>Agent: Edit source file
-    Server->>TP: stderr: "TypeError at users.py:42"
-    TP->>TP: Parse + Score (75/100)
-
-    Agent->>TP: get_errors()
-    TP-->>Agent: {file: "users.py", line: 42, score: 75}
-
-    Agent->>Agent: Fix the bug
-
-    Agent->>TP: verify_fix(10)
-    Server->>TP: "Server reloaded successfully"
-    TP->>TP: Detect hot-reload
-    TP-->>Agent: {verdict: "PASS", hot_reload: true}
-```
 
 ---
 
@@ -172,18 +64,10 @@ sequenceDiagram
 
 From 3 agent sessions on a production project:
 
-```mermaid
-pie title Tool Usage (70+ invocations)
-    "get_build_errors (23x)" : 23
-    "watch_for_errors (13x)" : 13
-    "get_errors (10x)" : 10
-    "get_runtime_status (8x)" : 8
-    "verify_fix (5x)" : 5
-    "Other tools (11x)" : 11
-```
-
 | Metric | Value |
 |--------|-------|
+| Total tool invocations | 70+ |
+| Most used tool | get_build_errors (23x) |
 | Manual vite builds replaced | 15+ |
 | Time saved (build checks) | 20+ minutes |
 | Real bugs caught | 3 |

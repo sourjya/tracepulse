@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="320" rx="16" fill="url(#bg2)"/>
+
+  <text x="480" y="36" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700" letter-spacing="0.5">TOKENS PER BACKEND ERROR INVESTIGATION</text>
+  <line x1="40" y1="50" x2="920" y2="50" stroke="#334155" stroke-width="1"/>
+
+  <!-- Bar 1: Manual log reading -->
+  <text x="220" y="85" text-anchor="end" fill="#94a3b8" font-size="12">Manual log reading</text>
+  <rect x="230" y="72" width="600" height="20" rx="4" fill="#ef4444" opacity="0.8"/>
+  <text x="840" y="87" fill="#fca5a5" font-size="12" font-weight="700">12,000+</text>
+
+  <!-- Bar 2: Shell + grep -->
+  <text x="220" y="120" text-anchor="end" fill="#94a3b8" font-size="12">Shell + grep + parse</text>
+  <rect x="230" y="107" width="500" height="20" rx="4" fill="#f87171" opacity="0.6"/>
+  <text x="740" y="122" fill="#fca5a5" font-size="12" font-weight="700">10,000</text>
+
+  <!-- Bar 3: Sentry MCP (production) -->
+  <text x="220" y="155" text-anchor="end" fill="#94a3b8" font-size="12">Sentry MCP (production)</text>
+  <rect x="230" y="142" width="250" height="20" rx="4" fill="#eab308" opacity="0.5"/>
+  <text x="490" y="157" fill="#fde68a" font-size="12" font-weight="700">5,000</text>
+
+  <!-- Bar 4: TracePulse get_errors -->
+  <text x="220" y="190" text-anchor="end" fill="#e2e8f0" font-size="12" font-weight="600">TracePulse get_errors</text>
+  <rect x="230" y="177" width="50" height="20" rx="4" fill="url(#orange)"/>
+  <text x="290" y="192" fill="#fb923c" font-size="12" font-weight="700">1,000</text>
+
+  <!-- Bar 5: TracePulse verify_fix -->
+  <text x="220" y="225" text-anchor="end" fill="#e2e8f0" font-size="12" font-weight="600">TracePulse verify_fix</text>
+  <rect x="230" y="212" width="25" height="20" rx="4" fill="#22c55e"/>
+  <text x="265" y="227" fill="#4ade80" font-size="12" font-weight="700">500</text>
+
+  <!-- Bar 6: TracePulse get_project_health -->
+  <text x="220" y="260" text-anchor="end" fill="#e2e8f0" font-size="12" font-weight="600">TracePulse get_project_health</text>
+  <rect x="230" y="247" width="10" height="20" rx="4" fill="#22c55e"/>
+  <text x="250" y="262" fill="#4ade80" font-size="12" font-weight="700">200</text>
+
+  <!-- Bottom summary -->
+  <rect x="40" y="280" width="880" height="30" rx="8" fill="url(#orange)" opacity="0.15"/>
+  <text x="480" y="300" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="600">92% TOKEN REDUCTION - ONE TOOL CALL INSTEAD OF SCANNING RAW LOGS</text>
+</svg>

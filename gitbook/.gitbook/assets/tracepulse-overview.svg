@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="420" rx="16" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="480" y="36" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700" letter-spacing="0.5">WHY YOUR AI AGENT NEEDS TRACEPULSE</text>
+  <line x1="40" y1="50" x2="920" y2="50" stroke="#334155" stroke-width="1"/>
+
+  <!-- PANEL 1: THE PROBLEM -->
+  <text x="160" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">THE BLIND SPOT</text>
+
+  <!-- Terminal icon with scrolling logs -->
+  <rect x="80" y="95" width="160" height="100" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="96" cy="107" r="4" fill="#ef4444"/>
+  <circle cx="108" cy="107" r="4" fill="#eab308"/>
+  <circle cx="120" cy="107" r="4" fill="#22c55e"/>
+  <text x="90" y="128" fill="#475569" font-size="8" font-family="monospace">TypeError: Cannot read</text>
+  <text x="90" y="140" fill="#475569" font-size="8" font-family="monospace">  at getUser (users.py:42)</text>
+  <text x="90" y="152" fill="#475569" font-size="8" font-family="monospace">  at handle (app.py:18)</text>
+  <text x="90" y="164" fill="#475569" font-size="8" font-family="monospace">GET /api/users 500 1.2s</text>
+  <text x="90" y="176" fill="#475569" font-size="8" font-family="monospace">ImportError: no module</text>
+  <text x="90" y="188" fill="#475569" font-size="8" font-family="monospace">FAILED test_login...</text>
+
+  <!-- Big X over terminal -->
+  <text x="160" y="218" text-anchor="middle" fill="#f87171" font-size="28" font-weight="800">INVISIBLE</text>
+  <text x="160" y="236" text-anchor="middle" fill="#94a3b8" font-size="11">to the AI agent</text>
+
+  <!-- Quote -->
+  <text x="160" y="268" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">"LLMs can't see what happens</text>
+  <text x="160" y="280" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">when their code actually runs"</text>
+  <text x="160" y="296" text-anchor="middle" fill="#475569" font-size="8">- Sentry Engineering, 2026</text>
+
+  <!-- Token waste stat -->
+  <rect x="105" y="310" width="110" height="28" rx="14" fill="#7f1d1d"/>
+  <text x="160" y="329" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="700">12,000 tokens</text>
+  <text x="160" y="348" text-anchor="middle" fill="#94a3b8" font-size="9">wasted per error (manual)</text>
+
+  <!-- ARROW 1-2 -->
+  <path d="M 280 180 L 330 180" stroke="#475569" stroke-width="2" fill="none"/>
+  <polygon points="330,175 340,180 330,185" fill="#475569"/>
+
+  <!-- PANEL 2: TRACEPULSE -->
+  <text x="490" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">TRACEPULSE PIPELINE</text>
+
+  <!-- Pipeline stages -->
+  <rect x="360" y="95" width="260" height="24" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="1"/>
+  <text x="490" y="111" text-anchor="middle" fill="#fb923c" font-size="9" font-weight="600">PARSE (20 parsers: Node, Python, Go, Java, Rust...)</text>
+
+  <rect x="360" y="125" width="260" height="24" rx="4" fill="#1e293b" stroke="#eab308" stroke-width="1"/>
+  <text x="490" y="141" text-anchor="middle" fill="#facc15" font-size="9" font-weight="600">SCORE (0-100 signal scoring)</text>
+
+  <rect x="360" y="155" width="260" height="24" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+  <text x="490" y="171" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">DEDUPLICATE (fingerprint: 42 occurrences -> 1 event)</text>
+
+  <rect x="360" y="185" width="260" height="24" rx="4" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="490" y="201" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="600">REDACT (13 secret patterns removed)</text>
+
+  <rect x="360" y="215" width="260" height="24" rx="4" fill="#1e293b" stroke="#22c55e" stroke-width="1"/>
+  <text x="490" y="231" text-anchor="middle" fill="#4ade80" font-size="9" font-weight="600">SERVE (26 MCP tools)</text>
+
+  <!-- Result -->
+  <rect x="380" y="252" width="220" height="50" rx="6" fill="#1e293b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="490" y="270" text-anchor="middle" fill="#4ade80" font-size="9" font-family="monospace">{"file":"users.py","line":42,</text>
+  <text x="490" y="282" text-anchor="middle" fill="#4ade80" font-size="9" font-family="monospace"> "score":75,"type":"TypeError"}</text>
+  <text x="490" y="295" text-anchor="middle" fill="#22c55e" font-size="9" font-weight="600">^^ One tool call. Exact answer.</text>
+
+  <!-- Token count -->
+  <rect x="445" y="310" width="90" height="28" rx="14" fill="#14532d"/>
+  <text x="490" y="329" text-anchor="middle" fill="#86efac" font-size="13" font-weight="700">1,000 tokens</text>
+  <text x="490" y="348" text-anchor="middle" fill="#94a3b8" font-size="9">per error (TracePulse)</text>
+
+  <!-- ARROW 2-3 -->
+  <path d="M 640 180 L 690 180" stroke="#475569" stroke-width="2" fill="none"/>
+  <polygon points="690,175 700,180 690,185" fill="#475569"/>
+
+  <!-- PANEL 3: THE STACK -->
+  <text x="810" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">THREE-LAYER STACK</text>
+
+  <!-- Layer 1: TracePulse -->
+  <rect x="720" y="95" width="180" height="55" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+  <text x="810" y="115" text-anchor="middle" fill="#fb923c" font-size="11" font-weight="700">TracePulse</text>
+  <text x="810" y="130" text-anchor="middle" fill="#94a3b8" font-size="9">Backend: errors, logs, builds, tests</text>
+  <text x="810" y="142" text-anchor="middle" fill="#94a3b8" font-size="9">26 tools | 20 parsers | 10 skills</text>
+
+  <!-- Layer 2: Chrome DevTools -->
+  <rect x="720" y="158" width="180" height="55" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+  <text x="810" y="178" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="700">Chrome DevTools MCP</text>
+  <text x="810" y="193" text-anchor="middle" fill="#94a3b8" font-size="9">Browser: console, network, perf</text>
+  <text x="810" y="205" text-anchor="middle" fill="#94a3b8" font-size="9">DOM, screenshots, interactions</text>
+
+  <!-- Layer 3: ViewGraph -->
+  <rect x="720" y="221" width="180" height="55" rx="6" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="810" y="241" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">ViewGraph</text>
+  <text x="810" y="256" text-anchor="middle" fill="#94a3b8" font-size="9">Visual UI: DOM, a11y, layout</text>
+  <text x="810" y="268" text-anchor="middle" fill="#94a3b8" font-size="9">Annotations, regressions, tests</text>
+
+  <!-- Stats -->
+  <text x="810" y="300" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="600">Real-world results:</text>
+  <text x="810" y="316" text-anchor="middle" fill="#4ade80" font-size="9">3 bugs caught in first session</text>
+  <text x="810" y="330" text-anchor="middle" fill="#4ade80" font-size="9">15+ manual builds replaced</text>
+  <text x="810" y="344" text-anchor="middle" fill="#4ade80" font-size="9">20+ minutes saved per session</text>
+
+  <!-- BOTTOM BAR -->
+  <rect x="40" y="365" width="880" height="42" rx="8" fill="url(#accent)" opacity="0.15"/>
+  <text x="480" y="384" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="600">92% TOKEN REDUCTION - 12,000 -> 1,000 PER ERROR - ZERO CONFIG - ANY LANGUAGE</text>
+  <text x="480" y="400" text-anchor="middle" fill="#f97316" font-size="10">26 MCP TOOLS - 20 PARSERS - 10 SKILLS - 631 TESTS - 2 SECURITY REVIEWS - AGPL-3.0</text>
+</svg>
