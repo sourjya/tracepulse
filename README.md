@@ -1,7 +1,7 @@
 # TracePulse
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
-[![License: AGPL--3.0](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Tests](https://img.shields.io/badge/tests-592%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
@@ -276,4 +276,4 @@ See [docs/architecture/architecture-guide.md](docs/architecture/architecture-gui
 
 ## License
 
-MIT
+AGPL-3.0

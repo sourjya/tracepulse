@@ -7,7 +7,7 @@ Last updated: 2026-04-28
 | | **TracePulse** | **Chrome DevTools MCP** | **BrowserTools MCP** | **agentic-debugger** | **Playwright MCP** |
 |---|:-:|:-:|:-:|:-:|:-:|
 | **Publisher** | sourjya | Google (ChromeDevTools) | AgentDesk | iarmankhan | Community |
-| **License** | MIT | Apache 2.0 | MIT | MIT | MIT |
+| **License** | AGPL-3.0 | Apache 2.0 | MIT | MIT | MIT |
 | **Language** | TypeScript | TypeScript | TypeScript | TypeScript | TypeScript |
 | **Transport** | stdio + HTTP | stdio | stdio + WebSocket | stdio | stdio |
 | **Setup complexity** | Zero config | Zero config | Extension + server | Zero config | Zero config |
