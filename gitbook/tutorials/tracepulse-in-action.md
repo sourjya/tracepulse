@@ -219,6 +219,79 @@ In one call, the agent knows: server is running, 2 runtime errors to investigate
 
 ---
 
+---
+
+## Example 6: Catching a Persistent ORM Bug with 42 Occurrences
+
+**The problem:** The activity endpoint kept crashing but nobody noticed because the errors were buried in a stream of normal log output.
+
+**With TracePulse:**
+
+The agent runs a routine error check:
+
+```
+Agent: get_errors(limit: 3)
+```
+
+```json
+{
+  "errors": [{
+    "message": "AttributeError: 'EntityMeta' object has no attribute 'get'",
+    "occurrence_count": 42,
+    "signal_score": 95,
+    "context": { "error_type": "AttributeError", "framework": "python" }
+  }],
+  "total_matching": 1,
+  "session_started_at": 1714300000000
+}
+```
+
+42 occurrences of the same error! The agent immediately sees the pattern: an ORM entity object is being used like a dictionary (calling `.get()` instead of accessing attributes directly). It opens the file, changes `entity.get("name")` to `entity.display_name`, and verifies.
+
+**What happened behind the scenes:**
+1. Every time the activity endpoint was called, the same AttributeError fired
+2. TracePulse's fingerprint deduplication collapsed all 42 into one event with `occurrence_count: 42`
+3. The signal scorer gave it 95/100 (Python exception + high occurrence + user code)
+4. The pinned errors feature kept it in the buffer even as other events were evicted
+5. Without dedup, the agent would have seen 42 separate error events - noise. With dedup, it saw one actionable item.
+
+---
+
+## Example 7: The Trust Recovery Moment
+
+**The problem:** The agent had stopped trusting `watch_for_errors` because `hot_reload_detected` kept returning `false` in attach mode. After we added uvicorn reload patterns, the agent tried again.
+
+**With TracePulse:**
+
+After fixing the activity endpoint bug, the agent restarts the server and watches:
+
+```
+Agent: clear_errors()
+Agent: watch_for_errors(duration_seconds: 10)
+```
+
+```json
+{
+  "events": [],
+  "hot_reload_detected": true,
+  "total_events_seen": 12,
+  "pre_existing_errors": 0
+}
+```
+
+The agent's reaction: "Zero events AND `hot_reload_detected: true`! **Win** - the HMR detection actually worked this time. This is the first time `hot_reload_detected` returned true this session - confirms the server reloaded with the new code."
+
+**What happened behind the scenes:**
+1. uvicorn printed `WARNING: WatchFiles detected changes in 'activity.py'` to stderr
+2. TracePulse's hot-reload detector matched the uvicorn pattern (added based on earlier agent feedback)
+3. `hot_reload_detected` flipped to `true`
+4. `total_events_seen: 12` confirmed the server was alive and processing
+5. `pre_existing_errors: 0` confirmed the buffer was clean after the clear
+
+**Why this matters:** The agent went from "stopped trusting it" to "Win!" in one interaction. The fix (adding uvicorn patterns) was built the same day the agent reported the problem. This is the feedback loop in action - agent reports gap, we fix it, agent validates it works.
+
+---
+
 ## The Pattern
 
 Every example follows the same pattern:
