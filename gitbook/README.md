@@ -93,6 +93,26 @@ Works with [Kiro](getting-started/mcp-client-setup.md), [Cursor](getting-started
 
 ---
 
+## Cloud Log Monitoring
+
+Monitor 9 cloud platforms with zero additional dependencies:
+
+| Platform | Command |
+|----------|---------|
+| **AWS CloudWatch** | `run_and_watch("aws logs tail /aws/lambda/my-fn --follow")` |
+| **Google Cloud** | `run_and_watch("gcloud logging tail '...'")` |
+| **Azure** | `run_and_watch("az webapp log tail --name my-app")` |
+| **Kubernetes** | `run_and_watch("kubectl logs -f deployment/my-app")` |
+| **Docker** | `run_and_watch("docker logs -f my-container")` |
+| **Heroku** | `run_and_watch("heroku logs --tail --app my-app")` |
+| **Vercel / Railway / Fly.io** | Same pattern with their CLIs |
+
+The same 20 parsers that catch local dev server errors catch cloud errors too.
+
+[Full cloud monitoring guide ->](tutorials/cloud-logs.md)
+
+---
+
 ## Open Source
 
 AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/tracepulse).

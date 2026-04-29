@@ -41,3 +41,11 @@
 
 **USP-11: "Two independent paths converged on the same architecture"**
 > TP team and agent independently arrived at browser error -> HTTP POST -> log collector. Validates the architecture is correct.
+
+## Cloud & Platform USPs
+
+**USP-12: "9 cloud platforms, zero dependencies"**
+> AWS CloudWatch, GCP, Azure, Kubernetes, Docker, Heroku, Vercel, Railway, Fly.io - all via `run_and_watch` with existing CLIs. Same 20 parsers catch cloud errors. A Python traceback from Lambda is parsed the same as one from localhost.
+
+**USP-13: "37,000 lines per second through the full pipeline"**
+> Benchmarked: parser registry 92K lines/sec, secret redaction 258K lines/sec, buffer query 0.1ms. The pipeline is 370x faster than it needs to be.

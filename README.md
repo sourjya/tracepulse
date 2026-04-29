@@ -203,6 +203,22 @@ tracepulse start --persist "npm run dev"
 tracepulse start --http "npm run dev"
 ```
 
+## Cloud Log Monitoring
+
+Monitor cloud service logs with zero additional dependencies - uses your existing cloud CLIs:
+
+| Platform | Command |
+|----------|---------|
+| **AWS CloudWatch** | `run_and_watch("aws logs tail /aws/lambda/my-fn --follow")` |
+| **Google Cloud** | `run_and_watch("gcloud logging tail '...'")` |
+| **Azure** | `run_and_watch("az webapp log tail --name my-app")` |
+| **Kubernetes** | `run_and_watch("kubectl logs -f deployment/my-app")` |
+| **Docker** | `run_and_watch("docker logs -f my-container")` |
+| **Heroku** | `run_and_watch("heroku logs --tail --app my-app")` |
+| **Vercel / Railway / Fly.io** | Same pattern with their CLIs |
+
+The same 20 parsers that catch local dev server errors catch cloud errors too.
+
 ## Hot-Reload Detection
 
 TracePulse detects hot-reload events from 8 dev tools:
