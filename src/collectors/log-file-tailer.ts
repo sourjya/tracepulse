@@ -84,8 +84,14 @@ export function createLogFileTailer(
           onLine(source, line);
         }
       }
-    } catch {
-      // File may have been deleted or become inaccessible - ignore
+    } catch (err) {
+      // Only ignore ENOENT (file deleted/rotated) - surface other errors
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code !== "ENOENT") {
+        process.stderr.write(
+          `[tracepulse] log tailer error (${code ?? "unknown"}): ${err instanceof Error ? err.message : String(err)}\n`,
+        );
+      }
     }
   }
 

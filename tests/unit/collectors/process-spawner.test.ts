@@ -182,7 +182,7 @@ describe("createProcessSpawner", () => {
       collector.start((source, line) => {
         lines.push({ source, line });
       }),
-    ).rejects.toThrow("Command not found");
+    ).rejects.toThrow("Command failed");
 
     collector = undefined;
   });

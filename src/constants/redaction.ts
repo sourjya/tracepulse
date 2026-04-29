@@ -47,6 +47,15 @@ export const REDACTION_PATTERNS: ReadonlyArray<
   // npm tokens - npm_xxxx
   ["npm-token", /npm_[A-Za-z0-9]{36,}/g],
 
+  // GCP service account private key ID in JSON
+  ["gcp-service-account", /"private_key_id"\s*:\s*"[^"]+"/g],
+
+  // Azure storage connection strings - AccountKey=base64
+  ["azure-connection-string", /AccountKey=[A-Za-z0-9+/=]{20,}/g],
+
+  // Datadog API/app keys - DD_API_KEY, DD_APP_KEY env vars
+  ["datadog-key", /(?:DD_API_KEY|DD_APP_KEY)\s*[=:]\s*[A-Za-z0-9]{20,}/g],
+
   // Bearer tokens in Authorization headers - preserve "Bearer " prefix
   ["bearer-token", /(?<=Bearer\s)[A-Za-z0-9\-._~+/]+=*/g],
 
@@ -57,8 +66,9 @@ export const REDACTION_PATTERNS: ReadonlyArray<
   ["connection-string", /:\/\/[^:/?#]+:[^@/?#]+@/g],
 
   // Key-value secrets - password=xxx, secret: xxx, token=xxx, etc.
+  // Captures quoted values as a unit so "my secret phrase" is fully redacted.
   [
     "key-value-secret",
-    /(?:password|passwd|secret|token|api_key|apikey|access_key|private_key|auth_token|client_secret)\s*[=:]\s*\S+/gi,
+    /(?:password|passwd|secret|token|api_key|apikey|access_key|private_key|auth_token|client_secret)\s*[=:]\s*(?:"[^"]*"|'[^']*'|\S+)/gi,
   ],
 ] as const;

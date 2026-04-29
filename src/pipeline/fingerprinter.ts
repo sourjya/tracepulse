@@ -37,6 +37,14 @@ const NORMALIZATION_PATTERNS: readonly RegExp[] = [
 ];
 
 // ──────────────────────────────────────────────
+// Fingerprint Cache
+// ──────────────────────────────────────────────
+
+/** LRU cache to skip SHA-256 recomputation for repeated messages. */
+const CACHE_MAX = 256;
+const fpCache = new Map<string, string>();
+
+// ──────────────────────────────────────────────
 // Public API
 // ──────────────────────────────────────────────
 
@@ -77,7 +85,21 @@ export function fingerprint(
   file?: string,
   line?: number,
 ): string {
+  const cacheKey = `${source}|${message}|${file ?? ""}:${line ?? ""}`;
+
+  const cached = fpCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const normalized = normalizeForFingerprint(message);
   const input = `${source}|${normalized}|${file ?? ""}:${line ?? ""}`;
-  return createHash("sha256").update(input).digest("hex");
+  const hash = createHash("sha256").update(input).digest("hex");
+
+  // Simple LRU: delete oldest entry when cache is full
+  if (fpCache.size >= CACHE_MAX) {
+    const firstKey = fpCache.keys().next().value as string;
+    fpCache.delete(firstKey);
+  }
+  fpCache.set(cacheKey, hash);
+
+  return hash;
 }

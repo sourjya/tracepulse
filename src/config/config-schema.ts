@@ -56,6 +56,9 @@ export interface ConfigValidationResult {
 /** Allowed characters for service names. */
 const SERVICE_NAME_PATTERN = /^[a-z0-9-]+$/;
 
+/** Known top-level config keys. */
+const KNOWN_KEYS = new Set(["services", "compose", "transport", "persist", "correlation_window_ms"]);
+
 /**
  * Validate a raw config object against the TracePulse schema.
  *
@@ -63,6 +66,12 @@ const SERVICE_NAME_PATTERN = /^[a-z0-9-]+$/;
  * @returns Validation result with parsed config or error message.
  */
 export function validateConfig(raw: Record<string, unknown>): ConfigValidationResult {
+  // Check for unknown keys before casting
+  const unknownKeys = Object.keys(raw).filter((k) => !KNOWN_KEYS.has(k));
+  if (unknownKeys.length > 0) {
+    return { valid: false, error: `Unknown config key(s): ${unknownKeys.join(", ")}` };
+  }
+
   const config = raw as TracePulseConfig;
 
   // Mutual exclusivity: services and compose cannot coexist

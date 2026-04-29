@@ -21,6 +21,7 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M10: Project Health & Dependency Awareness | Gap Analysis | v0.9.1 | ✅ Complete |
 | M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | ✅ Complete |
 | M12: Ecosystem Research Features | Research | v0.9.3-v1.0 | 🔲 Not Started |
+| M-Harden: Code Quality & Hardening | CRR-001 | v0.9.4 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 
 ## M7: Agent-Driven Enhancements
@@ -57,6 +58,39 @@ Detect infrastructure issues from the existing log stream. No new data sources -
 
 **Design patterns:** Log-based anomaly detection, sliding window counters, threshold-based alerting, startup validation.
 
+## M-Harden: Code Quality & Hardening
+
+Findings from CRR-001 (2026-04-30) full codebase review. Addresses security gaps, correctness bugs, performance hot paths, and type safety. Should complete before M6 Stable Release.
+
+**Review:** [docs/reviews/CRR-001-2026-04-30-full-review.md](../reviews/CRR-001-2026-04-30-full-review.md)
+
+### Fix Now — Pre-Release Blockers
+
+- [ ] **TD-008** — Wrap `JSON.parse` in `loadConfig()` with try/catch; return validation error on malformed config file (`src/config/config-loader.ts:80,84`)
+- [ ] **TD-009** — Fix `key-value-secret` redaction pattern to capture quoted values (`src/constants/redaction.ts:62`)
+- [ ] **TD-010** — Reject `start()` on any non-zero early exit, not just code 127 (`src/collectors/process-spawner.ts:131,164`)
+
+### High Priority
+
+- [ ] **TD-011** — Replace O(n log n) pinned error eviction sort with insertion-ordered list for O(1) eviction (`src/store/ring-buffer.ts:173`)
+- [ ] **TD-012** — Guard health prober error handler with `timedOut` flag to prevent timeout message being overwritten (`src/infra/health-prober.ts:66`)
+- [ ] **TD-013** — Extract typed `createNoOpInfraMonitor()` factory; remove `as any` casts in `server.ts` and collector monkey-patch in `cli.ts` (`src/mcp/server.ts:507,518`, `src/cli.ts:451`)
+
+### Medium Priority
+
+- [ ] **TD-014** — Add unknown-key validation to `validateConfig()` (`src/config/config-schema.ts:65`)
+- [ ] **TD-015** — Log file tailer: only suppress ENOENT; surface EACCES and other I/O errors to stderr (`src/collectors/log-file-tailer.ts:87`)
+- [ ] **TD-016** — Add LRU fingerprint cache to skip SHA-256 + 5 regex passes on duplicate messages (`src/pipeline/fingerprinter.ts:53`)
+- [ ] **TD-017** — Add GCP service account, Azure connection string, and Datadog API key redaction patterns (`src/constants/redaction.ts`)
+
+### Low Priority
+
+- [ ] **TD-018** — Check `child.exitCode !== null` before registering exit listener in `stop()` to close the narrow exit-race (`src/collectors/multi-process-collector.ts:115`)
+- [ ] **TD-019** — Detect EADDRINUSE in HTTP transport and print actionable suggestion (`src/transport/http-transport.ts:59`)
+- [ ] **TD-020** — Replace fixed-window rate limiter with continuous token bucket (`src/correlation/sources/log-collector.ts:65`)
+
+---
+
 ## M6: Stable Release - Remaining Work
 
 - [ ] Wire `get_errors` response as structured object (TD-001)
@@ -66,11 +100,11 @@ Detect infrastructure issues from the existing log stream. No new data sources -
 - [ ] Add HMR event details to watch result (TD-007)
 - [ ] Migrate ESLint to v9 flat config (TD-004)
 - [ ] Fix intermittent multi-process test (TD-005)
+- [ ] Complete M-Harden milestone (TD-008 through TD-020)
 - [ ] Full test coverage audit (target ≥80%)
 - [ ] Performance benchmarks
 - [ ] npm publish (`npx tracepulse`)
 - [ ] Tier 3 security review
-- [ ] Maintainability review
 - [ ] GitHub release with changelog
 
 ## Post-v1.0 - Agent-Driven Improvements
@@ -186,12 +220,13 @@ See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
 | 4 | Combined start + attach | Low | #1 |
 | 5 | HTTP log ingestion (expand) | Low | Already built |
 
-## Security Reviews
+## Code Reviews
 
-| SRR | Date | Scope | Report |
-|-----|------|-------|--------|
-| SRR-001 | 2026-04-29 | T2 full codebase (v0.8.0) | [Report](../security/SRR-001-2026-04-29-T2.md) |
-| SRR-002 | 2026-04-29 | T2 post-M9/M10/M11 additions | [Report](../security/SRR-002-2026-04-29-T2.md) | [Report](../security/SRR-001-2026-04-29-T2.md) |
+| Review | Date | Scope | Report |
+|--------|------|-------|--------|
+| SRR-001 | 2026-04-29 | T2 security — full codebase (v0.8.0) | [Report](../security/SRR-001-2026-04-29-T2.md) |
+| SRR-002 | 2026-04-29 | T2 security — post-M9/M10/M11 (v0.9.2) | [Report](../security/SRR-002-2026-04-29-T2.md) |
+| CRR-001 | 2026-04-30 | Full review — security, performance, maintainability, edge cases (v0.9.2) | [Report](../reviews/CRR-001-2026-04-30-full-review.md) |
 
 ## ADRs
 

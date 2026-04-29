@@ -47,6 +47,8 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
   let lastBuildAt: number | null = null;
   /** Pinned high-signal errors that survive ring buffer eviction. Max 50. */
   const pinnedErrors = new Map<string, RuntimeEvent>();
+  /** Insertion-order list for O(1) oldest-pinned eviction. */
+  const pinnedOrder: string[] = [];
   const MAX_PINNED = 50;
   const PIN_THRESHOLD = 50;
 
@@ -168,10 +170,13 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
       // Pin high-signal errors so they survive eviction
       if (event.signal_score >= PIN_THRESHOLD) {
         pinnedErrors.set(event.fingerprint, event);
-        // Evict oldest pinned if over limit
+        if (!pinnedOrder.includes(event.fingerprint)) {
+          pinnedOrder.push(event.fingerprint);
+        }
+        // Evict oldest pinned if over limit - O(1) via insertion-order list
         if (pinnedErrors.size > MAX_PINNED) {
-          const oldest = [...pinnedErrors.entries()].sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
-          if (oldest) pinnedErrors.delete(oldest[0]);
+          const oldestFp = pinnedOrder.shift();
+          if (oldestFp) pinnedErrors.delete(oldestFp);
         }
       }
 
@@ -211,6 +216,7 @@ export function createRingBuffer(maxSize: number = RING_BUFFER_MAX_SIZE): EventB
       slots.fill(undefined);
       fpMap.clear();
       pinnedErrors.clear();
+      pinnedOrder.length = 0;
       writePtr = 0;
       count = 0;
       bufferClearedAt = Date.now();

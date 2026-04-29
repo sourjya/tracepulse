@@ -9,6 +9,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Fixed (CRR-001 Code Review - 13 items)
+- **TD-008**: Config loader wraps JSON.parse in try/catch - malformed config returns error instead of crashing
+- **TD-009**: Secret redactor captures quoted values as a unit (`password = "my secret"` fully redacted)
+- **TD-010**: Process spawner rejects start() on any non-zero exit code, not just 127
+- **TD-011**: Pinned error eviction uses insertion-order list for O(1) instead of O(n log n) sort
+- **TD-012**: Health prober timeout message preserved via timedOut flag (no longer overwritten by socket error)
+- **TD-013**: Typed `createNoOpInfraMonitor()` factory replaces `as any` casts in server.ts
+- **TD-014**: Config validator rejects unknown keys (catches typos like `correleation_window_ms`)
+- **TD-015**: Log file tailer only ignores ENOENT, surfaces EACCES/ENOSPC to stderr
+- **TD-016**: Fingerprinter LRU cache (256 entries) skips SHA-256 recomputation for repeated messages
+- **TD-017**: Added GCP service account, Azure connection string, Datadog API key redaction patterns
+- **TD-018**: Multi-process collector checks exitCode before registering exit listener (fixes race)
+- **TD-019**: EADDRINUSE error suggests alternate port instead of opaque Node.js error
+- **TD-020**: Rate limiter uses proportional token refill instead of fixed-window reset
+
 ### Added (post-v0.8.1)
 
 - **`register_probe` + `list_probes` tools** (25th, 26th tools) - agent-generated health probes

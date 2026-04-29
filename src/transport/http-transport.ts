@@ -57,9 +57,16 @@ export function createHttpTransport(port: number = DEFAULT_HTTP_PORT): HttpTrans
     start(): Promise<void> {
       return new Promise((resolve, reject) => {
         server.on("error", (err) => {
-          process.stderr.write(
-            `[tracepulse] HTTP transport error: ${err.message}\n`,
-          );
+          const errno = err as NodeJS.ErrnoException;
+          if (errno.code === "EADDRINUSE") {
+            process.stderr.write(
+              `[tracepulse] Port ${port} is already in use. Try --http-port ${port + 1}\n`,
+            );
+          } else {
+            process.stderr.write(
+              `[tracepulse] HTTP transport error: ${err.message}\n`,
+            );
+          }
           reject(err);
         });
 

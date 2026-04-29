@@ -77,11 +77,19 @@ export function loadConfig(options: ConfigOptions): ConfigValidationResult {
     if (!existsSync(configPath)) {
       return { valid: false, error: `Config file not found: ${configPath}` };
     }
-    fileConfig = JSON.parse(readFileSync(configPath, "utf-8")) as Record<string, unknown>;
+    try {
+      fileConfig = JSON.parse(readFileSync(configPath, "utf-8")) as Record<string, unknown>;
+    } catch (err) {
+      return { valid: false, error: `Config file contains invalid JSON: ${err instanceof Error ? err.message : String(err)}` };
+    }
   } else {
     // Default path - optional
     if (existsSync(DEFAULT_CONFIG_FILE)) {
-      fileConfig = JSON.parse(readFileSync(DEFAULT_CONFIG_FILE, "utf-8")) as Record<string, unknown>;
+      try {
+        fileConfig = JSON.parse(readFileSync(DEFAULT_CONFIG_FILE, "utf-8")) as Record<string, unknown>;
+      } catch (err) {
+        return { valid: false, error: `Default config file contains invalid JSON: ${err instanceof Error ? err.message : String(err)}` };
+      }
     }
   }
 

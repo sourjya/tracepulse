@@ -39,6 +39,7 @@ export function createHealthProber(url: string, intervalMs: number = 30000): Hea
   function probe(): void {
     const start = Date.now();
     const parsed = new URL(url);
+    let timedOut = false;
 
     const req = request(
       { hostname: parsed.hostname, port: parsed.port, path: parsed.pathname, timeout: 5000 },
@@ -55,6 +56,8 @@ export function createHealthProber(url: string, intervalMs: number = 30000): Hea
     );
 
     req.on("error", (err) => {
+      // Skip if already handled by timeout - prevents overwriting timeout context
+      if (timedOut) return;
       lastResult = {
         status: "unreachable",
         duration_ms: Date.now() - start,
@@ -64,6 +67,7 @@ export function createHealthProber(url: string, intervalMs: number = 30000): Hea
     });
 
     req.on("timeout", () => {
+      timedOut = true;
       req.destroy();
       lastResult = {
         status: "unreachable",

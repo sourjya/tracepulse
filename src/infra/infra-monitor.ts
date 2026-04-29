@@ -28,6 +28,20 @@ export interface InfraMonitor {
   getSummary(): string;
 }
 
+/**
+ * Create a no-op InfraMonitor for when infrastructure monitoring is not configured.
+ * Used as a typed fallback instead of `as any` casts.
+ */
+export function createNoOpInfraMonitor(): InfraMonitor {
+  return {
+    start() {},
+    stop() {},
+    getAll() { return []; },
+    getByName() { return undefined; },
+    getSummary() { return "Infrastructure monitoring not configured"; },
+  };
+}
+
 const PROBE_INTERVAL_MS = 60_000;
 const MAX_HISTORY = 10;
 

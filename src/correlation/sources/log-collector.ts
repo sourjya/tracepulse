@@ -56,17 +56,22 @@ export function createLogCollector(
     });
   }
 
-  /** Simple token bucket rate limiter: 100 requests per second. */
-  let tokenCount = 100;
-  let lastRefill = Date.now();
+  /** Proportional token bucket rate limiter: 100 requests per second. */
   const RATE_LIMIT = 100;
   const REFILL_INTERVAL_MS = 1000;
+  let tokenCount = RATE_LIMIT;
+  let lastRefill = Date.now();
 
   function checkRateLimit(): boolean {
     const now = Date.now();
-    if (now - lastRefill >= REFILL_INTERVAL_MS) {
-      tokenCount = RATE_LIMIT;
-      lastRefill = now;
+    const elapsed = now - lastRefill;
+    // Proportional refill based on elapsed time
+    if (elapsed > 0) {
+      const refill = Math.floor((elapsed / REFILL_INTERVAL_MS) * RATE_LIMIT);
+      if (refill > 0) {
+        tokenCount = Math.min(RATE_LIMIT, tokenCount + refill);
+        lastRefill = now;
+      }
     }
     if (tokenCount <= 0) return false;
     tokenCount--;

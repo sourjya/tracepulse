@@ -103,6 +103,12 @@ export function createMultiProcessCollector(
       for (const [name, child] of children) {
         killPromises.push(
           new Promise<void>((resolve) => {
+            // If child already exited, resolve immediately (avoids exit-race)
+            if (child.exitCode !== null) {
+              resolve();
+              return;
+            }
+
             const timer = setTimeout(() => {
               try {
                 if (child.pid) process.kill(-child.pid, "SIGKILL");

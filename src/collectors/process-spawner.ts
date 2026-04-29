@@ -127,12 +127,12 @@ export function createProcessSpawner(command: string): Collector {
               );
             }
 
-            // Exit code 127 = command not found in shell
-            if (!settled && code === 127) {
+            // Any non-zero exit before start() resolves = fast failure
+            if (!settled && code !== null && code !== 0) {
               settled = true;
               reject(
                 new Error(
-                  `Command not found: "${command}" (exit code 127)`,
+                  `Command failed: "${command}" (exit code ${code})`,
                 ),
               );
             }

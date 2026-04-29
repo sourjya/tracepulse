@@ -37,6 +37,7 @@ import { handleGetRequests } from "@/tools/get-requests.js";
 import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
 import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-status.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
+import { createNoOpInfraMonitor } from "@/infra/infra-monitor.js";
 import { handleCheckPort } from "@/tools/check-port.js";
 import { handleGetProjectHealth } from "@/tools/get-project-health.js";
 import { handleRegisterProbe, handleListProbes, createProbeManager, type ProbeManager } from "@/tools/register-probe.js";
@@ -504,7 +505,7 @@ export function createMcpServer(
     description:
       "Summary of all discovered backend services (databases, Redis, queues) with connectivity status. Reads from .env files, probes every 60s.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  }, () => handleGetInfraStatus(options?.infraMonitor ?? { getAll: () => [], getByName: () => undefined, getSummary: () => "Infrastructure monitoring not configured" } as any));
+  }, () => handleGetInfraStatus(options?.infraMonitor ?? createNoOpInfraMonitor()));
 
   server.registerTool("get_infra_detail", {
     title: "Get Infrastructure Detail",
@@ -515,7 +516,7 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleGetInfraDetail(
-    options?.infraMonitor ?? { getAll: () => [], getByName: () => undefined, getSummary: () => "" } as any,
+    options?.infraMonitor ?? createNoOpInfraMonitor(),
     args as Record<string, unknown>,
   ));
 
