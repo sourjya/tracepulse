@@ -49,6 +49,13 @@ export const INFRA_PATTERNS: readonly InfraPattern[] = [
 
   // DNS
   { pattern: /NXDOMAIN|getaddrinfo.*ENOTFOUND/i, category: "dns", score_boost: 15 },
+
+  // Database schema / migration issues
+  { pattern: /column.*does not exist/i, category: "migration", score_boost: 25 },
+  { pattern: /table.*does not exist/i, category: "migration", score_boost: 25 },
+  { pattern: /relation.*does not exist/i, category: "migration", score_boost: 25 },
+  { pattern: /no such table/i, category: "migration", score_boost: 25 },
+  { pattern: /Unknown column/i, category: "migration", score_boost: 25 },
 ];
 
 /**

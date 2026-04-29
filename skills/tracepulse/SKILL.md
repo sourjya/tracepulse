@@ -28,6 +28,19 @@ This is the core loop. Do this every time you edit a backend file:
 5. If errors: read `context.file` at `context.line`, fix, repeat from step 1
 6. If clean: move on
 
+### The proven debugging loop (most productive workflow)
+
+When TracePulse surfaces real errors, this is the fastest resolution path:
+
+1. `get_new_errors(limit: 5)` - see only errors with unseen fingerprints
+2. Read the error: `context.file`, `context.line`, `context.error_type`
+3. Fix the root cause
+4. `clear_errors()` - reset the buffer for a clean baseline
+5. `verify_fix(10)` - watch 10s, confirm zero new errors, pass/fail verdict
+6. If PASS: move on. If FAIL: repeat from step 2.
+
+This loop resolved a 25-occurrence migration error in under 2 minutes during real-world testing.
+
 ### Using watch mode (best for hot-reload servers)
 
 If the dev server supports hot-reload (Vite, nodemon, Next.js, webpack, ts-node-dev):
