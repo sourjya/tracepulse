@@ -149,6 +149,27 @@ Agent feedback: "Test failures are a major error source but TP doesn't capture t
 
 New pytest/jest parser that understands PASSED/FAILED/ERROR summary lines. Medium effort, high value.
 
+### Background Task Management
+
+Agent research (2026-04-29): 6 categories of background state agents can't see.
+See `docs/ideas/agent-background-task-gaps.md` for full analysis.
+
+**Immediate (SKILL.md only):**
+- Language-specific command reference (Node, Python, Go, Rust, Java)
+- Dependency check workflow via `run_and_watch`
+- Migration status workflow via `run_and_watch`
+- Security audit workflow via `run_and_watch`
+
+**New parsers:**
+- npm audit JSON parser (vulnerability counts)
+- Coverage output parser (line/branch/function %)
+- npm outdated parser (outdated dependency table)
+
+**New tools:**
+- `check_port(port)` - verify port availability
+- `get_dependency_status()` - installed vs required deps
+- `get_project_health()` - composite health check (deps + env + db + server + tests)
+
 ### Log Ingestion Flexibility (post-v1.0 sequence)
 
 See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
