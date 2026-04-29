@@ -31,7 +31,7 @@ These problems cost 15-30 minutes per debugging session. TracePulse eliminates t
 
 ## Your Agent Is Wasting Tokens
 
-Research shows AI agents spend **60-80% of their token budget** on orientation and retrieval, not problem-solving. One study found an agent reading 25 files to answer a question that needed 3.
+Research from [Morph](https://www.morphllm.com) (2026), [Cognition](https://cognition.ai) internal measurements, and [SWE-Pruner](https://arxiv.org/abs/2601.16746) (arXiv 2601.16746) shows AI agents spend **60-80% of their token budget** on orientation and retrieval, not problem-solving. One developer reported Claude Code reading 25 files to answer a question that needed 3.
 
 <figure><img src=".gitbook/assets/tracepulse-token-efficiency.svg" alt="Token comparison: 12,000 down to 1,000 per error" width="960"></figure>
 
