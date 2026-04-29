@@ -19,6 +19,7 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M8: Dev Infrastructure Awareness | Agent Feedback + Research | v0.8.0 | 🔲 Not Started |
 | M9: Infrastructure Discovery & Health | Research | v0.9.0 | 🔲 Not Started |
 | M10: Project Health & Dependency Awareness | Gap Analysis | v0.9.1 | 🔲 Not Started |
+| M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | 🔲 Not Started |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
 
 ## M7: Agent-Driven Enhancements
