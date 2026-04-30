@@ -261,6 +261,15 @@ Save the timestamp from your last call and pass it next time:
 This avoids re-processing errors you already investigated.
 
 ### Bridge frontend errors manually
+
+### NEVER run interactive CLI tools via shell
+Database CLIs (`psql`, `mysql`, `sqlite3`, `redis-cli`, `mongo`) prompt for passwords interactively and will hang your session indefinitely. Instead:
+- **For migration checks:** use `get_migration_status()` - auto-detects framework, reads credentials from .env
+- **For DB queries:** use `run_and_watch("PGPASSWORD=$DB_PASS psql -h localhost -U user -d dbname -c 'SELECT ...'")` with credentials from .env
+- **For Redis/Mongo:** use `run_and_watch("redis-cli -a $REDIS_PASS ping")` with credentials from .env
+- **General rule:** if a CLI tool might prompt for input, pass credentials via environment variables or flags, never interactively
+
+### Bridge frontend errors manually
 When `get_correlated_errors` returns empty (no frontend source configured):
 1. Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` → find failed requests
 2. Note the URL and status code of the failure
