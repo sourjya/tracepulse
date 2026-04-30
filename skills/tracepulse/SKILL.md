@@ -46,7 +46,7 @@ run_and_watch("pytest tests/unit/")     -> { passed: 554, failed: 0, warnings: 1
 run_and_watch("npx vitest run")         -> { passed: 120, failed: 0 }
 run_and_watch("npx vite build")         -> { build: "success", modules: 342 }
 ```
-Shell commands return raw text the agent must parse manually.
+Shell commands return raw text the agent must parse manually. Note: commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, make, bash). Don't prefix with `cd` - use `bash /absolute/path/to/script.sh` instead.
 
 ### The proven debugging loop (most productive workflow)
 
