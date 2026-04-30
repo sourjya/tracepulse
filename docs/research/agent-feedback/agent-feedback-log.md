@@ -558,3 +558,14 @@ Agent created a Settings tab bar as a separate sticky div below TopBar instead o
 **TP can't help here** - this is a visual/architectural pattern violation, not a runtime error. The correct tools are ViewGraph (capture diffing) and steering files (ux-patterns.md).
 
 **Meta-insight:** The agent's self-assessment is valuable product feedback. When agents explain WHY they made a mistake, it reveals what guardrails are missing. In this case: "Before creating any new header/tab element, check if TopBar already handles it." This is a steering file rule, not a tool feature.
+
+### First real-world use of get_error_clusters - 59 errors triaged in seconds
+
+Agent called `get_error_clusters()` and got 7 clusters from 59 errors. Quickly triaged:
+- 4 clusters: stale (HMR transients, asyncpg cache) - dismissed
+- 2 clusters: investigated (useAuth import, SortableFolderWrapper render prop) - confirmed stale after code review
+- Result: zero real bugs, `clear_errors()` to reset
+
+**TP value:** Without clustering, the agent would have seen 59 individual errors and spent significant tokens reading each one. With clustering, it saw 7 groups, triaged in one pass, and moved on. This is the error intelligence feature working as designed.
+
+**Also validates:** The auto-expire HMR transients feature (wishlist #25) would have automatically dismissed clusters #1 and #3-4, reducing the triage from 7 clusters to 3.
