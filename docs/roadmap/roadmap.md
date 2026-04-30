@@ -24,6 +24,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M-Harden: Code Quality & Hardening | CRR-001 | v0.9.2 | ✅ Complete (13/13 items) |
 | M13: Discoverability & Integration | Deep Research | v0.9.3 | 🔲 Next |
 | M14: Category Extension | Deep Research | v0.9.4-v1.0 | 🔲 Planned |
+| M15: Tool Schema Optimization | MCP Tooling Research | v1.0 | 🔲 Planned |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
 
 ---
@@ -58,6 +59,21 @@ These features move TracePulse from "backend log MCP" to "agentic debug primitiv
 | 5 | HTTP record-replay sidecar | 2-3 weeks | Medium | 6.2 |
 | 6 | V8 Inspector integration for Node JIT-instrumentation | 4-6 weeks | HIGH | 6.7 |
 | 7 | AST-aware diff correlation (tree-sitter) | 2-3 weeks | Medium | 6.9 |
+
+## Strategic Positioning (from Deep Research)
+
+## M15: Tool Schema Optimization (informed by MCP Tooling Research)
+
+Source: [MCP Tooling Research](../research/mcp-tooling-research--the-case-for-rearchitecting-tracepulse-and-viewgraph.md) | [Spec](.kiro/specs/m15-tool-schema-optimization/)
+
+30 tool schemas = ~6,000 tokens overhead per turn. Research shows 90%+ reduction achievable.
+
+| # | Feature | Effort | Impact | Research Ref |
+|---|---------|--------|--------|-------------|
+| 1 | Tool description compression (remove "tool smells") | 1 day | 25-35% per schema | arXiv 2602.14878 |
+| 2 | Tool clustering (5 clusters, progressive disclosure) | 2 weeks | 83% schema reduction | Speakeasy, arXiv 2603.20313 |
+| 3 | Token audit in get_audit_trail (cost per call) | 3 days | Transparency | Internal |
+| 4 | Efficiency summary (tokens saved, cost, carbon) | 2 days | Marketing metric | IEA, Goldman Sachs |
 
 ## Strategic Positioning (from Deep Research)
 

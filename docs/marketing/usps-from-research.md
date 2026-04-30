@@ -86,3 +86,25 @@ On WSL, terminal output capture is unreliable - Kiro IDE and other tools often c
 **Target audience:** Any developer using AI coding agents on WSL (a large segment - WSL is the default Linux environment for Windows developers).
 
 **Messaging:** "Your agent can't read the terminal on WSL. TracePulse doesn't use the terminal. Test results, build errors, and server crashes flow through a separate channel that WSL can't break."
+
+## Environmental Impact & Responsible AI USP
+
+Source: [MCP Tooling Research](../research/mcp-tooling-research--the-case-for-rearchitecting-tracepulse-and-viewgraph.md)
+
+**USP: "Every wasted token = wasted compute = wasted energy = avoidable carbon emissions"**
+
+Key data points (all cited):
+- 59.4% of token consumption in agentic coding goes to re-reading own work (arXiv 2601.14470)
+- Global DC electricity demand projected to double to ~945 TWh by 2030 (IEA 2025)
+- LLM inference accounts for >90% of total AI power consumption (arXiv 2512.03024)
+- TracePulse: 12x token reduction per error = direct compute/energy savings
+
+**Messaging:** "TracePulse doesn't just save tokens - it saves energy. Every error the agent doesn't re-read is compute that doesn't run, energy that doesn't burn, carbon that doesn't emit."
+
+## Schema Overhead USP
+
+**USP: "30 tools at ~200 tokens each = 6,000 tokens of overhead per turn. We're cutting that by 83%."**
+
+Research: Speakeasy Dynamic Toolsets (96% reduction), arXiv 2603.20313 (99.6% reduction at 97.1% accuracy)
+
+**Messaging:** "Most MCP servers tax every message with thousands of tokens of tool definitions the agent never uses. TracePulse's progressive disclosure loads only what the agent needs, when it needs it."
