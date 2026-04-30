@@ -19,7 +19,12 @@ interface DetectedFramework {
   readonly command: string;
 }
 
-/** Detect migration framework from project files in cwd. */
+/**
+ * Detect migration framework from project files in cwd.
+ *
+ * @param cwd - Directory to scan for framework markers.
+ * @returns Detected framework with its status command, or null if none found.
+ */
 function detectFramework(cwd: string): DetectedFramework | null {
   // Alembic (Python/SQLAlchemy)
   if (existsSync(`${cwd}/alembic.ini`) || existsSync(`${cwd}/alembic`)) {
@@ -40,7 +45,13 @@ function detectFramework(cwd: string): DetectedFramework | null {
   return null;
 }
 
-/** Parse migration status output into structured result. */
+/**
+ * Parse migration status output into structured result.
+ *
+ * @param framework - Which framework produced the output (alembic, prisma, django, knex).
+ * @param output - Raw stdout from the migration status command.
+ * @returns Structured status with pending count, suggestion, and raw output snippet.
+ */
 function parseMigrationOutput(framework: string, output: string): Record<string, unknown> {
   const lines = output.split("\n").filter(Boolean);
 

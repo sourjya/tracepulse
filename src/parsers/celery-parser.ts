@@ -22,11 +22,13 @@ const TASK_SUCCEEDED = /Task\s+([\w.]+)\[([a-f0-9-]+)\]\s+succeeded/i;
 export const celeryParser: ErrorParser = {
   name: "celery",
 
+  /** Test for Celery task lifecycle patterns (raised, retry, timeout, succeeded). */
   canParse(line: string): boolean {
     return TASK_RAISED.test(line) || TASK_RETRY.test(line) ||
            TASK_TIMEOUT.test(line) || TASK_SUCCEEDED.test(line);
   },
 
+  /** Parse Celery task event into structured error with task name and status. */
   parse(line: string): ParsedError | null {
     let match = TASK_RAISED.exec(line);
     if (match) {

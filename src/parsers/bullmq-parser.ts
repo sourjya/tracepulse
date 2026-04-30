@@ -22,11 +22,13 @@ const BULLMQ_ERROR = /bull(?:mq)?\s*(?:error|ERR)/i;
 export const bullmqParser: ErrorParser = {
   name: "bullmq",
 
+  /** Test for BullMQ patterns: Job failed/stalled/completed or bullmq error. */
   canParse(line: string): boolean {
     return JOB_FAILED.test(line) || JOB_STALLED.test(line) ||
            JOB_COMPLETED.test(line) || BULLMQ_ERROR.test(line);
   },
 
+  /** Parse BullMQ job event into structured error with job ID and queue name. */
   parse(line: string): ParsedError | null {
     let match = JOB_FAILED.exec(line);
     if (match) {

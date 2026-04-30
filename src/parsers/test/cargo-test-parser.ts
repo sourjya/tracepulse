@@ -24,10 +24,12 @@ const FAILURES_HEADER = /^failures:$/;
 export const cargoTestParser: ErrorParser = {
   name: "cargo-test",
 
+  /** Test for cargo test patterns: summary, test FAILED, panic. */
   canParse(line: string): boolean {
     return SUMMARY.test(line) || TEST_FAILED.test(line) || PANIC.test(line) || FAILURES_HEADER.test(line);
   },
 
+  /** Parse cargo test output into structured error with test name and file:line from panics. */
   parse(line: string): ParsedError | null {
     const panicMatch = line.match(PANIC);
     if (panicMatch) {

@@ -27,12 +27,14 @@ const BUILD_RESULT = /BUILD (SUCCESS|FAILURE)/;
 export const junitParser: ErrorParser = {
   name: "junit",
 
+  /** Test for JUnit/Maven/Gradle patterns: Surefire summary, task FAILED, AssertionError, BUILD result. */
   canParse(line: string): boolean {
     return MAVEN_SUMMARY.test(line) || GRADLE_FAILED.test(line) ||
            TEST_FAILED.test(line) || ASSERTION_ERROR.test(line) ||
            BUILD_RESULT.test(line);
   },
 
+  /** Parse JUnit/Maven/Gradle output into structured error with test class, method, and counts. */
   parse(line: string): ParsedError | null {
     const assertMatch = line.match(ASSERTION_ERROR);
     if (assertMatch) {

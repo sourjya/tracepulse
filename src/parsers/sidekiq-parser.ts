@@ -20,11 +20,13 @@ const SIDEKIQ_START = /([\w:]+)\s+JID-([a-f0-9]+)\s+start/i;
 export const sidekiqParser: ErrorParser = {
   name: "sidekiq",
 
+  /** Test for Sidekiq patterns: JID- marker with WARN/ERROR/FATAL/done keywords. */
   canParse(line: string): boolean {
     return (line.includes("JID-") && (line.includes("done:") || line.includes("start") || line.includes("WARN") || line.includes("ERROR") || line.includes("FATAL"))) ||
            SIDEKIQ_FAIL.test(line);
   },
 
+  /** Parse Sidekiq job event into structured error with job class and timing. */
   parse(line: string): ParsedError | null {
     let match = SIDEKIQ_FAIL.exec(line);
     if (match && /WARN|ERROR|FATAL/.test(line)) {

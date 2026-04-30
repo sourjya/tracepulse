@@ -74,7 +74,10 @@ const NARRATIVE_PATTERNS: readonly NarrativePattern[] = [
       command: "brew services start redis || sudo systemctl start redis",
     }),
   },
-  // Database: relation/table does not exist
+  // Database: relation/table does not exist - matches PostgreSQL, MySQL, and SQLite
+  // PostgreSQL: relation "users" does not exist
+  // MySQL: Table 'mydb.users' doesn't exist
+  // SQLite: no such table: users
   {
     name: "relation-does-not-exist",
     test: /relation "(\S+)" does not exist|Table '(\S+)' doesn't exist|no such table: (\S+)/i,
@@ -85,7 +88,10 @@ const NARRATIVE_PATTERNS: readonly NarrativePattern[] = [
       command: "alembic upgrade head || npx prisma migrate deploy || python manage.py migrate",
     }),
   },
-  // Database: column does not exist
+  // Database: column does not exist - matches PostgreSQL, MySQL, and SQLite variants
+  // PostgreSQL: column "auth_provider" does not exist
+  // PostgreSQL: column users.auth_provider of relation
+  // Captures the column name from either quoted or dotted notation
   {
     name: "column-does-not-exist",
     test: /column (?:"?(\S+)"?\.)?"?(\S+)"? (?:does not exist|of relation)/i,

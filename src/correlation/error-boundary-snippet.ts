@@ -19,6 +19,17 @@
  *
  * @param port - TracePulse log collector port (default 9801)
  */
+/**
+ * Report a frontend crash to TracePulse's log collector.
+ *
+ * Sends the error details to the /api/v1/crashes endpoint. Silently
+ * ignores failures (TracePulse not running, network error) so crash
+ * reporting never breaks the app.
+ *
+ * @param error - The caught Error object from ErrorBoundary or window.onerror.
+ * @param componentStack - React component stack from ErrorBoundary's componentDidCatch.
+ * @param port - TracePulse log collector port (default 9801).
+ */
 export function reportCrashToTracePulse(
   error: Error,
   componentStack?: string | null,
