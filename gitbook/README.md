@@ -1,5 +1,7 @@
 # The Backend Feedback Layer for AI Coding Agents
 
+<figure><img src=".gitbook/assets/tracepulse-logo.png" alt="TracePulse" width="420"></figure>
+
 **TracePulse - Runtime feedback MCP server.**
 
 *Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
