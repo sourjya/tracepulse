@@ -28,6 +28,18 @@ This is the core loop. Do this every time you edit a backend file:
 5. If errors: read `context.file` at `context.line`, fix, repeat from step 1
 6. If clean: move on
 
+### Three-tier verification (recommended)
+
+Use the right level of verification for the situation:
+
+| Tier | Tool | Speed | When to use |
+|------|------|-------|-------------|
+| 1. Static | `tsc --noEmit` or linter via shell | Instant | After every edit |
+| 2. Runtime | `verify_fix(3)` or `get_build_errors()` | 3s | After edits that affect running server |
+| 3. Comprehensive | Full test suite + build via shell | 20s+ | At task completion only |
+
+Don't run the full test suite after every edit - use tier 1-2 for rapid iteration, tier 3 as a final gate.
+
 ### The proven debugging loop (most productive workflow)
 
 When TracePulse surfaces real errors, this is the fastest resolution path:
