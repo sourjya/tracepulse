@@ -289,6 +289,14 @@ Don't call `get_timeline` or `get_server_logs` unless you need the full picture.
 
 ## Pro Tips
 
+### Checkpoint before context compaction
+When your context window is getting long, run the full test suite via `run_and_watch` before compaction. This establishes a verified clean state - if something breaks after compaction, you know tests were green at the checkpoint.
+```
+run_and_watch("pytest tests/", cwd: "./backend")
+run_and_watch("npx vitest run", cwd: "./frontend")
+run_and_watch("npx vite build", cwd: "./frontend")
+```
+
 ### Use `message_contains` to filter by URL path
 Instead of scanning all logs, filter directly:
 - `get_errors(message_contains: "/api/export")` - only errors mentioning this path
