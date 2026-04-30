@@ -43,3 +43,25 @@ export const MAX_PARSE_INPUT_LENGTH = 10_000;
 
 /** Regex to strip ANSI escape codes from log output before parsing. */
 export const ANSI_ESCAPE_REGEX = /\x1b\[[0-9;]*m/g;
+
+// ──────────────────────────────────────────────
+// Tool Handler Defaults
+// ──────────────────────────────────────────────
+
+/** Default limit for get_new_errors tool. */
+export const DEFAULT_NEW_ERRORS_LIMIT = 10;
+
+/** Default limit for get_audit_trail tool. */
+export const DEFAULT_AUDIT_TRAIL_LIMIT = 50;
+
+/** Default limit for get_perf_baseline and get_requests tools. */
+export const DEFAULT_QUERY_LIMIT = 20;
+
+/** Default timeout for wait_for_build and wait_for_event tools (seconds). */
+export const DEFAULT_WAIT_TIMEOUT_SECONDS = 30;
+
+/** Max items in truncated lists (warnings, build errors, history). */
+export const MAX_TRUNCATED_LIST = 5;
+
+/** Max pending migrations to show. */
+export const MAX_PENDING_MIGRATIONS = 10;

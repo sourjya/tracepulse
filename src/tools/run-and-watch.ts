@@ -11,6 +11,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
+import { resolve as resolvePath } from "node:path";
 import type { RuntimeEvent } from "@/types/events.js";
 import { createRingBuffer } from "@/store/ring-buffer.js";
 import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
@@ -21,7 +22,7 @@ import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js
 /** Default allowed command prefixes. Only these can be executed. */
 const DEFAULT_ALLOWED_PREFIXES = [
   "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
-  "vitest", "jest", "go test", "cargo test", "make", "bash",
+  "vitest", "jest", "go test", "cargo test",
 ];
 
 /**
@@ -66,6 +67,23 @@ export async function handleRunAndWatch(
   }
 
   const timeout = ((args.timeout_seconds as number | undefined) ?? 60) * 1000;
+
+  // Security: validate cwd is within the project root (no directory traversal)
+  let resolvedCwd: string | undefined;
+  if (cwd) {
+    const projectRoot = process.cwd();
+    const resolved = resolvePath(projectRoot, cwd);
+    if (!resolved.startsWith(projectRoot)) {
+      return {
+        content: [{
+          type: "text",
+          text: `cwd must be within the project root. "${cwd}" resolves outside ${projectRoot}.`,
+        }],
+        isError: true,
+      };
+    }
+    resolvedCwd = resolved;
+  }
   const tempBuffer = createRingBuffer(200);
   const registry = createDefaultRegistry();
 
@@ -77,7 +95,7 @@ export async function handleRunAndWatch(
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],
       env: { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" },
-      ...(cwd ? { cwd } : {}),
+      ...(resolvedCwd ? { cwd: resolvedCwd } : {}),
     });
 
     /** Process a line through the parser pipeline into the temp buffer. */

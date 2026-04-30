@@ -52,7 +52,7 @@ For monorepos with separate frontend/backend dirs, use the `cwd` parameter:
 run_and_watch("npx vitest run", cwd: "./frontend")
 run_and_watch("pytest tests/", cwd: "./backend")
 ```
-Commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, make, bash). Don't prefix with `cd`.
+Commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test). Don't prefix with `cd`.
 
 ### The proven debugging loop (most productive workflow)
 

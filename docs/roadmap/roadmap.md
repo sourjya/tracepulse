@@ -259,6 +259,10 @@ See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
 | SRR-001 | 2026-04-29 | T2 security — full codebase (v0.8.0) | [Report](../security/SRR-001-2026-04-29-T2.md) |
 | SRR-002 | 2026-04-29 | T2 security — post-M9/M10/M11 (v0.9.2) | [Report](../security/SRR-002-2026-04-29-T2.md) |
 | CRR-001 | 2026-04-30 | Full review — security, performance, maintainability, edge cases (v0.9.2) | [Report](../reviews/CRR-001-2026-04-30-full-review.md) |
+| SRR-003 | 2026-04-30 | T3 security — full codebase sprint-end (v0.9.2) | [Report](../security/SRR-003-2026-04-30-T3.md) |
+| MRR-001 | 2026-04-30 | Maintainability — full codebase (v0.9.2) | [Report](../reviews/MRR-001-2026-04-30.md) |
+| TQR-001 | 2026-04-30 | Test quality — 722 tests across 77 files (v0.9.2) | [Report](../reviews/TQR-001-2026-04-30.md) |
+| DRR-001 | 2026-04-30 | Dependency risk — package.json + transitive deps (v0.9.2) | [Report](../reviews/DRR-001-2026-04-30.md) |
 
 ## ADRs
 

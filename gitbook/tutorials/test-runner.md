@@ -83,7 +83,7 @@ The MCP protocol (JSON-RPC over stdio) is a completely separate channel from the
 
 ## Security
 
-Commands are validated against an allowlist: `npx`, `npm`, `node`, `pytest`, `python`, `tsc`, `eslint`, `vitest`, `jest`, `go test`, `cargo test`, `make`, `bash`. Other commands are rejected.
+Commands are validated against an allowlist: `npx`, `npm`, `node`, `pytest`, `python`, `tsc`, `eslint`, `vitest`, `jest`, `go test`, `cargo test`. Other commands are rejected.
 
 ## Language Coverage
 
