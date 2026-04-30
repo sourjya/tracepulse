@@ -76,3 +76,13 @@ Feedback from a testing professional: "Integration with unit testing or integrat
 
 ### Key Differentiator for Testing Audiences
 "Most AI coding tools can write code. None of them can verify it works. TracePulse + ViewGraph + Chrome DevTools MCP give the agent the same verification loop a senior QA engineer uses: check the backend, check the browser, check the UI."
+
+## WSL Reliability USP
+
+**USP: "run_and_watch bypasses WSL terminal output bugs"**
+
+On WSL, terminal output capture is unreliable - Kiro IDE and other tools often can't read test results from the terminal. Developers resort to piping everything through `tee` to log files. `run_and_watch` bypasses this entirely because it captures output via Node.js pipes and returns data over the MCP protocol (JSON-RPC over stdio), a completely separate channel from the terminal.
+
+**Target audience:** Any developer using AI coding agents on WSL (a large segment - WSL is the default Linux environment for Windows developers).
+
+**Messaging:** "Your agent can't read the terminal on WSL. TracePulse doesn't use the terminal. Test results, build errors, and server crashes flow through a separate channel that WSL can't break."

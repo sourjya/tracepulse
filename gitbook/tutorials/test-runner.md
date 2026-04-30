@@ -49,11 +49,37 @@ run_and_watch(command: "npx eslint src/", timeout_seconds: 30)
 ## How it works
 
 1. TracePulse spawns the command as a child process
-2. stdout/stderr are piped through all 20 parsers
+2. stdout/stderr are piped through all 23 parsers
 3. Errors are scored and structured
 4. When the process exits, results are returned
 
 The output is parsed the same way as dev server logs - pytest failures get file:line extraction, TypeScript errors get TS code extraction, etc.
+
+## Monorepo support
+
+Use the `cwd` parameter to run commands in subdirectories:
+
+```
+run_and_watch(command: "npx vitest run", cwd: "./frontend")
+run_and_watch(command: "pytest tests/", cwd: "./backend")
+run_and_watch(command: "npx vite build", cwd: "./frontend")
+```
+
+No `cd` prefix needed. The command runs directly in the specified directory.
+
+## WSL reliability
+
+On WSL (Windows Subsystem for Linux), terminal output capture is unreliable. Kiro IDE and other tools often can't read test results from the terminal, forcing developers to pipe output through `tee` to log files.
+
+`run_and_watch` bypasses this entirely:
+
+| Method | How output travels | WSL reliable? |
+|--------|-------------------|---------------|
+| Shell command | Terminal stdout -> IDE reads terminal | No - breaks frequently |
+| Shell + tee | Terminal -> tee -> log file -> agent reads file | Yes but clunky |
+| `run_and_watch` | Node.js pipe -> parser pipeline -> JSON via MCP | Yes - separate channel |
+
+The MCP protocol (JSON-RPC over stdio) is a completely separate channel from the terminal. WSL rendering issues don't affect it. The agent gets clean, parsed results every time.
 
 ## Security
 

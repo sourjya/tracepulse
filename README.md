@@ -236,6 +236,22 @@ tracepulse start --http "npm run dev"
 ```
 Starts a Streamable HTTP server on `127.0.0.1:9800` alongside the default stdio transport. Allows multiple MCP clients to connect to the same TracePulse instance simultaneously.
 
+## Why `run_and_watch` Instead of Shell
+
+`run_and_watch` isn't just a convenience - it solves real reliability problems:
+
+**Structured output.** Shell commands return raw text the agent must parse. `run_and_watch` returns structured JSON with pass/fail counts, error details, and file:line references.
+
+**WSL reliability.** On WSL (Windows Subsystem for Linux), terminal output capture is unreliable - Kiro IDE and other tools often can't read test results from the terminal. `run_and_watch` bypasses this entirely because it captures output via Node.js pipes and returns data over the MCP protocol (JSON-RPC over stdio), a completely separate channel from the terminal.
+
+**Monorepo support.** The `cwd` parameter runs commands in subdirectories without `cd` prefix hacks:
+```
+run_and_watch("npx vitest run", cwd: "./frontend")
+run_and_watch("pytest tests/", cwd: "./backend")
+```
+
+**Parser pipeline.** Output flows through TracePulse's 23 parsers, so test failures, build errors, and runtime crashes are all normalized into the same structured format the agent already knows.
+
 ## Cloud Log Monitoring
 
 Monitor cloud service logs with zero additional dependencies - uses your existing cloud CLIs:
