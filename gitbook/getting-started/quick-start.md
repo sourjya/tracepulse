@@ -8,11 +8,13 @@ Find your MCP client's config file:
 
 | Client | Config File |
 |--------|-------------|
-| **Kiro CLI** | `.kiro/settings/mcp.json` |
-| **Claude Desktop** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| **Cursor** | `.cursor/mcp.json` |
-| **VS Code** | `.vscode/mcp.json` |
+| **Kiro CLI** | `.kiro/settings/mcp.json` (in your project) |
+| **Claude Desktop (macOS)** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| **Claude Desktop (Windows)** | `%APPDATA%\Claude\claude_desktop_config.json` |
+| **Cursor** | `.cursor/mcp.json` (in your project) |
+| **VS Code (Copilot)** | `.vscode/mcp.json` (in your project) |
 | **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
+| **Generic** | `.mcp.json` (in your project root) |
 
 Add TracePulse:
 
