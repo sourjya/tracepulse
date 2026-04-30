@@ -506,3 +506,12 @@ Agent replaced `colOrder` with `visibleColOrder` in ListView.tsx. `tsc --noEmit`
 3. Wishlist #25: component render monitoring
 
 **Lesson:** The three-tier pattern needs a tier 1.5: after frontend changes, navigate to the affected page and check console errors before calling verify_fix. tsc + verify_fix alone misses frontend runtime errors.
+
+### Agent root-caused visibleColOrder bug + wishlist #29
+
+Agent fixed the ReferenceError: `visibleColOrder` was in ListView scope but used inside a memo'd SortableRow component that only has access to its own props. Fix: pass it as a prop.
+
+Agent's wishlist:
+> "TP should detect ReferenceError crashes from the ErrorBoundary bridge and correlate them with recent file changes. If `visibleColOrder is not defined` appears right after I edited ListView.tsx, TP should flag 'likely caused by your last edit to ListView.tsx - check variable scoping.'"
+
+**Assessment:** This combines two existing capabilities: (1) ErrorBoundary bridge (already captures crashes), (2) `correlate_with_diff()` (already links errors to git changes). The missing piece is automatic correlation - TP would need to auto-run correlate_with_diff when a new ReferenceError appears and include the result in the error response. Feasible but requires the file-change tracker to be wired into the error narrative system.
