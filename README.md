@@ -304,6 +304,8 @@ TracePulse is designed to work alongside:
 
 TracePulse is the auditory cortex - it hears what the backend is saying. Together, the agent has the same situational awareness a senior developer has: see the UI, act in the browser, hear the server.
 
+*The cortex analogy is a positioning metaphor for the three-layer agentic debugging stack, not a neuroscience claim.*
+
 ## Architecture
 
 See [docs/architecture/architecture-guide.md](docs/architecture/architecture-guide.md) for the full architecture guide with diagrams.

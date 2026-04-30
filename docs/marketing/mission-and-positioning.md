@@ -92,6 +92,8 @@ TracePulse is designed as a companion, not a replacement:
 
 Together: the agent has the same situational awareness a senior developer has.
 
+*The cortex analogy is a positioning metaphor for the three-layer agentic debugging stack, not a neuroscience claim.*
+
 ## Citations
 
 | Claim | Source |
