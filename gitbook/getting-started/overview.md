@@ -1,5 +1,7 @@
 # What is TracePulse?
 
+<img src="../.gitbook/assets/tracepulse-icon.png" alt="" width="48" align="left" style="margin-right: 12px"/>
+
 TracePulse is a runtime feedback MCP server for AI coding agents. It watches your dev server's stdout/stderr, parses errors into structured data, scores them by importance, and exposes them as tools the AI agent can call.
 
 *Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
