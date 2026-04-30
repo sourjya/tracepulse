@@ -84,11 +84,11 @@ TracePulse is a runtime feedback MCP server that watches dev server stdout/stder
 
 TracePulse is designed as a companion, not a replacement:
 
-| Layer | Tool | What it sees |
-|-------|------|-------------|
-| Backend | **TracePulse** | Server errors, crashes, build failures, infrastructure health |
-| Browser | Chrome DevTools MCP | Console errors, network failures, performance |
-| Visual | ViewGraph | DOM structure, accessibility, layout, visual regressions |
+| Layer | Tool | Role | What it does |
+|-------|------|------|-------------|
+| Backend | **TracePulse** | Auditory cortex | Hears server errors, crashes, build failures, infrastructure health |
+| Browser | Chrome DevTools MCP | Motor cortex | Acts in the browser - console, network, performance |
+| Visual | ViewGraph | Visual cortex | Sees the UI - DOM structure, a11y, layout, visual regressions |
 
 Together: the agent has the same situational awareness a senior developer has.
 

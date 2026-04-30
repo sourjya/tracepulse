@@ -8,7 +8,7 @@
 
 *Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
 
-[ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse feels the backend.
+[ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse hears the backend.
 
 > "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark." - [Sentry Engineering](https://blog.sentry.io/vibe-coding-closing-the-feedback-loop-with-traceability/)
 >
@@ -299,10 +299,10 @@ When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true
 
 TracePulse is designed to work alongside:
 
-- **[ViewGraph](https://github.com/sourjya/viewgraph)** - UI context layer (DOM, a11y, layout, annotations)
-- **[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)** - Browser debugging (console, network, performance)
+- **[ViewGraph](https://github.com/sourjya/viewgraph)** - Visual cortex: structured UI perception (DOM, a11y, layout, annotations)
+- **[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)** - Motor cortex: browser interaction (console, network, performance)
 
-Together: backend verification (TracePulse) → browser verification (Chrome DevTools MCP) → visual verification (ViewGraph).
+TracePulse is the auditory cortex - it hears what the backend is saying. Together, the agent has the same situational awareness a senior developer has: see the UI, act in the browser, hear the server.
 
 ## Architecture
 
