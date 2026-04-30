@@ -107,7 +107,7 @@ Monitor 9 cloud platforms with zero additional dependencies:
 | **[Heroku](https://devcenter.heroku.com/articles/heroku-cli)** | `run_and_watch("heroku logs --tail --app my-app")` |
 | **[Vercel](https://vercel.com/docs/cli)** / **[Railway](https://docs.railway.com/guides/cli)** / **[Fly.io](https://fly.io/docs/flyctl/install/)** | Same pattern with their CLIs |
 
-The same 23 parsers that catch local dev server errors catch cloud errors too.
+The same 25 parsers that catch local dev server errors catch cloud errors too.
 
 [Full cloud monitoring guide ->](tutorials/cloud-logs.md)
 

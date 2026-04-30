@@ -49,7 +49,7 @@ run_and_watch(command: "npx eslint src/", timeout_seconds: 30)
 ## How it works
 
 1. TracePulse spawns the command as a child process
-2. stdout/stderr are piped through all 23 parsers
+2. stdout/stderr are piped through all 25 parsers
 3. Errors are scored and structured
 4. When the process exits, results are returned
 
@@ -84,3 +84,17 @@ The MCP protocol (JSON-RPC over stdio) is a completely separate channel from the
 ## Security
 
 Commands are validated against an allowlist: `npx`, `npm`, `node`, `pytest`, `python`, `tsc`, `eslint`, `vitest`, `jest`, `go test`, `cargo test`, `make`, `bash`. Other commands are rejected.
+
+## Language Coverage
+
+| Language | Test Runner | Parser | Structured Output |
+|----------|------------|--------|-------------------|
+| **Node.js/TypeScript** | vitest | vitest-parser | Pass/fail count, file:line, assertions |
+| **Node.js/TypeScript** | jest | jest-parser | Pass/fail count, file:line, Expected/Received |
+| **Python** | pytest | pytest-parser | Pass/fail/warning count, file:line, error type |
+| **Go** | go test | go-test-parser | FAIL with file:line |
+| **Rust** | cargo test | cargo-test-parser | Pass/fail count, panic with file:line |
+| **Java/Kotlin** | JUnit/Maven/Gradle | junit-parser | Surefire summary, Gradle task status, AssertionError |
+| **Any language** | (no parser match) | raw output | Exit code, success/fail, raw text |
+
+All test runners work with `run_and_watch` regardless of parser support. Parsers add structured extraction - without a parser, you still get exit code and raw output.

@@ -1,6 +1,6 @@
-# 23 Error Parsers
+# 25 Error Parsers
 
-TracePulse parses errors from 23 sources. Parsers run in priority order - first match wins.
+TracePulse parses errors from 25 sources. Parsers run in priority order - first match wins.
 
 ## Runtime Parsers
 
@@ -32,6 +32,8 @@ TracePulse parses errors from 23 sources. Parsers run in priority order - first 
 | **Jest** | FAIL header, x lines, Expected/Received | `FAIL src/auth.test.ts` |
 | **vitest** | FAIL file, assertion errors | `FAIL tests/unit/auth.test.ts` |
 | **Go test** | `--- FAIL`, error with file:line | `--- FAIL: TestLogin (0.00s)` |
+| **cargo test** | test FAILED, panic with file:line, summary | `test result: FAILED. 10 passed; 2 failed` |
+| **JUnit/Maven/Gradle** | Surefire summary, Gradle task FAILED, AssertionError | `Tests run: 25, Failures: 2, Errors: 1` |
 
 ## Infrastructure Parsers
 

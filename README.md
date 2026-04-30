@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-709%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-722%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -16,7 +16,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.0+ - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [23 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [30 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [709 tests](tests/) passing.
+🟡 **Alpha v0.9.0+ - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [25 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [30 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [722 tests](tests/) passing.
 
 ## Quick Start
 
@@ -150,7 +150,7 @@ Point directly to the built CLI:
 
 ## Error Parsers
 
-TracePulse parses errors from 23 sources out of the box:
+TracePulse parses errors from 25 sources out of the box:
 
 **Runtime errors:**
 - **Node.js** - TypeError, ReferenceError, SyntaxError, etc. with V8 stack traces
@@ -172,6 +172,8 @@ TracePulse parses errors from 23 sources out of the box:
 - **Jest** - FAIL header, assertion details
 - **vitest** - FAIL file, Expected/Received
 - **Go test** - `--- FAIL`, error with file:line
+- **cargo test** - test FAILED, panic with file:line, summary
+- **JUnit/Maven/Gradle** - Surefire summary, Gradle task FAILED, AssertionError
 
 **Infrastructure:**
 - **HTTP Access Log** - uvicorn, express/morgan, nginx with status and duration
@@ -250,7 +252,7 @@ run_and_watch("npx vitest run", cwd: "./frontend")
 run_and_watch("pytest tests/", cwd: "./backend")
 ```
 
-**Parser pipeline.** Output flows through TracePulse's 23 parsers, so test failures, build errors, and runtime crashes are all normalized into the same structured format the agent already knows.
+**Parser pipeline.** Output flows through TracePulse's 25 parsers, so test failures, build errors, and runtime crashes are all normalized into the same structured format the agent already knows.
 
 ## Cloud Log Monitoring
 

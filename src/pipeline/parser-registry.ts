@@ -27,6 +27,8 @@ import { pytestParser } from '@/parsers/test/pytest-parser.js';
 import { jestParser } from '@/parsers/test/jest-parser.js';
 import { vitestParser } from '@/parsers/test/vitest-parser.js';
 import { goTestParser } from '@/parsers/test/go-test-parser.js';
+import { cargoTestParser } from '@/parsers/test/cargo-test-parser.js';
+import { junitParser } from '@/parsers/test/junit-parser.js';
 import { migrationParser } from '@/parsers/migration-parser.js';
 import { npmAuditParser } from '@/parsers/npm-audit-parser.js';
 import { coverageParser } from '@/parsers/coverage-parser.js';
@@ -108,6 +110,8 @@ export function createDefaultRegistry(): ParserRegistry {
     jestParser,
     vitestParser,
     goTestParser,
+    cargoTestParser,
+    junitParser,
     migrationParser,
     npmAuditParser,
     coverageParser,
