@@ -35,10 +35,11 @@ Use the right level of verification for the situation:
 | Tier | Tool | Speed | When to use |
 |------|------|-------|-------------|
 | 1. Static | `tsc --noEmit` or linter via shell | Instant | After every edit |
+| 1.5 Browser | Chrome DevTools: `list_console_messages(types: ["error"])` | 2s | After frontend edits - tsc misses runtime scope errors in lazy-loaded components |
 | 2. Runtime | `verify_fix(3)` or `get_build_errors()` | 3s | After edits that affect running server |
 | 3. Comprehensive | Full test suite + build via `run_and_watch` | 20s+ | At task completion only |
 
-Don't run the full test suite after every edit - use tier 1-2 for rapid iteration, tier 3 as a final gate.
+**Tier 1.5 is critical for frontend changes.** `tsc --noEmit` cannot trace runtime scope through lazy-loaded component boundaries. A variable that exists in the file but isn't in scope at runtime will pass tsc but crash the page. Navigate to the affected page and check console errors before calling verify_fix.
 
 **Prefer `run_and_watch` over shell for tests and builds.** It parses output through TracePulse's test runner parsers and returns structured pass/fail counts:
 ```
