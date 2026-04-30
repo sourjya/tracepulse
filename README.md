@@ -1,5 +1,7 @@
 # TracePulse
 
+<img src="gitbook/.gitbook/assets/tracepulse-logo.png" alt="TracePulse" width="120" align="right"/>
+
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Tests](https://img.shields.io/badge/tests-722%20passing-brightgreen)]()
