@@ -31,6 +31,6 @@ Last updated: 2026-04-29
 | 23 | Instant composite: build errors + last HMR status + last error (no wait) | 🔲 Not a new tool - `get_build_errors()` already serves this role |
 | 24 | Auto-detect resolved errors (stop showing fixed errors at score 95) | 🔲 Roadmap - error lifecycle management |
 | 25 | Auto-expire transient HMR crashes after 60s of no recurrence | 🔲 Roadmap - error lifecycle management |
-| 26 | SKILL.md anti-pattern: warn against interactive CLI tools (psql, mysql) | 🔲 Buildable now |
+| 26 | SKILL.md anti-pattern: warn against interactive CLI tools (psql, mysql) | ✅ Shipped |
 
-**16 of 26 wishlist items shipped.** 2 buildable now, 7 on roadmap, 1 covered by existing tools.
+**17 of 26 wishlist items shipped.** 1 buildable now, 7 on roadmap, 1 covered by existing tools.
