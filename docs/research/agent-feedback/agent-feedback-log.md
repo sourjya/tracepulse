@@ -481,3 +481,9 @@ Agent called `get_errors(limit: 3)` between tasks. Same run_count column error s
 Agent recognized the run_count errors were stale (asyncpg prepared statement cache, resolves on restart). Used `clear_errors()` to reset the buffer and move on to new work instead of wasting time on a known issue.
 
 **Pattern:** get_errors -> recognize stale -> clear_errors -> continue. This is the correct workflow for known issues that require a restart. TP's clear_errors serves as "I've acknowledged this, stop showing it."
+
+### run_and_watch caught 5 test failures from model change
+
+Agent ran `run_and_watch("bash .../test-backend.sh tests/unit/")` after adding `trigger_value` to the rule model. TP reported 5 failures in test_rule_engine.py - mock rules missing the new attribute. Agent immediately knew the file and cause without reading raw pytest output.
+
+**TP value:** Structured failure reporting. Agent didn't need to parse "FAILED tests/unit/test_rule_engine.py::test_..." from raw text - TP's pytest parser extracted it.
