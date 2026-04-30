@@ -358,3 +358,12 @@ Agent's usage pattern:
 > TracePulse: pre-flight health check (1 call). Chrome DevTools MCP: visual audit + debugging (20+ calls). Correct tool selection - TP for infra, DevTools for frontend.
 
 **Insight:** The "nothing wrong" signal from check_port is as valuable as error detection. Agent didn't waste time debugging phantom issues from a dead server. This validates the three-layer stack design: TP for backend health, DevTools for browser, ViewGraph for visual.
+
+### verify_fix confirms frontend audit fixes + tsc blind spot
+
+After fixing the missing route and missing `members` variable, agent ran `verify_fix(5)`. Result: PASS, 7 HMR transient errors in buffer (expected from route change).
+
+Agent's feedback:
+> "TP win: The visual audit with Chrome DevTools caught two real bugs (missing route, missing variable) that tsc --noEmit didn't flag because members was used in JSX that TypeScript couldn't trace through the lazy-loaded component boundary."
+
+**Insight:** This is a concrete example of the three-layer stack catching what single tools miss. tsc --noEmit (static analysis) missed the bug. Chrome DevTools (runtime browser) caught it. TracePulse (runtime backend) confirmed the fix was clean. Each layer covers a different blind spot.
