@@ -43,6 +43,7 @@ The research identifies discoverability and cross-tool integration as the highes
 | 5 | Unified `check_drift()` tool (env + deps + migrations) | 2 weeks | HIGH | 5.8 |
 | 6 | Cursor rules file (`tracepulse.cursor-rules.json`) | 2 days | Medium | 5.2 |
 | 7 | Dynamic toolsets for less-frequent tools | 1 week | Medium | 7.7 |
+| 8 | ViewGraph routing hints in empty responses (`suggested_next` field) | 2 days | Medium | [Design](../engineering/designs/viewgraph-handover.md) |
 
 ## M14: Category Extension (informed by Deep Research)
 
