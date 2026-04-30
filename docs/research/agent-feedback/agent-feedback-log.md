@@ -407,3 +407,14 @@ Agent did Sparq UI rename/resize work. TP was not useful for the core task (visu
 - #26: Interaction replay (lightweight Playwright in dev loop)
 
 **Assessment:** Items 22-23 are buildable in TP (error lifecycle management). Items 24-26 are ViewGraph/DevTools territory, not TP. The agent correctly identified the boundary: TP = backend/runtime, DevTools = browser, ViewGraph = visual. Each tool has its lane.
+
+### get_errors caught migration-applied-but-column-missing bug (18 occurrences)
+
+Agent called `get_errors(limit: 10)` and found `column automation_rules.run_count does not exist` at signal_score 95 with 18 occurrences. The migration was created and applied via Alembic (`alembic current` shows head), but the column doesn't exist in the database.
+
+Agent's analysis:
+> "Excellent catch - real bug at signal 95. The migration was created and applied via Alembic, but the running dev server is connecting to the DB with the app user, and the migration ran successfully. This means either: 1. The migration didn't actually apply (wrong DB?) 2. The server restarted before the migration ran."
+
+**Why this matters:** This is the exact bug type that `get_migration_status` was designed for. The agent had to manually run `alembic current` and then query `information_schema.columns` to diagnose. With `get_migration_status`, the discrepancy between "alembic says applied" and "column doesn't exist" would be surfaced automatically.
+
+**Also notable:** TP correctly separated the real bug (signal 95, 18 occurrences) from transient HMR noise (SparkleIcon, attachedFiles, members - all from mid-edit hot reloads). Signal scoring worked as designed.
