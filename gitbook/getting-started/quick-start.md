@@ -29,11 +29,30 @@ Add TracePulse:
 }
 ```
 
-## 2. Start a chat
+Replace `npm run dev` with your dev server command (`python manage.py runserver`, `go run main.go`, etc.).
 
-Open your AI coding agent. TracePulse starts automatically when the MCP client connects.
+> **Tip:** Not sure which config file to edit? Just paste the JSON above into your agent's chat and ask: "Add TracePulse to my MCP config." The agent knows where its own config file is and can add it for you.
 
-## 3. Ask the agent to check for errors
+## 2. Attach mode (servers already running)
+
+If your servers are managed by Docker, tmux, pm2, or scripts:
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "npx",
+      "args": ["tracepulse", "attach", "--log-file", "./logs/server.log"]
+    }
+  }
+}
+```
+
+## 3. Start a chat
+
+Open your AI coding agent and start working. TracePulse connects automatically.
+
+Try asking:
 
 ```
 Are there any backend errors?
@@ -41,12 +60,44 @@ Are there any backend errors?
 
 The agent calls `get_errors()` and tells you what's wrong - with file, line number, error type, and importance score.
 
+Or let the agent check everything at once:
+
+```
+Check the project health.
+```
+
+The agent calls `get_project_health()` - server status, infrastructure connectivity, error count, and build status in one call.
+
+## 4. Let the agent verify its own fixes
+
+After the agent makes a code change, it can verify the fix worked:
+
+```
+Verify the fix is clean.
+```
+
+The agent calls `verify_fix()` - watches for new errors, checks the build, and returns a definitive pass/fail. No more "I think I fixed it."
+
 ## That's it
 
-The agent now has 24 tools for backend debugging. It will use them automatically when investigating errors, verifying fixes, and monitoring your dev server.
+The agent now has 30 tools for backend debugging. It uses them automatically when investigating errors, verifying fixes, running tests, and monitoring your dev server.
+
+## Common Commands to Try
+
+| Ask the agent | What happens |
+|---------------|-------------|
+| "Any backend errors?" | `get_errors()` - errors ranked by importance |
+| "Check project health" | `get_project_health()` - server + infra + errors in one call |
+| "Run the tests" | `run_and_watch("pytest tests/")` - structured pass/fail results |
+| "Verify the fix" | `verify_fix()` - definitive pass/fail after a code change |
+| "What's the build status?" | `get_build_errors()` - TypeScript, ESLint, Vite/webpack errors |
+| "Check migration status" | `get_migration_status()` - pending migrations across frameworks |
+
+You don't need to remember tool names. Describe what you want and the agent picks the right tool.
 
 ## Next Steps
 
 - [Installation options ->](installation.md)
-- [Attach mode (for already-running servers) ->](installation.md#attach-mode)
-- [All 26 MCP tools ->](../features/mcp-tools.md)
+- [All 30 MCP tools ->](../features/mcp-tools.md)
+- [TracePulse in Action (real examples) ->](../tutorials/tracepulse-in-action.md)
+- [Why TracePulse? ->](../why-tracepulse.md)
