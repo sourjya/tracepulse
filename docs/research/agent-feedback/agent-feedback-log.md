@@ -493,3 +493,16 @@ Agent ran `run_and_watch("bash .../test-backend.sh tests/unit/")` after adding `
 Agent ran `npx vitest run` and `npx vite build` via shell with `cd frontend &&` prefix. The `cwd` parameter was shipped this same session but agent hasn't adopted it yet. Expected to pick up on next session when SKILL.md is re-read.
 
 **Note:** vite build showed an error (`errors: [Getter/Setter]`) that would have been parsed by TP if run via `run_and_watch("npx vite build", cwd: "./frontend")` instead of shell.
+
+### visibleColOrder ReferenceError missed by tsc, caught by user
+
+Agent replaced `colOrder` with `visibleColOrder` in ListView.tsx. `tsc --noEmit` passed. `verify_fix(3)` passed (backend was clean). But the page crashed with `visibleColOrder is not defined` - the variable was scoped to ListView but referenced in a view that doesn't have it.
+
+**Root cause:** Same blind spot as the Rules tab 404 - TypeScript can't trace runtime scope through lazy-loaded component boundaries. The ErrorBoundary caught it visually but TP didn't surface it because it's a frontend-only ReferenceError.
+
+**What would have caught it:**
+1. `verify_fix` + navigating to the page in the browser (Chrome DevTools MCP `list_console_messages(types: ["error"])`)
+2. The ErrorBoundary -> TP log collector bridge (if wired)
+3. Wishlist #25: component render monitoring
+
+**Lesson:** The three-tier pattern needs a tier 1.5: after frontend changes, navigate to the affected page and check console errors before calling verify_fix. tsc + verify_fix alone misses frontend runtime errors.
