@@ -463,3 +463,9 @@ Agent's feedback:
 **Fix:** Extend test runner parsers to capture success summaries as info-level events with structured counts. Low effort, high value - the agent wants to know pass count, not just fail count.
 
 **Wishlist #27:** Test runner summary parsing - extract pass/fail/warning counts from pytest, vitest, jest summary lines into structured response fields.
+
+### run_and_watch adopted for backend tests, shell still used for frontend
+
+Agent used `run_and_watch` for all 3 backend test runs in this session (import check, targeted test, full suite). But frontend tests (`npx vitest run`, `npx vite build`) still ran via shell - likely because the agent needs to `cd` to the frontend directory first, hitting the same allowlist friction.
+
+**Pattern:** run_and_watch works well for single-directory projects. Multi-directory monorepos (backend + frontend in separate dirs) create friction because the agent can't `cd` before running. Possible fix: add a `cwd` parameter to run_and_watch so the agent can specify the working directory.

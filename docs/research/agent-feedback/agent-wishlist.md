@@ -33,5 +33,6 @@ Last updated: 2026-04-29
 | 25 | Auto-expire transient HMR crashes after 60s of no recurrence | 🔲 Roadmap - error lifecycle management |
 | 26 | SKILL.md anti-pattern: warn against interactive CLI tools (psql, mysql) | ✅ Shipped |
 | 27 | Test runner summary parsing (pass/fail/warning counts in structured fields) | ✅ Shipped |
+| 28 | `run_and_watch(command, cwd?)` - working directory parameter for monorepos | 🔲 Buildable now |
 
-**18 of 27 wishlist items shipped.** 1 buildable now, 7 on roadmap, 1 covered by existing tools.
+**18 of 28 wishlist items shipped.** 2 buildable now, 7 on roadmap, 1 covered by existing tools.
