@@ -7,7 +7,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-## [Unreleased]
+## [0.9.2] - 2026-04-30
+
+### Added
+- **4 new MCP tools**: get_error_clusters, get_migration_status, get_audit_trail, get_perf_baseline (30 total)
+- **3 new parsers**: Celery, Sidekiq, BullMQ background worker parsers (23 total)
+- **Error narratives**: 10 fix suggestion patterns (module not found, connection refused, missing migration, etc.) wired into get_error_context
+- **ErrorBoundary crash bridge**: POST /api/v1/crashes endpoint + JS snippet for React crash reporting
+- **Score decay**: transient 401/403/408/429 errors lose priority after 60s no recurrence
+- **Error lifecycle manager**: auto-detect resolved errors, auto-expire HMR transients
+- **run_and_watch cwd parameter**: working directory support for monorepos
+- **Test runner summary parsing**: pytest/vitest/jest success summaries in structured output
+- **Build warnings + stats**: get_build_errors now includes warnings and Vite module count
+- **Previous session error details**: last_message loaded from fingerprint persistence
 
 ### Fixed (CRR-001 Code Review - 13 items)
 - **TD-008**: Config loader wraps JSON.parse in try/catch - malformed config returns error instead of crashing

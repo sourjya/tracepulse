@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-630%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-709%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -16,7 +16,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.0+ - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [23 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [30 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [691 tests](tests/) passing.
+🟡 **Alpha v0.9.0+ - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [23 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [30 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [709 tests](tests/) passing.
 
 ## Quick Start
 
