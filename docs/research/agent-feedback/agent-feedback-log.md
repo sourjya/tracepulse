@@ -349,3 +349,12 @@ Agent's feedback:
 > "TP wishlist #20: A single tool that combines get_build_errors (instant) + 'last HMR status' (instant) would be the ideal rapid-iteration check. No need to wait for watch_for_errors duration."
 
 **Status:** Interesting pattern emerging - agent wants a "quick check" tool (instant, no blocking) vs "thorough check" tool (blocking, watches for new errors). Wishlist #20 would be a lightweight composite: build errors + last HMR event + last error timestamp. Zero wait time.
+
+### TP as pre-flight check in frontend-focused session
+
+Agent ran a layout padding audit across 8 pages. First action was `check_port([5176, 8100])` to confirm both servers running. Rest of session was Chrome DevTools MCP (screenshots, console errors, navigation).
+
+Agent's usage pattern:
+> TracePulse: pre-flight health check (1 call). Chrome DevTools MCP: visual audit + debugging (20+ calls). Correct tool selection - TP for infra, DevTools for frontend.
+
+**Insight:** The "nothing wrong" signal from check_port is as valuable as error detection. Agent didn't waste time debugging phantom issues from a dead server. This validates the three-layer stack design: TP for backend health, DevTools for browser, ViewGraph for visual.
