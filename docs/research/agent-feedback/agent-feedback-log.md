@@ -515,3 +515,9 @@ Agent's wishlist:
 > "TP should detect ReferenceError crashes from the ErrorBoundary bridge and correlate them with recent file changes. If `visibleColOrder is not defined` appears right after I edited ListView.tsx, TP should flag 'likely caused by your last edit to ListView.tsx - check variable scoping.'"
 
 **Assessment:** This combines two existing capabilities: (1) ErrorBoundary bridge (already captures crashes), (2) `correlate_with_diff()` (already links errors to git changes). The missing piece is automatic correlation - TP would need to auto-run correlate_with_diff when a new ReferenceError appears and include the result in the error response. Feasible but requires the file-change tracker to be wired into the error narrative system.
+
+### Agent adopted cwd param on first session after SKILL.md update
+
+Agent read updated SKILL.md, immediately tried `run_and_watch("npx vitest run", cwd: "./frontend")`. First real-world test of the cwd parameter (#28). Also used `get_project_health()` as session opener - the recommended workflow pattern.
+
+**Adoption speed:** Same day as SKILL.md update. The three-tier pattern and cwd examples in SKILL.md drove immediate behavior change.
