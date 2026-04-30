@@ -586,3 +586,16 @@ This is a strong USP for WSL users and should be documented in the README/gitboo
 Agent noticed context getting long and ran full test suite via `run_and_watch` before context compaction. This ensures the agent has a verified clean state before losing earlier context.
 
 **Pattern:** run_and_watch serves as a "save point" before context compression. If something breaks after compaction, the agent knows tests were green at the checkpoint. This is an emergent behavior - the agent wasn't told to do this, it developed the pattern naturally from the three-tier verification workflow.
+
+### ProseMirror plugin key crash - same blind spot pattern
+
+Frontend crash: "Adding different instances of a keyed plugin (suggestion$)". tsc passed, vite build passed, TP didn't catch it. User found it by navigating to the page.
+
+**Root cause:** SlashCommand extension and @tiptap/extension-mention both use Suggestion() with default "suggestion$" key. Two plugins with same key = ProseMirror crash.
+
+**What would have caught it:**
+1. ErrorBoundary crash bridge (just built today) - if wired, TP would see it in get_errors()
+2. Tier 1.5 browser check - navigate to page + list_console_messages after frontend changes
+3. Agent skipped tier 1.5 and went straight to tsc + vite build
+
+**Pattern:** This is the third frontend crash that tsc + build passed but runtime caught (Rules 404, visibleColOrder, plugin key). The tier 1.5 browser check is not optional for frontend changes - it's mandatory. The ErrorBoundary bridge would make this automatic.
