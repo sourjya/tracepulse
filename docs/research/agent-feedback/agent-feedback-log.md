@@ -450,3 +450,16 @@ This is a natural three-tier pattern: static -> runtime -> comprehensive. TP fil
 Agent tried `run_and_watch("cd /path && bash scripts/test-backend.sh")` - blocked because `cd` isn't in the allowlist. Self-corrected to `run_and_watch("bash /path/scripts/test-backend.sh")` which worked.
 
 **Action taken:** Updated SKILL.md to document the allowlist and "no cd prefix" rule. The agent adopted run_and_watch for tests (as recommended in the three-tier pattern) on the same session it was documented.
+
+### run_and_watch doesn't parse test summary into structured fields
+
+Agent used `run_and_watch("bash .../test-backend.sh")` - worked, reported success/fail and exit code. But didn't extract pytest's `554 passed, 11 warnings` into structured fields.
+
+Agent's feedback:
+> "run_and_watch should parse pytest output to extract 554 passed, 11 warnings into structured fields like {passed: 554, failed: 0, warnings: 11}. Currently it only reports success/fail and error count from TP's event parsers, not the test runner's own summary."
+
+**Root cause:** pytest parser's SUMMARY_PATTERN only matches lines containing "failed" or "error". A clean pass (`554 passed, 11 warnings`) doesn't match. Same gap likely exists for vitest/jest.
+
+**Fix:** Extend test runner parsers to capture success summaries as info-level events with structured counts. Low effort, high value - the agent wants to know pass count, not just fail count.
+
+**Wishlist #27:** Test runner summary parsing - extract pass/fail/warning counts from pytest, vitest, jest summary lines into structured response fields.

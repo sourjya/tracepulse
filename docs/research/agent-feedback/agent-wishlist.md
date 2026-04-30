@@ -32,5 +32,6 @@ Last updated: 2026-04-29
 | 24 | Auto-detect resolved errors (stop showing fixed errors at score 95) | 🔲 Roadmap - error lifecycle management |
 | 25 | Auto-expire transient HMR crashes after 60s of no recurrence | 🔲 Roadmap - error lifecycle management |
 | 26 | SKILL.md anti-pattern: warn against interactive CLI tools (psql, mysql) | ✅ Shipped |
+| 27 | Test runner summary parsing (pass/fail/warning counts in structured fields) | 🔲 Buildable now |
 
-**17 of 26 wishlist items shipped.** 1 buildable now, 7 on roadmap, 1 covered by existing tools.
+**17 of 27 wishlist items shipped.** 2 buildable now, 7 on roadmap, 1 covered by existing tools.
