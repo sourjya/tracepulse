@@ -35,5 +35,6 @@ Last updated: 2026-04-29
 | 27 | Test runner summary parsing (pass/fail/warning counts in structured fields) | ✅ Shipped |
 | 28 | `run_and_watch(command, cwd?)` - working directory parameter for monorepos | ✅ Shipped |
 | 29 | Auto-correlate ReferenceError crashes with recent file edits | 🔲 Roadmap - combines ErrorBoundary bridge + correlate_with_diff |
+| 30 | `run_and_watch` env/venv support for Python projects | 🔲 Buildable now |
 
-**19 of 29 wishlist items shipped.** 1 buildable now, 8 on roadmap, 1 covered by existing tools.
+**19 of 30 wishlist items shipped.** 2 buildable now, 8 on roadmap, 1 covered by existing tools.

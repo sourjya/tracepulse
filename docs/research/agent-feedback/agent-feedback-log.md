@@ -521,3 +521,17 @@ Agent's wishlist:
 Agent read updated SKILL.md, immediately tried `run_and_watch("npx vitest run", cwd: "./frontend")`. First real-world test of the cwd parameter (#28). Also used `get_project_health()` as session opener - the recommended workflow pattern.
 
 **Adoption speed:** Same day as SKILL.md update. The three-tier pattern and cwd examples in SKILL.md drove immediate behavior change.
+
+### cwd works for frontend, fails for Python venv backend
+
+`run_and_watch("npx vitest run", cwd: "./frontend")` - works perfectly.
+`run_and_watch("python -m pytest tests/unit/", cwd: "./backend")` - fails, system Python doesn't have deps.
+
+Agent fell back to `bash scripts/test-backend.sh` which activates the venv internally.
+
+**Gap:** run_and_watch inherits process.env but doesn't activate Python virtualenvs. Options:
+1. Add `env` parameter to run_and_watch for custom env vars (e.g., `PATH=.venv/bin:$PATH`)
+2. Agent uses `bash -c "source .venv/bin/activate && pytest"` (but shell metacharacters are blocked)
+3. Agent wraps in a script (current workaround)
+
+**Wishlist #30:** run_and_watch should support `env` parameter for custom environment variables, or auto-detect `.venv/bin/python` when cwd contains a virtualenv.
