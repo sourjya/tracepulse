@@ -76,6 +76,7 @@ export function createFingerprintHistory(): FingerprintHistory {
           first_seen: e.first_seen,
           last_seen: e.last_seen,
           total_occurrences: e.total_count,
+          last_message: e.last_message,
         });
       }
     },

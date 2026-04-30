@@ -88,6 +88,14 @@ function errorResult(message: string): CallToolResult {
  * @param args - Untrusted MCP tool input: { since?: number, source?: string, limit?: number }.
  * @returns CallToolResult with JSON array of RuntimeEvents, or error result on invalid params.
  */
+import { applyScoreDecay } from "@/scoring/score-decay.js";
+
+/**
+ * Handle get_errors tool - returns recent errors sorted by signal_score descending.
+ *
+ * Applies score decay to transient errors (401s, 403s) that haven't recurred
+ * within 60 seconds, so persistent errors surface above one-off transients.
+ */
 export function handleGetErrors(
   buffer: EventBuffer,
   args: Record<string, unknown>,
@@ -115,8 +123,9 @@ export function handleGetErrors(
     : events;
 
   // Sort by signal_score descending (highest first), then apply limit
-  filtered.sort((a, b) => b.signal_score - a.signal_score);
-  const limited = filtered.slice(0, limit);
+  const decayed = applyScoreDecay(filtered);
+  decayed.sort((a, b) => b.signal_score - a.signal_score);
+  const limited = decayed.slice(0, limit);
 
   // Run cross-service correlation on results
   const correlated = correlateEvents(limited, CORRELATION_WINDOW_MS);
@@ -125,7 +134,7 @@ export function handleGetErrors(
 
   return jsonResult({
     errors: correlated,
-    total_matching: filtered.length,
+    total_matching: decayed.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
     buffer_cleared_at: buffer.bufferClearedAt,
