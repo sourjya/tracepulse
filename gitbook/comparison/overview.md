@@ -19,6 +19,6 @@ TracePulse is the only backend-first runtime feedback tool for AI coding agents.
 3. **20 parsers** - structured data from raw log text
 4. **Fingerprint dedup** - same error appears once with occurrence count
 5. **Passive observation** - doesn't modify code or require a browser
-6. **Companion design** - works WITH Chrome DevTools MCP and ViewGraph
+6. **Companion design** - works WITH Chrome DevTools MCP and [ViewGraph](https://chaoslabz.gitbook.io/viewgraph)
 
 See [Feature Matrix](feature-matrix.md) for the full comparison.

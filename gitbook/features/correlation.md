@@ -14,7 +14,7 @@ Match browser HTTP failures with backend stack traces.
 Frontend errors need a source. Options:
 - Log collector HTTP server on port 9801
 - CDP listener (Chrome DevTools Protocol)
-- ViewGraph bridge
+- [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) bridge
 
 ## Without Frontend Source
 

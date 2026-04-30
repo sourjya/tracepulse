@@ -176,6 +176,6 @@ Last updated: 2026-04-28
 **TracePulse does NOT:**
 - Inspect the browser (use Chrome DevTools MCP)
 - Take screenshots (use Chrome DevTools MCP)
-- Inspect DOM elements (use Chrome DevTools MCP or ViewGraph)
+- Inspect DOM elements (use Chrome DevTools MCP or [ViewGraph](https://chaoslabz.gitbook.io/viewgraph))
 - Modify source code for debugging (use agentic-debugger)
 - Run Lighthouse audits (use Chrome DevTools MCP)

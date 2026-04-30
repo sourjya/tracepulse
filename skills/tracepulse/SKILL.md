@@ -329,7 +329,7 @@ This is 2 calls instead of the automated correlation, but works in any setup.
 
 - Does not set breakpoints or step through code (use mcp-debugger for that)
 - Does not inspect the browser DOM or console (use Chrome DevTools MCP for that)
-- Does not inspect the visual UI (use ViewGraph for that)
+- Does not inspect the visual UI (use [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) for that)
 - Does not modify code or fix errors - it only reports what the dev server outputs
 - Does not run type checkers - but it parses TypeScript compiler output if your dev server runs `tsc`
 
