@@ -18,14 +18,15 @@ const FAIL_FILE = /^\s*(?:FAIL|❯)\s+(\S+\.(?:test|spec)\.\w+)/;
 /** AssertionError: expected X to be Y */
 const ASSERTION = /^\s*(AssertionError|Error):\s+(.+)/;
 
-/** Test Files  1 failed | 5 passed */
-const SUMMARY = /Test Files\s+(\d+)\s+failed/;
+/** Test Files  1 failed | 5 passed or Test Files  5 passed (5) */
+const SUMMARY_FAIL = /Test Files\s+(\d+)\s+failed/;
+const SUMMARY_PASS = /Tests\s+(\d+)\s+passed/;
 
 export const vitestParser: ErrorParser = {
   name: "vitest",
 
   canParse(line: string): boolean {
-    return FAIL_FILE.test(line) || FAIL_LINE.test(line) || ASSERTION.test(line) || SUMMARY.test(line);
+    return FAIL_FILE.test(line) || FAIL_LINE.test(line) || ASSERTION.test(line) || SUMMARY_FAIL.test(line) || SUMMARY_PASS.test(line);
   },
 
   parse(line: string): ParsedError | null {
@@ -59,11 +60,21 @@ export const vitestParser: ErrorParser = {
       };
     }
 
-    const sumMatch = line.match(SUMMARY);
+    const sumMatch = line.match(SUMMARY_FAIL);
     if (sumMatch) {
       return {
-        message: `${sumMatch[1]} test file(s) failed`,
+        message: `vitest: ${sumMatch[1]} test file(s) failed`,
         level: "warn",
+        context: { framework: "vitest" },
+        scoring_hints: { is_user_code: false, has_stack_trace: false },
+      };
+    }
+
+    const passMatch = line.match(SUMMARY_PASS);
+    if (passMatch) {
+      return {
+        message: `vitest: ${passMatch[1]} tests passed`,
+        level: "info",
         context: { framework: "vitest" },
         scoring_hints: { is_user_code: false, has_stack_trace: false },
       };

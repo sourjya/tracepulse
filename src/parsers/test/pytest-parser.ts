@@ -14,8 +14,8 @@ const FAILED_PATTERN = /^FAILED\s+(\S+?)(?:::(\S+))?\s*(?:-\s*(\w+Error|Assertio
 /** ERROR tests/test_auth.py - ImportError: ... */
 const ERROR_PATTERN = /^ERROR\s+(\S+?)(?:\s*-\s*(\w+Error|ImportError)?:?\s*(.*))?$/;
 
-/** ===== 2 failed, 15 passed in 3.45s ===== */
-const SUMMARY_PATTERN = /^=+\s*(.*(?:failed|error).*)\s*=+$/;
+/** ===== 2 failed, 15 passed in 3.45s ===== or ===== 554 passed, 11 warnings in 8.98s ===== */
+const SUMMARY_PATTERN = /^=+\s*(.*(?:passed|failed|error).*)\s*=+$/;
 
 export const pytestParser: ErrorParser = {
   name: "pytest",
@@ -50,9 +50,11 @@ export const pytestParser: ErrorParser = {
 
     const sumMatch = line.match(SUMMARY_PATTERN);
     if (sumMatch) {
+      const summary = sumMatch[1].trim();
+      const hasFailed = /failed|error/i.test(summary);
       return {
-        message: sumMatch[1].trim(),
-        level: "warn",
+        message: `pytest: ${summary}`,
+        level: hasFailed ? "warn" : "info",
         context: { framework: "pytest" },
         scoring_hints: { is_user_code: false, has_stack_trace: false },
       };
