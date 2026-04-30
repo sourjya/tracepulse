@@ -132,16 +132,25 @@ Point directly to the built CLI:
 
 | Tool | Description | Tokens |
 |------|-------------|--------|
-| `run_and_watch(command, timeout_seconds?)` | Run tests/linter/typechecker, get parsed results | ~1,000 |
+| `run_and_watch(command, timeout_seconds?, cwd?)` | Run tests/linter/typechecker, get parsed results. `cwd` for monorepos. | ~1,000 |
 | `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status | ~1,000 |
 | `get_health_summary()` | One-line health check: errors, warnings, uptime | ~100 |
 | `verify_fix(duration_seconds?)` | All-in-one post-fix verification with pass/fail verdict | ~500 |
 | `wait_for_build(timeout_seconds?)` | Block until next build completes (event-driven) | ~200 |
 | `wait_for_event(type?, timeout_seconds?)` | Block until next error/warning/build/crash event | ~200 |
 
+### Error Intelligence
+
+| Tool | Description | Tokens |
+|------|-------------|--------|
+| `get_error_clusters(min_count?)` | Group errors by type + module path. See patterns across the codebase. | ~500 |
+| `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 |
+| `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 |
+| `get_audit_trail(limit?, since?)` | Review tool usage this session. Optimize your workflow. | ~500 |
+
 ## Error Parsers
 
-TracePulse parses errors from 18 sources out of the box:
+TracePulse parses errors from 23 sources out of the box:
 
 **Runtime errors:**
 - **Node.js** - TypeError, ReferenceError, SyntaxError, etc. with V8 stack traces
@@ -167,6 +176,11 @@ TracePulse parses errors from 18 sources out of the box:
 **Infrastructure:**
 - **HTTP Access Log** - uvicorn, express/morgan, nginx with status and duration
 - **Migration** - alembic and Django migration output
+
+**Background workers:**
+- **Celery** - task raised/retry/timeout/succeeded
+- **Sidekiq** - WARN/ERROR/FATAL job events, done timing
+- **BullMQ** - job failed/stalled/completed, queue errors
 
 ## Signal Scoring
 

@@ -292,6 +292,41 @@ The agent's reaction: "Zero events AND `hot_reload_detected: true`! **Win** - th
 
 ---
 
+## Example 8: Triaging 59 Errors in 30 Seconds with Clustering
+
+**The problem:** After a long editing session with many HMR reloads, the error buffer has 59 errors. Reading them one by one would take minutes and thousands of tokens.
+
+**With TracePulse:**
+
+```
+Agent: get_error_clusters()
+```
+
+```json
+{
+  "clusters": [
+    { "cluster_key": "FrontendCrash|unknown", "count": 21, "representative_message": "[Frontend] useAuth is not defined" },
+    { "cluster_key": "ProgrammingError|src/api", "count": 14, "representative_message": "GET /projects 500" },
+    { "cluster_key": "ReferenceError|unknown", "count": 7, "representative_message": "[Frontend] useAuth is not defined" },
+    { "cluster_key": "TypeError|unknown", "count": 3, "representative_message": "children is not a function" },
+    { "cluster_key": "ProgrammingError|src/models", "count": 6, "representative_message": "column projects.settings does not exist" },
+    { "cluster_key": "ProgrammingError|src/models", "count": 3, "representative_message": "column automation_rules.run_count does not exist" }
+  ],
+  "total_clusters": 7,
+  "total_errors": 59
+}
+```
+
+The agent sees 7 clusters instead of 59 individual errors. Quick triage: clusters 1, 5, 6 are stale (HMR transients, asyncpg cache). Clusters 3 and 4 need investigation - but after checking the code, both are also stale from mid-edit HMR. Zero real bugs. `clear_errors()` to reset.
+
+**What happened behind the scenes:**
+1. `get_error_clusters` grouped all 59 errors by `(error_type, module_path)`
+2. Fingerprint deduplication collapsed repeated errors within each cluster
+3. The agent triaged 7 groups instead of 59 individual events
+4. Total time: 30 seconds. Total tokens: ~500 (one call + one response)
+
+---
+
 ## The Pattern
 
 Every example follows the same pattern:

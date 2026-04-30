@@ -1,6 +1,6 @@
-# 20 Error Parsers
+# 23 Error Parsers
 
-TracePulse parses errors from 20 sources. Parsers run in priority order - first match wins.
+TracePulse parses errors from 23 sources. Parsers run in priority order - first match wins.
 
 ## Runtime Parsers
 
@@ -40,6 +40,14 @@ TracePulse parses errors from 20 sources. Parsers run in priority order - first 
 | **Migration** | alembic + Django migration output | `Running upgrade abc123 -> def456` |
 | **npm audit** | Vulnerability summary | `6 vulnerabilities (2 critical, 1 high)` |
 | **Coverage** | Istanbul/pytest-cov percentages | `Statements: 85.23%`, `TOTAL 1234 567 54%` |
+
+## Background Worker Parsers
+
+| Parser | Detects | Example |
+|--------|---------|---------|
+| **Celery** | Task raised/retry/timeout/succeeded | `Task myapp.tasks.send_email[abc-123] raised ValueError` |
+| **Sidekiq** | WARN/ERROR/FATAL job events, done timing | `WARN: MyWorker JID-abc123 Error: connection refused` |
+| **BullMQ** | Job failed/stalled/completed, queue errors | `[email] Job 42 failed with Error: SMTP timeout` |
 
 ## Unmatched Lines
 
