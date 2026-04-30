@@ -367,3 +367,14 @@ Agent's feedback:
 > "TP win: The visual audit with Chrome DevTools caught two real bugs (missing route, missing variable) that tsc --noEmit didn't flag because members was used in JSX that TypeScript couldn't trace through the lazy-loaded component boundary."
 
 **Insight:** This is a concrete example of the three-layer stack catching what single tools miss. tsc --noEmit (static analysis) missed the bug. Chrome DevTools (runtime browser) caught it. TracePulse (runtime backend) confirmed the fix was clean. Each layer covers a different blind spot.
+
+### Migration workflow without TP - manual shell commands
+
+Agent created an alembic migration for 2 new columns. Autogenerate picked up 161 lines of schema drift (index drops, nullability changes, table drops). Agent had to manually read, identify drift, and rewrite to 10 lines. All done via shell commands.
+
+**What TP could have provided:**
+- `get_migration_status()` for pre-flight check (current vs head)
+- `verify_fix(5)` after `alembic upgrade head` to confirm no column-missing errors
+- Error narratives for migration failures
+
+**Gap identified:** Schema drift detection (M12 item 10, post-v1.0). When autogenerate produces changes beyond the intended scope, TP should flag it. This session shows the real cost: 161 lines of dangerous drift that the agent had to manually triage.
