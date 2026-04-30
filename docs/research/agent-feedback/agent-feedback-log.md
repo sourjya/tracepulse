@@ -475,3 +475,9 @@ Agent used `run_and_watch` for all 3 backend test runs in this session (import c
 Agent called `get_errors(limit: 3)` between tasks. Same run_count column error still showing. Instead of ignoring it again, the agent decided to fix it by making the columns optional in the ORM model.
 
 **TP value:** The persistent visibility of the error (showing up every time the agent checks) created pressure to fix it. Without TP, this error would have been invisible after the first terminal scroll-away. TP's "errors don't disappear until fixed" behavior is working as designed - it's annoying enough to drive action.
+
+### clear_errors used correctly to dismiss known stale errors
+
+Agent recognized the run_count errors were stale (asyncpg prepared statement cache, resolves on restart). Used `clear_errors()` to reset the buffer and move on to new work instead of wasting time on a known issue.
+
+**Pattern:** get_errors -> recognize stale -> clear_errors -> continue. This is the correct workflow for known issues that require a restart. TP's clear_errors serves as "I've acknowledged this, stop showing it."
