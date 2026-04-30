@@ -46,7 +46,12 @@ run_and_watch("pytest tests/unit/")     -> { passed: 554, failed: 0, warnings: 1
 run_and_watch("npx vitest run")         -> { passed: 120, failed: 0 }
 run_and_watch("npx vite build")         -> { build: "success", modules: 342 }
 ```
-Shell commands return raw text the agent must parse manually. Note: commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, make, bash). Don't prefix with `cd` - use `bash /absolute/path/to/script.sh` instead.
+For monorepos with separate frontend/backend dirs, use the `cwd` parameter:
+```
+run_and_watch("npx vitest run", cwd: "./frontend")
+run_and_watch("pytest tests/", cwd: "./backend")
+```
+Commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, make, bash). Don't prefix with `cd`.
 
 ### The proven debugging loop (most productive workflow)
 
@@ -180,6 +185,21 @@ When a frontend page shows errors and you suspect a backend cause:
 | `get_infra_detail(name)` | Per-service detail with probe history. Use after get_infra_status shows something unreachable. | ~200 tokens |
 | `check_port(port)` | Is a port available or in use? Use before starting a server. | ~50 tokens |
 | `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status. | ~1,000 tokens |
+
+### Error intelligence
+
+| Tool | When to use | Cost |
+|------|-------------|------|
+| `get_error_clusters(min_count?)` | Group errors by type + module path. See patterns like "5 TypeErrors in src/api/". | ~500 tokens |
+| `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 tokens |
+| `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 tokens |
+| `get_audit_trail(limit?, since?)` | Review your own tool usage this session. Optimize your workflow. | ~500 tokens |
+
+### Execution
+
+| Tool | When to use | Cost |
+|------|-------------|------|
+| `run_and_watch(command, timeout_seconds?, cwd?)` | Run tests/linter/build, get parsed results. Use `cwd` for monorepos. | ~1,000 tokens |
 
 ## Workflow Examples
 

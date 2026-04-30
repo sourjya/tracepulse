@@ -1,4 +1,4 @@
-# 26 MCP Tools
+# 30 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
@@ -24,7 +24,7 @@ Every tool the agent can call, organized by workflow.
 
 | Tool | What it does | Cost |
 |------|-------------|------|
-| `run_and_watch(command, timeout_seconds?)` | Run tests/linter/typechecker, get parsed results | ~1,000 tokens |
+| `run_and_watch(command, timeout_seconds?, cwd?)` | Run tests/linter/typechecker, get parsed results. Use `cwd` for monorepos. | ~1,000 tokens |
 | `get_requests(path?, limit?, status_code_min?)` | Recent HTTP requests filtered by path and status | ~1,000 tokens |
 
 ## Deep Investigation
@@ -62,3 +62,12 @@ Every tool the agent can call, organized by workflow.
 | `get_infra_status()` | All backend services (DB, Redis, etc.) with connectivity | ~200 tokens |
 | `get_infra_detail(name)` | Per-service detail with probe history | ~200 tokens |
 | `check_port(port)` | Is a TCP port available or in use? | ~50 tokens |
+
+## Error Intelligence
+
+| Tool | What it does | Cost |
+|------|-------------|------|
+| `get_error_clusters(min_count?)` | Group errors by type + module path. See patterns across the codebase. | ~500 tokens |
+| `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 tokens |
+| `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 tokens |
+| `get_audit_trail(limit?, since?)` | Review your own tool usage this session. Optimize your workflow. | ~500 tokens |

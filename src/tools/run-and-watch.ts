@@ -27,12 +27,13 @@ const DEFAULT_ALLOWED_PREFIXES = [
 /**
  * Handle run_and_watch MCP tool call.
  *
- * @param args - { command: string, timeout_seconds?: number }.
+ * @param args - { command: string, timeout_seconds?: number, cwd?: string }.
  */
 export async function handleRunAndWatch(
   args: Record<string, unknown>,
 ): Promise<CallToolResult> {
   const command = args.command as string | undefined;
+  const cwd = args.cwd as string | undefined;
   if (!command) {
     return { content: [{ type: "text", text: "command parameter is required" }], isError: true };
   }
@@ -76,6 +77,7 @@ export async function handleRunAndWatch(
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],
       env: { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" },
+      ...(cwd ? { cwd } : {}),
     });
 
     /** Process a line through the parser pipeline into the temp buffer. */
