@@ -19,6 +19,12 @@ import { DEFAULT_ERROR_LIMIT, DEFAULT_LOG_LIMIT } from "@/constants/limits.js";
 import { VERSION } from "@/index.js";
 import { handleWatchForErrors } from "@/tools/watch-for-errors.js";
 import { handleGetBuildErrors } from "@/tools/get-build-errors.js";
+import { handleGetErrorClusters } from "@/tools/get-error-clusters.js";
+import { handleGetMigrationStatus } from "@/tools/get-migration-status.js";
+import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
+import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
+import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
+import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
 import { handleGetErrorContext } from "@/tools/get-error-context.js";
 import { handleGetTimeline } from "@/tools/get-timeline.js";
 import { correlateEvents } from "@/correlation/correlation-engine.js";
@@ -236,12 +242,18 @@ export function createMcpServer(
     restartFn?: RestartFn;
     infraMonitor?: InfraMonitor;
     probeManager?: ProbeManager;
+    auditBuffer?: AuditBuffer;
+    perfBaseline?: PerfBaseline;
   },
 ): McpServer {
   const server = new McpServer({
     name: "tracepulse",
     version: VERSION,
   });
+
+  // Create audit buffer for tracking tool invocations
+  const auditBuffer = options?.auditBuffer ?? createAuditBuffer();
+  const perfBaseline = options?.perfBaseline ?? createPerfBaseline();
 
   server.registerTool("get_errors", {
     title: "Get Errors",
@@ -344,6 +356,68 @@ export function createMcpServer(
       openWorldHint: false,
     },
   }, (args) => handleGetBuildErrors(buffer, args as Record<string, unknown>));
+
+  server.registerTool("get_error_clusters", {
+    title: "Get Error Clusters",
+    description:
+      "Group errors by type and module path. Shows patterns like '5 TypeErrors in src/api/' instead of individual events. Use to understand error distribution across the codebase.",
+    inputSchema: {
+      min_count: z.number().optional().describe("Minimum errors per cluster (default 2)"),
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+  }, (args) => handleGetErrorClusters(buffer, args as Record<string, unknown>));
+
+  server.registerTool("get_migration_status", {
+    title: "Get Migration Status",
+    description:
+      "Check database migration status. Auto-detects framework (alembic, prisma, django, knex) from project files. Returns pending count and run command.",
+    inputSchema: {
+      framework: z.string().optional().describe("Migration framework: alembic, prisma, django, knex. Auto-detected if omitted."),
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+  }, (args) => handleGetMigrationStatus(args as Record<string, unknown>, options?.cwd ?? process.cwd()));
+
+  server.registerTool("get_audit_trail", {
+    title: "Get Audit Trail",
+    description:
+      "Review your own MCP tool usage this session. Shows which tools were called, when, with what params, and response sizes. Use to optimize your workflow.",
+    inputSchema: {
+      limit: z.number().optional().describe("Maximum records to return (default 50)"),
+      since: z.number().optional().describe("Only records after this timestamp"),
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+  }, (args) => handleGetAuditTrail(auditBuffer, args as Record<string, unknown>));
+
+  server.registerTool("get_perf_baseline", {
+    title: "Get Performance Baseline",
+    description:
+      "Per-endpoint response time percentiles (P50, P95, max) from HTTP access logs. Use to detect performance regressions after code changes.",
+    inputSchema: {
+      path: z.string().optional().describe("Filter to a specific endpoint path"),
+      limit: z.number().optional().describe("Maximum endpoints to return (default 20)"),
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+  }, (args) => handleGetPerfBaseline(perfBaseline, args as Record<string, unknown>));
 
   server.registerTool("get_error_context", {
     title: "Get Error Context",

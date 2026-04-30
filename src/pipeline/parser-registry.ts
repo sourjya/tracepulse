@@ -30,6 +30,9 @@ import { goTestParser } from '@/parsers/test/go-test-parser.js';
 import { migrationParser } from '@/parsers/migration-parser.js';
 import { npmAuditParser } from '@/parsers/npm-audit-parser.js';
 import { coverageParser } from '@/parsers/coverage-parser.js';
+import { celeryParser } from '@/parsers/celery-parser.js';
+import { sidekiqParser } from '@/parsers/sidekiq-parser.js';
+import { bullmqParser } from '@/parsers/bullmq-parser.js';
 
 // ──────────────────────────────────────────────
 // Parser Registry Interface
@@ -108,5 +111,8 @@ export function createDefaultRegistry(): ParserRegistry {
     migrationParser,
     npmAuditParser,
     coverageParser,
+    celeryParser,
+    sidekiqParser,
+    bullmqParser,
   ]);
 }

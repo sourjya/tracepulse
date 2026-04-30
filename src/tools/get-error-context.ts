@@ -12,6 +12,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import { querySurroundingLogs, countOccurrences } from "@/query/timeline-query.js";
 import { ERROR_CONTEXT_WINDOW_MS, MAX_SURROUNDING_LOGS } from "@/constants/watch.js";
+import { findNarrative } from "@/scoring/error-narratives.js";
 
 /**
  * Handle get_error_context MCP tool call.
@@ -60,6 +61,7 @@ export function handleGetErrorContext(
     MAX_SURROUNDING_LOGS,
   );
   const occurrenceCount = countOccurrences(buffer, fingerprint);
+  const narrative = findNarrative(error.message);
 
   return {
     content: [
@@ -69,6 +71,7 @@ export function handleGetErrorContext(
           error,
           surrounding_logs: surroundingLogs,
           occurrence_count: occurrenceCount,
+          ...(narrative ? { fix_suggestion: narrative } : {}),
         }),
       },
     ],
