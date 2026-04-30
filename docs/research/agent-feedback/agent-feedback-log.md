@@ -378,3 +378,9 @@ Agent created an alembic migration for 2 new columns. Autogenerate picked up 161
 - Error narratives for migration failures
 
 **Gap identified:** Schema drift detection (M12 item 10, post-v1.0). When autogenerate produces changes beyond the intended scope, TP should flag it. This session shows the real cost: 161 lines of dangerous drift that the agent had to manually triage.
+
+### verify_fix as task completion gate
+
+Agent used `verify_fix` as the final step before marking task complete. PASS result served as the "green light" to move on.
+
+**Pattern:** verify_fix is becoming the standard task completion gate - agent calls it after every meaningful change, treats PASS as permission to proceed. This is the edit-verify loop working as designed.
