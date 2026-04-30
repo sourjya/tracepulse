@@ -36,9 +36,17 @@ Use the right level of verification for the situation:
 |------|------|-------|-------------|
 | 1. Static | `tsc --noEmit` or linter via shell | Instant | After every edit |
 | 2. Runtime | `verify_fix(3)` or `get_build_errors()` | 3s | After edits that affect running server |
-| 3. Comprehensive | Full test suite + build via shell | 20s+ | At task completion only |
+| 3. Comprehensive | Full test suite + build via `run_and_watch` | 20s+ | At task completion only |
 
 Don't run the full test suite after every edit - use tier 1-2 for rapid iteration, tier 3 as a final gate.
+
+**Prefer `run_and_watch` over shell for tests and builds.** It parses output through TracePulse's test runner parsers and returns structured pass/fail counts:
+```
+run_and_watch("pytest tests/unit/")     -> { passed: 554, failed: 0, warnings: 11 }
+run_and_watch("npx vitest run")         -> { passed: 120, failed: 0 }
+run_and_watch("npx vite build")         -> { build: "success", modules: 342 }
+```
+Shell commands return raw text the agent must parse manually.
 
 ### The proven debugging loop (most productive workflow)
 
