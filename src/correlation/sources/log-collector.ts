@@ -10,6 +10,8 @@
 
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from "node:http";
 import type { FrontendError } from "@/correlation/types.js";
+import { validateCrashReport, crashReportToEvent } from "@/correlation/frontend-crash-bridge.js";
+import type { RuntimeEvent } from "@/types/events.js";
 
 /** Public API for the log collector. */
 export interface LogCollector {
@@ -29,6 +31,7 @@ export interface LogCollector {
 export function createLogCollector(
   listenPort: number,
   onError: (error: FrontendError) => void,
+  onCrash?: (event: RuntimeEvent) => void,
 ): LogCollector {
   const bindHost = "127.0.0.1";
   let server: Server;
@@ -148,6 +151,39 @@ export function createLogCollector(
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: msg }));
           }
+        });
+      return;
+    }
+
+    // Frontend crash ingestion (ErrorBoundary bridge)
+    if (req.method === "POST" && req.url === "/api/v1/crashes" && onCrash) {
+      readBody(req)
+        .then((body) => {
+          let payload: Record<string, unknown>;
+          try {
+            payload = JSON.parse(body) as Record<string, unknown>;
+          } catch {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Invalid JSON" }));
+            return;
+          }
+
+          const report = validateCrashReport(payload);
+          if (!report) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "message is required" }));
+            return;
+          }
+
+          const event = crashReportToEvent(report);
+          onCrash(event);
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ fingerprint: event.fingerprint }));
+        })
+        .catch((err) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          res.writeHead(msg === "Body too large" ? 413 : 500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: msg }));
         });
       return;
     }

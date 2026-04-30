@@ -156,17 +156,17 @@ export function createProcessSpawner(command: string): Collector {
           }
 
           /**
-           * Wait 500ms before resolving to give fast-failing commands
-           * (exit code 127) time to reject first. Shell processes with
-           * invalid commands typically exit within ~100-300ms. If the process
-           * is still alive after 500ms, it's a real command.
+           * Wait 800ms before resolving to give fast-failing commands
+           * (non-zero exit) time to reject first. Shell processes with
+           * invalid commands typically exit within ~100-500ms. Under heavy
+           * parallel load (e.g., 76 test files), this can take longer.
            */
           setTimeout(() => {
             if (!settled) {
               settled = true;
               resolve();
             }
-          }, 500);
+          }, 800);
         });
       });
     },
