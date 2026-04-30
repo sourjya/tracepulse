@@ -418,3 +418,16 @@ Agent's analysis:
 **Why this matters:** This is the exact bug type that `get_migration_status` was designed for. The agent had to manually run `alembic current` and then query `information_schema.columns` to diagnose. With `get_migration_status`, the discrepancy between "alembic says applied" and "column doesn't exist" would be surfaced automatically.
 
 **Also notable:** TP correctly separated the real bug (signal 95, 18 occurrences) from transient HMR noise (SparkleIcon, attachedFiles, members - all from mid-edit hot reloads). Signal scoring worked as designed.
+
+### Agent hung on interactive psql password prompt
+
+Agent ran `psql -U postgres -d planiq -c "SELECT..."` via shell. psql prompted for password interactively, blocking the session. User had to intervene.
+
+**Root cause:** Agent didn't use DATABASE_URL from .env. Tried bare psql which requires interactive auth.
+
+**TP could help:**
+1. `get_migration_status` already avoids this for migration checks
+2. SKILL.md should warn: "Never run psql/mysql/redis-cli directly - they prompt for passwords. Use run_and_watch with connection string from .env"
+3. Future: TP could expose a `run_db_query(sql)` tool that reads DATABASE_URL from .env and runs non-interactive queries
+
+**Wishlist #26:** SKILL.md anti-pattern warning for interactive CLI tools (psql, mysql, redis-cli, mongo) that hang on password prompts.
