@@ -42,6 +42,8 @@ Every wasted token is wasted compute, wasted energy, and avoidable carbon emissi
 
 **The chain:** Wasted tokens -> wasted GPU cycles -> wasted data center energy -> avoidable carbon emissions. TracePulse breaks this chain at the source.
 
+<figure><img src=".gitbook/assets/tracepulse-environmental-impact.svg" alt="The hidden cost of blind agentic coding - environmental and token impact comparison" width="960"></figure>
+
 ---
 
 ## Your Agent Is Wasting Tokens
