@@ -304,7 +304,7 @@ TracePulse is designed to work alongside:
 
 TracePulse is the auditory cortex - it hears what the backend is saying. Together, the agent has the same situational awareness a senior developer has: see the UI, act in the browser, hear the server.
 
-*The cortex analogy is a positioning metaphor for the three-layer agentic debugging stack, not a neuroscience claim.*
+*The cortex analogy maps to the Perception-Planning-Acting modular architecture formalized in GUI agent research ([arXiv 2412.13501](https://arxiv.org/abs/2412.13501), [arXiv 2504.20464](https://arxiv.org/abs/2504.20464)). ViewGraph provides the perception module, Chrome DevTools MCP the action module, TracePulse the environment feedback module.*
 
 ## Architecture
 
