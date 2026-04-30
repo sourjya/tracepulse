@@ -535,3 +535,18 @@ Agent fell back to `bash scripts/test-backend.sh` which activates the venv inter
 3. Agent wraps in a script (current workaround)
 
 **Wishlist #30:** run_and_watch should support `env` parameter for custom environment variables, or auto-detect `.venv/bin/python` when cwd contains a virtualenv.
+
+### Full build round summary - TP caught 3 real issues
+
+Agent completed a full build round. TP catches:
+1. **JSONB NameError at signal 95** (11 occurrences) - stale server process. Agent forced reload via `touch main.py`, `clear_errors`, `watch_for_errors(5)` - zero errors after.
+2. **projects.settings 500s** - caught during development
+3. **structlog event keyword conflict** - would have crashed in production
+
+**Workflow pattern now fully established:**
+- `run_and_watch` for all tests (backend via bash script, frontend via cwd)
+- `get_errors(limit: 3)` as health check between tasks
+- `clear_errors` + `watch_for_errors` to verify after forced reload
+- Three-tier verification: tsc -> verify_fix -> run_and_watch full suite
+
+**Agent's own assessment:** "TP catches: JSONB NameError (stale server), projects.settings 500s, structlog conflict." Three real bugs caught by TP in one build round.
