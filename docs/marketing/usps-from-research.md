@@ -49,3 +49,30 @@
 
 **USP-13: "37,000 lines per second through the full pipeline"**
 > Benchmarked: parser registry 92K lines/sec, secret redaction 258K lines/sec, buffer query 0.1ms. The pipeline is 370x faster than it needs to be.
+
+## Testing Integration Messaging
+
+### For Testing Teams
+
+Feedback from a testing professional: "Integration with unit testing or integration testing frameworks will help."
+
+**TracePulse angle (already built):**
+- "TracePulse parses test runner output from pytest, Jest, vitest, and go test. The agent runs your test suite via `run_and_watch`, gets structured pass/fail/error results, and fixes failures in the same loop - no manual test reading."
+- Target: backend/QA teams who want agents to run and respond to tests autonomously
+
+**ViewGraph angle (roadmap opportunity):**
+- "ViewGraph captures the working UI as structured data. The next step: generate Playwright/Cypress test assertions from captures automatically. The agent sees 'Submit button at this position with this label' and emits `expect(page.getByRole('button', { name: 'Submit' })).toBeVisible()`."
+- Target: QA teams who write E2E tests manually today
+
+**Three-layer testing stack messaging:**
+
+| Testing layer | Tool | Message |
+|---|---|---|
+| Unit/integration tests | TracePulse | "Your agent runs tests, reads results, fixes failures - zero manual log reading" |
+| Visual regression | ViewGraph | "Capture the working UI. After changes, capture again. Auto-diff catches regressions" |
+| Accessibility | ViewGraph | "WCAG audit on every capture. Agents fix a11y issues as they build" |
+| E2E test generation | ViewGraph (roadmap) | "Turn a UI capture into Playwright test code. The working state becomes the test" |
+| Browser errors | Chrome DevTools MCP | "Console errors, network failures, performance traces - the browser layer" |
+
+### Key Differentiator for Testing Audiences
+"Most AI coding tools can write code. None of them can verify it works. TracePulse + ViewGraph + Chrome DevTools MCP give the agent the same verification loop a senior QA engineer uses: check the backend, check the browser, check the UI."
