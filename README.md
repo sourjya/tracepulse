@@ -6,6 +6,8 @@
 
 **Runtime feedback MCP server for AI coding agents.**
 
+*Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
+
 [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse feels the backend.
 
 > "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark." - [Sentry Engineering](https://blog.sentry.io/vibe-coding-closing-the-feedback-loop-with-traceability/)

@@ -2,6 +2,8 @@
 
 **TracePulse - Runtime feedback MCP server.**
 
+*Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
+
 [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) sees the UI. TracePulse feels the backend.
 
 > "LLMs can't see what happens when their code actually runs. They're throwing darts in the dark."
@@ -26,6 +28,19 @@ TracePulse closes this loop at dev time - seconds after the code change, not min
 - Debugging requires **copy-pasting logs** into the chat
 
 These problems cost 15-30 minutes per debugging session. TracePulse eliminates them.
+
+---
+
+## Why It Matters Beyond Productivity
+
+Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions.
+
+- [59.4% of token consumption](https://arxiv.org/html/2601.14470v1) in agentic coding goes to the agent re-reading its own work (arXiv 2601.14470)
+- Global data center electricity demand projected to [double to ~945 TWh by 2030](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) - more than Japan's entire consumption (IEA, 2025)
+- [LLM inference accounts for >90%](https://arxiv.org/html/2512.03024) of total AI power consumption - not training (arXiv 2512.03024)
+- Data center CO2 emissions projected to rise from [~220M to 320M tonnes by 2035](https://www.iea.org/reports/energy-and-ai/ai-and-climate-change) (IEA)
+
+**The chain:** Wasted tokens -> wasted GPU cycles -> wasted data center energy -> avoidable carbon emissions. TracePulse breaks this chain at the source.
 
 ---
 

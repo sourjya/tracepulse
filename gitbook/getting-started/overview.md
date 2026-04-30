@@ -2,9 +2,13 @@
 
 TracePulse is a runtime feedback MCP server for AI coding agents. It watches your dev server's stdout/stderr, parses errors into structured data, scores them by importance, and exposes them as tools the AI agent can call.
 
+*Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.*
+
 ## The Problem
 
 When you're using an AI assistant (Kiro, Claude Code, Cursor, Copilot) to write code, the agent can't see what happens when its code runs. If the dev server crashes or throws an error, the agent has no way to know. You'd have to manually copy-paste error logs into the chat.
+
+This blindness costs more than time. Research shows agents waste [59.4% of their tokens](https://arxiv.org/html/2601.14470v1) re-reading their own work. Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions - at a time when [data center electricity demand is projected to double by 2030](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works).
 
 ## The Solution
 
