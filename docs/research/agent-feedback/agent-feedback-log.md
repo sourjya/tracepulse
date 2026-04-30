@@ -580,3 +580,9 @@ Major finding: Kiro IDE on WSL has a long-standing issue reading terminal output
 **After:** run_and_watch -> Node.js pipe capture -> parser pipeline -> structured JSON via MCP
 
 This is a strong USP for WSL users and should be documented in the README/gitbook.
+
+### run_and_watch as pre-compaction checkpoint
+
+Agent noticed context getting long and ran full test suite via `run_and_watch` before context compaction. This ensures the agent has a verified clean state before losing earlier context.
+
+**Pattern:** run_and_watch serves as a "save point" before context compression. If something breaks after compaction, the agent knows tests were green at the checkpoint. This is an emergent behavior - the agent wasn't told to do this, it developed the pattern naturally from the three-tier verification workflow.
