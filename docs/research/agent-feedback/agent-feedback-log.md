@@ -550,3 +550,11 @@ Agent completed a full build round. TP catches:
 - Three-tier verification: tsc -> verify_fix -> run_and_watch full suite
 
 **Agent's own assessment:** "TP catches: JSONB NameError (stale server), projects.settings 500s, structlog conflict." Three real bugs caught by TP in one build round.
+
+### UI pattern violation - not TP scope but interesting meta-question
+
+Agent created a Settings tab bar as a separate sticky div below TopBar instead of extending TopBar. User caught it visually. Agent's introspection: "I was lazy. I took the path of least resistance instead of the correct path."
+
+**TP can't help here** - this is a visual/architectural pattern violation, not a runtime error. The correct tools are ViewGraph (capture diffing) and steering files (ux-patterns.md).
+
+**Meta-insight:** The agent's self-assessment is valuable product feedback. When agents explain WHY they made a mistake, it reveals what guardrails are missing. In this case: "Before creating any new header/tab element, check if TopBar already handles it." This is a steering file rule, not a tool feature.
