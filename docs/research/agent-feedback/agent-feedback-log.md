@@ -444,3 +444,9 @@ Agent's workflow for this task:
 3. Full test suite + vite build (final gate, ~20s)
 
 This is a natural three-tier pattern: static -> runtime -> comprehensive. TP fills the middle tier that tsc can't cover (runtime errors from the running server). The agent only runs the expensive full suite at task completion, not after every edit.
+
+### run_and_watch allowlist friction - cd prefix blocked
+
+Agent tried `run_and_watch("cd /path && bash scripts/test-backend.sh")` - blocked because `cd` isn't in the allowlist. Self-corrected to `run_and_watch("bash /path/scripts/test-backend.sh")` which worked.
+
+**Action taken:** Updated SKILL.md to document the allowlist and "no cd prefix" rule. The agent adopted run_and_watch for tests (as recommended in the three-tier pattern) on the same session it was documented.
