@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.6.0 (alpha - Phases 1–5 complete)
+v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 
 ## Milestones
 
@@ -20,9 +20,51 @@ v0.6.0 (alpha - Phases 1–5 complete)
 | M9: Infrastructure Discovery & Health | Research | v0.9.0 | ✅ Complete |
 | M10: Project Health & Dependency Awareness | Gap Analysis | v0.9.1 | ✅ Complete |
 | M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | ✅ Complete |
-| M12: Ecosystem Research Features | Research | v0.9.3-v1.0 | 🔲 Not Started |
-| M-Harden: Code Quality & Hardening | CRR-001 | v0.9.4 | 🔲 Not Started |
-| M6: Stable Release | Release | v1.0.0 | 🔲 Not Started |
+| M12: Ecosystem Research Features | Research | v0.9.2 | ✅ Complete |
+| M-Harden: Code Quality & Hardening | CRR-001 | v0.9.2 | ✅ Complete (13/13 items) |
+| M13: Discoverability & Integration | Deep Research | v0.9.3 | 🔲 Next |
+| M14: Category Extension | Deep Research | v0.9.4-v1.0 | 🔲 Planned |
+| M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
+
+---
+
+## M13: Discoverability & Integration (Next - informed by Deep Research 2026-04-30)
+
+Source: [Deep Research - Competitive Landscape & Roadmap 2026](../research/agentic-debug-loop-deep-research-2-2026.md)
+
+The research identifies discoverability and cross-tool integration as the highest-leverage gaps. The agent only benefits from TracePulse if it knows to call the tools. Hooks are the highest-leverage discoverability mechanism.
+
+| # | Feature | Effort | Impact | Research Ref |
+|---|---------|--------|--------|-------------|
+| 1 | Claude Code PostToolUse hook (auto-check errors after edits) | 1 week | HIGH | 5.2 |
+| 2 | Kiro hooks pack (pre/post tool use) | 3 days | HIGH | 5.2 |
+| 3 | Tool description token audit (stay under 1K tokens) | 2 days | HIGH | 7.7 |
+| 4 | verify_fix with claim-checking (prior fingerprint gone?) | 1 week | HIGH | 5.3, 6.1 |
+| 5 | Unified `check_drift()` tool (env + deps + migrations) | 2 weeks | HIGH | 5.8 |
+| 6 | Cursor rules file (`tracepulse.cursor-rules.json`) | 2 days | Medium | 5.2 |
+| 7 | Dynamic toolsets for less-frequent tools | 1 week | Medium | 7.7 |
+
+## M14: Category Extension (informed by Deep Research)
+
+These features move TracePulse from "backend log MCP" to "agentic debug primitive."
+
+| # | Feature | Effort | Impact | Research Ref |
+|---|---------|--------|--------|-------------|
+| 1 | Cross-environment fingerprint correlation + Sentry export | 2-3 weeks | HIGH | 6.3 |
+| 2 | DAP-MCP companion package (`tracepulse-debug`) | 4-6 weeks | HIGH | 5.1, 4.4 |
+| 3 | Developer-facing dashboard (`tracepulse view`) | 1-2 weeks | HIGH | 5.6 |
+| 4 | Multi-agent observability (per-agent filtering, conflict detection) | 2 weeks | HIGH | 5.5 |
+| 5 | HTTP record-replay sidecar | 2-3 weeks | Medium | 6.2 |
+| 6 | V8 Inspector integration for Node JIT-instrumentation | 4-6 weeks | HIGH | 6.7 |
+| 7 | AST-aware diff correlation (tree-sitter) | 2-3 weeks | Medium | 6.9 |
+
+## Strategic Positioning (from Deep Research)
+
+- **Coexistence, not competition:** "TracePulse for local dev, Lightrun for prod, Sentry for production monitoring"
+- **The drift detection layer:** No tool currently brands itself as "the drift detection layer for agentic coding" - unclaimed category
+- **Connective tissue:** TracePulse + Sentry + Replay + Lightrun + Chrome DevTools MCP form a stack where each covers a different stage
+- **The trust gap:** "Agents that verify their own work ship faster, break less, require fewer human review cycles"
+- **Window:** "One product cycle away from being either the indispensable backend layer or a feature absorbed by Cursor/Lightrun/Sentry"
 
 ## M7: Agent-Driven Enhancements
 
@@ -58,36 +100,25 @@ Detect infrastructure issues from the existing log stream. No new data sources -
 
 **Design patterns:** Log-based anomaly detection, sliding window counters, threshold-based alerting, startup validation.
 
-## M-Harden: Code Quality & Hardening
+## M-Harden: Code Quality & Hardening ✅ COMPLETE
 
-Findings from CRR-001 (2026-04-30) full codebase review. Addresses security gaps, correctness bugs, performance hot paths, and type safety. Should complete before M6 Stable Release.
+All 13 findings from CRR-001 (2026-04-30) resolved in v0.9.2.
 
 **Review:** [docs/reviews/CRR-001-2026-04-30-full-review.md](../reviews/CRR-001-2026-04-30-full-review.md)
 
-### Fix Now — Pre-Release Blockers
-
-- [ ] **TD-008** — Wrap `JSON.parse` in `loadConfig()` with try/catch; return validation error on malformed config file (`src/config/config-loader.ts:80,84`)
-- [ ] **TD-009** — Fix `key-value-secret` redaction pattern to capture quoted values (`src/constants/redaction.ts:62`)
-- [ ] **TD-010** — Reject `start()` on any non-zero early exit, not just code 127 (`src/collectors/process-spawner.ts:131,164`)
-
-### High Priority
-
-- [ ] **TD-011** — Replace O(n log n) pinned error eviction sort with insertion-ordered list for O(1) eviction (`src/store/ring-buffer.ts:173`)
-- [ ] **TD-012** — Guard health prober error handler with `timedOut` flag to prevent timeout message being overwritten (`src/infra/health-prober.ts:66`)
-- [ ] **TD-013** — Extract typed `createNoOpInfraMonitor()` factory; remove `as any` casts in `server.ts` and collector monkey-patch in `cli.ts` (`src/mcp/server.ts:507,518`, `src/cli.ts:451`)
-
-### Medium Priority
-
-- [ ] **TD-014** — Add unknown-key validation to `validateConfig()` (`src/config/config-schema.ts:65`)
-- [ ] **TD-015** — Log file tailer: only suppress ENOENT; surface EACCES and other I/O errors to stderr (`src/collectors/log-file-tailer.ts:87`)
-- [ ] **TD-016** — Add LRU fingerprint cache to skip SHA-256 + 5 regex passes on duplicate messages (`src/pipeline/fingerprinter.ts:53`)
-- [ ] **TD-017** — Add GCP service account, Azure connection string, and Datadog API key redaction patterns (`src/constants/redaction.ts`)
-
-### Low Priority
-
-- [ ] **TD-018** — Check `child.exitCode !== null` before registering exit listener in `stop()` to close the narrow exit-race (`src/collectors/multi-process-collector.ts:115`)
-- [ ] **TD-019** — Detect EADDRINUSE in HTTP transport and print actionable suggestion (`src/transport/http-transport.ts:59`)
-- [ ] **TD-020** — Replace fixed-window rate limiter with continuous token bucket (`src/correlation/sources/log-collector.ts:65`)
+- [x] **TD-008** - Config loader JSON.parse try/catch
+- [x] **TD-009** - Secret redactor quoted value capture
+- [x] **TD-010** - Process spawner rejects any non-zero exit
+- [x] **TD-011** - O(1) pinned error eviction
+- [x] **TD-012** - Health prober timedOut flag
+- [x] **TD-013** - Typed createNoOpInfraMonitor()
+- [x] **TD-014** - Config validator rejects unknown keys
+- [x] **TD-015** - Log tailer surfaces non-ENOENT errors
+- [x] **TD-016** - Fingerprinter LRU cache
+- [x] **TD-017** - GCP/Azure/Datadog secret patterns (16 total)
+- [x] **TD-018** - Multi-process exit-race guard
+- [x] **TD-019** - Friendly EADDRINUSE error
+- [x] **TD-020** - Proportional rate limiter
 
 ---
 
