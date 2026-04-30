@@ -569,3 +569,14 @@ Agent called `get_error_clusters()` and got 7 clusters from 59 errors. Quickly t
 **TP value:** Without clustering, the agent would have seen 59 individual errors and spent significant tokens reading each one. With clustering, it saw 7 groups, triaged in one pass, and moved on. This is the error intelligence feature working as designed.
 
 **Also validates:** The auto-expire HMR transients feature (wishlist #25) would have automatically dismissed clusters #1 and #3-4, reducing the triage from 7 clusters to 3.
+
+### run_and_watch bypasses WSL terminal output bug in Kiro IDE
+
+Major finding: Kiro IDE on WSL has a long-standing issue reading terminal output after running tests/commands. The workaround was piping all output through `tee` to log files via scripts in `./scripts/`. `run_and_watch` bypasses this entirely because it captures stdout/stderr via Node.js pipes and returns structured JSON over MCP (JSON-RPC over stdio) - a completely separate channel from the terminal.
+
+**Impact:** run_and_watch isn't just a convenience feature - it's a reliability fix for WSL environments. The agent gets clean, parsed test results without any terminal rendering issues.
+
+**Before:** shell command -> WSL terminal pipe breaks -> tee to log file -> agent reads file
+**After:** run_and_watch -> Node.js pipe capture -> parser pipeline -> structured JSON via MCP
+
+This is a strong USP for WSL users and should be documented in the README/gitbook.
