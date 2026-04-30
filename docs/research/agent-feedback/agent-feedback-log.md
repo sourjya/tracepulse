@@ -469,3 +469,9 @@ Agent's feedback:
 Agent used `run_and_watch` for all 3 backend test runs in this session (import check, targeted test, full suite). But frontend tests (`npx vitest run`, `npx vite build`) still ran via shell - likely because the agent needs to `cd` to the frontend directory first, hitting the same allowlist friction.
 
 **Pattern:** run_and_watch works well for single-directory projects. Multi-directory monorepos (backend + frontend in separate dirs) create friction because the agent can't `cd` before running. Possible fix: add a `cwd` parameter to run_and_watch so the agent can specify the working directory.
+
+### get_errors persistence drives fix - stale run_count error finally addressed
+
+Agent called `get_errors(limit: 3)` between tasks. Same run_count column error still showing. Instead of ignoring it again, the agent decided to fix it by making the columns optional in the ORM model.
+
+**TP value:** The persistent visibility of the error (showing up every time the agent checks) created pressure to fix it. Without TP, this error would have been invisible after the first terminal scroll-away. TP's "errors don't disappear until fixed" behavior is working as designed - it's annoying enough to drive action.
