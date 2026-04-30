@@ -435,3 +435,12 @@ Agent ran `psql -U postgres -d planiq -c "SELECT..."` via shell. psql prompted f
 ### verify_fix(3) as quick post-import check
 
 Agent ran import validation script, then `verify_fix(duration_seconds: 3)` as a quick confirmation. PASS with 16 stale events. Agent is now consistently using the short duration (3s) for quick checks vs default 15s for thorough checks - the two-tier pattern from wishlist #22 is being adopted naturally.
+
+### Three-tier verification pattern emerging
+
+Agent's workflow for this task:
+1. `tsc --noEmit` (static check, instant)
+2. `verify_fix(3)` (runtime check, 3s)
+3. Full test suite + vite build (final gate, ~20s)
+
+This is a natural three-tier pattern: static -> runtime -> comprehensive. TP fills the middle tier that tsc can't cover (runtime errors from the running server). The agent only runs the expensive full suite at task completion, not after every edit.
