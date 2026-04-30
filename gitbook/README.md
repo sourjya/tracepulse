@@ -13,7 +13,7 @@
 
 TracePulse closes this loop at dev time - seconds after the code change, not minutes after deployment.
 
-[![npm](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse) [![GitHub](https://img.shields.io/github/stars/sourjya/tracepulse)](https://github.com/sourjya/tracepulse)
+[![npm](https://img.shields.io/badge/npm-tracepulse-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/tracepulse) &nbsp; [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/tracepulse)
 
 <figure><img src=".gitbook/assets/tracepulse-overview.svg" alt="Why your AI agent needs TracePulse" width="960"></figure>
 
