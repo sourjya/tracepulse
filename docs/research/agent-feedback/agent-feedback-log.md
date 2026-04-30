@@ -384,3 +384,26 @@ Agent created an alembic migration for 2 new columns. Autogenerate picked up 161
 Agent used `verify_fix` as the final step before marking task complete. PASS result served as the "green light" to move on.
 
 **Pattern:** verify_fix is becoming the standard task completion gate - agent calls it after every meaningful change, treats PASS as permission to proceed. This is the edit-verify loop working as designed.
+
+### Honest assessment: TP blind spot on UI polish work
+
+Agent did Sparq UI rename/resize work. TP was not useful for the core task (visual changes, icon swaps, drag/resize). Agent's assessment:
+
+**Where TP helped this session (despite UI focus):**
+- Caught 40 notification 401 errors the agent wouldn't have noticed
+- Caught health.py NameError at signal_score 95 (stale but real)
+- HMR crash detection proved ErrorBoundary bridge works (367 events)
+
+**Where TP is blind:**
+- Visual regression (icon renders correctly?)
+- Component dimensions (800px expected, 400px actual)
+- Interaction testing (drag, resize, expand/collapse)
+
+**New wishlist items from external project (items 22-26):**
+- #22: Auto-detect resolved errors (stop showing fixed errors at score 95)
+- #23: Auto-expire transient HMR crashes after 60s
+- #24: Visual snapshot diffing (screenshot diff after UI changes)
+- #25: Component render monitoring (0x0 dimensions, missing children)
+- #26: Interaction replay (lightweight Playwright in dev loop)
+
+**Assessment:** Items 22-23 are buildable in TP (error lifecycle management). Items 24-26 are ViewGraph/DevTools territory, not TP. The agent correctly identified the boundary: TP = backend/runtime, DevTools = browser, ViewGraph = visual. Each tool has its lane.
