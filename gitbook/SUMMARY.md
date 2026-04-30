@@ -1,6 +1,8 @@
 # Table of contents
 
 * [What is TracePulse?](README.md)
+* [Why TracePulse?](why-tracepulse.md)
+* [Who Benefits?](who-benefits.md)
 
 ## Getting Started
 
