@@ -487,3 +487,9 @@ Agent recognized the run_count errors were stale (asyncpg prepared statement cac
 Agent ran `run_and_watch("bash .../test-backend.sh tests/unit/")` after adding `trigger_value` to the rule model. TP reported 5 failures in test_rule_engine.py - mock rules missing the new attribute. Agent immediately knew the file and cause without reading raw pytest output.
 
 **TP value:** Structured failure reporting. Agent didn't need to parse "FAILED tests/unit/test_rule_engine.py::test_..." from raw text - TP's pytest parser extracted it.
+
+### Frontend tests still via shell despite cwd param being shipped
+
+Agent ran `npx vitest run` and `npx vite build` via shell with `cd frontend &&` prefix. The `cwd` parameter was shipped this same session but agent hasn't adopted it yet. Expected to pick up on next session when SKILL.md is re-read.
+
+**Note:** vite build showed an error (`errors: [Getter/Setter]`) that would have been parsed by TP if run via `run_and_watch("npx vite build", cwd: "./frontend")` instead of shell.
