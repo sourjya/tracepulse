@@ -431,3 +431,7 @@ Agent ran `psql -U postgres -d planiq -c "SELECT..."` via shell. psql prompted f
 3. Future: TP could expose a `run_db_query(sql)` tool that reads DATABASE_URL from .env and runs non-interactive queries
 
 **Wishlist #26:** SKILL.md anti-pattern warning for interactive CLI tools (psql, mysql, redis-cli, mongo) that hang on password prompts.
+
+### verify_fix(3) as quick post-import check
+
+Agent ran import validation script, then `verify_fix(duration_seconds: 3)` as a quick confirmation. PASS with 16 stale events. Agent is now consistently using the short duration (3s) for quick checks vs default 15s for thorough checks - the two-tier pattern from wishlist #22 is being adopted naturally.
