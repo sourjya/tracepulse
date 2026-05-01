@@ -627,3 +627,13 @@ User added TracePulse MCP config to a new project with no npm/node_modules insta
 1. Fresh project / non-Node project setup (point to local build or global install)
 2. Attach mode as the default for projects without a dev server command yet
 3. The error message "connection closed: initialize response" should be in a troubleshooting section
+
+### No "standalone" mode for fresh projects without a dev server
+
+Attach mode requires --log-file. Start mode requires a command. Fresh projects with neither can't use TracePulse at all - but they'd still benefit from run_and_watch, check_port, get_migration_status.
+
+**Workaround:** Create an empty log file and use attach mode.
+
+**Real fix needed:** A `tracepulse standalone` or `tracepulse tools-only` mode that starts the MCP server with no collector. Agent gets all tools except passive error monitoring. This is the correct mode for: fresh projects, library development, projects where the server is started externally.
+
+**Wishlist #32:** Standalone/tools-only mode for projects without a dev server or log file.

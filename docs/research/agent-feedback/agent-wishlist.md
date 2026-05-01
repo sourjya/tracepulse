@@ -37,5 +37,6 @@ Last updated: 2026-04-29
 | 29 | Auto-correlate ReferenceError crashes with recent file edits | 🔲 Roadmap - combines ErrorBoundary bridge + correlate_with_diff |
 | 30 | `run_and_watch` env/venv support for Python projects | 🔲 Buildable now |
 | 31 | Auto-escalate unacknowledged errors (occurrence grows, agent never investigates) | 🔲 Roadmap |
+| 32 | Standalone/tools-only mode (no dev server or log file required) | 🔲 Buildable now |
 
-**19 of 31 wishlist items shipped.** 2 buildable now, 9 on roadmap, 1 covered by existing tools.
+**19 of 32 wishlist items shipped.** 3 buildable now, 9 on roadmap, 1 covered by existing tools.
