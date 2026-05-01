@@ -35,7 +35,7 @@ Last updated: 2026-04-29
 | 27 | Test runner summary parsing (pass/fail/warning counts in structured fields) | ✅ Shipped |
 | 28 | `run_and_watch(command, cwd?)` - working directory parameter for monorepos | ✅ Shipped |
 | 29 | Auto-correlate ReferenceError crashes with recent file edits | 🔲 Roadmap - combines ErrorBoundary bridge + correlate_with_diff |
-| 30 | `run_and_watch` env/venv support for Python projects | 🔲 Buildable now |
+| 30 | `run_and_watch` env/venv support for Python projects | ✅ Shipped |
 | 31 | Auto-escalate unacknowledged errors (occurrence grows, agent never investigates) | 🔲 Roadmap |
 | 32 | Standalone/tools-only mode (no dev server or log file required) | ✅ Shipped |
 | 33 | force_reload in attach mode (touch file or SIGHUP) | 🔲 Buildable now |
