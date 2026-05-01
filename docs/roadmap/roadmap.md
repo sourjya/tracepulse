@@ -45,6 +45,7 @@ The research identifies discoverability and cross-tool integration as the highes
 | 6 | Cursor rules file (`tracepulse.cursor-rules.json`) | 2 days | Medium | 5.2 |
 | 7 | Dynamic toolsets for less-frequent tools | 1 week | Medium | 7.7 |
 | 8 | ViewGraph routing hints in empty responses (`suggested_next` field) | 2 days | Medium | [Design](../engineering/designs/viewgraph-handover.md) |
+| 9 | Read Kiro steering files (tech.md) for project-aware defaults | 3 days | Medium | [Design](../engineering/designs/kiro-steering-integration.md) |
 
 ## M14: Category Extension (informed by Deep Research)
 
