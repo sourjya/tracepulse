@@ -33,6 +33,39 @@ Replace `npm run dev` with your dev server command (`python manage.py runserver`
 
 > **Tip:** Not sure which config file to edit? Just paste the JSON above into your agent's chat and ask: "Add TracePulse to my MCP config." The agent knows where its own config file is and can add it for you.
 
+### Examples by language
+
+**Python (Django/FastAPI/Flask):**
+```json
+{ "args": ["tracepulse", "start", "python manage.py runserver"] }
+{ "args": ["tracepulse", "start", "uvicorn main:app --reload"] }
+{ "args": ["tracepulse", "start", "flask run --reload"] }
+```
+
+**Go:**
+```json
+{ "args": ["tracepulse", "start", "go run main.go"] }
+```
+
+**Java (Spring Boot / Gradle):**
+```json
+{ "args": ["tracepulse", "start", "mvn spring-boot:run"] }
+{ "args": ["tracepulse", "start", "./gradlew bootRun"] }
+```
+
+**Rust:**
+```json
+{ "args": ["tracepulse", "start", "cargo run"] }
+```
+
+### Prerequisites
+
+TracePulse is a Node.js tool. It requires **Node.js 22+** installed, but your project does not need to be Node.js. TracePulse runs alongside any dev server - Python, Go, Java, Rust, or anything that prints to stdout/stderr.
+
+If you don't have Node.js:
+1. [Install Node.js](https://nodejs.org/) (LTS recommended)
+2. Or install TracePulse globally: `npm install -g tracepulse`, then use `"command": "tracepulse"` instead of `"command": "npx"`
+
 ## 2. Attach mode (servers already running)
 
 If your servers are managed by Docker, tmux, pm2, or scripts:
@@ -101,3 +134,21 @@ You don't need to remember tool names. Describe what you want and the agent pick
 - [All 30 MCP tools ->](../features/mcp-tools.md)
 - [TracePulse in Action (real examples) ->](../tutorials/tracepulse-in-action.md)
 - [Why TracePulse? ->](../why-tracepulse.md)
+
+## Troubleshooting
+
+### "connection closed: initialize response"
+
+TracePulse started but crashed before completing the MCP handshake. Common causes:
+
+1. **Dev server command doesn't exist** - check that the command in `args` works when you run it manually in the terminal
+2. **No Node.js installed** - `npx` requires Node.js. Install it from [nodejs.org](https://nodejs.org/) or use a global install
+3. **No package.json** - if using `npm run dev`, the project needs a `package.json` with a `dev` script. For non-Node projects, use the actual server command directly (e.g., `python manage.py runserver`)
+
+### "tracepulse: command not found"
+
+Install globally: `npm install -g tracepulse`, or use `npx` which downloads it on the fly.
+
+### Tools don't appear in the agent
+
+Check you're editing the right config file. Kiro CLI uses `.kiro/settings/mcp.json` (not `.kiro/mcp.json`). Restart the agent after editing the config.
