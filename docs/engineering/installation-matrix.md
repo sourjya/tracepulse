@@ -38,7 +38,8 @@ This bypasses both the PATH issue and the shell wrapper issue.
 ### 2. npx fails in non-Node projects
 **Symptom:** "connection closed: initialize response" with `"command": "npx"`
 **Cause:** npx needs Node.js on PATH. Python/Go/Rust projects may not have it.
-**Fix:** Global install + `"command": "tracepulse"` or absolute path
+**Fix:** Global install + `"command": "tracepulse"` or absolute path.
+**Note (v0.9.5+):** If the start command fails, TracePulse auto-falls back to standalone mode instead of crashing. You still get all tools.
 
 ### 3. Python venv not activated
 **Symptom:** `run_and_watch("pytest")` returns exit 127 (command not found)
