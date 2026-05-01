@@ -36,6 +36,7 @@ import { handleGetErrorTrends } from "@/tools/get-error-trends.js";
 import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
 import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import { handleVerifyFix } from "@/tools/verify-fix.js";
+import { handleVerifyBuild } from "@/tools/verify-build.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
@@ -533,6 +534,19 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
+
+  server.registerTool("verify_build", {
+    title: "Verify Build",
+    description:
+      "Type-check + build + runtime error check in one call. Replaces 3 separate tool calls.",
+    inputSchema: {
+      typecheck_command: z.string().optional().describe("Type checker command (default: 'npx tsc --noEmit')"),
+      build_command: z.string().optional().describe("Build command (default: 'npx vite build')"),
+      cwd: z.string().optional().describe("Working directory for commands"),
+      duration_seconds: z.number().optional().describe("Runtime watch duration (default: 3)"),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  }, (args) => handleVerifyBuild(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
   server.registerTool("wait_for_build", {
     title: "Wait For Build",
