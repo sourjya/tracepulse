@@ -660,3 +660,9 @@ Agent listed concrete shell sequences it repeats daily:
 TracePulse running in standalone mode on a Python library project with no dev server. Agent used get_project_health and get_health_summary for health checks. 190 tests passing, ruff clean, TP healthy.
 
 **Venv gap still present:** Agent tried `python .venv/bin/pytest` instead of `.venv/bin/pytest`. The SKILL.md venv pattern is in local build but not yet in the published npm package the agent is reading. Will resolve on next npm publish.
+
+### Good workflow: stale error triage in 3 calls
+
+Agent called `get_errors(limit: 3)`, saw SprintPlanRequest NameError and GroupingError. Instead of investigating, agent recognized both as stale (server hasn't reloaded after code changes, asyncpg cache). Verified by reading the source file to confirm code is correct. Called `clear_errors` and moved on to productive work.
+
+**Pattern:** get_errors -> recognize stale -> verify code is correct (not a bug) -> clear_errors -> continue. Total: 3 tool calls, 30 seconds. Without TP, agent would have either (a) not known about the errors at all, or (b) spent 10+ minutes investigating errors that aren't bugs.
