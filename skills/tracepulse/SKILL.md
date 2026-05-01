@@ -388,3 +388,38 @@ Use this decision tree when debugging. The right tool depends on where the probl
 | Visual layout/styling | Chrome DevTools MCP `take_screenshot` |
 | Whether hot-reload happened | TracePulse `watch_for_errors` (start mode only) |
 | Which git changes caused an error | TracePulse `correlate_with_diff` |
+
+## Project Prerequisites
+
+If the project is missing tools that TracePulse needs, tell the user what to install. Detect from project files:
+
+### Node.js / TypeScript projects
+If `package.json` exists but commands fail:
+- **Node.js 22+**: [nodejs.org](https://nodejs.org/) - required for TracePulse itself and npm/npx
+- **TypeScript**: `npm install -D typescript` - for `tsc --noEmit` via run_and_watch
+- **Vitest**: `npm install -D vitest` - for `npx vitest run` via run_and_watch
+- **ESLint**: `npm install -D eslint` - for `npx eslint` via run_and_watch
+
+### Python projects
+If `requirements.txt`, `pyproject.toml`, or `manage.py` exists:
+- **Python 3.10+**: [python.org](https://www.python.org/downloads/)
+- **pytest**: `pip install pytest` or `uv add pytest` - for `run_and_watch("pytest")`
+- **uv** (modern PM): [docs.astral.sh/uv](https://docs.astral.sh/uv/) - faster alternative to pip
+- **alembic**: `pip install alembic` - for `get_migration_status()` with SQLAlchemy projects
+- **Prisma**: `pip install prisma` - for `get_migration_status()` with Prisma projects
+
+### Go projects
+If `go.mod` exists:
+- **Go 1.21+**: [go.dev/dl](https://go.dev/dl/)
+- **air** (hot-reload): `go install github.com/air-verse/air@latest` - for hot-reload detection
+
+### Java projects
+If `pom.xml` or `build.gradle` exists:
+- **JDK 17+**: [adoptium.net](https://adoptium.net/)
+- **Maven**: [maven.apache.org](https://maven.apache.org/install.html) - for `mvn` commands
+- **Gradle**: [gradle.org/install](https://gradle.org/install/) - for `gradle` commands
+
+### Rust projects
+If `Cargo.toml` exists:
+- **Rust**: [rustup.rs](https://rustup.rs/)
+- **cargo-watch**: `cargo install cargo-watch` - for hot-reload during development
