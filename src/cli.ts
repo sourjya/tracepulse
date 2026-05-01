@@ -247,6 +247,7 @@ import { detectHotReload } from "@/watch/hot-reload-detector.js";
 import { createLineAccumulator } from "@/pipeline/line-accumulator.js";
 import { createCrashLoopDetector } from "@/pipeline/crash-loop-detector.js";
 import { validateEnvironment } from "@/infra/env-validator.js";
+import { readProjectHints } from "@/config/project-hints.js";
 
 // ──────────────────────────────────────────────
 // Pipeline Factory
@@ -380,6 +381,12 @@ async function main(): Promise<void> {
   }
   if (envWarnings.length > 0) {
     process.stderr.write(`[tracepulse] ${envWarnings.length} missing environment variable(s)\n`);
+  }
+
+  // Read Kiro steering files for project-aware defaults
+  const projectHints = readProjectHints(process.cwd());
+  if (projectHints.language || projectHints.framework) {
+    process.stderr.write(`[tracepulse] Project detected: ${projectHints.language ?? "unknown"} / ${projectHints.framework ?? "unknown"}\n`);
   }
 
   // Create the appropriate collector based on command.
