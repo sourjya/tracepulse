@@ -24,8 +24,16 @@ Last updated: 2026-05-01
 
 ### 1. Kiro IDE PATH differs from terminal
 **Symptom:** `tracepulse` works in terminal but MCP shows "connection closed: initialize response"
-**Cause:** Kiro IDE doesn't inherit the full shell PATH (nvm, custom bin dirs)
-**Fix:** Use absolute path: `"command": "/usr/local/sf/bin/tracepulse"` (find with `which tracepulse`)
+**Cause:** Two possible issues: (a) Kiro IDE doesn't inherit the full shell PATH, or (b) the npm global symlink wrapper doesn't pipe stdin/stdout correctly for MCP
+**Fix:** Use `node` with the direct path to cli.js:
+```bash
+# Find the path:
+echo "$(npm prefix -g)/lib/node_modules/tracepulse/dist/cli.js"
+```
+```json
+{ "command": "node", "args": ["/usr/local/sf/lib/node_modules/tracepulse/dist/cli.js", "standalone"] }
+```
+This bypasses both the PATH issue and the shell wrapper issue.
 
 ### 2. npx fails in non-Node projects
 **Symptom:** "connection closed: initialize response" with `"command": "npx"`
@@ -102,6 +110,12 @@ where tracepulse
 ```json
 { "command": "tracepulse", "args": ["start", "python manage.py runserver"] }
 ```
+
+### Non-Node project (global, reliable - use node directly)
+```json
+{ "command": "node", "args": ["/usr/local/sf/lib/node_modules/tracepulse/dist/cli.js", "standalone"] }
+```
+Find your path: `echo "$(npm prefix -g)/lib/node_modules/tracepulse/dist/cli.js"`
 
 ### Non-Node project (global, absolute path)
 ```json
