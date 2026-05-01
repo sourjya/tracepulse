@@ -616,3 +616,14 @@ Agent identified 4 specific gaps after fixing the bug:
 - #4 is new - combines ErrorBoundary bridge + file-change tracker + correlate_with_diff into an automatic pipeline
 
 **Wishlist #31:** Auto-escalate errors that accumulate without acknowledgment (occurrence count grows but agent never calls get_error_context or clear_errors on that fingerprint).
+
+### TracePulse fails on fresh project with no node_modules
+
+User added TracePulse MCP config to a new project with no npm/node_modules installed. `npx tracepulse start "npm run dev"` failed with "connection closed: initialize response" because npx couldn't resolve the package.
+
+**Fix:** Use local build path: `node /path/to/tracepulse/dist/cli.js attach`
+
+**Docs gap:** Quick-start assumes Node.js is available. Need to document:
+1. Fresh project / non-Node project setup (point to local build or global install)
+2. Attach mode as the default for projects without a dev server command yet
+3. The error message "connection closed: initialize response" should be in a troubleshooting section
