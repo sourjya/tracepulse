@@ -46,6 +46,23 @@ function percentile(sorted: number[], p: number): number {
   return sorted[Math.max(0, idx)];
 }
 
+/** Maximum endpoints to track before evicting least-used. */
+const MAX_ENDPOINTS = 100;
+
+/**
+ * Normalize a URL path for aggregation.
+ * Replaces UUIDs and numeric IDs with placeholders so
+ * /api/users/123 and /api/users/456 aggregate together.
+ *
+ * @param path - Raw URL path.
+ * @returns Normalized path with ID placeholders.
+ */
+function normalizePath(path: string): string {
+  return path
+    .replace(/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, "/:uuid")
+    .replace(/\/\d+/g, "/:id");
+}
+
 /**
  * Create a performance baseline tracker.
  *
@@ -57,10 +74,20 @@ export function createPerfBaseline(): PerfBaseline {
 
   return {
     record(path: string, duration_ms: number): void {
-      let durations = endpoints.get(path);
+      const normalized = normalizePath(path);
+      let durations = endpoints.get(normalized);
       if (!durations) {
+        // Evict least-used endpoint if over limit
+        if (endpoints.size >= MAX_ENDPOINTS) {
+          let minKey = "";
+          let minLen = Infinity;
+          for (const [k, v] of endpoints) {
+            if (v.length < minLen) { minLen = v.length; minKey = k; }
+          }
+          if (minKey) endpoints.delete(minKey);
+        }
         durations = [];
-        endpoints.set(path, durations);
+        endpoints.set(normalized, durations);
       }
       durations.push(duration_ms);
       // Evict oldest samples when over limit
