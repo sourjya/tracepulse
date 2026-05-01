@@ -9,6 +9,7 @@
 * [Quick Start (2 minutes)](getting-started/quick-start.md)
 * [Installation](getting-started/installation.md)
 * [MCP Client Setup](getting-started/mcp-client-setup.md)
+* [Agent Integration](getting-started/agent-integration.md)
 * [Uninstall](getting-started/uninstall.md)
 
 ## Tutorials

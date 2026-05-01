@@ -1,0 +1,16 @@
+{
+  "name": "TracePulse Post-Edit Check",
+  "description": "Auto-check for errors after file edits using TracePulse",
+  "version": "1.0.0",
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "tools": ["write", "create"],
+      "description": "After any file write, remind to check for errors",
+      "action": {
+        "type": "suggest",
+        "message": "File changed. Run get_build_errors() for instant build check, or verify_fix(3) for runtime check."
+      }
+    }
+  ]
+}

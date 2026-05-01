@@ -1,0 +1,43 @@
+# TracePulse Rules for Cursor
+
+## Runtime Feedback
+
+You have TracePulse MCP tools available for backend runtime feedback. Use them instead of reading terminal output manually.
+
+## Verification Pattern
+
+After every backend code change:
+1. `get_build_errors()` - instant build check
+2. `verify_fix(duration_seconds: 3)` - runtime check with pass/fail verdict
+
+After frontend changes, also check browser:
+3. Navigate to the affected page
+4. `list_console_messages(types: ["error"])` - catch runtime errors tsc misses
+
+Full test suite only at task completion:
+5. `run_and_watch("pytest tests/", cwd: "./backend")` or `run_and_watch("npx vitest run", cwd: "./frontend")`
+
+## Error Investigation
+
+When debugging:
+1. `get_project_health()` - start here, one call for full status
+2. `get_errors(limit: 5)` - errors ranked by importance (signal_score)
+3. `get_error_context(fingerprint)` - deep dive with surrounding logs and fix suggestions
+4. `verify_fix(fingerprint: "...", duration_seconds: 5)` - confirm the specific error is resolved
+
+## Key Tools
+
+- `get_errors()` - backend errors sorted by importance
+- `get_build_errors()` - TypeScript/ESLint/Vite/webpack errors
+- `verify_fix()` - post-fix pass/fail verdict (pass fingerprint to verify specific error)
+- `run_and_watch(command, cwd?)` - run tests/linter with parsed results. Use cwd for monorepos.
+- `get_project_health()` - server + infra + errors + build in one call
+- `get_error_clusters()` - group errors by type and module path
+- `get_migration_status()` - check pending migrations (alembic/prisma/django/knex)
+
+## Avoid
+
+- Don't read terminal output manually - use TracePulse tools
+- Don't run `psql`, `mysql`, `redis-cli` directly - they hang on password prompts. Use `run_and_watch` with credentials from .env
+- Don't prefix `run_and_watch` commands with `cd` - use the `cwd` parameter instead
+- Don't run the full test suite after every edit - use `get_build_errors()` for quick checks
