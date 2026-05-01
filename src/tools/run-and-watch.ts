@@ -62,7 +62,7 @@ function diagnoseFailure(command: string, exitCode: number | null, cwd?: string)
 const DEFAULT_ALLOWED_PREFIXES = [
   "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
   "vitest", "jest", "go test", "cargo test", "uv",
-  ".venv/bin/python", ".venv/bin/pytest", "venv/bin/python", "venv/bin/pytest",
+  ".venv/bin/python", ".venv/bin/pytest",
 ];
 
 /**

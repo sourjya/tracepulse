@@ -291,9 +291,13 @@ See `docs/ideas/log-ingestion-flexibility.md` for full technical designs.
 | SRR-002 | 2026-04-29 | T2 security — post-M9/M10/M11 (v0.9.2) | [Report](../security/SRR-002-2026-04-29-T2.md) |
 | CRR-001 | 2026-04-30 | Full review — security, performance, maintainability, edge cases (v0.9.2) | [Report](../reviews/CRR-001-2026-04-30-full-review.md) |
 | SRR-003 | 2026-04-30 | T3 security — full codebase sprint-end (v0.9.2) | [Report](../security/SRR-003-2026-04-30-T3.md) |
+| SRR-004 | 2026-05-01 | T3 security — post-M13/M16 features (v0.9.3) | [Report](../security/SRR-004-2026-05-01-T3.md) |
 | MRR-001 | 2026-04-30 | Maintainability — full codebase (v0.9.2) | [Report](../reviews/MRR-001-2026-04-30.md) |
+| MRR-002 | 2026-05-01 | Maintainability — new M13/M16 code (v0.9.3) | [Report](../reviews/MRR-002-2026-05-01.md) |
 | TQR-001 | 2026-04-30 | Test quality — 722 tests across 77 files (v0.9.2) | [Report](../reviews/TQR-001-2026-04-30.md) |
+| TQR-002 | 2026-05-01 | Test quality — 731 tests across 79 files (v0.9.3) | [Report](../reviews/TQR-002-2026-05-01.md) |
 | DRR-001 | 2026-04-30 | Dependency risk — package.json + transitive deps (v0.9.2) | [Report](../reviews/DRR-001-2026-04-30.md) |
+| DRR-002 | 2026-05-01 | Dependency risk — zod resolved, eslint open (v0.9.3) | [Report](../reviews/DRR-002-2026-05-01.md) |
 
 ## ADRs
 

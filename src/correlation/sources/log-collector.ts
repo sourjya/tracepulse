@@ -85,10 +85,19 @@ export function createLogCollector(
   function handleRequest(req: IncomingMessage, res: ServerResponse): void {
     // Security: reject cross-origin requests (only localhost should POST)
     const origin = req.headers.origin;
-    if (origin && !origin.includes("localhost") && !origin.includes("127.0.0.1")) {
-      res.writeHead(403, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Cross-origin requests not allowed" }));
-      return;
+    if (origin) {
+      try {
+        const originHost = new URL(origin).hostname;
+        if (originHost !== "localhost" && originHost !== "127.0.0.1") {
+          res.writeHead(403, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Cross-origin requests not allowed" }));
+          return;
+        }
+      } catch {
+        res.writeHead(403, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Invalid Origin header" }));
+        return;
+      }
     }
 
     // Health check (exempt from rate limiting)

@@ -43,6 +43,9 @@ const HMR_EXPIRY_MS = 60_000;
 /** Window after which errors with no recurrence post-file-change are "likely resolved". */
 const RESOLUTION_WINDOW_MS = 30_000;
 
+/** Maximum tracked fingerprints before evicting oldest. */
+const MAX_TRACKED = 500;
+
 /**
  * Create an error lifecycle manager.
  *
@@ -51,6 +54,13 @@ const RESOLUTION_WINDOW_MS = 30_000;
 export function createErrorLifecycle(): ErrorLifecycle {
   const states = new Map<string, ResolutionState>();
   let lastFileChangeAt: number | null = null;
+
+  /** Evict oldest entries when over limit. */
+  function evictIfNeeded(): void {
+    if (states.size <= MAX_TRACKED) return;
+    const oldest = [...states.entries()].sort((a, b) => a[1].lastSeen - b[1].lastSeen)[0];
+    if (oldest) states.delete(oldest[0]);
+  }
 
   return {
     recordError(fingerprint: string, isHmrTransient = false): void {
@@ -65,6 +75,7 @@ export function createErrorLifecycle(): ErrorLifecycle {
           fileChangeAfter: false,
           isHmrTransient,
         });
+        evictIfNeeded();
       }
     },
 

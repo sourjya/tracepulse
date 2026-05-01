@@ -33,16 +33,33 @@ export async function handleVerifyBuild(
   isAttachMode?: boolean,
 ): Promise<CallToolResult> {
   const cwd = args.cwd as string | undefined;
+
+  // Security: restrict to known type-check and build commands (no free-form input)
+  const ALLOWED_TYPECHECK = ["npx tsc --noEmit", "tsc --noEmit", "npx vue-tsc --noEmit"];
+  const ALLOWED_BUILD = ["npx vite build", "npx next build", "npx webpack", "npm run build", "pnpm run build"];
+
   const typecheckCmd = (args.typecheck_command as string | undefined) ?? "npx tsc --noEmit";
   const buildCmd = (args.build_command as string | undefined) ?? "npx vite build";
+
+  if (!ALLOWED_TYPECHECK.includes(typecheckCmd)) {
+    return { content: [{ type: "text", text: `typecheck_command must be one of: ${ALLOWED_TYPECHECK.join(", ")}` }], isError: true };
+  }
+  if (!ALLOWED_BUILD.includes(buildCmd)) {
+    return { content: [{ type: "text", text: `build_command must be one of: ${ALLOWED_BUILD.join(", ")}` }], isError: true };
+  }
   const duration = (args.duration_seconds as number | undefined) ?? 3;
 
   const steps: Array<{ step: string; pass: boolean; detail: string }> = [];
 
   // Step 1: Type check
   const tscResult = await handleRunAndWatch({ command: typecheckCmd, timeout_seconds: 30, cwd });
-  const tscData = JSON.parse((tscResult.content[0] as { text: string }).text);
-  const tscPass = tscData.success && tscData.error_count === 0;
+  let tscData: { success?: boolean; error_count?: number; duration_ms?: number; errors?: unknown[] };
+  try {
+    tscData = JSON.parse((tscResult.content[0] as { text: string }).text);
+  } catch {
+    return result("FAIL", [{ step: "typecheck", pass: false, detail: "Failed to parse typecheck result" }]);
+  }
+  const tscPass = tscData.success === true && (tscData.error_count ?? 0) === 0;
   steps.push({
     step: "typecheck",
     pass: tscPass,
@@ -56,8 +73,13 @@ export async function handleVerifyBuild(
 
   // Step 2: Build
   const buildResult = await handleRunAndWatch({ command: buildCmd, timeout_seconds: 30, cwd });
-  const buildData = JSON.parse((buildResult.content[0] as { text: string }).text);
-  const buildPass = buildData.success;
+  let buildData: { success?: boolean; exit_code?: number; duration_ms?: number; errors?: unknown[] };
+  try {
+    buildData = JSON.parse((buildResult.content[0] as { text: string }).text);
+  } catch {
+    return result("FAIL", [...steps, { step: "build", pass: false, detail: "Failed to parse build result" }]);
+  }
+  const buildPass = buildData.success === true;
   steps.push({
     step: "build",
     pass: buildPass,
