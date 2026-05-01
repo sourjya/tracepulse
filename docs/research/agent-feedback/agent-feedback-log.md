@@ -672,3 +672,13 @@ Agent called `get_errors(limit: 3)`, saw SprintPlanRequest NameError and Groupin
 Agent used `run_and_watch(".venv/bin/python -m pytest tests/...", cwd: "./backend")` successfully. The venv allowlist fix (v0.9.4) is working in production.
 
 TP caught: `timedelta not defined` in project_health.py - imported `date, datetime, timezone` but not `timedelta`. Real bug found via structured test output from run_and_watch.
+
+### run_and_watch can't reach sibling repos due to cwd restriction
+
+Agent in uai project used run_and_watch for local tests but fell back to shell for beacon and beacon-ts (sibling repos). The cwd validation rejects paths outside the project root.
+
+**Tension:** SRR-004 H-002 added cwd validation to prevent directory traversal. But monorepo/multi-repo workflows need to run commands in sibling directories.
+
+**Possible fix:** Allow cwd to parent directories up to a configurable depth (e.g., one level up from project root), or allow absolute paths that are within the same workspace. But this weakens the security boundary.
+
+**Current workaround:** Agent uses shell for cross-repo commands. This is acceptable - run_and_watch is for the current project, shell is for cross-project operations.
