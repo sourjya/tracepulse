@@ -58,6 +58,14 @@ Replace `npm run dev` with your dev server command (`python manage.py runserver`
 { "args": ["tracepulse", "start", "cargo run"] }
 ```
 
+**pnpm / Bun (modern Node.js):**
+```json
+{ "args": ["tracepulse", "start", "pnpm run dev"] }
+{ "args": ["tracepulse", "start", "bun run dev"] }
+```
+
+TracePulse works with any package manager - npm, pnpm, Bun, yarn. The process spawner doesn't care which one starts the server.
+
 ### Prerequisites
 
 TracePulse is a Node.js tool. It requires **Node.js 22+** installed, but your project does not need to be Node.js. TracePulse runs alongside any dev server - Python, Go, Java, Rust, or anything that prints to stdout/stderr.
