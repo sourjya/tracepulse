@@ -14,7 +14,6 @@ const SIDEKIQ_FAIL = /(?:WARN|ERROR|FATAL):\s*([\w:]+)(?:\s+JID-([a-f0-9]+))?\s+
 // Sidekiq done: <class> JID-<id> done: <duration>
 const SIDEKIQ_DONE = /([\w:]+)\s+JID-([a-f0-9]+)\s+done:\s*([\d.]+)/i;
 // Sidekiq start: <class> JID-<id> start
-const SIDEKIQ_START = /([\w:]+)\s+JID-([a-f0-9]+)\s+start/i;
 
 /** Sidekiq background worker parser. */
 export const sidekiqParser: ErrorParser = {

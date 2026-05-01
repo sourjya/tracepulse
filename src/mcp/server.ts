@@ -62,17 +62,7 @@ export type { CallToolResult };
  * Wrap a JSON-serializable value in a successful CallToolResult.
  * All tool handlers return a single text content block with JSON.
  */
-function jsonResult(data: unknown): CallToolResult {
-  return { content: [{ type: "text", text: JSON.stringify(data) }] };
-}
-
-/**
- * Wrap an error message in a CallToolResult with isError flag.
- * Returned when MCP tool input validation fails.
- */
-function errorResult(message: string): CallToolResult {
-  return { content: [{ type: "text", text: message }], isError: true };
-}
+import { jsonResult, errorResult } from "@/mcp/response-helpers.js";
 
 // ──────────────────────────────────────────────
 // Tool Handlers (pure functions)

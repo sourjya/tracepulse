@@ -19,7 +19,6 @@ import type { ErrorParser, ParsedError } from "@/types/parsers.js";
 const VALIDATION_ERROR = /ValidationError:\s*(\d+)\s*validation\s*error/i;
 
 /** field required (type=missing) or value_error.missing */
-const FIELD_ERROR = /^\s+(\S+)\s*$/;
 
 /** Input should be a valid string [type=string_type] */
 const TYPE_ERROR = /Input should be (?:a valid )?(\S+).*\[type=(\w+)/;
