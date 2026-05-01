@@ -688,3 +688,21 @@ Agent in uai project used run_and_watch for local tests but fell back to shell f
 User asked "why not via MCP?" when agent used shell for cross-repo tests. Agent explained: "run_and_watch only works within the current project root. When I tried cwd pointing to beacon, it rejected it with 'cwd must be within the project root.' So I fell back to shell."
 
 **Validation:** The agent understands the security boundary and communicates it clearly. The SKILL.md guidance is working - agent knows when to use run_and_watch vs shell. This is the correct behavior: TP for current project, shell for cross-project.
+
+### Fresh project install friction - 3 issues from Piktor project
+
+Real user (different machine, different project) hit all the installation edge cases:
+
+**Issue 1: Default config assumes npm run dev**
+Agent set up `start "npm run dev"` but project has no dev script. TracePulse crashes before MCP handshake. Agent had to debug through 3 iterations (start with command -> start without command -> standalone).
+
+**Issue 2: Agent doesn't know standalone mode exists**
+Tried `start` without a command first (fails). Had to discover `standalone` through trial and error. SKILL.md needs standalone mode more prominent - it should be the FIRST suggestion for library/monorepo projects.
+
+**Issue 3: Agent uses shell instead of run_and_watch**
+Even after TP connected, agent ran `npx vitest run` and `npx tsc --noEmit` via shell. Eventually self-corrected after being prompted. The SKILL.md guidance works but takes time to internalize.
+
+**Action items:**
+- Quick-start should detect project type and suggest the right mode (standalone for libraries, start for servers)
+- SKILL.md should lead with "use run_and_watch, not shell" more aggressively
+- Consider: should TracePulse auto-detect "no dev script" and fall back to standalone instead of crashing?

@@ -451,8 +451,14 @@ async function main(): Promise<void> {
     await collector.start(processLine);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    process.stderr.write(`[tracepulse] Failed to start: ${msg}\n`);
-    process.exit(1);
+    process.stderr.write(`[tracepulse] Failed to start collector: ${msg}\n`);
+    process.stderr.write(`[tracepulse] Falling back to standalone mode (tools available, no passive monitoring)\n`);
+    // Fall back to standalone - agent still gets all tools
+    collector = {
+      async start() { /* no-op */ },
+      async stop() { /* no-op */ },
+      isConnected() { return false; },
+    };
   }
 
   process.stderr.write(`[tracepulse] Collector started (${parsed.command} mode)\n`);
