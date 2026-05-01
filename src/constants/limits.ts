@@ -65,3 +65,22 @@ export const MAX_TRUNCATED_LIST = 5;
 
 /** Max pending migrations to show. */
 export const MAX_PENDING_MIGRATIONS = 10;
+
+// ──────────────────────────────────────────────
+// Score Decay & Error Lifecycle
+// ──────────────────────────────────────────────
+
+/** Window after which transient errors (401/403) get score decay. */
+export const SCORE_DECAY_WINDOW_MS = 60_000;
+
+/** Score reduction applied to decayed transient errors. */
+export const SCORE_DECAY_AMOUNT = 20;
+
+/** Window after which HMR transient errors auto-expire. */
+export const HMR_EXPIRY_MS = 60_000;
+
+/** Window after which errors with no recurrence post-file-change are "likely resolved". */
+export const RESOLUTION_WINDOW_MS = 30_000;
+
+/** Maximum fingerprints tracked by the error lifecycle manager. */
+export const MAX_LIFECYCLE_TRACKED = 500;

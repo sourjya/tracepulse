@@ -11,6 +11,7 @@
  */
 
 import type { RuntimeEvent } from "@/types/events.js";
+import { HMR_EXPIRY_MS, RESOLUTION_WINDOW_MS, MAX_LIFECYCLE_TRACKED } from "@/constants/limits.js";
 
 /** Resolution status for a fingerprint. */
 interface ResolutionState {
@@ -38,13 +39,7 @@ export interface ErrorLifecycle {
   filterActive(events: readonly RuntimeEvent[]): RuntimeEvent[];
 }
 
-/** Window after which HMR transients expire if no recurrence. */
-const HMR_EXPIRY_MS = 60_000;
-/** Window after which errors with no recurrence post-file-change are "likely resolved". */
-const RESOLUTION_WINDOW_MS = 30_000;
 
-/** Maximum tracked fingerprints before evicting oldest. */
-const MAX_TRACKED = 500;
 
 /**
  * Create an error lifecycle manager.
@@ -57,7 +52,7 @@ export function createErrorLifecycle(): ErrorLifecycle {
 
   /** Evict oldest entries when over limit. */
   function evictIfNeeded(): void {
-    if (states.size <= MAX_TRACKED) return;
+    if (states.size <= MAX_LIFECYCLE_TRACKED) return;
     const oldest = [...states.entries()].sort((a, b) => a[1].lastSeen - b[1].lastSeen)[0];
     if (oldest) states.delete(oldest[0]);
   }

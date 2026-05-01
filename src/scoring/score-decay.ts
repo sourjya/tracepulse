@@ -12,12 +12,7 @@
  */
 
 import type { RuntimeEvent } from "@/types/events.js";
-
-/** Decay window in milliseconds. Errors older than this with occurrence_count=1 get decayed. */
-const DECAY_WINDOW_MS = 60_000;
-
-/** Score reduction for decayed events. */
-const DECAY_AMOUNT = 20;
+import { SCORE_DECAY_WINDOW_MS, SCORE_DECAY_AMOUNT } from "@/constants/limits.js";
 
 /** HTTP status codes that are commonly transient. */
 const TRANSIENT_STATUS_CODES = new Set([401, 403, 408, 429]);
@@ -27,7 +22,7 @@ const TRANSIENT_STATUS_CODES = new Set([401, 403, 408, 429]);
  *
  * An event is considered transient if:
  * 1. It has occurrence_count === 1 (never recurred)
- * 2. It's older than DECAY_WINDOW_MS
+ * 2. It's older than SCORE_DECAY_WINDOW_MS
  * 3. It has a transient HTTP status code (401, 403, 408, 429)
  *
  * Decayed events get a reduced signal_score but are not removed.
@@ -44,10 +39,10 @@ export function applyScoreDecay(events: readonly RuntimeEvent[]): RuntimeEvent[]
 
     if (
       event.occurrence_count === 1 &&
-      age > DECAY_WINDOW_MS &&
+      age > SCORE_DECAY_WINDOW_MS &&
       isTransientStatus
     ) {
-      const decayedScore = Math.max(0, event.signal_score - DECAY_AMOUNT);
+      const decayedScore = Math.max(0, event.signal_score - SCORE_DECAY_AMOUNT);
       return { ...event, signal_score: decayedScore };
     }
     return event;
