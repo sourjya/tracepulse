@@ -192,14 +192,18 @@ You don't need to remember tool names. Describe what you want and the agent pick
 
 TracePulse started but crashed before completing the MCP handshake. Common causes:
 
-1. **Dev server command doesn't exist** - check that the command in `args` works when you run it manually in the terminal
-2. **No Node.js installed** - `npx` requires Node.js. Install it from [nodejs.org](https://nodejs.org/) or use a global install
-3. **No package.json** - if using `npm run dev`, the project needs a `package.json` with a `dev` script. For non-Node projects, use the actual server command directly (e.g., `python manage.py runserver`)
+1. **Kiro IDE can't find tracepulse** - the IDE's PATH differs from your terminal. Find the absolute path with `which tracepulse` and use it directly: `"command": "/full/path/to/tracepulse"`
+2. **Dev server command doesn't exist** - check that the command in `args` works when you run it manually in the terminal
+3. **No Node.js installed** - `npx` requires Node.js. Install it from [nodejs.org](https://nodejs.org/) or use a global install
+4. **Old version** - standalone mode requires v0.9.3+. Update: `npm install -g tracepulse@latest`
+5. **No package.json** - if using `npm run dev`, the project needs a `package.json` with a `dev` script. For non-Node projects, use the actual server command directly
 
 ### "tracepulse: command not found"
 
-Install globally: `npm install -g tracepulse`, or use `npx` which downloads it on the fly.
+Install globally: `npm install -g tracepulse`. If it still fails, use the absolute path from `which tracepulse`.
 
 ### Tools don't appear in the agent
 
 Check you're editing the right config file. Kiro CLI uses `.kiro/settings/mcp.json` (not `.kiro/mcp.json`). Restart the agent after editing the config.
+
+For the full installation matrix with all edge cases, see [Installation Matrix](../../docs/engineering/installation-matrix.md).
