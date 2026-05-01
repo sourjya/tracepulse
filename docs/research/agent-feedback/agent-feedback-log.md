@@ -599,3 +599,20 @@ Frontend crash: "Adding different instances of a keyed plugin (suggestion$)". ts
 3. Agent skipped tier 1.5 and went straight to tsc + vite build
 
 **Pattern:** This is the third frontend crash that tsc + build passed but runtime caught (Rules 404, visibleColOrder, plugin key). The tier 1.5 browser check is not optional for frontend changes - it's mandatory. The ErrorBoundary bridge would make this automatic.
+
+### Agent's own TP gap analysis on BUG-014 (ProseMirror plugin key crash)
+
+Agent identified 4 specific gaps after fixing the bug:
+
+1. **Post-edit error correlation** - correlate_with_diff would have found it, but agent never called it. Should be automatic after HMR.
+2. **Mandatory post-HMR browser error check** - HMR success != runtime success. File saved, Vite reloaded, no build errors, but crash on component mount.
+3. **Stale high-occurrence error escalation** - 5 occurrences at signal_score 35 sitting in buffer for hours. Should escalate when errors accumulate without acknowledgment.
+4. **Browser error to source file mapping** - stack trace pointed to RichTextEditor.tsx:444, which was recently modified. Should flag proactively.
+
+**Assessment:**
+- #1 maps to wishlist #29 (auto-correlate errors with file edits) - already on roadmap
+- #2 is the tier 1.5 browser check - already in SKILL.md but agent skipped it
+- #3 maps to wishlist #24 (error lifecycle) - partially built (score decay exists, escalation doesn't)
+- #4 is new - combines ErrorBoundary bridge + file-change tracker + correlate_with_diff into an automatic pipeline
+
+**Wishlist #31:** Auto-escalate errors that accumulate without acknowledgment (occurrence count grows but agent never calls get_error_context or clear_errors on that fingerprint).
