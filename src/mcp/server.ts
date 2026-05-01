@@ -338,7 +338,7 @@ export function createMcpServer(
   server.registerTool("watch_for_errors", {
     title: "Watch For Errors",
     description:
-      "Block for N seconds and collect any new errors/warnings from the dev server. Use after editing code to verify if the fix worked. Note: hot_reload_detected only works in start mode or when the dev server's reload messages appear in the tailed log file. In attach mode with separate frontend/backend processes, use get_build_errors as the reliable post-change check instead.",
+      "Watch N seconds for new errors after a code change. Returns events + hot_reload_detected.",
     inputSchema: {
       duration_seconds: z.number().optional().describe("How long to watch (1-120 seconds). Default: 15."),
       source: z.string().optional().describe("Filter by event source"),
@@ -369,7 +369,7 @@ export function createMcpServer(
   server.registerTool("get_error_clusters", {
     title: "Get Error Clusters",
     description:
-      "Group errors by type and module path. Shows patterns like '5 TypeErrors in src/api/' instead of individual events. Use to understand error distribution across the codebase.",
+      "Group errors by type + module path. See patterns across the codebase.",
     inputSchema: {
       min_count: z.number().optional().describe("Minimum errors per cluster (default 2)"),
     },
@@ -525,7 +525,7 @@ export function createMcpServer(
   server.registerTool("verify_fix", {
     title: "Verify Fix",
     description:
-      "All-in-one post-fix verification: watches for N seconds, checks build errors, reports pass/fail verdict. Use after editing code instead of calling watch_for_errors + get_build_errors + get_errors separately.",
+      "Post-fix check: watch + build + errors in one call. Returns pass/fail verdict.",
     inputSchema: {
       duration_seconds: z.number().optional().describe("How long to watch (default 15 seconds)."),
     },
@@ -535,7 +535,7 @@ export function createMcpServer(
   server.registerTool("wait_for_build", {
     title: "Wait For Build",
     description:
-      "Block until the next build/hot-reload event completes, then return the result. Event-driven - returns immediately when build finishes instead of waiting a fixed duration.",
+      "Block until next build/hot-reload completes. Event-driven, no polling.",
     inputSchema: {
       timeout_seconds: z.number().optional().describe("Max wait time (default 30s)."),
     },
@@ -556,7 +556,7 @@ export function createMcpServer(
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
-      "Run a shell command (tests, linter, type checker), parse its output through TracePulse parsers, and return structured results with pass/fail, error count, and parsed error details.",
+      "Run a command, parse output through 26 parsers, return structured pass/fail results.",
     inputSchema: {
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),
