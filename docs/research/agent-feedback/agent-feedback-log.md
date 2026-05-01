@@ -654,3 +654,9 @@ Agent listed concrete shell sequences it repeats daily:
 - #3 (verify_build): Low effort - composite of two run_and_watch calls. But adds a new tool to the already-large surface.
 - #4 (auto import check): Hook territory, not a tool. Kiro hooks could trigger this.
 - #5 (migration in health): Low effort - add get_migration_status result to get_project_health response.
+
+### Standalone mode validated on pure Python project (intent-engine)
+
+TracePulse running in standalone mode on a Python library project with no dev server. Agent used get_project_health and get_health_summary for health checks. 190 tests passing, ruff clean, TP healthy.
+
+**Venv gap still present:** Agent tried `python .venv/bin/pytest` instead of `.venv/bin/pytest`. The SKILL.md venv pattern is in local build but not yet in the published npm package the agent is reading. Will resolve on next npm publish.
