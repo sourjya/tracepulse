@@ -42,6 +42,7 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 
 ### Start mode - spawn and monitor your dev server
 
+**Node.js projects** (npm/pnpm/Bun available in project):
 ```json
 {
   "mcpServers": {
@@ -52,6 +53,26 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
   }
 }
 ```
+
+**Python, Go, Java, Rust, or any non-Node project:**
+
+Node.js may not be on your project's PATH. Install TracePulse globally once:
+```bash
+npm install -g tracepulse
+```
+Then use the global binary directly:
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "python manage.py runserver"]
+    }
+  }
+}
+```
+
+Replace the command with your dev server: `uvicorn main:app --reload`, `go run main.go`, `mvn spring-boot:run`, `cargo run`, etc.
 
 ### Attach mode - tail an existing log file
 

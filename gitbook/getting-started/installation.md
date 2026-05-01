@@ -1,6 +1,16 @@
 # Installation
 
-## npx (recommended, zero install)
+## Which install method?
+
+| Your project | Recommended method |
+|---|---|
+| **Node.js / TypeScript** (has package.json) | `npx` - zero install, runs on demand |
+| **Python, Go, Java, Rust** (no Node in project) | Global install - one-time setup, works everywhere |
+| **Fresh project / library** (no server yet) | Global install + standalone mode |
+
+## npx (Node.js projects)
+
+If your project already has Node.js (npm/pnpm/Bun):
 
 ```json
 {
@@ -15,7 +25,9 @@
 
 No installation needed. The MCP client downloads and runs it on demand.
 
-## Global install
+## Global install (non-Node projects - recommended)
+
+For Python, Go, Java, Rust, or any project where Node.js isn't on the project PATH:
 
 ```bash
 npm install -g tracepulse
@@ -27,7 +39,7 @@ Then in your MCP config:
   "mcpServers": {
     "tracepulse": {
       "command": "tracepulse",
-      "args": ["start", "npm run dev"]
+      "args": ["start", "python manage.py runserver"]
     }
   }
 }
