@@ -39,6 +39,12 @@ const STACK_FRAME_RE = /^\s*at\s+(com\.|org\.)/;
 /** Matches "Caused by:" chained exception lines. */
 const CAUSED_BY_RE = /^Caused by:\s/;
 
+/** Matches Spring Boot APPLICATION FAILED TO START banner. */
+const SPRING_BOOT_FAILED_RE = /APPLICATION FAILED TO START/;
+
+/** Matches Spring Boot banner separator. */
+const SPRING_BOOT_BANNER_RE = /^\*{10,}/;
+
 // ──────────────────────────────────────────────
 // Parsing Patterns
 // ──────────────────────────────────────────────
@@ -129,7 +135,9 @@ export const javaParser: ErrorParser = {
       EXCEPTION_IN_THREAD_RE.test(line) ||
       CAUSED_BY_RE.test(line) ||
       JAVA_EXCEPTION_CLASS_RE.test(line) ||
-      STACK_FRAME_RE.test(line)
+      STACK_FRAME_RE.test(line) ||
+      SPRING_BOOT_FAILED_RE.test(line) ||
+      SPRING_BOOT_BANNER_RE.test(line)
     );
   },
 
@@ -161,6 +169,16 @@ export const javaParser: ErrorParser = {
 
     for (const raw of lines) {
       const trimmed = raw.trim();
+
+      // Spring Boot APPLICATION FAILED TO START - high signal
+      if (SPRING_BOOT_FAILED_RE.test(trimmed)) {
+        return {
+          message: "Spring Boot: APPLICATION FAILED TO START",
+          level: "error",
+          context: { framework: "spring-boot", error_type: "StartupFailure" },
+          scoring_hints: { is_unhandled_exception: true },
+        };
+      }
 
       // Check for "Caused by:" - overrides previous exception as root cause
       if (CAUSED_BY_RE.test(trimmed)) {
