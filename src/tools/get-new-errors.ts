@@ -6,6 +6,7 @@
  * @see src/persistence/fingerprint-history.ts for history manager
  */
 
+import { DEFAULT_NEW_ERRORS_LIMIT } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
@@ -23,7 +24,7 @@ export function handleGetNewErrors(
   history: FingerprintHistory,
   args: Record<string, unknown>,
 ): CallToolResult {
-  const limit = (args.limit as number | undefined) ?? 10;
+  const limit = (args.limit as number | undefined) ?? DEFAULT_NEW_ERRORS_LIMIT;
 
   // Get error/warn events
   const events = buffer.query({ level: "warn" });

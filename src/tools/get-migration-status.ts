@@ -10,6 +10,7 @@
  * @see .kiro/specs/m12-ecosystem-features/design.md for tool contract
  */
 
+import { MAX_PENDING_MIGRATIONS } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { existsSync } from "node:fs";
 
@@ -81,7 +82,7 @@ function parseMigrationOutput(framework: string, output: string): Record<string,
     return {
       status: unapplied.length > 0 ? "behind" : "up-to-date",
       pending_count: unapplied.length,
-      pending_migrations: unapplied.map((l) => l.trim()).slice(0, 10),
+      pending_migrations: unapplied.map((l) => l.trim()).slice(0, MAX_PENDING_MIGRATIONS),
       suggestion: unapplied.length > 0 ? "Run: python manage.py migrate" : null,
       raw_output: output.slice(0, 500),
     };

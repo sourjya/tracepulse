@@ -8,6 +8,7 @@
  * @see .kiro/specs/m12-ecosystem-features/design.md for tool contract
  */
 
+import { DEFAULT_QUERY_LIMIT } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { PerfBaseline } from "@/store/perf-baseline.js";
 
@@ -23,7 +24,7 @@ export function handleGetPerfBaseline(
   args: Record<string, unknown>,
 ): CallToolResult {
   const path = args.path as string | undefined;
-  const limit = (args.limit as number | undefined) ?? 20;
+  const limit = (args.limit as number | undefined) ?? DEFAULT_QUERY_LIMIT;
 
   if (path) {
     const metrics = perfBaseline.getByPath(path);

@@ -5,6 +5,7 @@
  * the build result with any errors. Replaces time-based polling.
  */
 
+import { MAX_TRUNCATED_LIST } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { RuntimeEvent } from "@/types/events.js";
@@ -38,7 +39,7 @@ export async function handleWaitForBuild(
             status: buildErrors.length > 0 ? "failed" : "success",
             build_tool: event.context.framework ?? "unknown",
             duration_ms: Date.now() - startTime,
-            build_errors: buildErrors.slice(0, 5),
+            build_errors: buildErrors.slice(0, MAX_TRUNCATED_LIST),
             build_error_count: buildErrors.length,
             last_build_at: event.timestamp,
           }),

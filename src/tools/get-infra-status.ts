@@ -5,6 +5,7 @@
  * get_infra_detail: per-service detail with history (on demand, ~200 tokens)
  */
 
+import { MAX_TRUNCATED_LIST } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import { redact } from "@/pipeline/secret-redactor.js";
@@ -73,7 +74,7 @@ export function handleGetInfraDetail(
         latency_ms: svc.current.latency_ms,
         error: svc.current.error,
         source: svc.service.source,
-        history: svc.history.slice(0, 5),
+        history: svc.history.slice(0, MAX_TRUNCATED_LIST),
       }),
     }],
   };

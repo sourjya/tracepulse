@@ -7,6 +7,7 @@
  * @see .kiro/specs/phase2-watch-mode/design.md for tool contract
  */
 
+import { MAX_TRUNCATED_LIST } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import { DEFAULT_BUILD_ERRORS_LIMIT } from "@/constants/watch.js";
@@ -50,7 +51,7 @@ export function handleGetBuildErrors(
         type: "text",
         text: JSON.stringify({
           errors: filtered.slice(0, limit),
-          warnings: warnings.slice(0, 5),
+          warnings: warnings.slice(0, MAX_TRUNCATED_LIST),
           total_count: totalCount,
           warning_count: warnings.length,
           ...(buildStats.length > 0 ? { build_stats: buildStats.map((e) => e.message) } : {}),

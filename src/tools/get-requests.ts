@@ -5,6 +5,7 @@
  * Answers: "show me the last 5 requests to /export with status and timing."
  */
 
+import { DEFAULT_QUERY_LIMIT } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 
@@ -22,7 +23,7 @@ export function handleGetRequests(
   args: Record<string, unknown>,
 ): CallToolResult {
   const pathFilter = args.path as string | undefined;
-  const limit = (args.limit as number | undefined) ?? 20;
+  const limit = (args.limit as number | undefined) ?? DEFAULT_QUERY_LIMIT;
   const statusMin = args.status_code_min as number | undefined;
 
   // Get all events that have http_status (i.e., parsed from access logs)
