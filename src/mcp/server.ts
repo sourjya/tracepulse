@@ -89,6 +89,7 @@ function errorResult(message: string): CallToolResult {
  * @returns CallToolResult with JSON array of RuntimeEvents, or error result on invalid params.
  */
 import { applyScoreDecay } from "@/scoring/score-decay.js";
+import { addEmptyDiagnostics } from "@/tools/empty-diagnostics.js";
 
 /**
  * Handle get_errors tool - returns recent errors sorted by signal_score descending.
@@ -132,14 +133,14 @@ export function handleGetErrors(
   // Re-sort by signal_score after correlation (correlation sorts by timestamp)
   correlated.sort((a, b) => b.signal_score - a.signal_score);
 
-  return jsonResult({
+  return jsonResult(addEmptyDiagnostics("get_errors", {
     errors: correlated,
     total_matching: decayed.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
     buffer_cleared_at: buffer.bufferClearedAt,
     last_event_timestamp: correlated.length > 0 ? correlated[0].timestamp : null,
-  });
+  }, correlated.length === 0));
 }
 
 /**

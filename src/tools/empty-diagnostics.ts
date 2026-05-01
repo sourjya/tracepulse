@@ -1,24 +1,72 @@
 /**
- * Why-empty diagnostics for tool responses.
+ * Why-empty diagnostics and cross-tool routing hints for tool responses.
  *
- * When a tool returns empty results, include a diagnostics field
- * explaining why and what to do. Prevents tool abandonment.
+ * When a tool returns empty results, include a diagnostics field explaining
+ * why and a suggested_next array pointing to the right tool in the three-layer
+ * stack (TracePulse, Chrome DevTools MCP, ViewGraph).
+ *
+ * Prevents tool abandonment and guides the agent to the correct layer.
+ *
+ * @see docs/engineering/designs/viewgraph-handover.md for routing design
  */
 
-/** Diagnostic messages for empty tool responses. */
-export const EMPTY_DIAGNOSTICS: Record<string, string> = {
-  get_errors: "No errors in buffer. Either the server is running cleanly, or no log output has been received yet. Check get_runtime_status() to verify the server is connected.",
-  get_build_errors: "No build errors. Either the build succeeded, or no build output has been received. Check last_build_at timestamp - if null, no build has run yet.",
-  get_new_errors: "No new fingerprints. All errors in the buffer have been seen in previous sessions. This means no novel errors since the last session.",
-  get_correlated_errors: "No correlations found. This usually means no frontend error source is configured. Use Chrome DevTools MCP list_console_messages() to check browser errors directly.",
-  correlate_with_diff: "No correlations. Either no errors have context.file matching changed files, or there are no uncommitted git changes.",
-  get_requests: "No HTTP requests matching the filter. The HTTP access log parser may not be matching your server's log format, or no requests have been made to the filtered path.",
-  watch_for_errors: "No new errors during the watch window. Check total_events_seen - if 0, no log output was received at all (server may not be running). If > 0, the server is active but produced no errors.",
-  get_infra_status: "No infrastructure services discovered. TracePulse scans .env files for service URLs (DATABASE_URL, REDIS_URL, etc.). If your .env uses different variable names, services won't be detected.",
+/** Diagnostic message + routing hints for empty tool responses. */
+interface EmptyDiagnostic {
+  readonly message: string;
+  readonly suggested_next?: readonly string[];
+}
+
+/** Diagnostic messages and routing hints for each tool. */
+const EMPTY_DIAGNOSTICS: Record<string, EmptyDiagnostic> = {
+  get_errors: {
+    message: "No errors in buffer. Server is running cleanly, or no log output received yet.",
+    suggested_next: [
+      "get_runtime_status() - verify server is connected",
+      "Chrome DevTools MCP: list_console_messages(types: ['error']) - check browser errors",
+      "ViewGraph: request_capture() - inspect the DOM for visual issues",
+    ],
+  },
+  get_build_errors: {
+    message: "No build errors. Build succeeded or no build output received. Check last_build_at.",
+  },
+  get_new_errors: {
+    message: "No new fingerprints. All errors have been seen in previous sessions.",
+  },
+  get_correlated_errors: {
+    message: "No correlations found. No frontend error source configured.",
+    suggested_next: [
+      "Chrome DevTools MCP: list_network_requests(resourceTypes: ['fetch', 'xhr']) - find failed requests",
+      "get_errors(message_contains: '/api/path') - search backend logs for the endpoint",
+    ],
+  },
+  correlate_with_diff: {
+    message: "No correlations. No errors match changed files, or no uncommitted git changes.",
+  },
+  get_requests: {
+    message: "No HTTP requests matching filter. Server may use a different log format, or no requests made.",
+  },
+  watch_for_errors: {
+    message: "No new errors during watch window. Check total_events_seen - if 0, server may not be running.",
+    suggested_next: [
+      "Chrome DevTools MCP: list_console_messages(types: ['error']) - check browser-side errors",
+      "Chrome DevTools MCP: list_network_requests() - check for failed API calls",
+    ],
+  },
+  get_infra_status: {
+    message: "No infrastructure services discovered. TracePulse scans .env for DATABASE_URL, REDIS_URL, etc.",
+  },
+  get_error_clusters: {
+    message: "No error clusters found. Either zero errors or all errors are unique (no patterns).",
+  },
 };
 
 /**
- * Add diagnostics to an empty response.
+ * Add diagnostics and routing hints to an empty response.
+ *
+ * @param toolName - Name of the tool that returned empty.
+ * @param response - The original response object.
+ * @param isEmpty - Whether the response is empty (no results).
+ * @returns Response with diagnostics and suggested_next fields added if empty.
  */
 export function addEmptyDiagnostics(
   toolName: string,
@@ -28,5 +76,9 @@ export function addEmptyDiagnostics(
   if (!isEmpty) return response;
   const diagnostic = EMPTY_DIAGNOSTICS[toolName];
   if (!diagnostic) return response;
-  return { ...response, diagnostics: diagnostic };
+  return {
+    ...response,
+    diagnostics: diagnostic.message,
+    ...(diagnostic.suggested_next ? { suggested_next: diagnostic.suggested_next } : {}),
+  };
 }
