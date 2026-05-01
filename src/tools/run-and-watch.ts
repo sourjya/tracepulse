@@ -23,6 +23,7 @@ import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js
 const DEFAULT_ALLOWED_PREFIXES = [
   "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
   "vitest", "jest", "go test", "cargo test", "uv",
+  ".venv/bin/python", ".venv/bin/pytest", "venv/bin/python", "venv/bin/pytest",
 ];
 
 /**

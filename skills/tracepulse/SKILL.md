@@ -318,6 +318,14 @@ Database CLIs (`psql`, `mysql`, `sqlite3`, `redis-cli`, `mongo`) prompt for pass
 - **For Redis/Mongo:** use `run_and_watch("redis-cli -a $REDIS_PASS ping")` with credentials from .env
 - **General rule:** if a CLI tool might prompt for input, pass credentials via environment variables or flags, never interactively
 
+### Python virtualenv projects
+`run_and_watch` supports `.venv/bin/python` and `.venv/bin/pytest` directly:
+```
+run_and_watch(".venv/bin/python -m pytest tests/ -v", cwd: "./backend")
+run_and_watch(".venv/bin/pytest tests/", cwd: ".")
+```
+Don't try to `source .venv/bin/activate` - that's a shell concept. Use the venv binary path directly.
+
 ### Bridge frontend errors manually
 When `get_correlated_errors` returns empty (no frontend source configured):
 1. Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` → find failed requests
