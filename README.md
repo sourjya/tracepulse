@@ -89,6 +89,7 @@ Point directly to the built CLI:
 |-----------|------|
 | Simple `npm run dev` or `python manage.py runserver` | **start** - TracePulse spawns it |
 | Servers managed by scripts, Docker, tmux, pm2 | **attach** - TracePulse tails the log file |
+| Fresh project, library, or no server yet | **standalone** - tools only, no collector |
 | Multiple services (API + worker + frontend) | **start --service** or **config file** |
 | Docker Compose setup | **compose** |
 

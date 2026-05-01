@@ -81,6 +81,23 @@ If your servers are managed by Docker, tmux, pm2, or scripts:
 }
 ```
 
+## 2b. Standalone mode (fresh projects, libraries, no server yet)
+
+For projects without a dev server or log file - you still get `run_and_watch`, `check_port`, `get_migration_status`, and all other tools:
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "npx",
+      "args": ["tracepulse", "standalone"]
+    }
+  }
+}
+```
+
+Upgrade to `start` mode later when you add a dev server. No config change needed beyond swapping `standalone` for `start "your command"`.
+
 ## 3. Start a chat
 
 Open your AI coding agent and start working. TracePulse connects automatically.

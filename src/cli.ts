@@ -74,8 +74,14 @@ interface FlagArgs {
   readonly command: "version" | "help";
 }
 
+/** Parsed CLI arguments for standalone mode (tools only, no collector). */
+interface StandaloneArgs {
+  readonly command: "standalone";
+  readonly persist?: boolean;
+}
+
 /** Union of all valid parsed argument shapes. */
-export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs;
+export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs;
 
 // ──────────────────────────────────────────────
 // Usage Text
@@ -87,12 +93,15 @@ const USAGE = `TracePulse v${VERSION} - Runtime feedback MCP server for AI codin
 Usage:
   tracepulse start <command>          Spawn a dev server and monitor its output
   tracepulse attach --log-file <path> Tail an existing log file
+  tracepulse standalone               Tools only - no dev server or log file needed
   tracepulse --version                Print version
   tracepulse --help                   Print this help
 
 Examples:
   tracepulse start "npm run dev"
+  tracepulse start "python manage.py runserver"
   tracepulse attach --log-file /var/log/app.log
+  tracepulse standalone
 `;
 
 // ──────────────────────────────────────────────
@@ -193,6 +202,11 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
     }
     if (logFiles.length === 0) return null;
     return { command: "attach", logFiles };
+  }
+
+  if (subcommand === "standalone") {
+    const persist = args.includes("--persist");
+    return { command: "standalone", persist: persist || undefined };
   }
 
   if (subcommand === "compose") {
@@ -350,7 +364,7 @@ async function main(): Promise<void> {
   const frontendBuffer = createFrontendErrorBuffer();
   const fingerprintHistory = createFingerprintHistory();
   const processLine = createPipeline(buffer, registry);
-  const persistEnabled = parsed.command === "start" && parsed.persist;
+  const persistEnabled = (parsed.command === "start" && parsed.persist) || (parsed.command === "standalone" && parsed.persist);
 
   // Load fingerprint history if persistence is enabled
   if (persistEnabled) {
@@ -412,6 +426,14 @@ async function main(): Promise<void> {
         },
       };
     }
+  } else if (parsed.command === "standalone") {
+    // Standalone mode: no collector, tools-only. Agent gets run_and_watch,
+    // check_port, get_migration_status, etc. but no passive error monitoring.
+    collector = {
+      async start() { /* no-op */ },
+      async stop() { /* no-op */ },
+      isConnected() { return true; },
+    };
   } else {
     process.stderr.write(`[tracepulse] Unknown command: ${(parsed as ParsedArgs).command}\n`);
     return process.exit(1);
@@ -462,7 +484,7 @@ async function main(): Promise<void> {
     frontendBuffer,
     fingerprintHistory,
     cwd: process.cwd(),
-    isAttachMode: parsed.command === "attach",
+    isAttachMode: parsed.command === "attach" || parsed.command === "standalone",
     restartFn,
     infraMonitor,
   });
