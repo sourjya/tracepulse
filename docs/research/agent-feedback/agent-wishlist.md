@@ -38,5 +38,8 @@ Last updated: 2026-04-29
 | 30 | `run_and_watch` env/venv support for Python projects | 🔲 Buildable now |
 | 31 | Auto-escalate unacknowledged errors (occurrence grows, agent never investigates) | 🔲 Roadmap |
 | 32 | Standalone/tools-only mode (no dev server or log file required) | ✅ Shipped |
+| 33 | force_reload in attach mode (touch file or SIGHUP) | 🔲 Buildable now |
+| 34 | run_migration (alembic upgrade + parse result in one call) | 🔲 Buildable now |
+| 35 | Migration status in get_project_health response | 🔲 Buildable now |
 
-**20 of 32 wishlist items shipped.** 2 buildable now, 9 on roadmap, 1 covered by existing tools.
+**20 of 35 wishlist items shipped.** 5 buildable now, 9 on roadmap, 1 covered by existing tools.

@@ -637,3 +637,20 @@ Attach mode requires --log-file. Start mode requires a command. Fresh projects w
 **Real fix needed:** A `tracepulse standalone` or `tracepulse tools-only` mode that starts the MCP server with no collector. Agent gets all tools except passive error monitoring. This is the correct mode for: fresh projects, library development, projects where the server is started externally.
 
 **Wishlist #32:** Standalone/tools-only mode for projects without a dev server or log file.
+
+### Agent identifies 5 shell patterns TP should replace
+
+Agent listed concrete shell sequences it repeats daily:
+
+1. **force_reload in attach mode** - `touch main.py` to trigger uvicorn reload. TP's restart_server only works in start mode. Need a `force_reload` that sends SIGHUP or touches the watched file.
+2. **run_migration** - `alembic upgrade head` + read log in one call. Extends get_migration_status with an `apply` action.
+3. **verify_build** - `tsc --noEmit` + `vite build` back-to-back. A composite that runs both and reports.
+4. **Auto import check** - `bash scripts/import-check.sh` after every Python file save. Could be a hook or auto-trigger.
+5. **Migration status in get_project_health** - `alembic current` as part of the health composite.
+
+**Assessment:**
+- #1 (force_reload): Buildable, medium effort. Needs file-system write or signal sending.
+- #2 (run_migration): Low effort - wrap run_and_watch with migration-specific parsing. Already have get_migration_status.
+- #3 (verify_build): Low effort - composite of two run_and_watch calls. But adds a new tool to the already-large surface.
+- #4 (auto import check): Hook territory, not a tool. Kiro hooks could trigger this.
+- #5 (migration in health): Low effort - add get_migration_status result to get_project_health response.
