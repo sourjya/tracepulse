@@ -103,4 +103,10 @@ export const DEFAULT_PATTERNS: readonly HotReloadPattern[] = [
     pattern: /Restarting with (stat|watchdog)|Detected change in/i,
     description: "Flask dev server auto-reload",
   },
+  {
+    id: "air-reload",
+    tool: "air",
+    pattern: /building\.\.\.|running\.\.\.|has changed/i,
+    description: "Go air hot-reload dev server rebuild",
+  },
 ];

@@ -35,6 +35,7 @@ import { coverageParser } from '@/parsers/coverage-parser.js';
 import { celeryParser } from '@/parsers/celery-parser.js';
 import { sidekiqParser } from '@/parsers/sidekiq-parser.js';
 import { bullmqParser } from '@/parsers/bullmq-parser.js';
+import { pydanticParser } from '@/parsers/pydantic-parser.js';
 
 // ──────────────────────────────────────────────
 // Parser Registry Interface
@@ -99,6 +100,7 @@ export function createDefaultRegistry(): ParserRegistry {
     httpAccessLogParser,
     nodeParser,
     pythonParser,
+    pydanticParser,
     goParser,
     javaParser,
     rustParser,
