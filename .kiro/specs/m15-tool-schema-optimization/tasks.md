@@ -1,26 +1,37 @@
-# M15 Tasks
+# M15 Tasks (Updated)
 
-## Phase 1: Description Compression (Quick Win)
-- [ ] 1. Audit all 30 tool descriptions for "tool smells" (redundant phrases, verbose examples)
-- [ ] 2. Compress each description to essential info only
-- [ ] 3. Move examples from schemas to SKILL.md
-- [ ] 4. Measure before/after token count
-- [ ] 5. Tests: verify all tools still register correctly
+## Phase 1: Shared Parameters (Quick Win, 1 day)
+- [ ] 1. Extract shared Zod params (since, limit, source, service, status_code_min) to `src/constants/common-params.ts`
+- [ ] 2. Update all tool handlers to import from common-params
+- [ ] 3. Measure before/after schema token count
+- [ ] 4. Tests: verify all tools still register correctly
 
-## Phase 2: Tool Clustering
-- [ ] 6. Define 5 cluster entry tools with member lists
-- [ ] 7. Implement cluster registration in server.ts
-- [ ] 8. Each cluster tool returns member schemas on `action: "list"`
-- [ ] 9. Member tools registered lazily (only after cluster is expanded)
-- [ ] 10. Tests: verify all tools accessible via clusters
-- [ ] 11. Measure session-start token overhead (target: 83% reduction)
+## Phase 2: Description Compression (1 day)
+- [ ] 5. Audit all 30 tool descriptions for "tool smells"
+- [ ] 6. Compress each description to essential info
+- [ ] 7. Move examples from schemas to SKILL.md
+- [ ] 8. Measure token reduction per schema
 
-## Phase 3: Token Audit Extension
-- [ ] 12. Add estimated token cost tracking to audit buffer
-- [ ] 13. Add `efficiency_summary` to get_audit_trail response
-- [ ] 14. Tests for token tracking
+## Phase 3: Gateway Infrastructure (3 days)
+- [ ] 9. Port gateway.ts from ViewGraph (zero product-specific code)
+- [ ] 10. Create cluster-config.json with 7 clusters
+- [ ] 11. Add createToolProxy + registerGateways wiring to server.ts
+- [ ] 12. Add --clustered CLI flag to cli.ts
+- [ ] 13. Add TP_TOOL_MODE env var support
 
-## Phase 4: Documentation
-- [ ] 15. Update SKILL.md with cluster-based tool discovery
-- [ ] 16. Update gitbook with token efficiency metrics
-- [ ] 17. Update README with schema optimization claims
+## Phase 4: Cluster Implementation (1 week)
+- [ ] 14. Wire all 30 register calls through proxy
+- [ ] 15. Implement destructive action guard on tp_manage (confirm=true)
+- [ ] 16. Keep run_and_watch + get_requests as standalone (not clustered)
+- [ ] 17. Test: flat mode unchanged (all 30 tools)
+- [ ] 18. Test: clustered mode (9 tools visible)
+- [ ] 19. Test: gateway discovery returns sub-tool listing
+- [ ] 20. Test: gateway dispatch routes correctly
+- [ ] 21. Test: destructive guard blocks without confirm
+- [ ] 22. Test: unregistered tool in config skipped cleanly
+
+## Phase 5: Documentation (2 days)
+- [ ] 23. Update SKILL.md with clustered mode guidance
+- [ ] 24. Update gitbook with token efficiency metrics
+- [ ] 25. Update README with --clustered flag
+- [ ] 26. Add token audit to get_audit_trail response
