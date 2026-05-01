@@ -70,9 +70,35 @@ TracePulse works with any package manager - npm, pnpm, Bun, yarn. The process sp
 
 TracePulse is a Node.js tool. It requires **Node.js 22+** installed, but your project does not need to be Node.js. TracePulse runs alongside any dev server - Python, Go, Java, Rust, or anything that prints to stdout/stderr.
 
-If you don't have Node.js:
-1. [Install Node.js](https://nodejs.org/) (LTS recommended)
-2. Or install TracePulse globally: `npm install -g tracepulse`, then use `"command": "tracepulse"` instead of `"command": "npx"`
+**For non-Node projects (Python, Go, Java, Rust):** Install TracePulse globally once:
+```bash
+npm install -g tracepulse
+```
+Then use `"command": "tracepulse"` (not `"command": "npx"`):
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "python manage.py runserver"]
+    }
+  }
+}
+```
+
+**For Node.js projects:** `npx` works without global install:
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "npx",
+      "args": ["tracepulse", "start", "npm run dev"]
+    }
+  }
+}
+```
+
+If you don't have Node.js: [Install Node.js](https://nodejs.org/) (LTS recommended).
 
 ## 2. Attach mode (servers already running)
 
