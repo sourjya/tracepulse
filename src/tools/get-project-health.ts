@@ -8,11 +8,22 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
+import { existsSync } from "node:fs";
+
+/** Detect migration framework from project files. */
+function detectMigrationFramework(cwd: string): string | null {
+  if (existsSync(`${cwd}/alembic.ini`) || existsSync(`${cwd}/alembic`)) return "alembic";
+  if (existsSync(`${cwd}/prisma/schema.prisma`)) return "prisma";
+  if (existsSync(`${cwd}/manage.py`)) return "django";
+  if (existsSync(`${cwd}/knexfile.js`) || existsSync(`${cwd}/knexfile.ts`)) return "knex";
+  return null;
+}
 
 export function handleGetProjectHealth(
   buffer: EventBuffer,
   getConnected: () => boolean,
   infraMonitor: InfraMonitor | null,
+  cwd?: string,
 ): CallToolResult {
   const connected = getConnected();
   const errors = buffer.query({ level: "error" });
@@ -22,6 +33,9 @@ export function handleGetProjectHealth(
   const infraSummary = infraMonitor?.getSummary() ?? "not configured";
   const infraServices = infraMonitor?.getAll() ?? [];
   const unreachable = infraServices.filter((s) => s.current.status !== "reachable");
+
+  // Detect migration framework from project files
+  const migrationFramework = cwd ? detectMigrationFramework(cwd) : null;
 
   const issues: string[] = [];
   if (!connected) issues.push("Server is DISCONNECTED");
@@ -45,6 +59,7 @@ export function handleGetProjectHealth(
           summary: infraSummary,
           unreachable: unreachable.map((s) => ({ name: s.service.name, error: s.current.error })),
         },
+        ...(migrationFramework ? { migrations: { framework: migrationFramework, hint: `Use get_migration_status() to check pending migrations` } } : {}),
         session_started_at: buffer.sessionStartedAt,
       }),
     }],

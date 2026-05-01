@@ -639,6 +639,7 @@ export function createMcpServer(
     buffer,
     getConnected,
     options?.infraMonitor ?? null,
+    options?.cwd,
   ));
 
   const probeManager = options?.probeManager ?? createProbeManager();
