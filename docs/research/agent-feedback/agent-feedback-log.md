@@ -682,3 +682,9 @@ Agent in uai project used run_and_watch for local tests but fell back to shell f
 **Possible fix:** Allow cwd to parent directories up to a configurable depth (e.g., one level up from project root), or allow absolute paths that are within the same workspace. But this weakens the security boundary.
 
 **Current workaround:** Agent uses shell for cross-repo commands. This is acceptable - run_and_watch is for the current project, shell is for cross-project operations.
+
+### Agent correctly explains cwd restriction to user
+
+User asked "why not via MCP?" when agent used shell for cross-repo tests. Agent explained: "run_and_watch only works within the current project root. When I tried cwd pointing to beacon, it rejected it with 'cwd must be within the project root.' So I fell back to shell."
+
+**Validation:** The agent understands the security boundary and communicates it clearly. The SKILL.md guidance is working - agent knows when to use run_and_watch vs shell. This is the correct behavior: TP for current project, shell for cross-project.
