@@ -38,7 +38,7 @@ const NARRATIVE_PATTERNS: readonly NarrativePattern[] = [
       pattern_name: "python-module-not-found",
       likely_cause: `Python package '${m[1]}' is not installed in the active environment.`,
       suggestion: `Install the missing package.`,
-      command: `pip install ${m[1]}`,
+      command: `pip install ${m[1].replace(/[^a-zA-Z0-9._-]/g, "")}`,
     }),
   },
   // Node.js: Cannot find module
@@ -49,7 +49,7 @@ const NARRATIVE_PATTERNS: readonly NarrativePattern[] = [
       pattern_name: "node-module-not-found",
       likely_cause: `Node.js package '${m[1]}' is not installed or the path is wrong.`,
       suggestion: m[1].startsWith(".") ? `Check the import path - the file may not exist.` : `Install the missing package.`,
-      command: m[1].startsWith(".") ? undefined : `npm install ${m[1]}`,
+      command: m[1].startsWith(".") ? undefined : `npm install ${m[1].replace(/[^a-zA-Z0-9._@/-]/g, "")}`,
     }),
   },
   // PostgreSQL: connection refused
@@ -109,8 +109,8 @@ const NARRATIVE_PATTERNS: readonly NarrativePattern[] = [
     narrative: (m) => ({
       pattern_name: "port-in-use",
       likely_cause: `Port ${m[1] || m[2]} is already in use by another process.`,
-      suggestion: `Kill the process using port ${m[1] || m[2]} or use a different port.`,
-      command: `lsof -i :${m[1] || m[2]} | grep LISTEN`,
+      suggestion: `Kill the process using port ${(m[1] || m[2]).replace(/\D/g, "")} or use a different port.`,
+      command: `lsof -i :${(m[1] || m[2]).replace(/\D/g, "")} | grep LISTEN`,
     }),
   },
   // Permission denied
