@@ -666,3 +666,9 @@ TracePulse running in standalone mode on a Python library project with no dev se
 Agent called `get_errors(limit: 3)`, saw SprintPlanRequest NameError and GroupingError. Instead of investigating, agent recognized both as stale (server hasn't reloaded after code changes, asyncpg cache). Verified by reading the source file to confirm code is correct. Called `clear_errors` and moved on to productive work.
 
 **Pattern:** get_errors -> recognize stale -> verify code is correct (not a bug) -> clear_errors -> continue. Total: 3 tool calls, 30 seconds. Without TP, agent would have either (a) not known about the errors at all, or (b) spent 10+ minutes investigating errors that aren't bugs.
+
+### run_and_watch .venv/bin/python working + caught missing import
+
+Agent used `run_and_watch(".venv/bin/python -m pytest tests/...", cwd: "./backend")` successfully. The venv allowlist fix (v0.9.4) is working in production.
+
+TP caught: `timedelta not defined` in project_health.py - imported `date, datetime, timezone` but not `timedelta`. Real bug found via structured test output from run_and_watch.
