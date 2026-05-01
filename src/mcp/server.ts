@@ -528,6 +528,7 @@ export function createMcpServer(
       "Post-fix check: watch + build + errors in one call. Returns pass/fail verdict.",
     inputSchema: {
       duration_seconds: z.number().optional().describe("How long to watch (default 15 seconds)."),
+      fingerprint: z.string().optional().describe("Verify a specific error is resolved. Pass the fingerprint from get_errors."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
