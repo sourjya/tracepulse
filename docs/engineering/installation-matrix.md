@@ -45,7 +45,11 @@ Last updated: 2026-05-01
 ### 5. Global install not on Kiro's PATH
 **Symptom:** `"command": "tracepulse"` fails but works in terminal
 **Cause:** npm global bin dir not in Kiro's PATH
-**Fix:** Find absolute path with `which tracepulse` or `npm bin -g`, use that in config
+**Fix:** Find absolute path:
+```bash
+echo "$(npm prefix -g)/bin/tracepulse"
+```
+Use that full path in your MCP config. This works regardless of where npm installs global packages (nvm, system, custom prefix).
 
 ## Recommended Setup by Platform
 
@@ -122,8 +126,8 @@ MCP shows "connection closed: initialize response"
   ├── Does `tracepulse --version` work in terminal?
   |     ├── No -> Install: npm install -g tracepulse
   |     └── Yes -> Kiro can't find it
-  |           ├── Run: which tracepulse
-  |           └── Use absolute path in config
+  |           ├── Run: echo "$(npm prefix -g)/bin/tracepulse"
+  |           └── Use that absolute path in config
   |
   ├── Does `tracepulse standalone` work in terminal?
   |     ├── No -> Update: npm install -g tracepulse@latest
