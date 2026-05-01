@@ -19,6 +19,17 @@ interface DetectedFramework {
   readonly command: string;
 }
 
+/** Get the command to apply pending migrations for a framework. */
+function getApplyCommand(framework: string): string {
+  const commands: Record<string, string> = {
+    alembic: "alembic upgrade head",
+    prisma: "npx prisma migrate deploy",
+    django: "python manage.py migrate",
+    knex: "npx knex migrate:latest",
+  };
+  return commands[framework] ?? `Unknown framework: ${framework}`;
+}
+
 /**
  * Detect migration framework from project files in cwd.
  *
@@ -109,6 +120,7 @@ export function handleGetMigrationStatus(
   runAndWatch?: (command: string) => Promise<string>,
 ): CallToolResult | Promise<CallToolResult> {
   const requestedFramework = args.framework as string | undefined;
+  const apply = args.apply === true;
 
   // Detect or use specified framework
   let framework: DetectedFramework | null;
@@ -143,21 +155,26 @@ export function handleGetMigrationStatus(
 
   // If no runAndWatch provided, return the command to run
   if (!runAndWatch) {
+    const cmd = apply ? getApplyCommand(framework.name) : framework.command;
     return {
       content: [{ type: "text", text: JSON.stringify({
         framework: framework.name,
-        command: framework.command,
-        suggestion: `Run: run_and_watch("${framework.command}") to check migration status`,
+        command: cmd,
+        suggestion: `Run: run_and_watch("${cmd}")`,
       }) }],
     };
   }
 
-  // Execute and parse
-  return runAndWatch(framework.command).then((output) => {
-    const parsed = parseMigrationOutput(framework!.name, output);
+  // Execute: either check status or apply migrations
+  const cmd = apply ? getApplyCommand(framework.name) : framework.command;
+  return runAndWatch(cmd).then((output) => {
+    const parsed = apply
+      ? { status: "applied", raw_output: output.slice(0, 500) }
+      : parseMigrationOutput(framework!.name, output);
     return {
       content: [{ type: "text", text: JSON.stringify({
         framework: framework!.name,
+        action: apply ? "apply" : "status",
         ...parsed,
       }) }],
     };

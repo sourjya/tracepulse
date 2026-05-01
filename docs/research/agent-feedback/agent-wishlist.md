@@ -39,7 +39,7 @@ Last updated: 2026-04-29
 | 31 | Auto-escalate unacknowledged errors (occurrence grows, agent never investigates) | 🔲 Roadmap |
 | 32 | Standalone/tools-only mode (no dev server or log file required) | ✅ Shipped |
 | 33 | force_reload in attach mode (touch file or SIGHUP) | 🔲 Buildable now |
-| 34 | run_migration (alembic upgrade + parse + touch for reload) | 🔲 Buildable now |
+| 34 | run_migration (alembic upgrade + parse + touch for reload) | ✅ Shipped (apply param on get_migration_status) |
 | 35 | Migration status in get_project_health response | ✅ Shipped |
 | 36 | verify_build composite (tsc + vite build + verify_fix in one call) | ✅ Shipped |
 | 37 | Stale error auto-suppress (same fingerprints, pre-existing, auto-clear) | 🔲 Roadmap - extends error lifecycle |

@@ -386,13 +386,14 @@ export function createMcpServer(
   server.registerTool("get_migration_status", {
     title: "Get Migration Status",
     description:
-      "Check database migration status. Auto-detects framework (alembic, prisma, django, knex) from project files. Returns pending count and run command.",
+      "Check or apply database migrations. Auto-detects alembic/prisma/django/knex. Pass apply=true to run pending migrations.",
     inputSchema: {
       framework: z.string().optional().describe("Migration framework: alembic, prisma, django, knex. Auto-detected if omitted."),
+      apply: z.boolean().optional().describe("Set true to apply pending migrations (runs upgrade/migrate command)."),
     },
     annotations: {
-      readOnlyHint: true,
-      destructiveHint: false,
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
     },
