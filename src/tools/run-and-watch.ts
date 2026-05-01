@@ -18,6 +18,45 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { redact } from "@/pipeline/secret-redactor.js";
 import { normalizeEvent, normalizeRawLine } from "@/pipeline/event-normalizer.js";
 import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
+import { existsSync } from "node:fs";
+
+/**
+ * Generate a diagnostic hint when a command fails.
+ * Detects missing tools and suggests installation steps.
+ *
+ * @param command - The command that failed.
+ * @param exitCode - The exit code (127 = not found).
+ * @param cwd - Working directory the command ran in.
+ * @returns Diagnostic string, or undefined if no hint available.
+ */
+function diagnoseFailure(command: string, exitCode: number | null, cwd?: string): string | undefined {
+  const dir = cwd ?? process.cwd();
+  const cmdLower = command.toLowerCase();
+
+  // Command not found (exit 127) or Python import errors
+  if (exitCode === 127 || cmdLower.includes("pytest") || cmdLower.includes("python")) {
+    const hasVenv = existsSync(resolvePath(dir, ".venv"));
+    const hasPyproject = existsSync(resolvePath(dir, "pyproject.toml"));
+    const hasRequirements = existsSync(resolvePath(dir, "requirements.txt"));
+    const isPython = hasPyproject || hasRequirements;
+
+    if (isPython && !hasVenv) {
+      return "Python project detected but no .venv/ found. Create one: python -m venv .venv && .venv/bin/pip install -e '.[dev]'";
+    }
+    if (isPython && hasVenv && cmdLower.includes("pytest")) {
+      return "pytest not found on system PATH. Use the venv binary directly: run_and_watch('.venv/bin/pytest tests/')";
+    }
+    if (isPython && hasVenv) {
+      return "Command failed. Try using the venv binary: .venv/bin/python -m <module>";
+    }
+  }
+
+  if (exitCode === 127) {
+    return `Command not found. Verify it is installed and on PATH.`;
+  }
+
+  return undefined;
+}
 
 /** Default allowed command prefixes. Only these can be executed. */
 const DEFAULT_ALLOWED_PREFIXES = [
@@ -139,6 +178,10 @@ export async function handleRunAndWatch(
             summary: exitCode === 0
               ? `Command succeeded in ${Date.now() - startTime}ms, ${errors.length} warnings`
               : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
+            ...(exitCode !== 0 ? (() => {
+              const hint = diagnoseFailure(command!, exitCode, process.cwd());
+              return hint ? { diagnostic: hint } : {};
+            })() : {}),
           }),
         }],
       });
