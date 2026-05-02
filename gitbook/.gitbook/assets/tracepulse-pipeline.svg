@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="pipeBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#f1f5f9"/></linearGradient>
+  </defs>
+
+  <rect width="960" height="540" rx="16" fill="url(#pipeBg)" stroke="#e2e8f0"/>
+  <text x="480" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">The TracePulse Pipeline</text>
+  <text x="480" y="52" text-anchor="middle" font-size="12" fill="#64748b">Every line your dev server prints goes through these stages</text>
+
+  <!-- Stage 1: Raw Input -->
+  <rect x="30" y="80" width="120" height="80" rx="10" fill="#334155" stroke="#475569"/>
+  <text x="90" y="105" text-anchor="middle" font-size="20">📥</text>
+  <text x="90" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="#f8fafc">Raw Output</text>
+  <text x="90" y="140" text-anchor="middle" font-size="8" fill="#94a3b8">stdout / stderr</text>
+
+  <!-- Arrow -->
+  <text x="165" y="125" text-anchor="middle" font-size="16" fill="#94a3b8">-></text>
+
+  <!-- Stage 2: ANSI Strip -->
+  <rect x="180" y="80" width="120" height="80" rx="10" fill="#7c3aed" opacity="0.9"/>
+  <text x="240" y="105" text-anchor="middle" font-size="20">🎨</text>
+  <text x="240" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">ANSI Strip</text>
+  <text x="240" y="140" text-anchor="middle" font-size="8" fill="#ddd6fe">Remove colors</text>
+
+  <text x="315" y="125" text-anchor="middle" font-size="16" fill="#94a3b8">-></text>
+
+  <!-- Stage 3: Secret Redact -->
+  <rect x="330" y="80" width="120" height="80" rx="10" fill="#dc2626" opacity="0.9"/>
+  <text x="390" y="105" text-anchor="middle" font-size="20">🔒</text>
+  <text x="390" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Redact Secrets</text>
+  <text x="390" y="140" text-anchor="middle" font-size="8" fill="#fecaca">16 patterns</text>
+
+  <text x="465" y="125" text-anchor="middle" font-size="16" fill="#94a3b8">-></text>
+
+  <!-- Stage 4: Hot-Reload -->
+  <rect x="480" y="80" width="120" height="80" rx="10" fill="#ea580c" opacity="0.9"/>
+  <text x="540" y="105" text-anchor="middle" font-size="20">🔄</text>
+  <text x="540" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Hot-Reload</text>
+  <text x="540" y="140" text-anchor="middle" font-size="8" fill="#fed7aa">12 frameworks</text>
+
+  <text x="615" y="125" text-anchor="middle" font-size="16" fill="#94a3b8">-></text>
+
+  <!-- Stage 5: Accumulate -->
+  <rect x="630" y="80" width="120" height="80" rx="10" fill="#0891b2" opacity="0.9"/>
+  <text x="690" y="105" text-anchor="middle" font-size="20">📋</text>
+  <text x="690" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Accumulate</text>
+  <text x="690" y="140" text-anchor="middle" font-size="8" fill="#a5f3fc">Join tracebacks</text>
+
+  <text x="765" y="125" text-anchor="middle" font-size="16" fill="#94a3b8">-></text>
+
+  <!-- Stage 6: Parse -->
+  <rect x="780" y="80" width="150" height="80" rx="10" fill="#16a34a" opacity="0.9"/>
+  <text x="855" y="105" text-anchor="middle" font-size="20">🔍</text>
+  <text x="855" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Parse (26 parsers)</text>
+  <text x="855" y="140" text-anchor="middle" font-size="8" fill="#bbf7d0">First match wins</text>
+
+  <!-- Row 2 arrow down -->
+  <text x="855" y="185" text-anchor="middle" font-size="16" fill="#94a3b8">v</text>
+
+  <!-- Row 2: Right to Left -->
+
+  <!-- Stage 7: Normalize -->
+  <rect x="780" y="200" width="150" height="80" rx="10" fill="#2563eb" opacity="0.9"/>
+  <text x="855" y="225" text-anchor="middle" font-size="20">📐</text>
+  <text x="855" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="white">Normalize</text>
+  <text x="855" y="260" text-anchor="middle" font-size="8" fill="#bfdbfe">Truncate, structure</text>
+
+  <text x="765" y="245" text-anchor="middle" font-size="16" fill="#94a3b8">&lt;-</text>
+
+  <!-- Stage 8: Score -->
+  <rect x="630" y="200" width="120" height="80" rx="10" fill="#d97706" opacity="0.9"/>
+  <text x="690" y="225" text-anchor="middle" font-size="20">⚡</text>
+  <text x="690" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="white">Signal Score</text>
+  <text x="690" y="260" text-anchor="middle" font-size="8" fill="#fef3c7">0-100 importance</text>
+
+  <text x="615" y="245" text-anchor="middle" font-size="16" fill="#94a3b8">&lt;-</text>
+
+  <!-- Stage 9: Fingerprint -->
+  <rect x="480" y="200" width="120" height="80" rx="10" fill="#7c3aed" opacity="0.9"/>
+  <text x="540" y="225" text-anchor="middle" font-size="20">🔑</text>
+  <text x="540" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="white">Fingerprint</text>
+  <text x="540" y="260" text-anchor="middle" font-size="8" fill="#ddd6fe">SHA-256 dedup</text>
+
+  <text x="465" y="245" text-anchor="middle" font-size="16" fill="#94a3b8">&lt;-</text>
+
+  <!-- Stage 10: Ring Buffer -->
+  <rect x="330" y="200" width="120" height="80" rx="10" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+  <text x="390" y="225" text-anchor="middle" font-size="20">💾</text>
+  <text x="390" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="#f8fafc">Ring Buffer</text>
+  <text x="390" y="260" text-anchor="middle" font-size="8" fill="#94a3b8">500 events, FIFO</text>
+
+  <text x="315" y="245" text-anchor="middle" font-size="16" fill="#94a3b8">&lt;-</text>
+
+  <!-- Stage 11: Crash Loop -->
+  <rect x="180" y="200" width="120" height="80" rx="10" fill="#dc2626" opacity="0.8"/>
+  <text x="240" y="225" text-anchor="middle" font-size="20">🚨</text>
+  <text x="240" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="white">Crash Loop</text>
+  <text x="240" y="260" text-anchor="middle" font-size="8" fill="#fecaca">3+ restarts = alert</text>
+
+  <text x="165" y="245" text-anchor="middle" font-size="16" fill="#94a3b8">&lt;-</text>
+
+  <!-- Output: MCP Tools -->
+  <rect x="30" y="200" width="120" height="80" rx="10" fill="#16a34a" stroke="#22c55e" stroke-width="2"/>
+  <text x="90" y="225" text-anchor="middle" font-size="20">🛠️</text>
+  <text x="90" y="245" text-anchor="middle" font-size="10" font-weight="600" fill="white">36 MCP Tools</text>
+  <text x="90" y="260" text-anchor="middle" font-size="8" fill="#bbf7d0">Agent calls these</text>
+
+  <!-- Bottom: Token savings summary -->
+  <rect x="30" y="310" width="900" height="80" rx="10" fill="white" stroke="#e2e8f0"/>
+  <text x="480" y="335" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">What the pipeline does for token savings</text>
+
+  <text x="120" y="360" text-anchor="middle" font-size="10" fill="#64748b">Secrets removed</text>
+  <text x="120" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">before agent sees them</text>
+
+  <text x="320" y="360" text-anchor="middle" font-size="10" fill="#64748b">26 parsers extract</text>
+  <text x="320" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">file:line:error_type</text>
+
+  <text x="520" y="360" text-anchor="middle" font-size="10" fill="#64748b">Signal scoring ranks</text>
+  <text x="520" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#d97706">most important first</text>
+
+  <text x="720" y="360" text-anchor="middle" font-size="10" fill="#64748b">Fingerprint dedup</text>
+  <text x="720" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">42 occurrences = 1 event</text>
+
+  <!-- Result line -->
+  <rect x="30" y="410" width="900" height="36" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="480" y="433" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">Result: ~1,000 structured tokens instead of ~12,000 raw log tokens. 12x reduction per error.</text>
+
+  <!-- Pipeline speed -->
+  <text x="480" y="470" text-anchor="middle" font-size="11" fill="#94a3b8">Pipeline throughput: 37,475 lines/sec | Parser registry: 92,375 lines/sec | Query latency: 0.10ms</text>
+</svg>
