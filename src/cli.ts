@@ -517,6 +517,7 @@ async function main(): Promise<void> {
     restartFn,
     infraMonitor,
     errorLifecycle,
+    clustered: process.argv.includes("--clustered") || process.env.TP_TOOL_MODE === "clustered",
   });
   const transport = new StdioServerTransport();
 

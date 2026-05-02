@@ -252,6 +252,7 @@ export function createMcpServer(
     auditBuffer?: AuditBuffer;
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
+    clustered?: boolean;
   },
 ): McpServer {
   const server = new McpServer({
@@ -680,6 +681,11 @@ export function createMcpServer(
       "List all registered health probes with their latest results (pass/fail/error).",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleListProbes(probeManager));
+
+  // Log clustered mode status
+  if (options?.clustered) {
+    process.stderr.write("[tracepulse] Clustered mode: 7 gateway tools available alongside individual tools\n");
+  }
 
   return server;
 }

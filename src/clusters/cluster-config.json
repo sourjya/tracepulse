@@ -1,0 +1,39 @@
+{
+  "clusters": [
+    {
+      "gateway": "tp_health",
+      "description": "Runtime and project health checks. Use first to establish baseline status.",
+      "tools": ["get_runtime_status", "get_health_summary", "get_project_health"]
+    },
+    {
+      "gateway": "tp_triage",
+      "description": "Error discovery and trend analysis. Use when errors are mentioned or suspected.",
+      "tools": ["get_errors", "get_build_errors", "get_new_errors", "get_error_trends"]
+    },
+    {
+      "gateway": "tp_watch",
+      "description": "Post-fix verification and event waiting. Use after a code change is applied.",
+      "tools": ["verify_fix", "verify_build", "watch_for_errors", "wait_for_build", "wait_for_event"]
+    },
+    {
+      "gateway": "tp_investigate",
+      "description": "Deep error context, timelines, and server logs. Load after triage identifies a target.",
+      "tools": ["get_error_context", "get_timeline", "get_server_logs", "get_error_clusters"]
+    },
+    {
+      "gateway": "tp_correlate",
+      "description": "Cross-reference errors with diffs, clusters, and correlated signals.",
+      "tools": ["correlate_with_diff", "get_correlated_errors", "check_drift"]
+    },
+    {
+      "gateway": "tp_infra",
+      "description": "Infrastructure status, service discovery, and port checks.",
+      "tools": ["get_infra_status", "get_infra_detail", "check_port", "list_services"]
+    },
+    {
+      "gateway": "tp_manage",
+      "description": "Management operations: clearing errors, restarts, audit trail, migrations, baselines.",
+      "tools": ["clear_errors", "restart_server", "get_audit_trail", "get_session_insights", "get_migration_status", "get_perf_baseline", "register_probe", "list_probes"]
+    }
+  ]
+}
