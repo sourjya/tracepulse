@@ -32,6 +32,8 @@ TracePulse is a runtime feedback MCP server that watches dev server stdout/stder
 
 **Measured impact:**
 - 12x token reduction per error (12,000 tokens down to 1,000)
+- Additional 21,000+ tokens/session saved via acknowledged errors, loop detection, and response compression
+- Environmental tracking: tokens saved -> energy (Wh) -> CO2 (g) per session
 - 15-30 minutes saved per debugging session
 - 3 real production bugs caught per session that agents would have missed
 - 92% fewer tokens consumed per debugging loop
