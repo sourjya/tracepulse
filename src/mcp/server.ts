@@ -563,7 +563,7 @@ export function createMcpServer(
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
-      "Run a command, parse output through 26 parsers, return structured pass/fail results.",
+      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters.",
     inputSchema: {
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),

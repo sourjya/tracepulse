@@ -706,3 +706,14 @@ Even after TP connected, agent ran `npx vitest run` and `npx tsc --noEmit` via s
 - Quick-start should detect project type and suggest the right mode (standalone for libraries, start for servers)
 - SKILL.md should lead with "use run_and_watch, not shell" more aggressively
 - Consider: should TracePulse auto-detect "no dev script" and fall back to standalone instead of crashing?
+
+### Agent defaults to shell despite SKILL.md guidance (Piktor project)
+
+Another instance: agent ran `npx vitest run` and `npx tsc --noEmit` via shell instead of run_and_watch. When prompted, correctly explained the distinction but admitted it should have used run_and_watch.
+
+**Root cause:** Agent training data has thousands of shell examples, few run_and_watch examples. SKILL.md guidance competes with training priors. The agent eventually self-corrects but wastes several calls first.
+
+**Possible mitigations:**
+1. Make SKILL.md guidance more aggressive: "NEVER use shell for test/build commands. ALWAYS use run_and_watch."
+2. Add run_and_watch examples to the tool description itself (not just SKILL.md)
+3. The Kiro PostToolUse hook (M13 #1) could intercept shell calls to test/build commands and suggest run_and_watch instead

@@ -41,7 +41,7 @@ Use the right level of verification for the situation:
 
 **Tier 1.5 is critical for frontend changes.** `tsc --noEmit` cannot trace runtime scope through lazy-loaded component boundaries. A variable that exists in the file but isn't in scope at runtime will pass tsc but crash the page. Navigate to the affected page and check console errors before calling verify_fix.
 
-**Prefer `run_and_watch` over shell for tests and builds.** It parses output through TracePulse's test runner parsers and returns structured pass/fail counts:
+**ALWAYS use `run_and_watch` instead of shell for tests, builds, and linters.** Shell returns raw text you must parse. `run_and_watch` returns structured JSON with pass/fail counts, error details, and file:line references. It also works reliably on WSL where shell output capture breaks.
 ```
 run_and_watch("pytest tests/unit/")     -> { passed: 554, failed: 0, warnings: 11 }
 run_and_watch("npx vitest run")         -> { passed: 120, failed: 0 }
