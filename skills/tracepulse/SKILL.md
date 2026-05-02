@@ -195,6 +195,7 @@ When a frontend page shows errors and you suspect a backend cause:
 | `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 tokens |
 | `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 tokens |
 | `get_audit_trail(limit?, since?)` | Review your own tool usage this session. Optimize your workflow. | ~500 tokens |
+| `get_bug_patterns()` | Cross-session patterns: recurring bugs, velocity, chains, flaky, regressions. Includes token cost. | ~500 tokens |
 
 ### Execution
 
@@ -377,6 +378,8 @@ When the developer asks these questions, use these TracePulse tools:
 | "How many tokens did we save?" | `get_session_impact()` |
 | "What did I miss?" | `get_session_insights()` |
 | "Session summary" | `get_session_summary()` |
+| "Any recurring bugs?" | `get_bug_patterns()` |
+| "What patterns do you see?" | `get_bug_patterns()` |
 
 ### Management
 | Developer asks | You call |

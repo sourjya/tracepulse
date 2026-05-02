@@ -34,6 +34,7 @@
 * [Infrastructure Awareness](features/infra-awareness.md)
 * [Frontend-Backend Correlation](features/correlation.md)
 * [Fingerprint Persistence](features/persistence.md)
+* [Bug Pattern Detection](features/bug-patterns.md)
 * [Agent Skills](features/skills.md)
 * [Security](features/security.md)
 

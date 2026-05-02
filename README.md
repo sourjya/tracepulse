@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [36 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [874 tests](tests/) passing.
+🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [37 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [874 tests](tests/) passing.
 
 ## Quick Start
 
@@ -170,6 +170,7 @@ Point directly to the built CLI:
 | Tool | Description | Tokens |
 |------|-------------|--------|
 | `get_error_clusters(min_count?)` | Group errors by type + module path. See patterns across the codebase. | ~500 |
+| `get_bug_patterns()` | Cross-session patterns: recurring, velocity, chains, flaky, regressions. Includes token cost. | ~500 |
 | `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 |
 | `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 |
 | `get_audit_trail(limit?, since?)` | Review tool usage this session. Optimize your workflow. | ~500 |
