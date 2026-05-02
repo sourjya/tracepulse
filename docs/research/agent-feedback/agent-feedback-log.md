@@ -725,3 +725,24 @@ After the "ALWAYS use run_and_watch" SKILL.md update, the Piktor agent is now us
 2. `run_and_watch("npx tsc -p packages/core/tsconfig.json")` caught unused import
 
 Agent's response: "TP caught it" - acknowledging the tool's value. The stronger SKILL.md language is working.
+
+### Piktor session report - 11 hours, 70+ TP calls, library project
+
+Agent provided a detailed TP usage summary for a TypeScript library monorepo (no dev server):
+
+**Usage:** ~40 run_and_watch for tests, ~15 for tsc, ~10 get_project_health, ~5 get_errors. 70+ total calls.
+
+**What TP caught:**
+- Unused imports across 8 files (TS6196)
+- number|undefined type errors in 3 files (TS2345/TS2532)
+- pptxgenjs v4 type incompatibilities
+- Test assertion failures with exact expected vs actual values
+
+**What TP couldn't help with (library, no server):**
+- No runtime error monitoring
+- No HTTP request tracking
+- verify_build/verify_fix expect a dev server
+
+**Key insight:** "The main TP value was run_and_watch replacing raw shell commands - it parsed vitest and tsc output into structured errors with fingerprints, file paths, and signal scores."
+
+**Validation:** TracePulse provides significant value even in standalone mode on library projects. The 70+ calls over 11 hours shows it's being used as the primary feedback mechanism, not just an occasional check. The run_and_watch -> fix -> run_and_watch loop is the core workflow.
