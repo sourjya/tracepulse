@@ -35,7 +35,7 @@ describe("Flat mode (default)", () => {
     const buffer = createRingBuffer();
     const server = createMcpServer(buffer, () => true);
     const tools = getVisibleTools(server);
-    expect(tools.length).toBe(36);
+    expect(tools.length).toBe(37);
     expect(tools).toContain("get_errors");
     expect(tools).toContain("run_and_watch");
     expect(tools).toContain("get_requests");
@@ -207,7 +207,7 @@ describe("Cluster config integrity", () => {
     const clustered = config.clusters.flatMap(c => [...c.tools]);
     const standalone = config.standalone ?? [];
     const total = clustered.length + standalone.length;
-    expect(total).toBe(36);
+    expect(total).toBe(37);
   });
 
   it("has no duplicate tool assignments", () => {

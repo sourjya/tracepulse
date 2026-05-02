@@ -26,6 +26,8 @@ import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
+import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
+import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
@@ -263,6 +265,7 @@ export function createMcpServer(
     auditBuffer?: AuditBuffer;
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
+    patternAnalyzer?: PatternAnalyzer;
     clustered?: boolean;
   },
 ): McpServer {
@@ -721,6 +724,17 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleListProbes(probeManager));
 
+
+  // ── Bug Pattern Detection (M20) ──
+
+  server.registerTool("get_bug_patterns", {
+    title: "Get Bug Patterns",
+    description:
+      "Analyze cross-session error patterns: recurring bugs, velocity changes, error chains, flaky errors, regressions. Requires persistence (default).",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => options?.patternAnalyzer
+    ? handleGetBugPatterns(options.patternAnalyzer)
+    : errorResult("get_bug_patterns requires persistence (enabled by default). Was --no-persist used?"));
   // ── Clustered Mode: Gateway Proxy Wiring ──
   // In clustered mode, copy all tool handlers into a registry for gateway dispatch,
   // then remove clustered tools from the MCP server and replace with 7 gateways.

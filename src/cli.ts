@@ -33,6 +33,8 @@ import { createServiceRegistry } from "@/services/service-registry.js";
 import { createFrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import { createFingerprintHistory } from "@/persistence/fingerprint-history.js";
 import { loadFingerprints, saveFingerprints } from "@/persistence/fingerprint-store.js";
+import { saveSession, loadSessionHistory } from "@/persistence/session-store.js";
+import { createPatternAnalyzer, type PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { createMultiProcessCollector } from "@/collectors/multi-process-collector.js";
 import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
@@ -81,8 +83,13 @@ interface StandaloneArgs {
   readonly persist?: boolean;
 }
 
+/** Parsed CLI arguments for the analyze subcommand. */
+interface AnalyzeArgs {
+  readonly command: "analyze";
+}
+
 /** Union of all valid parsed argument shapes. */
-export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs;
+export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs;
 
 // ──────────────────────────────────────────────
 // Usage Text
@@ -95,6 +102,7 @@ Usage:
   tracepulse start <command>          Spawn a dev server and monitor its output
   tracepulse attach --log-file <path> Tail an existing log file
   tracepulse standalone               Tools only - no dev server or log file needed
+  tracepulse analyze                  Analyze cross-session bug patterns
   tracepulse --version                Print version
   tracepulse --help                   Print this help
 
@@ -210,6 +218,10 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
   if (subcommand === "standalone") {
     const persist = !args.includes("--no-persist");
     return { command: "standalone", persist };
+  }
+
+  if (subcommand === "analyze") {
+    return { command: "analyze" };
   }
 
   if (subcommand === "compose") {
@@ -341,6 +353,63 @@ async function main(): Promise<void> {
     return process.exit(0);
   }
 
+  if (parsed.command === "analyze") {
+    // Load fingerprint history and run pattern analysis
+    const entries = loadFingerprints(FINGERPRINT_PERSISTENCE_PATH);
+    if (entries.length === 0) {
+      process.stderr.write("No fingerprint history found. Run TracePulse with persistence (default) first.\n");
+      return process.exit(1);
+    }
+    const { createPatternAnalyzer } = await import("@/analysis/pattern-analyzer.js");
+    const { loadSessionHistory } = await import("@/persistence/session-store.js");
+    const sessions = loadSessionHistory();
+    const analyzer = createPatternAnalyzer();
+    analyzer.loadSessions(sessions);
+    const analysis = analyzer.analyze();
+
+    process.stderr.write(`\nTracePulse Bug Pattern Analysis\n${"=".repeat(32)}\n\n`);
+    if (analysis.recurring.length) {
+      process.stderr.write(`RECURRING (${analysis.recurring.length} bug(s) across 3+ sessions):\n`);
+      for (const r of analysis.recurring) {
+        process.stderr.write(`  - ${r.fingerprint.slice(0, 12)}... (${r.sessions} sessions, ${r.total_occurrences} occurrences)\n`);
+      }
+      process.stderr.write("\n");
+    }
+    if (analysis.velocity.length) {
+      process.stderr.write(`VELOCITY (${analysis.velocity.length} bug(s) getting worse):\n`);
+      for (const v of analysis.velocity) {
+        process.stderr.write(`  - ${v.fingerprint.slice(0, 12)}... (${v.rate_change})\n`);
+      }
+      process.stderr.write("\n");
+    }
+    if (analysis.chains.length) {
+      process.stderr.write(`CHAINS (${analysis.chains.length} correlated group(s)):\n`);
+      for (const c of analysis.chains) {
+        process.stderr.write(`  - ${c.primary.slice(0, 12)}... triggers ${c.secondary.length} other error(s)\n`);
+      }
+      process.stderr.write("\n");
+    }
+    if (analysis.flaky.length) {
+      process.stderr.write(`FLAKY (${analysis.flaky.length} intermittent error(s)):\n`);
+      for (const f of analysis.flaky) {
+        process.stderr.write(`  - ${f.fingerprint.slice(0, 12)}... (${Math.round(f.presence_rate * 100)}% of sessions)\n`);
+      }
+      process.stderr.write("\n");
+    }
+    if (analysis.fixed_but_back.length) {
+      process.stderr.write(`FIXED BUT BACK (${analysis.fixed_but_back.length} regression(s)):\n`);
+      for (const fb of analysis.fixed_but_back) {
+        process.stderr.write(`  - ${fb.fingerprint.slice(0, 12)}... (was clean for ${fb.clean_sessions} sessions)\n`);
+      }
+      process.stderr.write("\n");
+    }
+    if (analysis.degradation?.trend === "increasing") {
+      process.stderr.write(`DEGRADATION: ${analysis.degradation.rate}\n\n`);
+    }
+    process.stderr.write(`Summary: ${analysis.summary}\n`);
+    return process.exit(0);
+  }
+
   // ── Global error handlers ──
   // Prevent unhandled errors from silently crashing the MCP server.
   // Log to stderr and attempt graceful shutdown.
@@ -385,13 +454,22 @@ async function main(): Promise<void> {
       errorLifecycle.recordFileChange();
     }
   });
-  const persistEnabled = (parsed.command === "start" && parsed.persist) || (parsed.command === "standalone" && parsed.persist);
+  const persistEnabled = (parsed.command === "start" && parsed.persist) || (parsed.command === "standalone" && parsed.persist) || (parsed.command === "compose" && parsed.persist);
 
   // Load fingerprint history if persistence is enabled
+  let patternAnalyzer: PatternAnalyzer | undefined;
   if (persistEnabled) {
     const entries = loadFingerprints(FINGERPRINT_PERSISTENCE_PATH);
     fingerprintHistory.loadEntries(entries);
     process.stderr.write(`[tracepulse] Loaded ${entries.length} fingerprints from disk\n`);
+
+    // Load session history for pattern analysis
+    patternAnalyzer = createPatternAnalyzer();
+    const sessions = loadSessionHistory();
+    patternAnalyzer.loadSessions(sessions);
+    if (sessions.length > 0) {
+      process.stderr.write(`[tracepulse] Loaded ${sessions.length} session(s) for pattern analysis\n`);
+    }
   }
 
   // Validate environment variables against .env.example
@@ -521,6 +599,7 @@ async function main(): Promise<void> {
     restartFn,
     infraMonitor,
     errorLifecycle,
+    patternAnalyzer,
     clustered: process.argv.includes("--clustered") || process.env.TP_TOOL_MODE === "clustered",
   });
   const transport = new StdioServerTransport();
@@ -536,7 +615,18 @@ async function main(): Promise<void> {
     infraMonitor.stop();
     if (persistEnabled) {
       saveFingerprints(FINGERPRINT_PERSISTENCE_PATH, fingerprintHistory.exportEntries());
-      process.stderr.write("[tracepulse] Fingerprints saved to disk\n");
+      // Save current session's fingerprints for pattern analysis
+      const sessionFingerprints = buffer.query({})
+        .filter((e: { level: string }) => e.level === "error" || e.level === "warn")
+        .map((e: { fingerprint: string }) => e.fingerprint);
+      if (sessionFingerprints.length > 0) {
+        saveSession({
+          session_id: `ses_${Math.floor(Date.now() / 1000)}`,
+          timestamp: Date.now(),
+          fingerprints: [...new Set(sessionFingerprints)],
+        });
+      }
+      process.stderr.write("[tracepulse] Fingerprints and session saved to disk\n");
     }
     await collector.stop();
     await server.close();

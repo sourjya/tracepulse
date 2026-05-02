@@ -36,7 +36,8 @@
       "tools": [
         "clear_errors", "acknowledge_error", "restart_server",
         "get_audit_trail", "get_session_insights", "get_session_impact", "get_session_summary",
-        "get_migration_status", "get_perf_baseline", "register_probe", "list_probes"
+        "get_migration_status", "get_perf_baseline", "register_probe", "list_probes",
+        "get_bug_patterns"
       ]
     }
   ],
