@@ -717,3 +717,11 @@ Another instance: agent ran `npx vitest run` and `npx tsc --noEmit` via shell in
 1. Make SKILL.md guidance more aggressive: "NEVER use shell for test/build commands. ALWAYS use run_and_watch."
 2. Add run_and_watch examples to the tool description itself (not just SKILL.md)
 3. The Kiro PostToolUse hook (M13 #1) could intercept shell calls to test/build commands and suggest run_and_watch instead
+
+### run_and_watch adopted on Piktor - catching real build issues
+
+After the "ALWAYS use run_and_watch" SKILL.md update, the Piktor agent is now using it consistently:
+1. `run_and_watch("npx vitest run tests/...")` caught missing package export (dist/ not built)
+2. `run_and_watch("npx tsc -p packages/core/tsconfig.json")` caught unused import
+
+Agent's response: "TP caught it" - acknowledging the tool's value. The stronger SKILL.md language is working.
