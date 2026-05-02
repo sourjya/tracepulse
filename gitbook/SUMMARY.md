@@ -22,6 +22,7 @@
 * [Audit All API Endpoints](tutorials/audit-endpoints.md)
 * [Cloud Log Monitoring](tutorials/cloud-logs.md)
 * [TracePulse in Action (Real Examples)](tutorials/tracepulse-in-action.md)
+* [Project Audit](tutorials/project-audit.md)
 
 ## Features
 
