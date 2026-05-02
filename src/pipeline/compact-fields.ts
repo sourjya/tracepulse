@@ -24,7 +24,7 @@ export interface CompactEvent {
   readonly msg: string;
   readonly fp: string;
   readonly ss: number;
-  readonly ctx: Record<string, unknown>;
+  readonly ctx: unknown;
   readonly oc: number;
 }
 
