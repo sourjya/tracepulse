@@ -26,7 +26,7 @@ import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
-import { loadClusterConfig, createToolRegistry } from "@/clusters/gateway.js";
+import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
 import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
@@ -721,16 +721,56 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleListProbes(probeManager));
 
-  // Log clustered mode status
+  // ── Clustered Mode: Gateway Proxy Wiring ──
+  // In clustered mode, copy all tool handlers into a registry for gateway dispatch,
+  // then remove clustered tools from the MCP server and replace with 7 gateways.
+  // Standalone tools (run_and_watch, get_requests) stay on the server directly.
   if (options?.clustered) {
     const clusterConfig = loadClusterConfig();
     const toolRegistry = createToolRegistry();
 
-    // Capture all registered tool handlers into the registry
-    // by re-registering them (they're already on the server, but we need them in the registry for dispatch)
-    // For now, log the mode - full proxy wiring requires refactoring registerTool calls
-    process.stderr.write(`[tracepulse] Clustered mode: ${clusterConfig.clusters.length} gateway clusters configured\n`);
-    process.stderr.write(`[tracepulse] Note: clustered mode infrastructure ready. Full proxy wiring in next release.\n`);
+    // Access internal tool storage to populate the registry and remove clustered tools.
+    // _registeredTools is a plain object { [name]: RegisteredTool } in the MCP SDK.
+    const internal = server as unknown as {
+      _registeredTools: Record<string, {
+        description?: string;
+        inputSchema?: Record<string, unknown>;
+        handler: (args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>;
+        remove: () => void;
+      }>;
+    };
+
+    // Copy all tool handlers into the registry for gateway dispatch
+    for (const [name, tool] of Object.entries(internal._registeredTools)) {
+      toolRegistry.register(name, {
+        description: tool.description ?? name,
+        inputSchema: tool.inputSchema ?? {},
+      }, tool.handler);
+    }
+
+    // Remove clustered tools from the MCP server (standalone tools stay)
+    const standaloneSet = new Set(clusterConfig.standalone ?? []);
+    const clusteredToolNames = new Set(clusterConfig.clusters.flatMap(c => [...c.tools]));
+
+    for (const name of clusteredToolNames) {
+      internal._registeredTools[name]?.remove();
+    }
+
+    // Register 7 gateway tools on the MCP server
+    for (const cluster of clusterConfig.clusters) {
+      server.registerTool(cluster.gateway, {
+        title: cluster.gateway,
+        description: cluster.description,
+        inputSchema: {
+          action: z.string().optional().describe("Sub-tool to invoke. Omit to list available tools in this gateway."),
+          confirm: z.boolean().optional().describe("Required for destructive actions (clear_errors, restart_server)."),
+        },
+        annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      }, (args) => createGatewayHandler(cluster, toolRegistry)(args as Record<string, unknown>));
+    }
+
+    const totalClustered = clusterConfig.clusters.reduce((n, c) => n + c.tools.length, 0);
+    process.stderr.write(`[tracepulse] Clustered mode: ${clusterConfig.clusters.length} gateways (${totalClustered} tools) + ${standaloneSet.size} standalone\n`);
   }
 
   return server;

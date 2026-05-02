@@ -32,8 +32,13 @@
     },
     {
       "gateway": "tp_manage",
-      "description": "Management operations: clearing errors, restarts, audit trail, migrations, baselines.",
-      "tools": ["clear_errors", "restart_server", "get_audit_trail", "get_session_insights", "get_migration_status", "get_perf_baseline", "register_probe", "list_probes"]
+      "description": "Session management, error lifecycle, audit trail, migrations, and probes.",
+      "tools": [
+        "clear_errors", "acknowledge_error", "restart_server",
+        "get_audit_trail", "get_session_insights", "get_session_impact", "get_session_summary",
+        "get_migration_status", "get_perf_baseline", "register_probe", "list_probes"
+      ]
     }
-  ]
+  ],
+  "standalone": ["run_and_watch", "get_requests"]
 }

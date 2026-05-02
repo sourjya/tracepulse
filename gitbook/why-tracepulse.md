@@ -125,7 +125,7 @@ TracePulse saves agents 90%+ of tokens on error investigation. But we noticed ou
 
 <figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 36 tools to 7 gateways, 80% fewer tokens" width="960"></figure>
 
-So we're fixing it. TracePulse's clustered mode (shipping soon) will collapse 36 tools into 7 semantic gateways. Schema overhead drops from ~1,000 to ~200 tokens per turn. The agent discovers sub-tools on demand - only loading what it actually needs.
+So we fixed it. TracePulse's clustered mode (`--clustered`) collapses 36 tools into 7 semantic gateways. Schema overhead drops from ~1,000 to ~200 tokens per turn. The agent discovers sub-tools on demand - only loading what it actually needs.
 
 **The math:**
 - Before: 36 schemas x ~28 tokens each = ~1,000 tokens/turn x 25 turns = 25,000 tokens/session

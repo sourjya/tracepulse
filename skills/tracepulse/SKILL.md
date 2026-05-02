@@ -287,6 +287,11 @@ Start cheap, drill down only when needed:
 
 Don't call `get_timeline` or `get_server_logs` unless you need the full picture. `get_project_health` -> `get_errors` covers 90% of cases.
 
+### Clustered mode (`--clustered`)
+When TracePulse runs with `--clustered`, 36 tools collapse into 7 gateways + 2 standalone. Call a gateway without `action` to discover its sub-tools, then call with `action: "tool_name"` to dispatch. Destructive tools (`clear_errors`, `restart_server`) require `confirm: true`.
+
+Gateways: `tp_health`, `tp_triage`, `tp_watch`, `tp_investigate`, `tp_correlate`, `tp_infra`, `tp_manage`. Standalone: `run_and_watch`, `get_requests`.
+
 ## Pro Tips
 
 ### Checkpoint before context compaction

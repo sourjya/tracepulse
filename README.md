@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-860%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-874%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [36 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [860 tests](tests/) passing.
+🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [36 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [874 tests](tests/) passing.
 
 ## Quick Start
 
@@ -256,7 +256,12 @@ Discovers services from a Docker Compose file and tails their container logs via
 # With persistence (saves fingerprints across sessions)
 tracepulse start --persist "npm run dev"
 ```
-Saves error fingerprints to `.tracepulse/fingerprints.json` on shutdown, loads them on startup. Enables `get_new_errors()` (only unseen fingerprints) and `get_error_trends()` (cross-session history).
+
+```bash
+# Clustered mode (7 gateways instead of 36 tools - 80% schema reduction)
+tracepulse start --clustered "npm run dev"
+```
+Collapses 36 tools into 7 semantic gateways. The agent discovers sub-tools on demand, loading only what it needs. Schema overhead drops from ~1,000 to ~200 tokens per turn.
 
 ```bash
 # With HTTP transport (for multi-client scenarios)

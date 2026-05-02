@@ -7,11 +7,11 @@
   <rect width="960" height="540" rx="16" fill="#fafafa" stroke="#e5e7eb"/>
 
   <text x="480" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#111">We Practice What We Preach</text>
-  <text x="480" y="56" text-anchor="middle" font-size="13" fill="#6b7280">TracePulse is cutting its own schema overhead by 80% (shipping soon)</text>
+  <text x="480" y="56" text-anchor="middle" font-size="13" fill="#6b7280">TracePulse cut its own schema overhead by 80%</text>
 
   <!-- LEFT CARD -->
   <rect x="25" y="75" width="420" height="440" rx="12" fill="url(#beforeBg)" stroke="#fca5a5" stroke-width="1.5"/>
-  <text x="235" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626">Today: 36 Individual Tools</text>
+  <text x="235" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626">Before: 36 Individual Tools</text>
 
   <!-- Row 1 - with names -->
   <rect x="45" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
@@ -74,7 +74,7 @@
 
   <!-- RIGHT CARD -->
   <rect x="515" y="75" width="420" height="440" rx="12" fill="url(#afterBg)" stroke="#86efac" stroke-width="1.5"/>
-  <text x="725" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a">Planned: 7 Smart Gateways</text>
+  <text x="725" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a">After: 7 Smart Gateways</text>
 
   <!-- Gateway boxes -->
   <rect x="535" y="118" width="185" height="44" rx="8" fill="#16a34a" opacity="0.9"/>

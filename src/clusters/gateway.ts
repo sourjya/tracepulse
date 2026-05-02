@@ -32,6 +32,7 @@ export interface ClusterDef {
 /** Full cluster configuration. */
 export interface ClusterConfig {
   readonly clusters: readonly ClusterDef[];
+  readonly standalone?: readonly string[];
 }
 
 /** A registered tool entry in the registry. */
