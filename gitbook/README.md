@@ -81,17 +81,19 @@ TracePulse pre-parses, scores, and deduplicates. The agent gets the exact file:l
 
 ## Real-World Results
 
-From 3 agent sessions on a production project:
+From live agent sessions across 4 projects (full-stack web app, TypeScript library, Python backend, shared libraries):
 
 | Metric | Value |
 |--------|-------|
-| Total tool invocations | 70+ |
-| Most used tool | get_build_errors (23x) |
-| Manual vite builds replaced | 15+ |
-| Time saved (build checks) | 20+ minutes |
-| Real bugs caught | 3 |
-| Feature request to bug catch | Same day |
-| Agent wishlist items shipped | [15/20 (75%)](https://github.com/sourjya/tracepulse/blob/main/docs/research/agent-feedback/agent-wishlist.md) |
+| Token reduction per error | 12x (measured) |
+| Chokepoints caught by TP | 7/8 (88%) |
+| Avg attempts before fix | 1.5 (structured file:line) |
+| Tool calls per session | 40-70 |
+| Schema overhead reduction | 80% (clustered mode) |
+| Agent wishlist items shipped | 24/38 (63%) |
+| Real bugs caught per session | 3 |
+
+<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 36 tools to 7 gateways" width="960"></figure>
 
 ---
 
