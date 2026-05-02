@@ -6,7 +6,7 @@ Technical designs for expanding how TracePulse collects log data. Ordered by imp
 
 ## 1. Multi-File Attach Mode
 
-**Priority: HIGH - solves the #1 agent pain point (Acme App)**
+**Priority: HIGH - solves the #1 agent pain point (Nexus)**
 **Effort: Low (30 min)**
 **Depends on: existing LogFileTailer + ServiceRegistry**
 

@@ -8,7 +8,7 @@
 
 ## 1. Baseline: What the Agent Data Actually Shows
 
-Before chasing new features, the real evidence base is your own sessions. Here is what three Kiro sessions on Acme App tell you, cleanly distilled.
+Before chasing new features, the real evidence base is your own sessions. Here is what three Kiro sessions on Nexus tell you, cleanly distilled.
 
 ### 1.1 Where TracePulse Already Wins
 
@@ -223,7 +223,7 @@ Organized by impact tier, grouped by capability area. Each entry states what it 
 
 **What:** Cross-reference TypeScript interface definitions with actual API response shapes observed in log output. Surface "schema drift: API returns `items[]` but code expects `{items, total}`."
 
-**Why:** The Acme App session 2 "saved views API" bug was exactly this shape mismatch - invisible to every tool, debugged manually. Detecting this class of bug automatically would be a genuine differentiator. Start simple: flag when an endpoint returns a different shape than the last N responses.
+**Why:** The Nexus session 2 "saved views API" bug was exactly this shape mismatch - invisible to every tool, debugged manually. Detecting this class of bug automatically would be a genuine differentiator. Start simple: flag when an endpoint returns a different shape than the last N responses.
 
 **Effort:** High. TypeScript AST parsing or OpenAPI spec reading + response shape inference.
 

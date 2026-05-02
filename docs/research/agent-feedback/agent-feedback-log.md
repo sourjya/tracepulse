@@ -4,7 +4,7 @@ Real-world feedback from AI coding agents using TracePulse. Used to prioritize i
 
 ---
 
-## 2026-04-28 - Kiro CLI agent on Acme App project
+## 2026-04-28 - Kiro CLI agent on Nexus project
 
 **Setup:** Attach mode, tailing Python backend log file. Kiro CLI with Chrome DevTools MCP and ViewGraph also active.
 
@@ -68,7 +68,7 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 ---
 
-## 2026-04-28 (session 2) - Kiro CLI agent on Acme App project
+## 2026-04-28 (session 2) - Kiro CLI agent on Nexus project
 
 **Setup:** Attach mode, tailing Python backend log file. Vite frontend running as separate process.
 
@@ -170,7 +170,7 @@ Agent initially put TracePulse config in `.kiro/mcp.json` instead of `.kiro/sett
 
 ### Session Report - Full Day Usage (2026-04-28 evening)
 
-The agent produced a comprehensive session report after ~35 tool invocations across a full day of Acme App development.
+The agent produced a comprehensive session report after ~35 tool invocations across a full day of Nexus development.
 
 **Usage stats:** `get_build_errors` ~15x, `watch_for_errors` ~8x, `get_errors` ~5x, `get_runtime_status` ~3x, `get_server_logs` ~2x, `get_new_errors` ~1x, `get_error_trends` 0x, `get_error_context` 0x.
 
@@ -421,7 +421,7 @@ Agent's analysis:
 
 ### Agent hung on interactive psql password prompt
 
-Agent ran `psql -U postgres -d planiq -c "SELECT..."` via shell. psql prompted for password interactively, blocking the session. User had to intervene.
+Agent ran `psql -U postgres -d nexus -c "SELECT..."` via shell. psql prompted for password interactively, blocking the session. User had to intervene.
 
 **Root cause:** Agent didn't use DATABASE_URL from .env. Tried bare psql which requires interactive auth.
 
@@ -689,7 +689,7 @@ User asked "why not via MCP?" when agent used shell for cross-repo tests. Agent 
 
 **Validation:** The agent understands the security boundary and communicates it clearly. The SKILL.md guidance is working - agent knows when to use run_and_watch vs shell. This is the correct behavior: TP for current project, shell for cross-project.
 
-### Fresh project install friction - 3 issues from Piktor project
+### Fresh project install friction - 3 issues from Prism project
 
 Real user (different machine, different project) hit all the installation edge cases:
 
@@ -707,7 +707,7 @@ Even after TP connected, agent ran `npx vitest run` and `npx tsc --noEmit` via s
 - SKILL.md should lead with "use run_and_watch, not shell" more aggressively
 - Consider: should TracePulse auto-detect "no dev script" and fall back to standalone instead of crashing?
 
-### Agent defaults to shell despite SKILL.md guidance (Piktor project)
+### Agent defaults to shell despite SKILL.md guidance (Prism project)
 
 Another instance: agent ran `npx vitest run` and `npx tsc --noEmit` via shell instead of run_and_watch. When prompted, correctly explained the distinction but admitted it should have used run_and_watch.
 
@@ -718,15 +718,15 @@ Another instance: agent ran `npx vitest run` and `npx tsc --noEmit` via shell in
 2. Add run_and_watch examples to the tool description itself (not just SKILL.md)
 3. The Kiro PostToolUse hook (M13 #1) could intercept shell calls to test/build commands and suggest run_and_watch instead
 
-### run_and_watch adopted on Piktor - catching real build issues
+### run_and_watch adopted on Prism - catching real build issues
 
-After the "ALWAYS use run_and_watch" SKILL.md update, the Piktor agent is now using it consistently:
+After the "ALWAYS use run_and_watch" SKILL.md update, the Prism agent is now using it consistently:
 1. `run_and_watch("npx vitest run tests/...")` caught missing package export (dist/ not built)
 2. `run_and_watch("npx tsc -p packages/core/tsconfig.json")` caught unused import
 
 Agent's response: "TP caught it" - acknowledging the tool's value. The stronger SKILL.md language is working.
 
-### Piktor session report - 11 hours, 70+ TP calls, library project
+### Prism session report - 11 hours, 70+ TP calls, library project
 
 Agent provided a detailed TP usage summary for a TypeScript library monorepo (no dev server):
 
@@ -747,13 +747,13 @@ Agent provided a detailed TP usage summary for a TypeScript library monorepo (no
 
 **Validation:** TracePulse provides significant value even in standalone mode on library projects. The 70+ calls over 11 hours shows it's being used as the primary feedback mechanism, not just an occasional check. The run_and_watch -> fix -> run_and_watch loop is the core workflow.
 
-### Piktor agent detailed effectiveness assessment + 7 wishlist items
+### Prism agent detailed effectiveness assessment + 7 wishlist items
 
 **What worked:** run_and_watch saved ~200 tokens/call, get_project_health saved 3 calls, signal scoring helped prioritize. ~3,000-5,000 tokens saved across 60 calls.
 
 **What fell short:** No structured test counts (pass/fail), no file-scoped error filtering, verify_build/verify_fix expect dev server, correlate_with_diff doesn't work for libraries.
 
-**New wishlist items from Piktor:**
+**New wishlist items from Prism:**
 - W1: Structured test results (pass/fail counts as top-level fields) - PARTIALLY BUILT (summary parsing exists but not surfaced cleanly)
 - W2: File-scoped error check (get_errors_by_file) - NEW, high value
 - W3: Test-specific output (individual test names/statuses) - NEW, medium value
@@ -764,7 +764,7 @@ Agent provided a detailed TP usage summary for a TypeScript library monorepo (no
 
 **Key quote:** "Not transformative, but consistently useful. The biggest value was speed - structured errors meant I could fix on first attempt more often."
 
-### Piktor chokepoint log - 8 blockers, TP helped on 7/8
+### Prism chokepoint log - 8 blockers, TP helped on 7/8
 
 Detailed chokepoint analysis from M1-M10 build session:
 

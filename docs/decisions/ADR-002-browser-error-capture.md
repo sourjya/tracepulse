@@ -31,7 +31,7 @@
 
 ## What the agent built (and why we rejected it)
 
-The agent independently built a custom ErrorBoundary bridge in the Acme App project:
+The agent independently built a custom ErrorBoundary bridge in the Nexus project:
 - Frontend: ErrorBoundary `componentDidCatch` POSTs to `/api/v1/frontend-error`
 - Backend: New endpoint logs via structlog
 - TP: Picks up the structlog output from stdout

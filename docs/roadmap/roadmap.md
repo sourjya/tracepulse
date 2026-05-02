@@ -100,7 +100,7 @@ Python is the #1 growth language. Go is TIOBE's fastest climber. pnpm/Bun are re
 
 ## M7: Agent-Driven Enhancements
 
-Features driven by real agent feedback (Acme App) and competitive research (CyberAgent, BrowserTools, Sentry).
+Features driven by real agent feedback (Nexus) and competitive research (CyberAgent, BrowserTools, Sentry).
 
 **Spec:** [`.kiro/specs/m7-agent-enhancements/`](../../.kiro/specs/m7-agent-enhancements/)
 - [requirements.md](../../.kiro/specs/m7-agent-enhancements/requirements.md) - 10 user stories
@@ -172,7 +172,7 @@ All 13 findings from CRR-001 (2026-04-30) resolved in v0.9.2.
 
 ## Post-v1.0 - Agent-Driven Improvements
 
-Items identified from real agent feedback during Acme App testing.
+Items identified from real agent feedback during Nexus testing.
 See `docs/feedback/feature-request-analysis-session3.md` for full analysis of session 3 requests.
 
 ### Quick Wins (pre-v1.0 candidates)

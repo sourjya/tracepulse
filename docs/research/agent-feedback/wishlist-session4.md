@@ -1,7 +1,7 @@
 # Agent Wishlist - Session 4 (Deep Feedback)
 
 Date: 2026-04-29
-Agent: Kiro CLI on Acme App
+Agent: Kiro CLI on Nexus
 Context: Agent was asked "any other TP wishlists?" and gave structured feedback across 6 themes.
 
 ---
