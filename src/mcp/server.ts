@@ -24,6 +24,7 @@ import { handleGetMigrationStatus } from "@/tools/get-migration-status.js";
 import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
 import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
+import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
 import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
@@ -450,6 +451,13 @@ export function createMcpServer(
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleCheckDrift({ cwd: options?.cwd ?? process.cwd() }));
+
+  server.registerTool("get_session_impact", {
+    title: "Get Session Impact",
+    description: "Environmental report: tokens saved, energy saved (Wh), CO2 saved (g). Shows the impact of using TracePulse this session.",
+    inputSchema: {},
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetSessionImpact(auditBuffer));
 
   server.registerTool("get_perf_baseline", {
     title: "Get Performance Baseline",
