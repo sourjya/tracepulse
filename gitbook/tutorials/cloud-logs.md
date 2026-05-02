@@ -22,7 +22,6 @@ All cloud CLIs stream logs to stdout. TracePulse's `run_and_watch` captures that
 
 ## Requirements
 
-- The cloud CLI must be installed and authenticated on your machine
-- TracePulse parses the output with the same 20 parsers used for local dev servers
-
-See the full [Cloud Logs Skill](https://github.com/sourjya/tracepulse/blob/main/skills/cloud-logs/SKILL.md) for detailed commands per platform.
+- The cloud CLI must be installed and authenticated on your machine ([install links](https://chaoslabz.gitbook.io/tracepulse/getting-started/quick-start#prerequisites))
+- TracePulse parses the output with the same 26 parsers used for local dev servers
+- A Python traceback from AWS Lambda is parsed the same way as one from your local server

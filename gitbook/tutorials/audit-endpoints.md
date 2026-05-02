@@ -1,12 +1,10 @@
 # Audit All API Endpoints
 
-Systematically verify every API endpoint is healthy. Inspired by CyberAgent's automated Storybook audit.
+Systematically verify every API endpoint is healthy. Instead of manually testing each route, let the agent work through them and report which ones have errors.
 
-## The Pattern
+## How It Works
 
-1. Find all routes in the project
-2. For each endpoint: make a request, check for errors
-3. Report clean vs erroring endpoints
+The agent finds your route definitions, makes a request to each endpoint, and checks TracePulse for backend errors after each request. The result is a clean/error report for every endpoint in your project.
 
 ## Example Prompt
 
