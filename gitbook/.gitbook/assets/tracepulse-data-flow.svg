@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="800" height="480" rx="12" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="400" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#111">Data Flow: Debugging "The export page is broken"</text>
+
+  <!-- Participants -->
+  <rect x="30" y="45" width="80" height="30" rx="6" fill="#e5e7eb"/><text x="70" y="65" text-anchor="middle" font-size="11" font-weight="600">User</text>
+  <rect x="180" y="45" width="100" height="30" rx="6" fill="#333"/><text x="230" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="white">AI Agent</text>
+  <rect x="370" y="45" width="100" height="30" rx="6" fill="#ff7733"/><text x="420" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="white">TracePulse</text>
+  <rect x="560" y="45" width="110" height="30" rx="6" fill="#4488ee"/><text x="615" y="65" text-anchor="middle" font-size="11" font-weight="600" fill="white">DevTools MCP</text>
+
+  <!-- Lifelines -->
+  <line x1="70" y1="75" x2="70" y2="450" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="230" y1="75" x2="230" y2="450" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="420" y1="75" x2="420" y2="450" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="615" y1="75" x2="615" y2="450" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
+
+  <!-- Step 1: User -> Agent -->
+  <line x1="70" y1="100" x2="225" y2="100" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="148" y="95" text-anchor="middle" font-size="10" fill="#333">"The export page is broken"</text>
+
+  <!-- Step 2: Agent -> TP -->
+  <line x1="235" y1="130" x2="415" y2="130" stroke="#ff7733" stroke-width="1.5"/>
+  <text x="325" y="125" text-anchor="middle" font-size="10" fill="#ff7733">get_errors(message_contains: "/export")</text>
+  <line x1="415" y1="150" x2="235" y2="150" stroke="#ff7733" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="325" y="165" text-anchor="middle" font-size="10" font-weight="600" fill="#ff7733">500 error at export.py:42 (score 95)</text>
+
+  <!-- Step 3: Agent -> CDT -->
+  <line x1="235" y1="190" x2="610" y2="190" stroke="#4488ee" stroke-width="1.5"/>
+  <text x="420" y="185" text-anchor="middle" font-size="10" fill="#4488ee">list_network_requests()</text>
+  <line x1="610" y1="210" x2="235" y2="210" stroke="#4488ee" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="420" y="225" text-anchor="middle" font-size="10" fill="#4488ee">POST /api/export -> 500</text>
+
+  <!-- Step 4: Agent -> CDT detail -->
+  <line x1="235" y1="250" x2="610" y2="250" stroke="#4488ee" stroke-width="1.5"/>
+  <text x="420" y="245" text-anchor="middle" font-size="10" fill="#4488ee">get_network_request(reqid)</text>
+  <line x1="610" y1="270" x2="235" y2="270" stroke="#4488ee" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="420" y="285" text-anchor="middle" font-size="10" fill="#4488ee">{"detail": "Project not found"}</text>
+
+  <!-- Step 5: Agent fixes -->
+  <rect x="190" y="300" width="80" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="230" y="316" text-anchor="middle" font-size="10" font-weight="600" fill="#16a34a">Fix code</text>
+
+  <!-- Step 6: Agent -> TP verify -->
+  <line x1="235" y1="340" x2="415" y2="340" stroke="#ff7733" stroke-width="1.5"/>
+  <text x="325" y="335" text-anchor="middle" font-size="10" fill="#ff7733">verify_fix(fingerprint, 5)</text>
+  <line x1="415" y1="360" x2="235" y2="360" stroke="#ff7733" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="325" y="375" text-anchor="middle" font-size="10" font-weight="600" fill="#16a34a">PASS - target error resolved</text>
+
+  <!-- Step 7: Agent -> CDT reload -->
+  <line x1="235" y1="395" x2="610" y2="395" stroke="#4488ee" stroke-width="1.5"/>
+  <text x="420" y="390" text-anchor="middle" font-size="10" fill="#4488ee">navigate_page(reload) + wait_for("Export complete")</text>
+  <line x1="610" y1="415" x2="235" y2="415" stroke="#4488ee" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="420" y="430" text-anchor="middle" font-size="10" fill="#4488ee">Page loaded correctly</text>
+
+  <!-- Step 8: Agent -> User -->
+  <line x1="225" y1="445" x2="75" y2="445" stroke="#333" stroke-width="1.5"/>
+  <text x="148" y="440" text-anchor="middle" font-size="10" font-weight="600" fill="#333">"Fixed. The export works now."</text>
+
+  <!-- Token callout -->
+  <rect x="640" y="120" width="140" height="50" rx="6" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="710" y="140" text-anchor="middle" font-size="10" font-weight="600" fill="#9a3412">TracePulse:</text>
+  <text x="710" y="155" text-anchor="middle" font-size="9" fill="#9a3412">~1,000 tokens total</text>
+  <text x="710" y="165" text-anchor="middle" font-size="9" fill="#9a3412">(vs ~12,000 manual)</text>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="tpGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff9966"/><stop offset="100%" stop-color="#ff7733"/></linearGradient>
+    <linearGradient id="cdtGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#66aaff"/><stop offset="100%" stop-color="#4488ee"/></linearGradient>
+    <linearGradient id="vgGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#66ff99"/><stop offset="100%" stop-color="#44dd77"/></linearGradient>
+  </defs>
+
+  <rect width="720" height="520" rx="12" fill="#fafafa" stroke="#e5e7eb"/>
+
+  <text x="360" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#111">When to Use Which Tool</text>
+
+  <!-- Start -->
+  <rect x="270" y="50" width="180" height="36" rx="18" fill="#333"/>
+  <text x="360" y="73" text-anchor="middle" font-size="13" font-weight="600" fill="white">Something broke</text>
+
+  <!-- Q1 -->
+  <line x1="360" y1="86" x2="360" y2="110" stroke="#666" stroke-width="1.5"/>
+  <rect x="240" y="110" width="240" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="360" y="133" text-anchor="middle" font-size="12" fill="#333">Backend error? (crash, 500, traceback)</text>
+
+  <!-- Yes -> TP -->
+  <line x1="480" y1="128" x2="580" y2="128" stroke="#666" stroke-width="1.5"/>
+  <text x="510" y="122" font-size="10" fill="#16a34a" font-weight="600">Yes</text>
+  <rect x="560" y="110" width="140" height="36" rx="6" fill="url(#tpGrad)"/>
+  <text x="630" y="128" text-anchor="middle" font-size="11" font-weight="600" fill="white">TracePulse</text>
+  <text x="630" y="141" text-anchor="middle" font-size="9" fill="white">get_errors()</text>
+
+  <!-- No -> Q2 -->
+  <line x1="360" y1="146" x2="360" y2="180" stroke="#666" stroke-width="1.5"/>
+  <text x="370" y="168" font-size="10" fill="#dc2626" font-weight="600">No</text>
+  <rect x="240" y="180" width="240" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="360" y="203" text-anchor="middle" font-size="12" fill="#333">Browser error? (console, network)</text>
+
+  <!-- Yes -> CDT -->
+  <line x1="480" y1="198" x2="580" y2="198" stroke="#666" stroke-width="1.5"/>
+  <text x="510" y="192" font-size="10" fill="#16a34a" font-weight="600">Yes</text>
+  <rect x="560" y="180" width="140" height="36" rx="6" fill="url(#cdtGrad)"/>
+  <text x="630" y="198" text-anchor="middle" font-size="11" font-weight="600" fill="white">DevTools MCP</text>
+  <text x="630" y="211" text-anchor="middle" font-size="9" fill="white">list_console_messages()</text>
+
+  <!-- No -> Q3 -->
+  <line x1="360" y1="216" x2="360" y2="250" stroke="#666" stroke-width="1.5"/>
+  <text x="370" y="238" font-size="10" fill="#dc2626" font-weight="600">No</text>
+  <rect x="240" y="250" width="240" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="360" y="273" text-anchor="middle" font-size="12" fill="#333">Visual bug? (layout, styling)</text>
+
+  <!-- Yes -> VG -->
+  <line x1="480" y1="268" x2="580" y2="268" stroke="#666" stroke-width="1.5"/>
+  <text x="510" y="262" font-size="10" fill="#16a34a" font-weight="600">Yes</text>
+  <rect x="560" y="250" width="140" height="36" rx="6" fill="url(#vgGrad)"/>
+  <text x="630" y="268" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">ViewGraph</text>
+  <text x="630" y="281" text-anchor="middle" font-size="9" fill="#14532d">get_capture()</text>
+
+  <!-- Verify section -->
+  <line x1="360" y1="286" x2="360" y2="320" stroke="#666" stroke-width="1.5"/>
+  <rect x="260" y="320" width="200" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="360" y="343" text-anchor="middle" font-size="12" fill="#333">Need to verify fix?</text>
+
+  <!-- Three verify options -->
+  <line x1="260" y1="356" x2="120" y2="390" stroke="#666" stroke-width="1.5"/>
+  <line x1="360" y1="356" x2="360" y2="390" stroke="#666" stroke-width="1.5"/>
+  <line x1="460" y1="356" x2="600" y2="390" stroke="#666" stroke-width="1.5"/>
+
+  <rect x="30" y="390" width="180" height="44" rx="6" fill="url(#tpGrad)"/>
+  <text x="120" y="410" text-anchor="middle" font-size="11" font-weight="600" fill="white">TracePulse</text>
+  <text x="120" y="425" text-anchor="middle" font-size="9" fill="white">verify_fix(fingerprint)</text>
+
+  <rect x="270" y="390" width="180" height="44" rx="6" fill="url(#cdtGrad)"/>
+  <text x="360" y="410" text-anchor="middle" font-size="11" font-weight="600" fill="white">DevTools MCP</text>
+  <text x="360" y="425" text-anchor="middle" font-size="9" fill="white">take_snapshot()</text>
+
+  <rect x="510" y="390" width="180" height="44" rx="6" fill="url(#vgGrad)"/>
+  <text x="600" y="410" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">ViewGraph</text>
+  <text x="600" y="425" text-anchor="middle" font-size="9" fill="#14532d">compare_captures()</text>
+
+  <text x="120" y="455" text-anchor="middle" font-size="9" fill="#666">Backend</text>
+  <text x="360" y="455" text-anchor="middle" font-size="9" fill="#666">Browser</text>
+  <text x="600" y="455" text-anchor="middle" font-size="9" fill="#666">Visual</text>
+
+  <!-- Token savings callout -->
+  <rect x="30" y="475" width="660" height="30" rx="6" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="360" y="495" text-anchor="middle" font-size="11" fill="#9a3412">TracePulse: 12x fewer tokens per error. DevTools + ViewGraph: structured data instead of screenshots.</text>
+</svg>
