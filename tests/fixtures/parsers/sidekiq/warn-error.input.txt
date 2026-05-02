@@ -1,0 +1,1 @@
+WARN: MyWorker::SendEmail JID-abc123def456 Error: connection refused
