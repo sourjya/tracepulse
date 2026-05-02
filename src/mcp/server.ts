@@ -28,6 +28,7 @@ import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
+import { annotateWithPatterns } from "@/analysis/pattern-injector.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
@@ -100,6 +101,7 @@ export function handleGetErrors(
   buffer: EventBuffer,
   args: Record<string, unknown>,
   errorLifecycle?: ErrorLifecycle,
+  patternAnalyzer?: PatternAnalyzer,
 ): CallToolResult {
   const validation = validateEventFilters(args);
   if (!validation.valid) {
@@ -139,11 +141,16 @@ export function handleGetErrors(
   const correlated = correlateEvents(limited, CORRELATION_WINDOW_MS);
   correlated.sort((a, b) => b.signal_score - a.signal_score);
 
+  // Annotate with cross-session patterns if analyzer available (M20)
+  const annotated = patternAnalyzer
+    ? annotateWithPatterns(correlated, patternAnalyzer)
+    : correlated;
+
   // Inject loop warning if detected (W1.6)
   const loopWarning = args._auditBuffer ? (args._auditBuffer as AuditBuffer).detectLoop() : null;
 
   return jsonResult(addEmptyDiagnostics("get_errors", {
-    errors: correlated,
+    errors: annotated,
     total_matching: unacknowledged.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
@@ -296,7 +303,7 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle));
+  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer));
 
   server.registerTool("get_server_logs", {
     title: "Get Server Logs",
@@ -697,6 +704,7 @@ export function createMcpServer(
     getConnected,
     options?.infraMonitor ?? null,
     options?.cwd,
+    options?.patternAnalyzer,
   ));
 
   const probeManager = options?.probeManager ?? createProbeManager();

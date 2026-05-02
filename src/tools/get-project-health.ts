@@ -8,6 +8,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
+import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { existsSync } from "node:fs";
 
 /** Detect migration framework from project files. */
@@ -24,6 +25,7 @@ export function handleGetProjectHealth(
   getConnected: () => boolean,
   infraMonitor: InfraMonitor | null,
   cwd?: string,
+  patternAnalyzer?: PatternAnalyzer,
 ): CallToolResult {
   const connected = getConnected();
   const errors = buffer.query({ level: "error" });
@@ -60,6 +62,11 @@ export function handleGetProjectHealth(
           unreachable: unreachable.map((s) => ({ name: s.service.name, error: s.current.error })),
         },
         ...(migrationFramework ? { migrations: { framework: migrationFramework, hint: `Use get_migration_status() to check pending migrations` } } : {}),
+        ...(patternAnalyzer ? (() => {
+          const analysis = patternAnalyzer.analyze();
+          const count = analysis.recurring.length + analysis.velocity.length + analysis.chains.length + analysis.flaky.length + analysis.fixed_but_back.length;
+          return count > 0 ? { pattern_alert: `${count} bug pattern(s) detected. Call get_bug_patterns() for details.` } : {};
+        })() : {}),
         session_started_at: buffer.sessionStartedAt,
       }),
     }],
