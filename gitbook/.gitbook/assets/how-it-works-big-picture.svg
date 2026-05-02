@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="serverGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#fde68a"/></linearGradient>
+    <linearGradient id="tpGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbeafe"/><stop offset="100%" stop-color="#93c5fd"/></linearGradient>
+    <linearGradient id="agentGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d1fae5"/><stop offset="100%" stop-color="#6ee7b7"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+  </defs>
+
+  <rect width="800" height="280" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <!-- Outer box label -->
+  <rect x="20" y="15" width="760" height="250" rx="10" fill="none" stroke="#cbd5e1" stroke-dasharray="6,3"/>
+  <text x="40" y="35" font-size="12" fill="#94a3b8" font-weight="600">YOUR MACHINE</text>
+
+  <!-- Dev Server -->
+  <rect x="50" y="65" width="190" height="160" rx="12" fill="url(#serverGrad)" stroke="#f59e0b" filter="url(#shadow)"/>
+  <text x="145" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">Dev Server</text>
+  <text x="145" y="125" text-anchor="middle" font-size="11" fill="#a16207">npm run dev</text>
+  <text x="145" y="142" text-anchor="middle" font-size="11" fill="#a16207">python manage.py</text>
+  <text x="145" y="159" text-anchor="middle" font-size="11" fill="#a16207">go run main.go</text>
+  <text x="145" y="176" text-anchor="middle" font-size="11" fill="#a16207">cargo run</text>
+  <text x="145" y="210" text-anchor="middle" font-size="10" fill="#b45309">Outputs to stdout/stderr</text>
+
+  <!-- Arrow: Server -> TP -->
+  <line x1="245" y1="130" x2="290" y2="130" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowAmber)"/>
+  <text x="267" y="120" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">stdout</text>
+  <text x="267" y="148" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">stderr</text>
+  <defs><marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#f59e0b"/></marker></defs>
+
+  <!-- TracePulse -->
+  <rect x="295" y="55" width="210" height="180" rx="12" fill="url(#tpGrad)" stroke="#3b82f6" filter="url(#shadow)"/>
+  <text x="400" y="85" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">TracePulse</text>
+  <text x="400" y="105" text-anchor="middle" font-size="11" fill="#1d4ed8">MCP Server</text>
+  <line x1="320" y1="115" x2="480" y2="115" stroke="#60a5fa" opacity="0.5"/>
+  <text x="400" y="135" text-anchor="middle" font-size="11" fill="#1e40af">26 parsers</text>
+  <text x="400" y="152" text-anchor="middle" font-size="11" fill="#1e40af">Signal scoring (0-100)</text>
+  <text x="400" y="169" text-anchor="middle" font-size="11" fill="#1e40af">Secret redaction</text>
+  <text x="400" y="186" text-anchor="middle" font-size="11" fill="#1e40af">Ring buffer (500 events)</text>
+  <text x="400" y="222" text-anchor="middle" font-size="10" fill="#2563eb">36 MCP tools</text>
+
+  <!-- Arrow: TP -> Agent -->
+  <line x1="510" y1="120" x2="555" y2="120" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <text x="532" y="112" text-anchor="middle" font-size="9" fill="#1e40af" font-weight="600">MCP</text>
+  <text x="532" y="136" text-anchor="middle" font-size="9" fill="#1e40af" font-weight="600">JSON-RPC</text>
+  <defs><marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#3b82f6"/></marker></defs>
+
+  <!-- Arrow: Agent -> TP (tool calls) -->
+  <line x1="555" y1="170" x2="510" y2="170" stroke="#16a34a" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowGreen)"/>
+  <text x="532" y="162" text-anchor="middle" font-size="9" fill="#166534" font-weight="600">Tool calls</text>
+  <defs><marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#16a34a"/></marker></defs>
+
+  <!-- AI Agent -->
+  <rect x="560" y="65" width="200" height="160" rx="12" fill="url(#agentGrad)" stroke="#16a34a" filter="url(#shadow)"/>
+  <text x="660" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#14532d">AI Coding Agent</text>
+  <text x="660" y="125" text-anchor="middle" font-size="11" fill="#166534">Kiro / Claude Code</text>
+  <text x="660" y="142" text-anchor="middle" font-size="11" fill="#166534">Cursor / Copilot</text>
+  <text x="660" y="159" text-anchor="middle" font-size="11" fill="#166534">Windsurf / Cline</text>
+  <line x1="585" y1="172" x2="735" y2="172" stroke="#6ee7b7" opacity="0.5"/>
+  <text x="660" y="192" text-anchor="middle" font-size="11" fill="#166534" font-style="italic">get_errors()</text>
+  <text x="660" y="209" text-anchor="middle" font-size="11" fill="#166534" font-style="italic">verify_fix()</text>
+</svg>

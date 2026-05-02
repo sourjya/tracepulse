@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="mStartBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#eff6ff"/><stop offset="100%" stop-color="#dbeafe"/></linearGradient>
+    <linearGradient id="mAttachBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fefce8"/><stop offset="100%" stop-color="#fef9c3"/></linearGradient>
+    <filter id="mShadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+    <marker id="mArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#64748b"/></marker>
+    <marker id="mArrowB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#3b82f6"/></marker>
+    <marker id="mArrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ca8a04"/></marker>
+  </defs>
+
+  <rect width="800" height="300" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <!-- START MODE -->
+  <rect x="20" y="15" width="370" height="270" rx="10" fill="url(#mStartBg)" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="205" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Start Mode</text>
+  <text x="205" y="57" text-anchor="middle" font-size="11" fill="#3b82f6">TracePulse spawns your dev server</text>
+
+  <!-- TP box -->
+  <rect x="45" y="75" width="140" height="70" rx="8" fill="white" stroke="#3b82f6" filter="url(#mShadow)"/>
+  <text x="115" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">TracePulse</text>
+  <text x="115" y="122" text-anchor="middle" font-size="10" fill="#3b82f6">parent process</text>
+
+  <!-- Child process -->
+  <rect x="230" y="75" width="140" height="70" rx="8" fill="white" stroke="#f59e0b" filter="url(#mShadow)"/>
+  <text x="300" y="100" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">Child Process</text>
+  <text x="300" y="118" text-anchor="middle" font-size="10" fill="#b45309">npm run dev</text>
+
+  <!-- spawn arrow -->
+  <line x1="185" y1="100" x2="225" y2="100" stroke="#3b82f6" stroke-width="2" marker-end="url(#mArrowB)"/>
+  <text x="205" y="93" text-anchor="middle" font-size="9" fill="#1e40af" font-weight="600">spawn</text>
+
+  <!-- stdout/stderr arrow back -->
+  <path d="M300,145 L300,170 L115,170 L115,148" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#mArrow)"/>
+  <text x="207" y="185" text-anchor="middle" font-size="10" fill="#64748b" font-weight="600">stdout/stderr piped directly</text>
+
+  <!-- How it works note -->
+  <rect x="45" y="205" width="325" height="60" rx="6" fill="white" stroke="#bfdbfe" opacity="0.9"/>
+  <text x="207" y="224" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="600">tracepulse start "npm run dev"</text>
+  <text x="207" y="242" text-anchor="middle" font-size="10" fill="#64748b">TracePulse manages the process lifecycle.</text>
+  <text x="207" y="256" text-anchor="middle" font-size="10" fill="#64748b">Forwards SIGTERM/SIGKILL on shutdown.</text>
+
+  <!-- ATTACH MODE -->
+  <rect x="410" y="15" width="370" height="270" rx="10" fill="url(#mAttachBg)" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="595" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="#854d0e">Attach Mode</text>
+  <text x="595" y="57" text-anchor="middle" font-size="11" fill="#ca8a04">TracePulse tails an existing log file</text>
+
+  <!-- Server (already running) -->
+  <rect x="435" y="75" width="130" height="70" rx="8" fill="white" stroke="#94a3b8" filter="url(#mShadow)"/>
+  <text x="500" y="100" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Dev Server</text>
+  <text x="500" y="118" text-anchor="middle" font-size="10" fill="#94a3b8">(already running)</text>
+
+  <!-- Log file -->
+  <rect x="500" y="165" width="100" height="40" rx="6" fill="#fefce8" stroke="#ca8a04"/>
+  <text x="550" y="190" text-anchor="middle" font-size="11" font-weight="600" fill="#854d0e">server.log</text>
+
+  <!-- Server writes to log -->
+  <line x1="500" y1="145" x2="530" y2="162" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#mArrow)"/>
+  <text x="490" y="158" font-size="9" fill="#64748b">writes</text>
+
+  <!-- TP tails log -->
+  <rect x="630" y="75" width="130" height="70" rx="8" fill="white" stroke="#ca8a04" filter="url(#mShadow)"/>
+  <text x="695" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#854d0e">TracePulse</text>
+  <text x="695" y="122" text-anchor="middle" font-size="10" fill="#ca8a04">tails the file</text>
+
+  <!-- tail arrow -->
+  <line x1="695" y1="145" x2="605" y2="175" stroke="#ca8a04" stroke-width="1.5" marker-end="url(#mArrowA)"/>
+  <text x="665" y="158" font-size="9" fill="#854d0e" font-weight="600">fs.watch</text>
+
+  <!-- How it works note -->
+  <rect x="435" y="215" width="325" height="50" rx="6" fill="white" stroke="#fde68a" opacity="0.9"/>
+  <text x="597" y="234" text-anchor="middle" font-size="11" fill="#854d0e" font-weight="600">tracepulse attach --log-file ./server.log</text>
+  <text x="597" y="252" text-anchor="middle" font-size="10" fill="#64748b">No process spawned. Works with Docker, tmux, pm2.</text>
+</svg>
