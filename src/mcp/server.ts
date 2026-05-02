@@ -23,6 +23,7 @@ import { handleGetErrorClusters } from "@/tools/get-error-clusters.js";
 import { handleGetMigrationStatus } from "@/tools/get-migration-status.js";
 import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
 import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
+import { handleCheckDrift } from "@/tools/check-drift.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
 import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
@@ -418,6 +419,14 @@ export function createMcpServer(
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionInsights(buffer, auditBuffer));
+
+  server.registerTool("check_drift", {
+    title: "Check Drift",
+    description:
+      "Check for env, dependency, and migration drift in one call. Detects missing .env vars, lock files, and migration frameworks.",
+    inputSchema: {},
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleCheckDrift({ cwd: options?.cwd ?? process.cwd() }));
 
   server.registerTool("get_perf_baseline", {
     title: "Get Performance Baseline",
