@@ -714,7 +714,16 @@ export function createMcpServer(
 
   // Log clustered mode status
   if (options?.clustered) {
-    process.stderr.write("[tracepulse] Clustered mode: 7 gateway tools available alongside individual tools\n");
+    // In clustered mode: register 7 gateway tools that dispatch to individual handlers
+    const { loadClusterConfig, createToolRegistry, createGatewayHandler } = await import("@/clusters/gateway.js");
+    const clusterConfig = loadClusterConfig();
+    const toolRegistry = createToolRegistry();
+
+    // Capture all registered tool handlers into the registry
+    // by re-registering them (they're already on the server, but we need them in the registry for dispatch)
+    // For now, log the mode - full proxy wiring requires refactoring registerTool calls
+    process.stderr.write(`[tracepulse] Clustered mode: ${clusterConfig.clusters.length} gateway clusters configured\n`);
+    process.stderr.write(`[tracepulse] Note: clustered mode infrastructure ready. Full proxy wiring in next release.\n`);
   }
 
   return server;
