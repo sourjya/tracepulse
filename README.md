@@ -319,6 +319,32 @@ When `watch_for_errors` detects a hot-reload, it sets `hot_reload_detected: true
 - Fingerprint persistence stores only hashes, not raw error messages
 - No file system writes except optional fingerprint persistence
 
+## TracePulse for Teams (Coming Soon)
+
+**Local:** Your agent sees your server. **Team:** Every agent sees every server.
+
+Deploy a shared TracePulse instance for your engineering team. Every developer's AI agent connects via HTTPS to one server that:
+
+- **Aggregates errors** across all dev environments
+- **Shares fingerprints** - if one developer hits a bug, every agent knows
+- **Team audit trail** - see tool usage and token savings across the team
+- **Centralized drift detection** - one health check covers shared staging
+- **SSO/API key auth** - enterprise-ready access control
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "type": "streamable-http",
+      "url": "https://tracepulse.internal.company.com/mcp",
+      "headers": { "Authorization": "Bearer <team-api-key>" }
+    }
+  }
+}
+```
+
+Self-hosted via Docker or one-click deploy on Railway/Fly.io. [Roadmap](docs/roadmap/roadmap.md)
+
 ## Companion Tools
 
 TracePulse is designed to work alongside:

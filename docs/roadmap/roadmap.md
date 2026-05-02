@@ -28,6 +28,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M16: Platform Coverage Expansion | Platform Strategy Research | v1.0 | 🔲 Planned |
 | M17: Token Savings Wave 1 (Quick Wins) | Advanced Token Research | v1.0 | 🔲 Planned |
 | M18: Token Savings Wave 2 (Medium Effort) | Advanced Token Research | v1.1 | 🔲 Planned |
+| M19: TracePulse Team Server | Enterprise | v1.2 | 🔲 Planned |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
 
 ---
