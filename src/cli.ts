@@ -37,6 +37,7 @@ import { createMultiProcessCollector } from "@/collectors/multi-process-collecto
 import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
+import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -365,6 +366,21 @@ async function main(): Promise<void> {
   const frontendBuffer = createFrontendErrorBuffer();
   const fingerprintHistory = createFingerprintHistory();
   const processLine = createPipeline(buffer, registry);
+
+  // Create error lifecycle manager for auto-resolving stale errors
+  const errorLifecycle = createErrorLifecycle();
+
+  // Subscribe to buffer events to feed the lifecycle manager
+  buffer.subscribe((event) => {
+    if (event.level === "error" || event.level === "warn") {
+      const isHmr = event.fingerprint.startsWith("hotreload:");
+      errorLifecycle.recordError(event.fingerprint, isHmr);
+    }
+    // Hot-reload events signal a file change
+    if (event.fingerprint.startsWith("hotreload:")) {
+      errorLifecycle.recordFileChange();
+    }
+  });
   const persistEnabled = (parsed.command === "start" && parsed.persist) || (parsed.command === "standalone" && parsed.persist);
 
   // Load fingerprint history if persistence is enabled
@@ -500,6 +516,7 @@ async function main(): Promise<void> {
     isAttachMode: parsed.command === "attach" || parsed.command === "standalone",
     restartFn,
     infraMonitor,
+    errorLifecycle,
   });
   const transport = new StdioServerTransport();
 

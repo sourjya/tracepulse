@@ -82,6 +82,7 @@ import { jsonResult, errorResult } from "@/mcp/response-helpers.js";
  */
 import { applyScoreDecay } from "@/scoring/score-decay.js";
 import { addEmptyDiagnostics } from "@/tools/empty-diagnostics.js";
+import type { ErrorLifecycle } from "@/store/error-lifecycle.js";
 
 /**
  * Handle get_errors tool - returns recent errors sorted by signal_score descending.
@@ -92,6 +93,7 @@ import { addEmptyDiagnostics } from "@/tools/empty-diagnostics.js";
 export function handleGetErrors(
   buffer: EventBuffer,
   args: Record<string, unknown>,
+  errorLifecycle?: ErrorLifecycle,
 ): CallToolResult {
   const validation = validateEventFilters(args);
   if (!validation.valid) {
@@ -115,10 +117,12 @@ export function handleGetErrors(
     ? events.filter((e) => e.service === serviceFilter)
     : events;
 
-  // Sort by signal_score descending (highest first), then apply limit
+  // Apply score decay for transient errors and filter resolved/expired via lifecycle
   const decayed = applyScoreDecay(filtered);
-  decayed.sort((a, b) => b.signal_score - a.signal_score);
-  const limited = decayed.slice(0, limit);
+  const lifecycle = errorLifecycle;
+  const active = lifecycle ? lifecycle.filterActive(decayed) : decayed;
+  active.sort((a, b) => b.signal_score - a.signal_score);
+  const limited = active.slice(0, limit);
 
   // Run cross-service correlation on results
   const correlated = correlateEvents(limited, CORRELATION_WINDOW_MS);
@@ -127,7 +131,7 @@ export function handleGetErrors(
 
   return jsonResult(addEmptyDiagnostics("get_errors", {
     errors: correlated,
-    total_matching: decayed.length,
+    total_matching: active.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
     buffer_cleared_at: buffer.bufferClearedAt,
@@ -246,6 +250,7 @@ export function createMcpServer(
     probeManager?: ProbeManager;
     auditBuffer?: AuditBuffer;
     perfBaseline?: PerfBaseline;
+    errorLifecycle?: ErrorLifecycle;
   },
 ): McpServer {
   const server = new McpServer({
@@ -275,7 +280,7 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrors(buffer, args as Record<string, unknown>));
+  }, (args) => handleGetErrors(buffer, args as Record<string, unknown>, options?.errorLifecycle));
 
   server.registerTool("get_server_logs", {
     title: "Get Server Logs",
