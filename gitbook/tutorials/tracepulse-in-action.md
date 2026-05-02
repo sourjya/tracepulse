@@ -327,6 +327,61 @@ The agent sees 7 clusters instead of 59 individual errors. Quick triage: cluster
 
 ---
 
+---
+
+## Example 9: Stale Error Triage in 30 Seconds
+
+**The problem:** After a long session, the error buffer has stale errors from earlier (asyncpg cache, HMR transients). The agent needs to know: are these real or stale?
+
+**With TracePulse:**
+
+```
+Agent: get_errors(limit: 3)
+```
+
+Agent sees two errors: `NameError` and `GroupingError`. Instead of investigating, recognizes both as stale (server hasn't reloaded, asyncpg cache). Verifies by reading the source file - code is correct. Calls `clear_errors()` and moves on.
+
+**Total: 3 tool calls, 30 seconds.** Without TP, the agent would have either not known about the errors at all, or spent 10+ minutes investigating errors that aren't bugs.
+
+---
+
+## Example 10: Library Project - 70+ Calls, No Server
+
+**The problem:** A TypeScript library monorepo has no dev server. Can TracePulse still help?
+
+**With TracePulse (standalone mode):**
+
+Over an 11-hour session, the agent made 70+ TracePulse calls:
+- `run_and_watch("npx vitest run")` - 40 times (structured test results)
+- `run_and_watch("npx tsc --noEmit")` - 15 times (type errors with file:line:col)
+- `get_project_health()` - 10 times (quick health gate)
+
+TracePulse caught: unused imports across 8 files, `number|undefined` type errors in 3 files, pptxgenjs type incompatibilities, and test assertion mismatches - all with exact file:line references.
+
+**Agent's assessment:** "Not transformative, but consistently useful. The biggest value was speed - structured errors meant I could fix on first attempt more often."
+
+---
+
+## Example 11: 7 of 8 Chokepoints Caught
+
+**The problem:** During a full build session, the agent hit 8 blockers. How many did TracePulse catch?
+
+**Result:** 7 of 8 chokepoints caught by `run_and_watch`. Average 1.5 attempts before green (structured file:line errors enable first-attempt fixes).
+
+| Chokepoint | What TP Caught |
+|-----------|---------------|
+| Vitest can't resolve sub-path imports | "Cannot find package" error |
+| 8 unused imports across primitive shapes | All 8 files with line numbers |
+| `number \| undefined` type error | Exact line:col |
+| pptxgenjs v4 type incompatibilities | All 5 type errors |
+| fflate not found in test context | "Cannot find package 'fflate'" |
+| Test assertion mismatch (6 vs 13) | "expected [...] to have length 6 but got 13" |
+| Autosize test with wrong constraints | "expected 16 to be 8" |
+
+The one miss: a runtime `#src/*` import alias error from a script run via shell instead of `run_and_watch`. If the agent had used `run_and_watch("node scripts/demo.mjs")`, TP would have caught it too.
+
+---
+
 ## The Pattern
 
 Every example follows the same pattern:
