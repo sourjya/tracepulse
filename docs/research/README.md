@@ -64,6 +64,12 @@ Last updated: 2026-05-02
 |----------|------|---------|----------------------|
 | [Experiments Index](experiments-index.md) | 2026-05-02 | 2 running, 1 planned, 2 specced experiments. Parser accuracy, pipeline throughput, session insights. | get_session_insights tool, error histogram |
 
+## Enterprise
+
+| Document | Date | Summary | Roadmap Items Derived |
+|----------|------|---------|----------------------|
+| M19 Team Server Spec | 2026-05-02 | Shared TracePulse instance for teams. HTTPS, multi-tenant, cross-developer fingerprints, team audit. | M19 (v1.2) |
+
 ## Other
 
 | Document | Date | Summary |
