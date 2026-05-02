@@ -165,6 +165,12 @@ export async function handleRunAndWatch(
       const allEvents = tempBuffer.query({});
       const errors = allEvents.filter((e) => e.level === "error" || e.level === "warn");
 
+      // Extract test summary from info-level events (pytest/vitest/jest/cargo/junit summaries)
+      const testSummary = allEvents
+        .filter((e) => e.level === "info" && /(?:pytest|vitest|jest|cargo test|junit):/i.test(e.message))
+        .map((e) => e.message)
+        .slice(-1)[0]; // last summary line
+
       resolve({
         content: [{
           type: "text",
@@ -175,6 +181,7 @@ export async function handleRunAndWatch(
             total_events: allEvents.length,
             error_count: errors.length,
             errors: errors.slice(0, 10),
+            ...(testSummary ? { test_summary: testSummary } : {}),
             summary: exitCode === 0
               ? `Command succeeded in ${Date.now() - startTime}ms, ${errors.length} warnings`
               : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,

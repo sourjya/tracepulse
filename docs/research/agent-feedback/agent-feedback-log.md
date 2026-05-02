@@ -746,3 +746,20 @@ Agent provided a detailed TP usage summary for a TypeScript library monorepo (no
 **Key insight:** "The main TP value was run_and_watch replacing raw shell commands - it parsed vitest and tsc output into structured errors with fingerprints, file paths, and signal scores."
 
 **Validation:** TracePulse provides significant value even in standalone mode on library projects. The 70+ calls over 11 hours shows it's being used as the primary feedback mechanism, not just an occasional check. The run_and_watch -> fix -> run_and_watch loop is the core workflow.
+
+### Piktor agent detailed effectiveness assessment + 7 wishlist items
+
+**What worked:** run_and_watch saved ~200 tokens/call, get_project_health saved 3 calls, signal scoring helped prioritize. ~3,000-5,000 tokens saved across 60 calls.
+
+**What fell short:** No structured test counts (pass/fail), no file-scoped error filtering, verify_build/verify_fix expect dev server, correlate_with_diff doesn't work for libraries.
+
+**New wishlist items from Piktor:**
+- W1: Structured test results (pass/fail counts as top-level fields) - PARTIALLY BUILT (summary parsing exists but not surfaced cleanly)
+- W2: File-scoped error check (get_errors_by_file) - NEW, high value
+- W3: Test-specific output (individual test names/statuses) - NEW, medium value
+- W4: Diff-aware correlation for libraries - BUILT but not working for non-server projects
+- W5: Dependency graph validation - NEW, low priority
+- W6: Bundle size tracking - NEW, low priority
+- W7: Vitest watch mode integration - NEW, low priority
+
+**Key quote:** "Not transformative, but consistently useful. The biggest value was speed - structured errors meant I could fix on first attempt more often."
