@@ -6,7 +6,7 @@ TracePulse ships integration configs for major AI coding agents. Copy the releva
 
 TracePulse's [SKILL.md](https://github.com/sourjya/tracepulse/blob/main/skills/tracepulse/SKILL.md) is automatically loaded by Kiro when TracePulse is in your MCP config. No additional setup needed.
 
-For post-edit hooks, copy `rules/kiro-hooks.json` to `.kiro/hooks/tracepulse.json`.
+For post-edit hooks, copy [`rules/kiro-hooks.json`](https://github.com/sourjya/tracepulse/blob/main/rules/kiro-hooks.json) to `.kiro/hooks/tracepulse.json`.
 
 ## Cursor
 
