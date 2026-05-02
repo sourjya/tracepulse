@@ -104,7 +104,7 @@ Done. Two migration-related bugs found and fixed in under 2 minutes.
 3. Fingerprint deduplication collapsed 25 identical errors into one event with `occurrence_count: 25`
 4. The signal scorer gave it 95/100 (database error + high occurrence)
 5. `get_new_errors` filtered to only fingerprints not seen in previous sessions
-6. `verify_fix` combined watch + build check + error check into one call
+6. [`verify_fix`](../features/mcp-tools.md#verify_fix) combined watch + build check + error check into one call
 
 ---
 
@@ -135,7 +135,7 @@ TracePulse checks the buffer for TypeScript, ESLint, and Vite/webpack errors and
 
 Zero errors, and `last_build_at` confirms the build actually ran. The agent moves on with confidence.
 
-The agent called `get_build_errors` 23 times in one session. It replaced 15+ manual `vite build` runs and saved over 20 minutes. The agent's own assessment: "Single biggest time saver."
+The agent called [`get_build_errors`](../features/mcp-tools.md#get_build_errors) 23 times in one session. It replaced 15+ manual `vite build` runs and saved over 20 minutes. The agent's own assessment: "Single biggest time saver."
 
 **What happened behind the scenes:**
 1. Vite's dev server prints compilation results to stdout
@@ -176,7 +176,7 @@ Zero errors, hot-reload detected (uvicorn started successfully), 12 log events s
 **What happened behind the scenes:**
 1. `restart_server` sent SIGTERM to the old process, waited for exit, spawned a new one
 2. The error buffer was auto-cleared so old crash errors don't confuse the verification
-3. `watch_for_errors` subscribed to the buffer and collected events for 10 seconds
+3. [`watch_for_errors`](../features/mcp-tools.md#watch_for_errors) subscribed to the buffer and collected events for 10 seconds
 4. The uvicorn reload pattern (`WatchFiles detected changes`) matched, setting `hot_reload_detected: true`
 5. `total_events_seen: 12` confirmed the server is alive and processing requests
 6. `pre_existing_errors: 0` confirmed the buffer is clean
@@ -214,7 +214,7 @@ In one call, the agent knows: server is running, 2 runtime errors to investigate
 1. TracePulse scanned `.env` for service URLs (DATABASE_URL, REDIS_URL, ELASTICSEARCH_URL, S3_ENDPOINT)
 2. Background probes checked TCP connectivity to each service every 60 seconds
 3. The error buffer was queried for runtime and build errors
-4. `get_project_health` combined server status + infrastructure + errors into one response
+4. [`get_project_health`](../features/mcp-tools.md#get_project_health) combined server status + infrastructure + errors into one response
 5. The agent got a complete picture without calling 4 separate tools
 
 ---
@@ -259,7 +259,7 @@ Agent: get_errors(limit: 3)
 
 ## Example 7: The Trust Recovery Moment
 
-**The problem:** The agent had stopped trusting `watch_for_errors` because `hot_reload_detected` kept returning `false` in attach mode. After we added uvicorn reload patterns, the agent tried again.
+**The problem:** The agent had stopped trusting [`watch_for_errors`](../features/mcp-tools.md#watch_for_errors) because `hot_reload_detected` kept returning `false` in attach mode. After we added uvicorn reload patterns, the agent tried again.
 
 **With TracePulse:**
 
@@ -317,10 +317,10 @@ Agent: get_error_clusters()
 }
 ```
 
-The agent sees 7 clusters instead of 59 individual errors. Quick triage: clusters 1, 5, 6 are stale (HMR transients, asyncpg cache). Clusters 3 and 4 need investigation - but after checking the code, both are also stale from mid-edit HMR. Zero real bugs. `clear_errors()` to reset.
+The agent sees 7 clusters instead of 59 individual errors. Quick triage: clusters 1, 5, 6 are stale (HMR transients, asyncpg cache). Clusters 3 and 4 need investigation - but after checking the code, both are also stale from mid-edit HMR. Zero real bugs. [`clear_errors`](../features/mcp-tools.md#clear_errors) to reset.
 
 **What happened behind the scenes:**
-1. `get_error_clusters` grouped all 59 errors by `(error_type, module_path)`
+1. [`get_error_clusters`](../features/mcp-tools.md#get_error_clusters) grouped all 59 errors by `(error_type, module_path)`
 2. Fingerprint deduplication collapsed repeated errors within each cluster
 3. The agent triaged 7 groups instead of 59 individual events
 4. Total time: 30 seconds. Total tokens: ~500 (one call + one response)
@@ -339,7 +339,7 @@ The agent sees 7 clusters instead of 59 individual errors. Quick triage: cluster
 Agent: get_errors(limit: 3)
 ```
 
-Agent sees two errors: `NameError` and `GroupingError`. Instead of investigating, recognizes both as stale (server hasn't reloaded, asyncpg cache). Verifies by reading the source file - code is correct. Calls `clear_errors()` and moves on.
+Agent sees two errors: `NameError` and `GroupingError`. Instead of investigating, recognizes both as stale (server hasn't reloaded, asyncpg cache). Verifies by reading the source file - code is correct. Calls [`clear_errors`](../features/mcp-tools.md#clear_errors) and moves on.
 
 **Total: 3 tool calls, 30 seconds.** Without TP, the agent would have either not known about the errors at all, or spent 10+ minutes investigating errors that aren't bugs.
 
@@ -354,7 +354,7 @@ Agent sees two errors: `NameError` and `GroupingError`. Instead of investigating
 Over an 11-hour session, the agent made 70+ TracePulse calls:
 - `run_and_watch("npx vitest run")` - 40 times (structured test results)
 - `run_and_watch("npx tsc --noEmit")` - 15 times (type errors with file:line:col)
-- `get_project_health()` - 10 times (quick health gate)
+- [`get_project_health`](../features/mcp-tools.md#get_project_health) - 10 times (quick health gate)
 
 TracePulse caught: unused imports across 8 files, `number|undefined` type errors in 3 files, pptxgenjs type incompatibilities, and test assertion mismatches - all with exact file:line references.
 
@@ -366,7 +366,7 @@ TracePulse caught: unused imports across 8 files, `number|undefined` type errors
 
 **The problem:** During a full build session, the agent hit 8 blockers. How many did TracePulse catch?
 
-**Result:** 7 of 8 chokepoints caught by `run_and_watch`. Average 1.5 attempts before green (structured file:line errors enable first-attempt fixes).
+**Result:** 7 of 8 chokepoints caught by [`run_and_watch`](../features/mcp-tools.md#run_and_watch). Average 1.5 attempts before green (structured file:line errors enable first-attempt fixes).
 
 | Chokepoint | What TP Caught |
 |-----------|---------------|
@@ -378,7 +378,7 @@ TracePulse caught: unused imports across 8 files, `number|undefined` type errors
 | Test assertion mismatch (6 vs 13) | "expected [...] to have length 6 but got 13" |
 | Autosize test with wrong constraints | "expected 16 to be 8" |
 
-The one miss: a runtime `#src/*` import alias error from a script run via shell instead of `run_and_watch`. If the agent had used `run_and_watch("node scripts/demo.mjs")`, TP would have caught it too.
+The one miss: a runtime `#src/*` import alias error from a script run via shell instead of [`run_and_watch`](../features/mcp-tools.md#run_and_watch). If the agent had used `run_and_watch("node scripts/demo.mjs")`, TP would have caught it too.
 
 ---
 

@@ -34,7 +34,7 @@ When an agent can't see runtime errors, every automated session eventually hits 
 
 This is why "let the agent run overnight" doesn't work today. Not because the agent can't write code - it can. But because the agent can't verify that the code it wrote actually runs. Without runtime feedback, autonomous sprints are fundamentally impossible. The agent will always need a human to tell it "the server crashed" or "the migration didn't apply" or "the test is failing."
 
-TracePulse removes the human from this loop. The agent calls `get_errors()` and knows immediately. It calls `verify_fix()` and gets a definitive pass/fail. It calls `get_project_health()` and sees the full picture in one call. No human needed. No stalled sprints. No "check the terminal."
+TracePulse removes the human from this loop. The agent calls [`get_errors`](features/mcp-tools.md#get_errors) and knows immediately. It calls [`verify_fix`](features/mcp-tools.md#verify_fix) and gets a definitive pass/fail. It calls [`get_project_health`](features/mcp-tools.md#get_project_health) and sees the full picture in one call. No human needed. No stalled sprints. No "check the terminal."
 
 **This is what makes autonomous coding sprints possible:** not smarter models, but closing the feedback loop between the agent and the runtime.
 
@@ -51,7 +51,7 @@ The most common workaround is "check the terminal" or "paste the error." Here's 
 | **Error detection** | Agent must be told to look | Automatic - errors scored and ranked |
 | **Deduplication** | Same error read 42 times | Fingerprinted - shown once with count |
 | **File:line** | Agent parses raw stack trace | Extracted and structured |
-| **Fix verification** | "I think I fixed it" | `verify_fix()` - definitive pass/fail |
+| **Fix verification** | "I think I fixed it" | [`verify_fix`](features/mcp-tools.md#verify_fix) - definitive pass/fail |
 | **Hot-reload** | Agent doesn't know if change took effect | 12 framework detectors |
 | **Infrastructure** | Agent can't see if Redis/Postgres is down | Auto-discovered from .env, probed every 60s |
 
@@ -74,9 +74,9 @@ Without TracePulse, the debugging loop is:
 With TracePulse:
 
 1. Agent edits code
-2. Agent calls `get_errors()` - sees the error instantly
+2. Agent calls [`get_errors`](features/mcp-tools.md#get_errors) - sees the error instantly
 3. Agent fixes it
-4. Agent calls `verify_fix()` - confirmed clean
+4. Agent calls [`verify_fix`](features/mcp-tools.md#verify_fix) - confirmed clean
 5. Done
 
 Zero human intervention. Zero copy-paste. Zero guessing.

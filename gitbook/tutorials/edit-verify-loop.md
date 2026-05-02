@@ -60,13 +60,13 @@ Blocks until the next build completes (not a fixed duration). Returns immediatel
 | Situation | Tool |
 |-----------|------|
 | After any code change (default) | `verify_fix(10)` |
-| Quick CSS/template change | `get_build_errors()` |
+| Quick CSS/template change | [`get_build_errors`](../features/mcp-tools.md#get_build_errors) |
 | Need to wait for slow build | `wait_for_build(30)` |
 | Need fine-grained control | `watch_for_errors(15)` |
 
 ## Attach Mode Caveat
 
-In attach mode (tailing a log file), `hot_reload_detected` returns `null` (unknown) instead of `true`/`false` if the dev server's reload messages go to a different process. Use `get_build_errors` as the reliable check in attach mode.
+In attach mode (tailing a log file), `hot_reload_detected` returns `null` (unknown) instead of `true`/`false` if the dev server's reload messages go to a different process. Use [`get_build_errors`](../features/mcp-tools.md#get_build_errors) as the reliable check in attach mode.
 
 ## The Proven Debugging Loop
 
@@ -81,5 +81,5 @@ When TracePulse surfaces real errors, this is the fastest resolution path. Valid
 6. If PASS: done. If FAIL: repeat from 2.
 ```
 
-This loop is more productive than the basic edit-verify pattern because `get_new_errors` filters out noise (old errors still in buffer) and `clear_errors` gives you a clean baseline for verification.
+This loop is more productive than the basic edit-verify pattern because `get_new_errors` filters out noise (old errors still in buffer) and [`clear_errors`](../features/mcp-tools.md#clear_errors) gives you a clean baseline for verification.
 

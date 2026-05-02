@@ -12,8 +12,8 @@ TracePulse gives AI coding agents runtime visibility. Anyone using an AI agent t
 
 Your agent writes Python, Node.js, Go, Java, or Rust. TracePulse parses errors from all of them - 26 parsers, zero configuration.
 
-- Agent calls `get_errors()` after every edit - no manual log checking
-- `verify_fix()` confirms the fix worked with a definitive pass/fail
+- Agent calls [`get_errors`](features/mcp-tools.md#get_errors) after every edit - no manual log checking
+- [`verify_fix`](features/mcp-tools.md#verify_fix) confirms the fix worked with a definitive pass/fail
 - `run_and_watch("pytest tests/")` runs tests and returns structured results
 - `get_error_context(fingerprint)` gives full error + surrounding logs for deep investigation
 - Works on WSL where terminal output capture is unreliable
@@ -22,7 +22,7 @@ Your agent writes Python, Node.js, Go, Java, or Rust. TracePulse parses errors f
 
 Backend crashes cause blank pages. TracePulse catches the backend error; Chrome DevTools MCP catches the browser error. Together with [ViewGraph](https://chaoslabz.gitbook.io/viewgraph), the agent sees the full picture.
 
-- `get_project_health()` - one call: server status + infrastructure + errors + build
+- [`get_project_health`](features/mcp-tools.md#get_project_health) - one call: server status + infrastructure + errors + build
 - `get_correlated_errors(url)` - match browser HTTP failures with backend stack traces
 - Three-tier verification: tsc (static) -> browser check (runtime) -> verify_fix (backend)
 
@@ -32,17 +32,17 @@ No dev server? No problem. TracePulse's standalone mode gives your agent structu
 
 - `run_and_watch("npx vitest run")` - structured pass/fail instead of raw terminal output
 - `run_and_watch("npx tsc --noEmit")` - type errors with exact file:line:column
-- `verify_build()` - typecheck + build + runtime check in one call
+- [`verify_build`](features/mcp-tools.md#verify_build) - typecheck + build + runtime check in one call
 - Works with pnpm, Bun, and monorepo tools (Turborepo, Nx)
 
 ### DevOps and infrastructure engineers
 
 TracePulse discovers your infrastructure from `.env` files and probes connectivity every 60 seconds.
 
-- `get_infra_status()` - PostgreSQL, Redis, Elasticsearch, S3 connectivity at a glance
+- [`get_infra_status`](features/mcp-tools.md#get_infra_status) - PostgreSQL, Redis, Elasticsearch, S3 connectivity at a glance
 - `check_port(port)` - is the service running?
-- `get_migration_status()` - pending migrations across alembic, prisma, django, knex
-- Cloud log monitoring via `run_and_watch` with AWS CloudWatch, GCP, Azure, Kubernetes CLIs
+- [`get_migration_status`](features/mcp-tools.md#get_migration_status) - pending migrations across alembic, prisma, django, knex
+- Cloud log monitoring via [`run_and_watch`](features/mcp-tools.md#run_and_watch) with AWS CloudWatch, GCP, Azure, Kubernetes CLIs
 
 {% endtab %}
 
@@ -62,7 +62,7 @@ Your team uses AI agents but you have no visibility into how efficiently they wo
 AI coding costs $500-2,000/month per developer (Morph, 2026). Most of that is wasted on orientation.
 
 - 92% fewer tokens per error investigation
-- `run_and_watch` replaces manual shell commands with structured output
+- [`run_and_watch`](features/mcp-tools.md#run_and_watch) replaces manual shell commands with structured output
 - Agents self-verify instead of asking humans "did that work?"
 
 {% endtab %}
@@ -97,7 +97,7 @@ Contributors use different AI agents. TracePulse works with all of them.
 - Protocol-neutral: Kiro, Claude Code, Cursor, Copilot, Windsurf, Cline
 - Zero config: contributors add one line to their MCP config
 - SKILL.md teaches the agent your project's debugging patterns
-- `correlate_with_diff()` links errors to the contributor's uncommitted changes
+- [`correlate_with_diff`](features/mcp-tools.md#correlate_with_diff) links errors to the contributor's uncommitted changes
 
 ### Framework authors
 

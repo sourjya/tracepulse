@@ -81,12 +81,12 @@ If both are clean, the fix is confirmed end-to-end.
 
 | What you need | Which tool |
 |---------------|-----------|
-| Backend exceptions, stack traces | TracePulse `get_errors` |
+| Backend exceptions, stack traces | TracePulse [`get_errors`](../features/mcp-tools.md#get_errors) |
 | Browser console errors | Chrome DevTools MCP `list_console_messages` |
 | Failed HTTP requests from browser | Chrome DevTools MCP `list_network_requests` |
 | Request/response headers and body | Chrome DevTools MCP `get_network_request` |
 | Match browser failure to backend error | TracePulse `get_correlated_errors` |
-| Link error to recent code changes | TracePulse `correlate_with_diff` |
-| Verify backend fix | TracePulse `verify_fix` |
+| Link error to recent code changes | TracePulse [`correlate_with_diff`](../features/mcp-tools.md#correlate_with_diff) |
+| Verify backend fix | TracePulse [`verify_fix`](../features/mcp-tools.md#verify_fix) |
 | Verify browser fix | Chrome DevTools MCP `take_snapshot` |
 

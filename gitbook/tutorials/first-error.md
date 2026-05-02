@@ -20,7 +20,7 @@ def get_users():
 Check for backend errors
 ```
 
-The agent calls `get_errors()` and sees:
+The agent calls [`get_errors`](../features/mcp-tools.md#get_errors) and sees:
 
 ```json
 {
@@ -62,7 +62,7 @@ The agent calls `verify_fix(10)`:
 2. TracePulse parsed it with the Python parser, extracted file:line
 3. Signal scorer gave it 75/100 (error + stack trace + user code)
 4. The agent read the structured error and knew exactly where to look
-5. After your fix, `verify_fix` confirmed zero new errors
+5. After your fix, [`verify_fix`](../features/mcp-tools.md#verify_fix) confirmed zero new errors
 
 No log reading. No copy-paste. The agent saw the error and the fix in real time.
 

@@ -1,6 +1,6 @@
 # Run Tests Through TracePulse
 
-Use `run_and_watch` to execute tests and get parsed, structured results.
+Use [`run_and_watch`](../features/mcp-tools.md#run_and_watch) to execute tests and get parsed, structured results.
 
 ## pytest
 
@@ -71,13 +71,13 @@ No `cd` prefix needed. The command runs directly in the specified directory.
 
 On WSL (Windows Subsystem for Linux), terminal output capture is unreliable. Kiro IDE and other tools often can't read test results from the terminal, forcing developers to pipe output through `tee` to log files.
 
-`run_and_watch` bypasses this entirely:
+[`run_and_watch`](../features/mcp-tools.md#run_and_watch) bypasses this entirely:
 
 | Method | How output travels | WSL reliable? |
 |--------|-------------------|---------------|
 | Shell command | Terminal stdout -> IDE reads terminal | No - breaks frequently |
 | Shell + tee | Terminal -> tee -> log file -> agent reads file | Yes but clunky |
-| `run_and_watch` | Node.js pipe -> parser pipeline -> JSON via MCP | Yes - separate channel |
+| [`run_and_watch`](../features/mcp-tools.md#run_and_watch) | Node.js pipe -> parser pipeline -> JSON via MCP | Yes - separate channel |
 
 The MCP protocol (JSON-RPC over stdio) is a completely separate channel from the terminal. WSL rendering issues don't affect it. The agent gets clean, parsed results every time.
 
@@ -97,5 +97,5 @@ Commands are validated against an allowlist: `npx`, `npm`, `node`, `pytest`, `py
 | **Java/Kotlin** | JUnit/Maven/Gradle | junit-parser | Surefire summary, Gradle task status, AssertionError |
 | **Any language** | (no parser match) | raw output | Exit code, success/fail, raw text |
 
-All test runners work with `run_and_watch` regardless of parser support. Parsers add structured extraction - without a parser, you still get exit code and raw output.
+All test runners work with [`run_and_watch`](../features/mcp-tools.md#run_and_watch) regardless of parser support. Parsers add structured extraction - without a parser, you still get exit code and raw output.
 

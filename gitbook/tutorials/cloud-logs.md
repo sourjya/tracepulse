@@ -4,7 +4,7 @@ Monitor logs from AWS, GCP, Azure, Kubernetes, Docker, Heroku, Vercel, Railway, 
 
 ## How It Works
 
-All cloud CLIs stream logs to stdout. TracePulse's `run_and_watch` captures that output and pipes it through the full parser pipeline. A Python traceback from AWS Lambda is parsed the same way as one from your local server.
+All cloud CLIs stream logs to stdout. TracePulse's [`run_and_watch`](../features/mcp-tools.md#run_and_watch) captures that output and pipes it through the full parser pipeline. A Python traceback from AWS Lambda is parsed the same way as one from your local server.
 
 ## Supported Platforms
 

@@ -20,7 +20,7 @@ Before any data enters the pipeline, TracePulse scans for secrets: API keys, JWT
 
 ## Stage 4: Hot-Reload Detection
 
-When you save a file, your dev server reloads. TracePulse recognizes reload messages from 12 frameworks (Vite, webpack, nodemon, Next.js, uvicorn, Django, Flask, air, and more). It injects a synthetic marker event so `watch_for_errors` can tell the agent "your change just took effect."
+When you save a file, your dev server reloads. TracePulse recognizes reload messages from 12 frameworks (Vite, webpack, nodemon, Next.js, uvicorn, Django, Flask, air, and more). It injects a synthetic marker event so [`watch_for_errors`](../features/mcp-tools.md#watch_for_errors) can tell the agent "your change just took effect."
 
 ## Stage 5: Multi-Line Accumulation
 
@@ -55,7 +55,7 @@ A SHA-256 hash is computed from the error's source, normalized message, and file
 
 Events are stored in a 500-slot circular buffer. When full, the oldest event is overwritten (FIFO). High-signal errors (score >= 50) are pinned and survive eviction. If the server restarts 3+ times in 60 seconds, TracePulse injects a crash loop alert at signal_score 95.
 
-The buffer is what MCP tools read from. `get_errors()`, `get_build_errors()`, `verify_fix()` - they all query this buffer. The pipeline ensures that by the time data reaches the buffer, it's clean, structured, scored, and deduplicated.
+The buffer is what MCP tools read from. [`get_errors`](../features/mcp-tools.md#get_errors), [`get_build_errors`](../features/mcp-tools.md#get_build_errors), [`verify_fix`](../features/mcp-tools.md#verify_fix) - they all query this buffer. The pipeline ensures that by the time data reaches the buffer, it's clean, structured, scored, and deduplicated.
 
 ---
 

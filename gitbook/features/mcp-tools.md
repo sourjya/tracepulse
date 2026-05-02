@@ -84,3 +84,107 @@ Every tool the agent can call, organized by workflow.
 | `acknowledge_error(fingerprint)` | Mark error as investigated. Excluded from future get_errors results. | ~50 tokens |
 | `check_drift()` | Check env, dependency, and migration drift in one call | ~300 tokens |
 | `verify_build(typecheck_command?, build_command?, cwd?)` | Type-check + build + runtime error check in one call | ~500 tokens |
+
+---
+
+## Tool Details
+
+### get\_errors
+
+The primary error discovery tool. Returns errors and warnings sorted by signal score (highest first).
+
+**Parameters:** `since?` (Unix ms), `source?`, `service?`, `limit?` (default 20), `message_contains?`, `status_code_min?`
+
+When [bug patterns](bug-patterns.md) are detected, errors include a `patterns` field with recurring/flaky/fixed-but-back annotations.
+
+### verify\_fix
+
+All-in-one post-fix verification. Watches for errors after a code change, checks build status, returns PASS or FAIL.
+
+**Parameters:** `duration_seconds?` (default 15), `fingerprint?` (verify a specific error is resolved)
+
+Call this after every code change. If you pass a fingerprint from `get_errors`, it specifically checks whether that error is gone.
+
+### run\_and\_watch
+
+Run any command through TracePulse's 26 parsers. Returns structured pass/fail with parsed errors. Use instead of shell for tests, builds, and linters.
+
+**Parameters:** `command` (required), `timeout_seconds?` (default 60), `cwd?` (for monorepos)
+
+```
+run_and_watch("npx vitest run")
+run_and_watch("pytest tests/", cwd: "./backend")
+run_and_watch("npx tsc --noEmit")
+```
+
+### get\_project\_health
+
+Composite health check in one call: server status, infrastructure connectivity, error count, build status. **Start every debugging session here.**
+
+No parameters. Returns `healthy: true/false` with a summary.
+
+### get\_build\_errors
+
+Returns only build/compilation errors (TypeScript, ESLint, Vite/webpack). Filters to `source: build-error`.
+
+**Parameters:** `limit?` (default 20)
+
+### watch\_for\_errors
+
+Block for N seconds and collect new errors. Returns `hot_reload_detected: true` if the server reloaded during the watch window.
+
+**Parameters:** `duration_seconds?` (default 15), `source?`
+
+### get\_error\_context
+
+Deep-dive into a specific error. Returns the full error, surrounding logs within +/-5 seconds, and occurrence count.
+
+**Parameters:** `fingerprint` (required)
+
+### verify\_build
+
+Type-check + build + runtime error check in one call. Replaces 3 separate tool calls.
+
+**Parameters:** `typecheck_command?` (default `npx tsc --noEmit`), `build_command?` (default `npx vite build`), `cwd?`
+
+### check\_drift
+
+Unified drift detection: missing .env vars, stale lock files, pending migrations. One call replaces manual checks.
+
+No parameters.
+
+### correlate\_with\_diff
+
+Link recent errors to uncommitted git changes. Shows which errors may be caused by your recent edits.
+
+No parameters. Requires a git repository.
+
+### get\_error\_clusters
+
+Group errors by type + module path. Reveals patterns like "5 TypeErrors in src/api/".
+
+**Parameters:** `min_count?` (default 2)
+
+### clear\_errors
+
+Reset the event buffer. Pass `fingerprint` to clear a specific error, or omit to clear all.
+
+**Parameters:** `fingerprint?`
+
+### get\_infra\_status
+
+Summary of all discovered backend services (databases, Redis, queues) with connectivity status. Reads from .env files, probes every 60 seconds.
+
+No parameters.
+
+### get\_migration\_status
+
+Check or run pending database migrations. Auto-detects alembic, prisma, django, knex.
+
+**Parameters:** `framework?`, `apply?` (set true to run migrations)
+
+### get\_session\_insights
+
+Agent effectiveness report: uninvestigated errors, verification gaps, tool usage patterns, parser stats. Use at end of session.
+
+No parameters.

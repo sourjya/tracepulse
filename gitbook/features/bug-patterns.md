@@ -3,8 +3,8 @@
 TracePulse detects 6 types of cross-session bug patterns from your error history. Patterns are detected automatically and surfaced in three places:
 
 - **`get_bug_patterns()`** - full analysis with all pattern types
-- **`get_errors()`** - pattern annotations on individual errors
-- **`get_project_health()`** - alert when patterns are detected
+- **[`get_errors`](../features/mcp-tools.md#get_errors)** - pattern annotations on individual errors
+- **[`get_project_health`](../features/mcp-tools.md#get_project_health)** - alert when patterns are detected
 
 ## How it works
 

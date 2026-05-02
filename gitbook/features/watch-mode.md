@@ -8,7 +8,7 @@ The core feedback loop: edit code, check if it worked, fix if not, repeat. Watch
 |-----------|------|-------------|
 | After any code change (default) | `verify_fix(5)` | Watches 5s + checks build + returns pass/fail verdict |
 | After frontend + backend changes | `verify_build(cwd: "./frontend")` | Runs tsc + build + runtime check in one call |
-| Quick CSS/template change | `get_build_errors()` | Returns instantly - no waiting |
+| Quick CSS/template change | [`get_build_errors`](../features/mcp-tools.md#get_build_errors) | Returns instantly - no waiting |
 | Need to wait for slow build | `wait_for_build(30)` | Event-driven - returns when build finishes, not after fixed time |
 | Need fine-grained control | `watch_for_errors(15)` | Blocks 15s, collects all new errors |
 | Waiting for a specific event | `wait_for_event("error", 30)` | Blocks until next error/warning/build/crash |

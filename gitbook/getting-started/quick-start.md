@@ -117,7 +117,7 @@ If your servers are managed by Docker, tmux, pm2, or scripts:
 
 ## 2b. Standalone mode (fresh projects, libraries, no server yet)
 
-For projects without a dev server or log file - libraries, monorepos, CLI tools, fresh projects. You still get `run_and_watch`, `verify_build`, `check_port`, `get_migration_status`, and all other tools:
+For projects without a dev server or log file - libraries, monorepos, CLI tools, fresh projects. You still get [`run_and_watch`](../features/mcp-tools.md#run_and_watch), [`verify_build`](../features/mcp-tools.md#verify_build), `check_port`, [`get_migration_status`](../features/mcp-tools.md#get_migration_status), and all other tools:
 
 ```json
 {
@@ -130,7 +130,7 @@ For projects without a dev server or log file - libraries, monorepos, CLI tools,
 }
 ```
 
-**Real-world validation:** A TypeScript library monorepo used TracePulse in standalone mode for 11 hours with 70+ tool calls. `run_and_watch` replaced all shell commands for tests and type-checking, catching unused imports, type errors, and test failures with structured output. No dev server needed.
+**Real-world validation:** A TypeScript library monorepo used TracePulse in standalone mode for 11 hours with 70+ tool calls. [`run_and_watch`](../features/mcp-tools.md#run_and_watch) replaced all shell commands for tests and type-checking, catching unused imports, type errors, and test failures with structured output. No dev server needed.
 
 Upgrade to `start` mode later when you add a dev server. No config change needed beyond swapping `standalone` for `start "your command"`.
 
@@ -146,7 +146,7 @@ Try asking:
 Are there any backend errors?
 ```
 
-The agent calls `get_errors()` and tells you what's wrong - with file, line number, error type, and importance score.
+The agent calls [`get_errors`](../features/mcp-tools.md#get_errors) and tells you what's wrong - with file, line number, error type, and importance score.
 
 Or let the agent check everything at once:
 
@@ -154,7 +154,7 @@ Or let the agent check everything at once:
 Check the project health.
 ```
 
-The agent calls `get_project_health()` - server status, infrastructure connectivity, error count, and build status in one call.
+The agent calls [`get_project_health`](../features/mcp-tools.md#get_project_health) - server status, infrastructure connectivity, error count, and build status in one call.
 
 ## 4. Let the agent verify its own fixes
 
@@ -164,7 +164,7 @@ After the agent makes a code change, it can verify the fix worked:
 Verify the fix is clean.
 ```
 
-The agent calls `verify_fix()` - watches for new errors, checks the build, and returns a definitive pass/fail. No more "I think I fixed it."
+The agent calls [`verify_fix`](../features/mcp-tools.md#verify_fix) - watches for new errors, checks the build, and returns a definitive pass/fail. No more "I think I fixed it."
 
 ## That's it
 
@@ -174,12 +174,12 @@ The agent now has 36 tools for backend debugging. It uses them automatically whe
 
 | Ask the agent | What happens |
 |---------------|-------------|
-| "Any backend errors?" | `get_errors()` - errors ranked by importance |
-| "Check project health" | `get_project_health()` - server + infra + errors in one call |
+| "Any backend errors?" | [`get_errors`](../features/mcp-tools.md#get_errors) - errors ranked by importance |
+| "Check project health" | [`get_project_health`](../features/mcp-tools.md#get_project_health) - server + infra + errors in one call |
 | "Run the tests" | `run_and_watch("pytest tests/")` - structured pass/fail results |
-| "Verify the fix" | `verify_fix()` - definitive pass/fail after a code change |
-| "What's the build status?" | `get_build_errors()` - TypeScript, ESLint, Vite/webpack errors |
-| "Check migration status" | `get_migration_status()` - pending migrations across frameworks |
+| "Verify the fix" | [`verify_fix`](../features/mcp-tools.md#verify_fix) - definitive pass/fail after a code change |
+| "What's the build status?" | [`get_build_errors`](../features/mcp-tools.md#get_build_errors) - TypeScript, ESLint, Vite/webpack errors |
+| "Check migration status" | [`get_migration_status`](../features/mcp-tools.md#get_migration_status) - pending migrations across frameworks |
 
 You don't need to remember tool names. Describe what you want and the agent picks the right tool.
 

@@ -22,9 +22,9 @@ The agent edits a file. Vite hot-reloads. The agent calls `watch_for_errors(5)`.
 
 ## How It Works
 
-When a hot-reload pattern matches a log line, TracePulse injects a synthetic marker event with `fingerprint: "hotreload:{pattern-id}"`. The `watch_for_errors` and `verify_fix` tools check for these markers and set `hot_reload_detected: true` in the response.
+When a hot-reload pattern matches a log line, TracePulse injects a synthetic marker event with `fingerprint: "hotreload:{pattern-id}"`. The [`watch_for_errors`](../features/mcp-tools.md#watch_for_errors) and [`verify_fix`](../features/mcp-tools.md#verify_fix) tools check for these markers and set `hot_reload_detected: true` in the response.
 
 ## Attach Mode
 
-In attach mode, TracePulse only sees reload messages from the log file it's tailing. If your frontend (Vite) and backend (uvicorn) are separate processes, tailing the backend log won't detect Vite HMR. Use multi-file attach mode to see both, or use `get_build_errors()` as the reliable check.
+In attach mode, TracePulse only sees reload messages from the log file it's tailing. If your frontend (Vite) and backend (uvicorn) are separate processes, tailing the backend log won't detect Vite HMR. Use multi-file attach mode to see both, or use [`get_build_errors`](../features/mcp-tools.md#get_build_errors) as the reliable check.
 

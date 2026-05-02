@@ -36,5 +36,5 @@ Highest priority: POST /api/export (signal: 72)
 | Make HTTP request | Chrome DevTools MCP: `navigate_page` |
 | Check for backend errors | TracePulse: `get_errors(message_contains: "/api/...")` |
 | Get error details | TracePulse: `get_error_context(fingerprint)` |
-| Check git correlation | TracePulse: `correlate_with_diff()` |
+| Check git correlation | TracePulse: [`correlate_with_diff`](../features/mcp-tools.md#correlate_with_diff) |
 

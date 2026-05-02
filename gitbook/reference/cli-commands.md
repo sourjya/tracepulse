@@ -101,7 +101,7 @@ Each container's output is tagged with its compose service name.
 
 ## `tracepulse standalone`
 
-Start TracePulse with no dev server and no log file. The MCP tools are available but no collector is running. Useful for fresh projects, libraries, or when you only need `run_and_watch` and `check_drift`.
+Start TracePulse with no dev server and no log file. The MCP tools are available but no collector is running. Useful for fresh projects, libraries, or when you only need [`run_and_watch`](../features/mcp-tools.md#run_and_watch) and [`check_drift`](../features/mcp-tools.md#check_drift).
 
 ```bash
 tracepulse standalone
@@ -114,7 +114,7 @@ tracepulse standalone
 | `--persist` | Save fingerprints across sessions. |
 
 {% hint style="info" %}
-**Auto-fallback:** If `tracepulse start` fails to spawn the dev server (e.g., missing dependency, wrong command), it automatically falls back to standalone mode instead of crashing. The agent can still use tools like `run_and_watch` and `get_project_health`.
+**Auto-fallback:** If `tracepulse start` fails to spawn the dev server (e.g., missing dependency, wrong command), it automatically falls back to standalone mode instead of crashing. The agent can still use tools like [`run_and_watch`](../features/mcp-tools.md#run_and_watch) and [`get_project_health`](../features/mcp-tools.md#get_project_health).
 {% endhint %}
 
 ---

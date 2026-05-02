@@ -4,7 +4,7 @@ TracePulse doesn't just catch code errors - it detects infrastructure problems f
 
 ## Crash Loop Detection
 
-If your server restarts 3+ times in 60 seconds, something is fundamentally broken. TracePulse detects this pattern and injects a crash loop alert at `signal_score: 95` - the highest priority. The agent sees it immediately in `get_errors()`.
+If your server restarts 3+ times in 60 seconds, something is fundamentally broken. TracePulse detects this pattern and injects a crash loop alert at `signal_score: 95` - the highest priority. The agent sees it immediately in [`get_errors`](../features/mcp-tools.md#get_errors).
 
 ## Slow Request Alerting
 
@@ -27,11 +27,11 @@ TracePulse recognizes infrastructure errors and boosts their signal score so the
 
 ## Infrastructure Discovery
 
-TracePulse scans your `.env` files for service URLs (`DATABASE_URL`, `REDIS_URL`, `ELASTICSEARCH_URL`, etc.) and probes their connectivity every 60 seconds. The agent calls `get_infra_status()` to see which services are reachable and which are down.
+TracePulse scans your `.env` files for service URLs (`DATABASE_URL`, `REDIS_URL`, `ELASTICSEARCH_URL`, etc.) and probes their connectivity every 60 seconds. The agent calls [`get_infra_status`](../features/mcp-tools.md#get_infra_status) to see which services are reachable and which are down.
 
 ## Environment Validation
 
-On startup, TracePulse compares your `.env` against `.env.example` and warns about missing variables. The agent sees these as low-signal events in the buffer. Use `check_drift()` for a comprehensive drift report.
+On startup, TracePulse compares your `.env` against `.env.example` and warns about missing variables. The agent sees these as low-signal events in the buffer. Use [`check_drift`](../features/mcp-tools.md#check_drift) for a comprehensive drift report.
 
 ## Health Probing
 

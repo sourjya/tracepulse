@@ -6,7 +6,7 @@ TracePulse sits between your dev server and your AI agent. It reads logs, parses
 
 <figure><img src="../.gitbook/assets/how-it-works-big-picture.svg" alt="TracePulse sits between your dev server and AI agent"><figcaption></figcaption></figure>
 
-Your dev server outputs to stdout/stderr. TracePulse captures that output, runs it through 26 parsers, scores each event, and stores it in a ring buffer. The AI agent calls MCP tools like `get_errors()` and `verify_fix()` to read structured results - no log parsing needed.
+Your dev server outputs to stdout/stderr. TracePulse captures that output, runs it through 26 parsers, scores each event, and stores it in a ring buffer. The AI agent calls MCP tools like [`get_errors`](../features/mcp-tools.md#get_errors) and [`verify_fix`](../features/mcp-tools.md#verify_fix) to read structured results - no log parsing needed.
 
 ## What Happens to Each Log Line
 

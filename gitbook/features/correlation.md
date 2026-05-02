@@ -13,7 +13,7 @@ When a user sees a blank page, the bug could be frontend (JavaScript crash) or b
 
 Frontend errors need to reach TracePulse. Three options:
 
-- **ErrorBoundary bridge** - add the TracePulse snippet to your React ErrorBoundary. Frontend crashes POST to `localhost:9801/api/v1/crashes` and appear in `get_errors()` alongside backend errors.
+- **ErrorBoundary bridge** - add the TracePulse snippet to your React ErrorBoundary. Frontend crashes POST to `localhost:9801/api/v1/crashes` and appear in [`get_errors`](../features/mcp-tools.md#get_errors) alongside backend errors.
 - **Chrome DevTools MCP** - the agent manually bridges by calling `list_network_requests()` in DevTools and `get_errors(message_contains: "/api/path")` in TracePulse.
 - **[ViewGraph](https://chaoslabz.gitbook.io/viewgraph)** - captures DOM state including error boundaries.
 

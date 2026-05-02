@@ -57,9 +57,9 @@ Run pre-deploy checks with TracePulse
 | Check | Tool | What it catches |
 |-------|------|----------------|
 | No runtime errors | `get_errors(limit: 5)` | Unhandled exceptions, 500s |
-| Build clean | `verify_build()` | TypeScript errors, build failures |
-| No drift | `check_drift()` | Missing env vars, pending migrations |
-| Infrastructure healthy | `get_infra_status()` | DB/Redis/services reachable |
+| Build clean | [`verify_build`](../features/mcp-tools.md#verify_build) | TypeScript errors, build failures |
+| No drift | [`check_drift`](../features/mcp-tools.md#check_drift) | Missing env vars, pending migrations |
+| Infrastructure healthy | [`get_infra_status`](../features/mcp-tools.md#get_infra_status) | DB/Redis/services reachable |
 | No slow endpoints | `get_perf_baseline()` | Response time regressions |
 | Tests pass | `run_and_watch("pytest tests/")` | Test failures with file:line |
 
@@ -76,9 +76,9 @@ Run pre-PR checks
 | Check | Tool | What it catches |
 |-------|------|----------------|
 | My changes don't break anything | `verify_build(cwd: "./frontend")` | Compile + build + runtime |
-| No new errors from my changes | `correlate_with_diff()` | Errors linked to uncommitted changes |
+| No new errors from my changes | [`correlate_with_diff`](../features/mcp-tools.md#correlate_with_diff) | Errors linked to uncommitted changes |
 | Tests still pass | `run_and_watch("npx vitest run")` | Regressions |
-| No drift introduced | `check_drift()` | Forgot to update .env.example |
+| No drift introduced | [`check_drift`](../features/mcp-tools.md#check_drift) | Forgot to update .env.example |
 
 ---
 
@@ -90,7 +90,7 @@ Ask your agent at the start of each session:
 What's the project health?
 ```
 
-One call to `get_project_health()` tells you everything: server running, infrastructure reachable, error count, build status, migration framework detected. Takes 2 seconds, costs ~200 tokens.
+One call to [`get_project_health`](../features/mcp-tools.md#get_project_health) tells you everything: server running, infrastructure reachable, error count, build status, migration framework detected. Takes 2 seconds, costs ~200 tokens.
 
 ---
 
@@ -98,8 +98,8 @@ One call to `get_project_health()` tells you everything: server running, infrast
 
 When TracePulse Team Server ships (M19), these same commands work across the entire team:
 
-- `get_project_health()` covers shared staging
-- `get_error_clusters()` shows team-wide error patterns
+- [`get_project_health`](../features/mcp-tools.md#get_project_health) covers shared staging
+- [`get_error_clusters`](../features/mcp-tools.md#get_error_clusters) shows team-wide error patterns
 - `get_session_impact()` reports combined token/energy savings
 - `get_audit_trail()` shows tool usage across all developers
 

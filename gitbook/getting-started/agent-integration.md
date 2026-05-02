@@ -21,7 +21,7 @@ This teaches Cursor's agent:
 
 Add the TracePulse section from [`rules/claude-code-integration.md`](https://github.com/sourjya/tracepulse/blob/main/rules/claude-code-integration.md) to your project's `CLAUDE.md`.
 
-This gives Claude Code the same workflow guidance as Kiro and Cursor: use `run_and_watch` instead of shell for tests, use `verify_fix` after changes, start sessions with `get_project_health`.
+This gives Claude Code the same workflow guidance as Kiro and Cursor: use [`run_and_watch`](../features/mcp-tools.md#run_and_watch) instead of shell for tests, use [`verify_fix`](../features/mcp-tools.md#verify_fix) after changes, start sessions with [`get_project_health`](../features/mcp-tools.md#get_project_health).
 
 ## VS Code (Copilot)
 
