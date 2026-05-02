@@ -785,3 +785,17 @@ Detailed chokepoint analysis from M1-M10 build session:
 **Key insight:** 7/8 chokepoints were caught by run_and_watch. The one miss (CP-006) was a runtime error from a script run directly, not through TP. If the agent had used `run_and_watch("node scripts/demo.mjs")` instead of shell, TP would have caught it too.
 
 **Avg attempts before green: 1.5** - structured errors with file:line mean most issues fixed on first attempt.
+
+### get_error_context used correctly for render pipeline crash (Prism)
+
+Agent used `run_and_watch` to catch render errors, then `get_error_context(fingerprint)` to deep-dive into the "Cannot read properties of undefined (reading 'attrs')" error. Led directly to the root cause: injectAria mapping over undefined children. TP working as designed.
+
+### Agent wasted 1 hour on file preview - NOT a TP gap
+
+Agent tried to preview an SVG file in the browser: file:// URL failed, tried python HTTP server (hung on background process), tried multiple workarounds. Wasted 1+ hour.
+
+**Not a TP gap** - this is a Chrome DevTools MCP workflow issue. The workaround (data URI) exists but wasn't discoverable. Agent's own assessment: "I shouldn't have tried at all."
+
+**Lesson for SKILL.md:** Add guidance: "To preview local files (SVG, HTML), use Chrome DevTools MCP navigate_page with a data URI, not file:// URLs. Or use evaluate_script to inject content into a blank page."
+
+**Idea for DevTools MCP:** A `preview_file(path)` tool that auto-detects file type and opens it via the most efficient method (data URI for SVG/images, file:// for HTML).
