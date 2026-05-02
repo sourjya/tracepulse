@@ -1,6 +1,6 @@
-# 25 Error Parsers
+# 26 Error Parsers
 
-TracePulse parses errors from 25 sources. Parsers run in priority order - first match wins.
+TracePulse parses errors from 26 sources. Parsers run in priority order - first match wins.
 
 ## Runtime Parsers
 
@@ -14,6 +14,7 @@ TracePulse parses errors from 25 sources. Parsers run in priority order - first 
 | **Go** | Panics with goroutine stack traces | `panic: runtime error: index out of range` |
 | **Java** | Exceptions with `at` frames + `Caused by:` | `java.lang.NullPointerException` |
 | **Rust** | Panics with `RUST_BACKTRACE` output | `thread 'main' panicked at 'index out of bounds'` |
+| **Pydantic** | FastAPI ValidationError, field required, type errors | `ValidationError: 2 validation errors for UserCreate` |
 
 ## Build Parsers
 

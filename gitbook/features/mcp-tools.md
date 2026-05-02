@@ -1,4 +1,4 @@
-# 35 MCP Tools
+# 36 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
@@ -62,6 +62,8 @@ Every tool the agent can call, organized by workflow.
 | `get_infra_status()` | All backend services (DB, Redis, etc.) with connectivity | ~200 tokens |
 | `get_infra_detail(name)` | Per-service detail with probe history | ~200 tokens |
 | `check_port(port)` | Is a TCP port available or in use? | ~50 tokens |
+| `register_probe(name, url)` | Register a health endpoint for periodic checking | ~100 tokens |
+| `list_probes()` | All registered probes with latest results | ~100 tokens |
 
 ## Error Intelligence
 
@@ -71,3 +73,14 @@ Every tool the agent can call, organized by workflow.
 | `get_migration_status(framework?)` | Check pending migrations. Auto-detects alembic/prisma/django/knex. | ~200 tokens |
 | `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times from HTTP access logs. | ~500 tokens |
 | `get_audit_trail(limit?, since?)` | Review your own tool usage this session. Optimize your workflow. | ~500 tokens |
+
+## Session & Behavior
+
+| Tool | What it does | Cost |
+|------|-------------|------|
+| `get_session_summary()` | Compact ~200-token session manifest: errors, builds, tools called | ~200 tokens |
+| `get_session_insights()` | Agent effectiveness: uninvestigated errors, verification gaps, recommendations | ~500 tokens |
+| `get_session_impact()` | Environmental report: tokens saved, energy (Wh), CO2 (g) | ~200 tokens |
+| `acknowledge_error(fingerprint)` | Mark error as investigated. Excluded from future get_errors results. | ~50 tokens |
+| `check_drift()` | Check env, dependency, and migration drift in one call | ~300 tokens |
+| `verify_build(typecheck_command?, build_command?, cwd?)` | Type-check + build + runtime error check in one call | ~500 tokens |

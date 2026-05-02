@@ -64,10 +64,10 @@ TracePulse pre-parses, scores, and deduplicates. The agent gets the exact file:l
 
 | Capability | TracePulse | Sentry MCP | Chrome DevTools | BrowserTools |
 |-----------|:---------:|:---------:|:--------------:|:-----------:|
-| Backend error parsing | **Yes (20)** | Yes (prod) | No | No |
+| Backend error parsing | **Yes (26)** | Yes (prod) | No | No |
 | Signal scoring (0-100) | **Yes** | No | No | No |
 | Fingerprint dedup | **Yes** | No | No | No |
-| Hot-reload detection | **Yes (11)** | No | No | No |
+| Hot-reload detection | **Yes (12)** | No | No | No |
 | Dev-time (seconds) | **Yes** | No (minutes) | Yes | Yes |
 | Works without browser | **Yes** | Yes | No | No |
 | Test runner integration | **Yes** | No | No | No |
@@ -128,7 +128,7 @@ Monitor 9 cloud platforms with zero additional dependencies:
 | **[Heroku](https://devcenter.heroku.com/articles/heroku-cli)** | `run_and_watch("heroku logs --tail --app my-app")` |
 | **[Vercel](https://vercel.com/docs/cli)** / **[Railway](https://docs.railway.com/guides/cli)** / **[Fly.io](https://fly.io/docs/flyctl/install/)** | Same pattern with their CLIs |
 
-The same 25 parsers that catch local dev server errors catch cloud errors too.
+The same 26 parsers that catch local dev server errors catch cloud errors too.
 
 [Full cloud monitoring guide ->](tutorials/cloud-logs.md)
 
@@ -149,7 +149,7 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/tracepulse
 ## Quick Links
 
 - [Quick Start (2 minutes) ->](getting-started/quick-start.md)
-- [30 MCP Tools ->](features/mcp-tools.md)
+- [36 MCP Tools ->](features/mcp-tools.md)
 - [23 Error Parsers ->](features/parsers.md)
 - [How It Works ->](architecture/how-it-works.md)
 - [Feature Matrix vs Competitors ->](comparison/feature-matrix.md)

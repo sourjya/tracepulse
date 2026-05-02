@@ -5,7 +5,7 @@ description: Uses TracePulse MCP server for backend runtime error monitoring. Us
 
 ## Core Concepts
 
-**What TracePulse does**: Watches your dev server's output (stdout/stderr or a log file), parses errors from 9 sources (Node.js, Python, Go, Java, Rust, JSON structured logs, TypeScript compiler, ESLint, Vite/webpack), scores them by severity (0-100), and exposes them as MCP tools. You never need to read raw terminal output or log files.
+**What TracePulse does**: Watches your dev server's output (stdout/stderr or a log file), parses errors from 26 sources (Node.js, Python, Go, Java, Rust, JSON structured logs, TypeScript compiler, ESLint, Vite/webpack), scores them by severity (0-100), and exposes them as MCP tools. You never need to read raw terminal output or log files.
 
 **Two modes**:
 - **Start mode**: TracePulse spawns your dev server and captures its output

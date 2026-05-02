@@ -49,7 +49,7 @@ run_and_watch(command: "npx eslint src/", timeout_seconds: 30)
 ## How it works
 
 1. TracePulse spawns the command as a child process
-2. stdout/stderr are piped through all 25 parsers
+2. stdout/stderr are piped through all 26 parsers
 3. Errors are scored and structured
 4. When the process exits, results are returned
 

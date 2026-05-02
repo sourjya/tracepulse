@@ -104,7 +104,7 @@ After adding the config, start a new chat session. Ask the agent:
 What TracePulse tools are available?
 ```
 
-It should list 24 tools. If tools don't appear, check:
+It should list 36 tools. If tools don't appear, check:
 1. Config file is in the correct location
 2. Node.js >= 22 is installed
 3. `npx tracepulse --version` works from your terminal

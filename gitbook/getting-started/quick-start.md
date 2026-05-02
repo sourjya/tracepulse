@@ -168,7 +168,7 @@ The agent calls `verify_fix()` - watches for new errors, checks the build, and r
 
 ## That's it
 
-The agent now has 30 tools for backend debugging. It uses them automatically when investigating errors, verifying fixes, running tests, and monitoring your dev server.
+The agent now has 36 tools for backend debugging. It uses them automatically when investigating errors, verifying fixes, running tests, and monitoring your dev server.
 
 ## Common Commands to Try
 
@@ -186,7 +186,7 @@ You don't need to remember tool names. Describe what you want and the agent pick
 ## Next Steps
 
 - [Installation options ->](installation.md)
-- [All 30 MCP tools ->](../features/mcp-tools.md)
+- [All 36 MCP tools ->](../features/mcp-tools.md)
 - [TracePulse in Action (real examples) ->](../tutorials/tracepulse-in-action.md)
 - [Why TracePulse? ->](../why-tracepulse.md)
 

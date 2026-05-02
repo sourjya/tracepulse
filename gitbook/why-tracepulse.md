@@ -52,7 +52,7 @@ The most common workaround is "check the terminal" or "paste the error." Here's 
 | **Deduplication** | Same error read 42 times | Fingerprinted - shown once with count |
 | **File:line** | Agent parses raw stack trace | Extracted and structured |
 | **Fix verification** | "I think I fixed it" | `verify_fix()` - definitive pass/fail |
-| **Hot-reload** | Agent doesn't know if change took effect | 11 framework detectors |
+| **Hot-reload** | Agent doesn't know if change took effect | 12 framework detectors |
 | **Infrastructure** | Agent can't see if Redis/Postgres is down | Auto-discovered from .env, probed every 60s |
 
 Manual log reading costs 12x more tokens and gives the agent unstructured text it has to parse. That's 12x more compute, more energy, and more carbon - for a worse result.

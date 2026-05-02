@@ -26,7 +26,7 @@ HTTP endpoints bind to `127.0.0.1` only:
 
 ## Command Allowlist
 
-`run_and_watch` only executes commands starting with: npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, make, bash.
+`run_and_watch` only executes commands starting with: npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test, uv, .venv/bin/python, .venv/bin/pytest.
 
 ## No Raw Messages in Persistence
 
