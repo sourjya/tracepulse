@@ -24,6 +24,7 @@ import {
 } from "@/constants/limits.js";
 import { fingerprint } from "@/pipeline/fingerprinter.js";
 import { scoreSignal } from "@/pipeline/signal-scorer.js";
+import { matchInfraPattern } from "@/scoring/infra-patterns.js";
 
 // ──────────────────────────────────────────────
 // Truncation Helpers
@@ -80,7 +81,11 @@ export function normalizeEvent(
   const timestamp = Date.now();
 
   const hints = { ...parsed.scoring_hints, is_first_occurrence: isFirstOccurrence };
-  const { signal_score, signal_strength } = scoreSignal(hints, parsed.level, 1);
+  const { signal_score: baseScore, signal_strength } = scoreSignal(hints, parsed.level, 1);
+
+  // Apply infrastructure pattern boost (connection refused, OOM, pool exhausted, etc.)
+  const infraMatch = matchInfraPattern(parsed.message);
+  const signal_score = Math.min(100, baseScore + (infraMatch?.score_boost ?? 0));
 
   return {
     id: randomUUID(),
