@@ -31,7 +31,7 @@ TracePulse breaks this chain at the source: fewer tokens wasted means less compu
 TracePulse is a runtime feedback MCP server that watches dev server stdout/stderr, parses errors through 25 framework-specific parsers, scores them by importance (0-100), deduplicates by fingerprint, and serves structured results via 30 MCP tools. The agent gets the exact file:line in one call instead of scanning raw logs.
 
 **Measured impact:**
-- 12x token reduction per error (12,000 tokens down to 1,000)
+- 12x token reduction per error - 12,000 tokens down to 1,000 (measured in live debugging sessions - see [TracePulse in Action](https://chaoslabz.gitbook.io/tracepulse/tutorials/tracepulse-in-action-real-examples))
 - Additional 21,000+ tokens/session saved via acknowledged errors, loop detection, and response compression
 - Environmental tracking: tokens saved -> energy (Wh) -> CO2 (g) per session
 - 15-30 minutes saved per debugging session
