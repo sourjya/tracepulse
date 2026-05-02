@@ -22,6 +22,7 @@ import { handleGetBuildErrors } from "@/tools/get-build-errors.js";
 import { handleGetErrorClusters } from "@/tools/get-error-clusters.js";
 import { handleGetMigrationStatus } from "@/tools/get-migration-status.js";
 import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
+import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
 import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
@@ -404,6 +405,14 @@ export function createMcpServer(
       openWorldHint: false,
     },
   }, (args) => handleGetAuditTrail(auditBuffer, args as Record<string, unknown>));
+
+  server.registerTool("get_session_insights", {
+    title: "Get Session Insights",
+    description:
+      "Analyze agent effectiveness: uninvestigated errors, verification gaps, tool usage patterns, parser stats. Use at end of session.",
+    inputSchema: {},
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetSessionInsights(buffer, auditBuffer));
 
   server.registerTool("get_perf_baseline", {
     title: "Get Performance Baseline",
