@@ -97,6 +97,16 @@ From live agent sessions across 4 projects (full-stack web app, TypeScript libra
 
 ---
 
+## Just Ask
+
+You don't need to remember tool names. Ask your agent naturally and TracePulse translates:
+
+<figure><img src=".gitbook/assets/tracepulse-query-mapping.svg" alt="Natural language to TracePulse tool mapping" width="960"></figure>
+
+[See all query mappings ->](tutorials/project-audit.md)
+
+---
+
 ## Install
 
 ```json

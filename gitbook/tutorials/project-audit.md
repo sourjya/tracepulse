@@ -2,6 +2,8 @@
 
 TracePulse tools aren't just for debugging - they're a project health audit system. Ask your agent to run these checks before deploying, before a PR, or at the start of each day.
 
+<figure><img src="../.gitbook/assets/tracepulse-query-mapping.svg" alt="Natural language queries mapped to TracePulse tool sequences" width="960"></figure>
+
 ## Quick Audit (30 seconds)
 
 Ask your agent:
