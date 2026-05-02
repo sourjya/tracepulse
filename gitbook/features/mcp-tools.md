@@ -1,4 +1,4 @@
-# 30 MCP Tools
+# 35 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
