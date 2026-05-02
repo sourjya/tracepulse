@@ -122,21 +122,29 @@ export function handleGetErrors(
   const decayed = applyScoreDecay(filtered);
   const lifecycle = errorLifecycle;
   const active = lifecycle ? lifecycle.filterActive(decayed) : decayed;
-  active.sort((a, b) => b.signal_score - a.signal_score);
-  const limited = active.slice(0, limit);
+
+  // Filter out acknowledged errors (W1.1) - agent already investigated these
+  const unacknowledged = args._auditBuffer
+    ? active.filter((e) => !(args._auditBuffer as AuditBuffer).isAcknowledged(e.fingerprint))
+    : active;
+  unacknowledged.sort((a, b) => b.signal_score - a.signal_score);
+  const limited = unacknowledged.slice(0, limit);
 
   // Run cross-service correlation on results
   const correlated = correlateEvents(limited, CORRELATION_WINDOW_MS);
-  // Re-sort by signal_score after correlation (correlation sorts by timestamp)
   correlated.sort((a, b) => b.signal_score - a.signal_score);
+
+  // Inject loop warning if detected (W1.6)
+  const loopWarning = args._auditBuffer ? (args._auditBuffer as AuditBuffer).detectLoop() : null;
 
   return jsonResult(addEmptyDiagnostics("get_errors", {
     errors: correlated,
-    total_matching: active.length,
+    total_matching: unacknowledged.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
     buffer_cleared_at: buffer.bufferClearedAt,
     last_event_timestamp: correlated.length > 0 ? correlated[0].timestamp : null,
+    ...(loopWarning ? { loop_warning: `Repeated ${loopWarning.tool} call (${loopWarning.count}x). ${loopWarning.suggestion}` } : {}),
   }, correlated.length === 0));
 }
 
@@ -282,7 +290,7 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrors(buffer, args as Record<string, unknown>, options?.errorLifecycle));
+  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle));
 
   server.registerTool("get_server_logs", {
     title: "Get Server Logs",
@@ -332,6 +340,20 @@ export function createMcpServer(
       openWorldHint: false,
     },
   }, (args) => handleClearErrors(buffer, args as Record<string, unknown>));
+
+  server.registerTool("acknowledge_error", {
+    title: "Acknowledge Error",
+    description: "Mark an error as investigated. Acknowledged errors are excluded from get_errors results. Saves tokens by preventing re-investigation.",
+    inputSchema: {
+      fingerprint: z.string().describe("Fingerprint of the error to acknowledge."),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => {
+    const fp = args.fingerprint as string;
+    if (!fp) return errorResult("fingerprint is required");
+    auditBuffer.acknowledge(fp);
+    return jsonResult({ acknowledged: fp, message: "Error excluded from future get_errors results." });
+  });
 
   // ── Phase 2 Tools ──
 
