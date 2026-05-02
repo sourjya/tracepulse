@@ -37,3 +37,5 @@ Highest priority: POST /api/export (signal: 72)
 | Check for backend errors | TracePulse: `get_errors(message_contains: "/api/...")` |
 | Get error details | TracePulse: `get_error_context(fingerprint)` |
 | Check git correlation | TracePulse: `correlate_with_diff()` |
+
+> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

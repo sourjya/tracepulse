@@ -133,3 +133,5 @@ So we fixed it. TracePulse's clustered mode collapses 36 tools into 7 semantic g
 - Saved: 20,000 tokens/session - automatically, with zero behavior change
 
 If we're going to tell developers that every wasted token is wasted compute, wasted energy, and avoidable carbon - we have to hold ourselves to the same standard. Our own schema overhead was the first thing we cut.
+
+> **Tool Reference:** See all [36 MCP Tools](features/mcp-tools.md) for complete parameter details.

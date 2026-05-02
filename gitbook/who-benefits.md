@@ -110,3 +110,5 @@ Your users hit errors in your framework. TracePulse parses them.
 {% endtab %}
 
 {% endtabs %}
+
+> **Tool Reference:** See all [36 MCP Tools](features/mcp-tools.md) for complete parameter details.

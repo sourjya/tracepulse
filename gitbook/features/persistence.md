@@ -46,3 +46,5 @@ Without persistence, `get_new_errors()` treats every error as new (since there's
 ## Security
 
 The persistence file stores only hashes and metadata - no raw error messages or stack traces beyond the 200-char truncated `last_message`. The file is local to your machine in the `.tracepulse/` directory. Add `.tracepulse/` to your `.gitignore`.
+
+> **Tool Reference:** See all [36 MCP Tools](mcp-tools.md) for complete parameter details.

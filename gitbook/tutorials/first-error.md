@@ -65,3 +65,5 @@ The agent calls `verify_fix(10)`:
 5. After your fix, `verify_fix` confirmed zero new errors
 
 No log reading. No copy-paste. The agent saw the error and the fix in real time.
+
+> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

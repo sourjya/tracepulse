@@ -27,3 +27,5 @@ When a hot-reload pattern matches a log line, TracePulse injects a synthetic mar
 ## Attach Mode
 
 In attach mode, TracePulse only sees reload messages from the log file it's tailing. If your frontend (Vite) and backend (uvicorn) are separate processes, tailing the backend log won't detect Vite HMR. Use multi-file attach mode to see both, or use `get_build_errors()` as the reliable check.
+
+> **Tool Reference:** See all [36 MCP Tools](mcp-tools.md) for complete parameter details.

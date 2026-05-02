@@ -98,3 +98,5 @@ Commands are validated against an allowlist: `npx`, `npm`, `node`, `pytest`, `py
 | **Any language** | (no parser match) | raw output | Exit code, success/fail, raw text |
 
 All test runners work with `run_and_watch` regardless of parser support. Parsers add structured extraction - without a parser, you still get exit code and raw output.
+
+> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

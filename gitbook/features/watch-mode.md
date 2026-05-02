@@ -67,3 +67,5 @@ When TracePulse surfaces real errors, this is the fastest resolution path:
 ```
 
 This loop resolved a 25-occurrence migration error in under 2 minutes during real-world testing.
+
+> **Tool Reference:** See all [36 MCP Tools](mcp-tools.md) for complete parameter details.
