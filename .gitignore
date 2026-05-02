@@ -13,3 +13,4 @@ coverage/
 # ViewGraph - captures, tokens, local config
 .viewgraph/
 .kiro/settings/
+docs/tmp-*
