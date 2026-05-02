@@ -8,6 +8,38 @@ If the server crashes, the agent doesn't know. If a database query fails, the ag
 
 ---
 
+## The Three Blind Spots
+
+**Blind spot one: the backend crashes, and the agent does not notice.**
+
+When you run `npx tracepulse start "npm run dev"` - or any dev server command - TracePulse sits between the process and the agent. Without something like this, the agent has no stdout access. The server throws an unhandled exception. The agent keeps talking about the code it just wrote. It does not know the thing is on fire.
+
+**Blind spot two: the same error fires 42 times, and the agent reads it 42 times.**
+
+This happens on real sessions. A misconfigured database connection throws the same error on every request. The agent sees the first instance, attempts a fix, the error recurs, the agent sees it again - treats it as new information, attempts another fix, repeat. No deduplication. No "you've already looked at this." Just 42 separate reads of the same stack trace, each one consuming tokens as if it were a fresh discovery.
+
+**Blind spot three: the agent declares victory before checking.**
+
+This one is the most insidious. The agent makes a change. The agent says "fixed." The error is still firing. But the agent has already moved on, and the next few messages are the agent building on top of a broken foundation. By the time the developer notices, the context has drifted, the fix attempt is buried three turns back, and untangling it costs more than starting over.
+
+These are not edge cases. They are the default behavior when you give an agent a coding task and a dev server with no observability layer.
+
+---
+
+## The Barrier to Autonomous Coding
+
+These blind spots are not just token waste - they are the single biggest barrier to autonomous coding sprints.
+
+When an agent can't see runtime errors, every automated session eventually hits a wall. The agent writes code, the code breaks at runtime, the agent doesn't know, it keeps building on the broken foundation, and the entire sprint stalls. The developer has to step in, read the terminal, paste the error, explain the context, and restart the agent's train of thought. All development stops until a human provides the feedback the agent should have gotten automatically.
+
+This is why "let the agent run overnight" doesn't work today. Not because the agent can't write code - it can. But because the agent can't verify that the code it wrote actually runs. Without runtime feedback, autonomous sprints are fundamentally impossible. The agent will always need a human to tell it "the server crashed" or "the migration didn't apply" or "the test is failing."
+
+TracePulse removes the human from this loop. The agent calls `get_errors()` and knows immediately. It calls `verify_fix()` and gets a definitive pass/fail. It calls `get_project_health()` and sees the full picture in one call. No human needed. No stalled sprints. No "check the terminal."
+
+**This is what makes autonomous coding sprints possible:** not smarter models, but closing the feedback loop between the agent and the runtime.
+
+---
+
 ## Why Not Just Read the Terminal?
 
 The most common workaround is "check the terminal" or "paste the error." Here's why that falls short - for your workflow and for the planet:
