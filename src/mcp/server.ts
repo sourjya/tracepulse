@@ -25,6 +25,7 @@ import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
 import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
+import { loadClusterConfig } from "@/clusters/gateway.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
 import { createPerfBaseline, type PerfBaseline } from "@/store/perf-baseline.js";
@@ -714,8 +715,6 @@ export function createMcpServer(
 
   // Log clustered mode status
   if (options?.clustered) {
-    // In clustered mode: register 7 gateway tools that dispatch to individual handlers
-    const { loadClusterConfig, createToolRegistry, createGatewayHandler } = await import("@/clusters/gateway.js");
     const clusterConfig = loadClusterConfig();
     const toolRegistry = createToolRegistry();
 
