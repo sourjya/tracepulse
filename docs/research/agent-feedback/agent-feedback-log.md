@@ -763,3 +763,25 @@ Agent provided a detailed TP usage summary for a TypeScript library monorepo (no
 - W7: Vitest watch mode integration - NEW, low priority
 
 **Key quote:** "Not transformative, but consistently useful. The biggest value was speed - structured errors meant I could fix on first attempt more often."
+
+### Piktor chokepoint log - 8 blockers, TP helped on 7/8
+
+Detailed chokepoint analysis from M1-M10 build session:
+
+**Stats:** 8 chokepoints, avg 1.5 attempts before green, most common: unused imports (TS6196)
+
+**TP helped (7/8):**
+- CP-001: "Cannot find package" caught by run_and_watch
+- CP-002: 8 unused imports listed with file:line by run_and_watch(tsc)
+- CP-003: number|undefined type error with exact line:col
+- CP-004: 5 pptxgenjs type errors identified
+- CP-005: "Cannot find package 'fflate'" caught
+- CP-007: "expected [...] to have length 6 but got 13" - test assertion mismatch
+- CP-008: "expected 16 to be 8" - autosize constraint issue
+
+**TP gap (1/8):**
+- CP-006: #src/* import alias breaks at RUNTIME (node process stderr). TP wasn't monitoring the node process. This is the "library project runtime error" gap - TP could monitor `node scripts/demo.mjs` output if run via run_and_watch.
+
+**Key insight:** 7/8 chokepoints were caught by run_and_watch. The one miss (CP-006) was a runtime error from a script run directly, not through TP. If the agent had used `run_and_watch("node scripts/demo.mjs")` instead of shell, TP would have caught it too.
+
+**Avg attempts before green: 1.5** - structured errors with file:line mean most issues fixed on first attempt.
