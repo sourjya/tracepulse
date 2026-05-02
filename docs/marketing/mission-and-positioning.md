@@ -109,3 +109,7 @@ Together: the agent has the same situational awareness a senior developer has.
 | DC CO2: 220M to 320M tonnes | [IEA AI & Climate Change](https://www.iea.org/reports/energy-and-ai/ai-and-climate-change) |
 | "Throwing darts in the dark" | [Sentry Engineering](https://blog.sentry.io/vibe-coding-closing-the-feedback-loop-with-traceability/) |
 | 12,000 to 1,000 tokens per error | TracePulse live sessions |
+
+## We Practice What We Preach
+
+TracePulse's own schema overhead was 25,000 tokens per session. We cut it by 80% with tool clustering - 7 gateways instead of 36 individual tools. If we're going to tell developers that every wasted token is wasted compute, we have to hold ourselves to the same standard.

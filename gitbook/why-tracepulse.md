@@ -118,3 +118,16 @@ npx tracepulse start "npm run dev"
 ```
 
 That's it. Two minutes from install to first error caught. No SDK to add to your app, no browser extension, no config file. TracePulse reads stdout/stderr - it works with any language, any framework, any dev server.
+
+## We Practice What We Preach
+
+TracePulse saves agents 90%+ of tokens on error investigation. But we noticed our own tool was part of the problem: 36 tool schemas at ~1,000 tokens per turn. Over a 25-turn session, that's 25,000 tokens of overhead just for TracePulse to exist in the agent's context - before a single tool is called.
+
+So we fixed it. TracePulse's clustered mode collapses 36 tools into 7 semantic gateways. Schema overhead drops from ~1,000 to ~200 tokens per turn. The agent discovers sub-tools on demand - only loading what it actually needs.
+
+**The math:**
+- Before: 36 schemas x ~28 tokens each = ~1,000 tokens/turn x 25 turns = 25,000 tokens/session
+- After: 7 gateways x ~28 tokens each = ~200 tokens/turn x 25 turns = 5,000 tokens/session
+- Saved: 20,000 tokens/session - automatically, with zero behavior change
+
+If we're going to tell developers that every wasted token is wasted compute, wasted energy, and avoidable carbon - we have to hold ourselves to the same standard. Our own schema overhead was the first thing we cut.
