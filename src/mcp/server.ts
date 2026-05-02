@@ -25,6 +25,7 @@ import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
 import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
+import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { loadClusterConfig, createToolRegistry } from "@/clusters/gateway.js";
 import { createAuditBuffer, type AuditBuffer } from "@/store/audit-buffer.js";
 import { handleGetPerfBaseline } from "@/tools/get-perf-baseline.js";
@@ -459,6 +460,13 @@ export function createMcpServer(
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionImpact(auditBuffer));
+
+  server.registerTool("get_session_summary", {
+    title: "Get Session Summary",
+    description: "Compact session manifest: errors seen/acknowledged/pending, build status, tool count. ~200 tokens. Use after context compaction.",
+    inputSchema: {},
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetSessionSummary(buffer, auditBuffer));
 
   server.registerTool("get_perf_baseline", {
     title: "Get Performance Baseline",
