@@ -90,4 +90,3 @@ If both are clean, the fix is confirmed end-to-end.
 | Verify backend fix | TracePulse `verify_fix` |
 | Verify browser fix | Chrome DevTools MCP `take_snapshot` |
 
-> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

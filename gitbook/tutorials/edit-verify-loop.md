@@ -83,4 +83,3 @@ When TracePulse surfaces real errors, this is the fastest resolution path. Valid
 
 This loop is more productive than the basic edit-verify pattern because `get_new_errors` filters out noise (old errors still in buffer) and `clear_errors` gives you a clean baseline for verification.
 
-> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

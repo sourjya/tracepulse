@@ -103,4 +103,3 @@ When TracePulse Team Server ships (M19), these same commands work across the ent
 - `get_session_impact()` reports combined token/energy savings
 - `get_audit_trail()` shows tool usage across all developers
 
-> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

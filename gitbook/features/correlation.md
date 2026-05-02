@@ -34,4 +34,3 @@ If no frontend source is configured, `get_correlated_errors` returns empty with 
 
 The routing hints guide the agent to the right tool instead of leaving it stuck.
 
-> **Tool Reference:** See all [36 MCP Tools](mcp-tools.md) for complete parameter details.

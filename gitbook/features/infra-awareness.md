@@ -37,4 +37,3 @@ On startup, TracePulse compares your `.env` against `.env.example` and warns abo
 
 With `--health-url http://localhost:8000/health`, TracePulse periodically GETs your health endpoint and reports the result. The agent can also register custom probes via `register_probe()`.
 
-> **Tool Reference:** See all [36 MCP Tools](mcp-tools.md) for complete parameter details.

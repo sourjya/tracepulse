@@ -44,4 +44,3 @@ Every agent benefits from TracePulse's tool descriptions and SKILL.md. The integ
 | **Windsurf** | Tool descriptions | None needed |
 | **Cline** | Tool descriptions | None needed |
 
-> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.

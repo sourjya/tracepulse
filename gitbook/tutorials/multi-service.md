@@ -84,4 +84,3 @@ list_services()                     # Overview of all services
 
 If a service crashes, TracePulse detects it immediately. If it crashes 3+ times in 60 seconds, TracePulse injects a crash loop alert at signal_score 95.
 
-> **Tool Reference:** See all [36 MCP Tools](../features/mcp-tools.md) for complete parameter details.
