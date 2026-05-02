@@ -333,6 +333,54 @@ When `get_correlated_errors` returns empty (no frontend source configured):
 3. TracePulse: `get_errors(message_contains: "/api/that-endpoint")` → find matching backend error
 This is 2 calls instead of the automated correlation, but works in any setup.
 
+## Common Queries -> Tool Mappings
+
+When the developer asks these questions, use these TracePulse tools:
+
+### Health & Status
+| Developer asks | You call |
+|---------------|---------|
+| "Is everything working?" | `get_project_health()` |
+| "Any errors?" | `get_errors(limit: 5)` |
+| "Is the build clean?" | `get_build_errors()` |
+| "Is Redis/Postgres up?" | `get_infra_status()` |
+| "Any drift?" | `check_drift()` |
+
+### After Code Changes
+| Developer asks | You call |
+|---------------|---------|
+| "Did my fix work?" | `verify_fix(fingerprint: "...", duration_seconds: 5)` |
+| "Does it compile and build?" | `verify_build(cwd: "./frontend")` |
+| "Run the tests" | `run_and_watch("npx vitest run", cwd: "./frontend")` |
+| "Run backend tests" | `run_and_watch(".venv/bin/pytest tests/")` |
+| "Check for type errors" | `run_and_watch("npx tsc --noEmit", cwd: "./frontend")` |
+
+### Investigation
+| Developer asks | You call |
+|---------------|---------|
+| "What's this error about?" | `get_error_context(fingerprint)` |
+| "Is this a new bug or old?" | `get_new_errors(limit: 5)` |
+| "What patterns do you see?" | `get_error_clusters()` |
+| "Did my changes cause this?" | `correlate_with_diff()` |
+| "What's slow?" | `get_perf_baseline()` |
+
+### Audit & Reporting
+| Developer asks | You call |
+|---------------|---------|
+| "Run a full project audit" | `get_project_health()` then `check_drift()` then `get_error_clusters()` then `get_perf_baseline()` |
+| "Pre-deploy checks" | `verify_build()` then `check_drift()` then `get_errors(limit: 5)` then `get_infra_status()` |
+| "How many tokens did we save?" | `get_session_impact()` |
+| "What did I miss?" | `get_session_insights()` |
+| "Session summary" | `get_session_summary()` |
+
+### Management
+| Developer asks | You call |
+|---------------|---------|
+| "Clear the stale errors" | `clear_errors()` |
+| "I've seen this error, skip it" | `acknowledge_error(fingerprint)` |
+| "Run migrations" | `get_migration_status(apply: true)` |
+| "Restart the server" | `restart_server()` |
+
 ## What TracePulse Does NOT Do
 
 - Does not set breakpoints or step through code (use mcp-debugger for that)
