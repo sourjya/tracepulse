@@ -26,6 +26,15 @@ Backend crashes cause blank pages. TracePulse catches the backend error; Chrome 
 - `get_correlated_errors(url)` - match browser HTTP failures with backend stack traces
 - Three-tier verification: tsc (static) -> browser check (runtime) -> verify_fix (backend)
 
+### Library and monorepo developers
+
+No dev server? No problem. TracePulse's standalone mode gives your agent structured test and build feedback without a running server. Real-world usage: 70+ tool calls over 11 hours on a TypeScript monorepo.
+
+- `run_and_watch("npx vitest run")` - structured pass/fail instead of raw terminal output
+- `run_and_watch("npx tsc --noEmit")` - type errors with exact file:line:column
+- `verify_build()` - typecheck + build + runtime check in one call
+- Works with pnpm, Bun, and monorepo tools (Turborepo, Nx)
+
 ### DevOps and infrastructure engineers
 
 TracePulse discovers your infrastructure from `.env` files and probes connectivity every 60 seconds.

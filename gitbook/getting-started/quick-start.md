@@ -117,7 +117,7 @@ If your servers are managed by Docker, tmux, pm2, or scripts:
 
 ## 2b. Standalone mode (fresh projects, libraries, no server yet)
 
-For projects without a dev server or log file - you still get `run_and_watch`, `check_port`, `get_migration_status`, and all other tools:
+For projects without a dev server or log file - libraries, monorepos, CLI tools, fresh projects. You still get `run_and_watch`, `verify_build`, `check_port`, `get_migration_status`, and all other tools:
 
 ```json
 {
@@ -130,7 +130,11 @@ For projects without a dev server or log file - you still get `run_and_watch`, `
 }
 ```
 
+**Real-world validation:** A TypeScript library monorepo used TracePulse in standalone mode for 11 hours with 70+ tool calls. `run_and_watch` replaced all shell commands for tests and type-checking, catching unused imports, type errors, and test failures with structured output. No dev server needed.
+
 Upgrade to `start` mode later when you add a dev server. No config change needed beyond swapping `standalone` for `start "your command"`.
+
+> **Note (v0.9.5+):** If you use `start` mode but the command fails (e.g., no `dev` script), TracePulse automatically falls back to standalone mode instead of crashing. You still get all tools.
 
 ## 3. Start a chat
 
