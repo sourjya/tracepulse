@@ -26,6 +26,8 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M14: Category Extension | Deep Research | v0.9.4-v1.0 | 🔲 Planned |
 | M15: Tool Schema Optimization | MCP Tooling Research | v1.0 | 🔲 Planned |
 | M16: Platform Coverage Expansion | Platform Strategy Research | v1.0 | 🔲 Planned |
+| M17: Token Savings Wave 1 (Quick Wins) | Advanced Token Research | v1.0 | 🔲 Planned |
+| M18: Token Savings Wave 2 (Medium Effort) | Advanced Token Research | v1.1 | 🔲 Planned |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
 
 ---
@@ -89,6 +91,39 @@ Python is the #1 growth language. Go is TIOBE's fastest climber. pnpm/Bun are re
 | 4 | Spring Boot error parser enhancement | 1 day | Medium | Enterprise Java default. Pairs with Angular frontend story. |
 | 5 | Monorepo child-process routing (Turbo/Nx) | 1-2 weeks | HIGH | Enterprise topology. Without it, agent can't tell which package errored. |
 | 6 | `uv run` in allowlist | 30 min | Low | Python's fastest-growing PM. Signals ecosystem awareness. |
+
+## Strategic Positioning (from Deep Research)
+
+## M17: Token Savings Wave 1 - Quick Wins (from Advanced Token Research)
+
+Source: [Advanced Token Savings Research](../research/tracepulse-advanced-token-savings-research.md) | [Spec](../../.kiro/specs/m17-token-wave1/)
+
+Zero external dependencies. ~21,300 tokens/session saved on top of existing 90.6% baseline.
+
+| # | Feature | Savings | Effort | Research Dimension |
+|---|---------|---------|--------|-------------------|
+| 1 | Acknowledged errors (exclude investigated from get_errors) | ~9,000 tokens/session | 2 days | D5 |
+| 2 | No-change delta responses (return 20 tokens vs 1,000) | ~4,900 tokens/session | 1 day | D1 |
+| 3 | Stack trace frame filtering (strip framework frames) | ~1,600 tokens/session | 1 day | D7 |
+| 4 | Error message abbreviation (10-pattern table) | ~800 tokens/session | 1 day | D7 |
+| 5 | token_budget + verbosity parameters on all tools | 2-5x control | 2 days | D9 |
+| 6 | Loop detection injection (break stuck loops) | ~5,000 tokens/session | 1 day | D5 |
+| 7 | Environmental report tool (get_session_impact) | Reporting | 1 day | D12 |
+
+## M18: Token Savings Wave 2 - Medium Effort (from Advanced Token Research)
+
+Source: [Advanced Token Savings Research](../research/tracepulse-advanced-token-savings-research.md) | [Spec](../../.kiro/specs/m18-token-wave2/)
+
+Minor dependencies (MCP Streamable HTTP, background workers). ~15,350 tokens/session saved.
+
+| # | Feature | Savings | Effort | Research Dimension |
+|---|---------|---------|--------|-------------------|
+| 1 | SSE push transport (eliminate polling) | ~5,550 tokens/session | 2 weeks | D2 |
+| 2 | Session summary tool (200-token compressed manifest) | ~5,000 tokens/session | 3 days | D4 |
+| 3 | Session briefing tool (background worker) | ~2,600 tokens/session | 1 week | D10 |
+| 4 | Pre-computed diff correlation (auto on HMR) | ~1,700 tokens/session | 3 days | D8 |
+| 5 | Compaction-friendly field names | 10-20% size | 2 days | D4 |
+| 6 | Semantic error grouping (file:line dedup) | ~500 tokens/session | 2 days | D7 |
 
 ## Strategic Positioning (from Deep Research)
 
