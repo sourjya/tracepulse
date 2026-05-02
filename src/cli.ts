@@ -143,7 +143,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
     let configPath: string | undefined;
     let http = false;
     let httpPort: number | undefined;
-    let persist = false;
+    let persist = true;
     let healthUrl: string | undefined;
 
     for (let i = 1; i < args.length; i++) {
@@ -162,6 +162,8 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
         i++;
       } else if (arg === "--persist") {
         persist = true;
+      } else if (arg === "--no-persist") {
+        persist = false;
       } else if (arg === "--health-url" && args[i + 1]) {
         healthUrl = args[i + 1];
         i++;
@@ -180,7 +182,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
       configPath,
       http: http || undefined,
       httpPort,
-      persist: persist || undefined,
+      persist,
       healthUrl,
     };
   }
@@ -206,15 +208,15 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
   }
 
   if (subcommand === "standalone") {
-    const persist = args.includes("--persist");
-    return { command: "standalone", persist: persist || undefined };
+    const persist = !args.includes("--no-persist");
+    return { command: "standalone", persist };
   }
 
   if (subcommand === "compose") {
     let composeFile: string | undefined;
     let http = false;
     let httpPort: number | undefined;
-    let persist = false;
+    let persist = true;
 
     for (let i = 1; i < args.length; i++) {
       const arg = args[i];
@@ -228,6 +230,8 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
         i++;
       } else if (arg === "--persist") {
         persist = true;
+      } else if (arg === "--no-persist") {
+        persist = false;
       }
     }
 
@@ -236,7 +240,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
       composeFile,
       http: http || undefined,
       httpPort,
-      persist: persist || undefined,
+      persist,
     };
   }
 
