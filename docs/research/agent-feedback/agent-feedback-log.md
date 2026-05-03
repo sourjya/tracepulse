@@ -818,3 +818,23 @@ Agent tried to preview an SVG file in the browser: file:// URL failed, tried pyt
 **Action taken:** Added guidance to SKILL.md so future agents know the workaround immediately.
 
 **Status:** Logged. Not TracePulse scope - Chrome DevTools MCP territory.
+
+---
+
+## 2026-05-04 - Agent shell fallback pattern (Prism project)
+
+**Context:** Agent used `run_and_watch` for vitest (correct), then fell back to raw shell for `npx vite --host` startup check and `npx tsc --noEmit` after run_and_watch failed twice.
+
+**Pattern: "TP tool fails -> fall back to shell"**
+
+This is the most common TP violation. The agent tries run_and_watch, it fails (pipe characters not allowed, or unexpected exit code), and instead of fixing the run_and_watch invocation, the agent drops to shell. Two instances in one session:
+
+1. **Dev server startup:** Used `shell("timeout 10 npx vite --host")` then tried to background with `&`. Should have used `check_port(5173)` + `run_and_watch("npx vite --host", timeout_seconds: 10)` + `navigate_page`.
+
+2. **Typecheck:** Used `shell("npx tsc --noEmit")` after run_and_watch failed with pipe chars and then exit code 1. Should have used `run_and_watch("npx tsc -p packages/studio/tsconfig.json --noEmit")` per-package.
+
+**Root cause:** Agent doesn't know how to recover when run_and_watch fails. It knows the rule but doesn't know the fix patterns.
+
+**Action:** Strengthen SKILL.md with "when run_and_watch fails" recovery patterns.
+
+**Self-correction:** Agent caught both violations, logged CP-021/CP-022, and committed to using TP tools going forward. Good self-awareness, but the violations still cost tokens.

@@ -332,6 +332,19 @@ run_and_watch(".venv/bin/pytest tests/", cwd: ".")
 ```
 Don't try to `source .venv/bin/activate` - that's a shell concept. Use the venv binary path directly.
 
+### When run\_and\_watch fails - DO NOT fall back to shell
+Fix the invocation instead. Common failures and fixes:
+
+| Failure | Wrong reaction | Correct fix |
+|---------|---------------|-------------|
+| "shell metacharacters" error | `shell("cmd \| head")` | Remove pipes: `run_and_watch("cmd")` |
+| Exit code 1 (tsc can't find tsconfig) | `shell("npx tsc --noEmit")` | `run_and_watch("npx tsc -p packages/x/tsconfig.json --noEmit")` |
+| Command hangs (dev server) | `shell("timeout 10 cmd")` | `run_and_watch("cmd", timeout_seconds: 10)` |
+| Need to background a process | `shell("cmd &")` | Don't. Use `check_port` + `navigate_page` to verify instead |
+| Monorepo package not found | `shell("cd pkg && cmd")` | `run_and_watch("cmd", cwd: "./pkg")` |
+
+**The rule is absolute:** if run_and_watch fails, fix the run_and_watch call. Never drop to shell.
+
 ### Bridge frontend errors manually
 When `get_correlated_errors` returns empty (no frontend source configured):
 1. Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` → find failed requests
