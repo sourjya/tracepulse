@@ -325,12 +325,16 @@ Database CLIs (`psql`, `mysql`, `sqlite3`, `redis-cli`, `mongo`) prompt for pass
 - **General rule:** if a CLI tool might prompt for input, pass credentials via environment variables or flags, never interactively
 
 ### Python virtualenv projects
-`run_and_watch` supports `.venv/bin/python` and `.venv/bin/pytest` directly:
+**ALWAYS use run_and_watch for Python commands.** Never `shell(".venv/bin/pytest ...")`.
+
 ```
-run_and_watch(".venv/bin/python -m pytest tests/ -v", cwd: "./backend")
-run_and_watch(".venv/bin/pytest tests/", cwd: ".")
+run_and_watch(".venv/bin/python -m pytest tests/ -v --tb=short", cwd: "./backend")
+run_and_watch(".venv/bin/pytest tests/unit/test_auth.py", cwd: ".")
+run_and_watch("uv run pytest tests/", cwd: "./backend")
 ```
 Don't try to `source .venv/bin/activate` - that's a shell concept. Use the venv binary path directly.
+
+Also use Write tool to create test files, not `shell("cat > file << 'EOF' ... EOF")`.
 
 ### When run\_and\_watch fails - DO NOT fall back to shell
 Fix the invocation instead. Common failures and fixes:

@@ -838,3 +838,26 @@ This is the most common TP violation. The agent tries run_and_watch, it fails (p
 **Action:** Strengthen SKILL.md with "when run_and_watch fails" recovery patterns.
 
 **Self-correction:** Agent caught both violations, logged CP-021/CP-022, and committed to using TP tools going forward. Good self-awareness, but the violations still cost tokens.
+
+---
+
+## 2026-05-04 - Agent shell patterns on Nexus M12 (Integration Hub)
+
+**Context:** Agent building EventRouter + DeliveryQueue for Nexus M12. Used TDD correctly (RED then GREEN) but with wrong tools.
+
+**Violations observed:**
+
+1. **Shell heredoc for file creation:** Used `shell("cat > file << 'PYEOF' ... PYEOF")` to create test files instead of the Write tool. This is a steering violation - "Use file-editing tools rather than sed, awk, or echo redirection." Heredoc is the same category.
+
+2. **Shell for pytest (3 times):** Used `shell("cd backend && .venv/bin/python -m pytest ...")` instead of `run_and_watch(".venv/bin/python -m pytest tests/unit/test_event_router.py -v --tb=short", cwd: "./backend")`. The SKILL.md explicitly says run_and_watch supports `.venv/bin/python` and `.venv/bin/pytest`.
+
+3. **Shell for git operations:** Used `shell("git add ... && git commit ... && git checkout ... && git merge ... && git push")` as a single chained command. This works but loses structured output. Not a TP violation per se, but the steering scripts (`scripts/git-commit-push.sh`) exist for this.
+
+**What went right:**
+- TDD discipline was solid (RED then GREEN for both router and queue)
+- Code quality was good (JSDoc-equivalent Python docstrings, dataclasses, proper typing)
+- Commit messages were descriptive with test counts
+
+**Pattern:** Agent defaults to shell for Python projects because it "feels natural" to run pytest from shell. The SKILL.md guidance exists but isn't being followed. This is the 3rd session with this pattern.
+
+**Recommendation:** The SKILL.md "NEVER Use Raw Shell" section needs to be more prominent - possibly moved to the top of Pro Tips, or repeated in the Python virtualenv section with explicit pytest examples.
