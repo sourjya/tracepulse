@@ -44,5 +44,6 @@ Last updated: 2026-04-29
 | 36 | verify_build composite (tsc + vite build + verify_fix in one call) | ✅ Shipped |
 | 37 | Stale error auto-suppress (same fingerprints, pre-existing, auto-clear) | 🔲 Roadmap - extends error lifecycle |
 | 38 | Post-migration health probe (hit endpoint after alembic to verify columns) | 🔲 Roadmap |
+| 39 | Local file preview guidance (SVG/HTML via data URI or evaluate_script) | ✅ Shipped (SKILL.md guidance) - not TP scope, Chrome DevTools MCP |
 
-**21 of 38 wishlist items shipped.** 5 buildable now, 11 on roadmap, 1 covered by existing tools.
+**22 of 39 wishlist items shipped.** 5 buildable now, 11 on roadmap, 1 covered by existing tools.

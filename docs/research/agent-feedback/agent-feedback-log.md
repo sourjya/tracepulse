@@ -799,3 +799,22 @@ Agent tried to preview an SVG file in the browser: file:// URL failed, tried pyt
 **Lesson for SKILL.md:** Add guidance: "To preview local files (SVG, HTML), use Chrome DevTools MCP navigate_page with a data URI, not file:// URLs. Or use evaluate_script to inject content into a blank page."
 
 **Idea for DevTools MCP:** A `preview_file(path)` tool that auto-detects file type and opens it via the most efficient method (data URI for SVG/images, file:// for HTML).
+
+---
+
+## 2026-05-03 - Agent insight: file preview gap analysis
+
+**Context:** Agent spent 1+ hour trying to preview a local SVG in the browser during a docs task. Tried file:// URL (failed for SVG), python HTTP server (hung), multiple workarounds before landing on data URI.
+
+**Root cause:** No discoverable "preview local file" workflow exists across the three-layer stack. This is a Chrome DevTools MCP gap, not TracePulse.
+
+**Existing workarounds (none discoverable in the moment):**
+1. `navigate_page` with `file://` - works for HTML, unreliable for SVG
+2. `evaluate_script` to inject SVG as innerHTML on a blank page
+3. Data URI: `navigate_page` with `data:image/svg+xml;base64,...`
+
+**Impact:** 1 hour wasted = ~12,000 tokens on failed attempts.
+
+**Action taken:** Added guidance to SKILL.md so future agents know the workaround immediately.
+
+**Status:** Logged. Not TracePulse scope - Chrome DevTools MCP territory.

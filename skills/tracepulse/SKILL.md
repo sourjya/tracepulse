@@ -337,6 +337,12 @@ When `get_correlated_errors` returns empty (no frontend source configured):
 1. Chrome DevTools MCP: `list_network_requests(resourceTypes: ["fetch", "xhr"])` → find failed requests
 2. Note the URL and status code of the failure
 3. TracePulse: `get_errors(message_contains: "/api/that-endpoint")` → find matching backend error
+
+### Preview local files in the browser
+Do NOT try `file://` URLs or spawn a local HTTP server. Use Chrome DevTools MCP directly:
+- **SVG:** `navigate_page` with `data:image/svg+xml;base64,<base64-encoded-svg>`
+- **HTML:** `navigate_page` with `file:///absolute/path/to/file.html` (works for HTML, not SVG)
+- **Inject content:** `evaluate_script` to set `document.body.innerHTML` on a blank page
 This is 2 calls instead of the automated correlation, but works in any setup.
 
 ## Common Queries -> Tool Mappings
