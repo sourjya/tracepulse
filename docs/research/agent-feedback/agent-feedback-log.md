@@ -982,3 +982,13 @@ Instead the agent started reasoning about the bug from the error message alone, 
 - No guidance for projects without venv (system Python)
 
 **Friction assessment:** A user trying to install TracePulse on a Python project hits 3-4 obstacles before getting it working. This needs to be a 30-second experience, not a 10-minute investigation.
+
+---
+
+## 2026-05-04 - Meta: TracePulse dev agent uses shell for grep
+
+**Context:** While building M21, the TracePulse development agent used `shell("grep -n ...")` to search the codebase instead of the dedicated `grep` or `code` tools.
+
+**Irony level:** High. The agent building the tool that tells other agents to use structured tools... uses raw shell for code search.
+
+**Mitigation:** This is a Kiro CLI agent behavior, not a TracePulse issue. The steering file says "Use search tools rather than find, ls, or grep" but the agent defaults to shell grep for quick lookups. Same root cause as the pytest pattern: shell feels faster for one-off lookups.
