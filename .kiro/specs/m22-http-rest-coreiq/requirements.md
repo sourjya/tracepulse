@@ -1,0 +1,224 @@
+# M22: HTTP REST API + CoreIQ Integration
+
+## Problem
+
+TracePulse has an HTTP transport (`--http` on port 9800) for MCP Streamable HTTP, but no REST endpoints for non-MCP consumers. CoreIQ needs to:
+1. Poll TracePulse's health status (ADR-002: HTTP health polling)
+2. Pull session/pattern data for dashboard widgets (ADR-003: observe, never store)
+3. Discover TracePulse via manifest registration
+
+Without REST endpoints, CoreIQ can only reach TracePulse through MCP protocol - which requires a full MCP client. The dashboard and health poller need simple HTTP GET.
+
+## Architecture
+
+### Data flow
+
+```
+CoreIQ Health Poller                    TracePulse HTTP (port 9800)
+  │                                       │
+  ├── GET /health (every 30s) ──────────► │ → returns error count, uptime, status
+  │                                       │
+CoreIQ Dashboard                          │
+  │                                       │
+  ├── GET /api/session ─────────────────► │ → returns session summary
+  ├── GET /api/patterns ────────────────► │ → returns bug patterns
+  ├── GET /api/metrics ─────────────────► │ → returns tool/parser/test counts
+  │                                       │
+TracePulse (on startup)                   │
+  │                                       │
+  ├── POST {COREIQ_URL}/api/v1/manifests ► CoreIQ → registers as a tool
+  │                                       │
+AI Agent (MCP client)                     │
+  │                                       │
+  ├── MCP JSON-RPC (existing) ──────────► │ → 39 tools, unchanged
+```
+
+### What changes vs what doesn't
+
+| Component | Changes? | Details |
+|-----------|----------|---------|
+| MCP tools (39) | No | Unchanged, still available via stdio and HTTP |
+| HTTP transport | Extended | Add REST endpoints alongside MCP Streamable HTTP |
+| CLI | Extended | Read COREIQ_URL env var, register on startup |
+| Security | Extended | API key auth on REST endpoints |
+| Public API | No | REST endpoints are optional, off by default |
+
+## Design Decisions
+
+### D1: REST endpoints are only available with `--http`
+
+REST endpoints only exist when the HTTP transport is active. In stdio-only mode (the default), there's no HTTP server, so no REST endpoints. This means:
+- Zero-config users are unaffected
+- No new attack surface unless explicitly enabled
+- CoreIQ integration requires `--http` flag
+
+### D2: API key authentication
+
+REST endpoints require `X-API-Key` header when `TRACEPULSE_API_KEY` env var is set. If the env var is not set, endpoints are open (localhost-only, same as today).
+
+This matches CoreIQ's auth pattern (M6: X-API-Key middleware with hmac.compare_digest).
+
+```
+TRACEPULSE_API_KEY not set → endpoints open (dev mode, localhost only)
+TRACEPULSE_API_KEY set     → X-API-Key header required on all REST calls
+```
+
+### D3: Manifest registration is opt-in via COREIQ_URL
+
+TracePulse only registers with CoreIQ when `COREIQ_URL` env var is set. No CoreIQ-specific code runs otherwise. The public npm package has zero CoreIQ awareness unless you set the env var.
+
+```
+COREIQ_URL not set → no registration, no CoreIQ awareness
+COREIQ_URL set     → POST manifest on startup, re-register every 5 min
+```
+
+### D4: REST responses mirror MCP tool output
+
+REST endpoints return the same JSON as the corresponding MCP tools. No separate data format to maintain.
+
+| REST endpoint | MCP tool equivalent | Response |
+|--------------|-------------------|----------|
+| GET /health | get_health_summary | `{ errors: 3, warnings: 1, uptime_min: 42 }` |
+| GET /api/session | get_session_summary | Session manifest (~200 tokens) |
+| GET /api/patterns | get_bug_patterns | Pattern analysis with costs |
+| GET /api/metrics | get_project_health | Stacks, layers, tool count |
+| GET /api/errors | get_errors (limit 10) | Top 10 errors by signal score |
+
+### D5: No data storage in CoreIQ
+
+Per ADR-003, CoreIQ never stores TracePulse data. It pulls on demand:
+- Health poller stores its own observations (poll result, latency) - not TracePulse's data
+- Dashboard fetches from TracePulse's REST endpoints on each render
+- If TracePulse is down, CoreIQ shows "unreachable" - not stale data
+
+## Security Model
+
+### Threat model for REST endpoints
+
+| Threat | Mitigation |
+|--------|-----------|
+| External access to error data | HTTP binds to 127.0.0.1 only (existing) |
+| Unauthorized local access | X-API-Key when TRACEPULSE_API_KEY is set |
+| Secret leakage in responses | Secret redaction runs before all responses (existing) |
+| Manifest registration spoofing | CoreIQ validates API key on manifest POST (CoreIQ's concern) |
+| Replay attacks | API keys are static (acceptable for local dev; rotate for team server) |
+
+### Auth flow
+
+```
+1. User sets TRACEPULSE_API_KEY=<secret> in MCP config env
+2. TracePulse reads it on startup, enables auth middleware
+3. CoreIQ stores the same key in its tool registry
+4. CoreIQ's health poller sends X-API-Key on every request
+5. TracePulse validates with timing-safe comparison
+6. Dashboard requests go through CoreIQ's proxy (CoreIQ adds the key)
+```
+
+For local dev (single developer), API key is optional. For team server (M19), it's required.
+
+## Manifest Schema
+
+```json
+{
+  "tool_name": "tracepulse",
+  "display_name": "TracePulse",
+  "base_url": "http://localhost:9800",
+  "version": "0.9.14",
+  "manifest": {
+    "type": "dev-tool",
+    "description": "Runtime feedback MCP server for AI coding agents",
+    "capabilities": ["error-monitoring", "test-runner", "drift-detection", "bug-patterns"],
+    "widgets": [
+      {
+        "id": "tp-error-feed",
+        "title": "Live Error Feed",
+        "type": "list",
+        "data_source": "/api/errors",
+        "refresh_interval_s": 10
+      },
+      {
+        "id": "tp-session",
+        "title": "Session Summary",
+        "type": "stats",
+        "data_source": "/api/session",
+        "refresh_interval_s": 60
+      },
+      {
+        "id": "tp-patterns",
+        "title": "Bug Patterns",
+        "type": "table",
+        "data_source": "/api/patterns",
+        "refresh_interval_s": 300
+      }
+    ],
+    "health_endpoint": "/health",
+    "mcp": {
+      "transport": "streamable-http",
+      "url": "http://localhost:9800/mcp",
+      "tools_count": 39
+    }
+  }
+}
+```
+
+## Docker Integration
+
+### Standalone (no Docker)
+```bash
+COREIQ_URL=http://localhost:7200 tracepulse --http start "npm run dev"
+```
+
+### In shared infra docker-compose
+```yaml
+services:
+  tracepulse:
+    image: node:22-alpine
+    command: ["tracepulse", "--http", "start", "npm run dev"]
+    ports:
+      - "9800:9800"
+    volumes:
+      - ${PROJECT_DIR}:/workspace
+    working_dir: /workspace
+    environment:
+      COREIQ_URL: http://coreiq:7200
+      TRACEPULSE_API_KEY: ${TP_API_KEY}
+    networks:
+      - infra
+```
+
+CoreIQ discovers TracePulse via manifest registration. No hardcoded URLs in CoreIQ's config.
+
+## Tasks
+
+### Phase 1: REST Endpoints (1 day)
+- [ ] 1. RED: Tests for /health endpoint
+- [ ] 2. GREEN: Implement /health as thin wrapper around get_health_summary handler
+- [ ] 3. RED: Tests for /api/session, /api/patterns, /api/metrics, /api/errors
+- [ ] 4. GREEN: Implement all REST endpoints
+- [ ] 5. Wire into HTTP transport server
+
+### Phase 2: API Key Auth (0.5 day)
+- [ ] 6. RED: Tests for auth middleware (key present, key missing, key wrong)
+- [ ] 7. GREEN: Implement timing-safe API key middleware
+- [ ] 8. Read TRACEPULSE_API_KEY from env, enable middleware when set
+
+### Phase 3: Manifest Registration (0.5 day)
+- [ ] 9. RED: Tests for manifest builder (generates correct JSON)
+- [ ] 10. GREEN: Implement buildManifest() from current tool/parser counts
+- [ ] 11. RED: Tests for registration (POST to COREIQ_URL)
+- [ ] 12. GREEN: Implement registerWithCoreIQ() with retry
+- [ ] 13. Wire into HTTP transport startup, re-register every 5 min
+
+### Phase 4: Documentation
+- [ ] 14. Update README with --http REST endpoints
+- [ ] 15. Add CoreIQ integration page to gitbook
+- [ ] 16. Update installation docs with COREIQ_URL env var
+- [ ] 17. Update architecture guide with REST API diagram
+
+## Out of Scope
+
+- CoreIQ dashboard widget (CoreIQ repo task)
+- CoreIQ health poller config (auto-discovers from manifest)
+- SSE push from TracePulse to CoreIQ (M18 W2.1, separate milestone)
+- Team server auth (M19, separate milestone)
+- NATS event bus integration (future, when CoreIQ ships M11)
