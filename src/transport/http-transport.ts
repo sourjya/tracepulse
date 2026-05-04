@@ -12,7 +12,8 @@
 
 import { createServer, type Server } from "node:http";
 import { DEFAULT_HTTP_PORT } from "@/constants/services.js";
-import { createRestHandler, type RestDeps, type RestResponse } from "@/transport/rest-endpoints.js";
+import { createRestHandler, type RestDeps } from "@/transport/rest-endpoints.js";
+import { createAuthMiddleware, createRateLimiter } from "@/transport/rest-auth.js";
 
 /** Public API for the HTTP transport wrapper. */
 export interface HttpTransport {
@@ -47,11 +48,31 @@ export function createHttpTransport(port: number = DEFAULT_HTTP_PORT, restDeps?:
   const server = createServer();
   const restHandler = restDeps ? createRestHandler(restDeps) : null;
 
-  // Wire REST endpoints into the HTTP server's request handler
+  // Wire REST endpoints with auth and rate limiting
   if (restHandler) {
+    const apiKey = process.env.TRACEPULSE_API_KEY;
+    const auth = createAuthMiddleware(apiKey);
+    const rateLimiter = createRateLimiter(60, 60000);
+
     server.on("request", (req, res) => {
       const result = restHandler({ method: req.method ?? "GET", url: req.url ?? "/" });
       if (result) {
+        // Auth check
+        const providedKey = req.headers["x-api-key"] as string | undefined;
+        if (!auth(providedKey)) {
+          res.writeHead(401, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Authentication failed" }));
+          return;
+        }
+
+        // Rate limit check (use API key or IP as client ID)
+        const clientId = providedKey ?? req.socket.remoteAddress ?? "unknown";
+        if (!rateLimiter.check(clientId)) {
+          res.writeHead(429, { "Content-Type": "application/json", "Retry-After": "60" });
+          res.end(JSON.stringify({ error: "Rate limit exceeded", retry_after_seconds: 60 }));
+          return;
+        }
+
         res.writeHead(result.status, {
           "Content-Type": result.contentType,
           "Access-Control-Allow-Origin": "*",
