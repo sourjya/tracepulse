@@ -38,7 +38,7 @@ That's it. TracePulse auto-detects your project type and provides 39 tools immed
 
 ## With a dev server command
 
-If you know your server command, pass it directly for immediate monitoring:
+If you know your server command, pass it directly for immediate error monitoring. The `start` argument tells TracePulse to spawn and monitor the command:
 
 **Node.js:**
 ```json
@@ -64,7 +64,7 @@ If you know your server command, pass it directly for immediate monitoring:
 }
 ```
 
-**Python with environment variables:**
+**Python with environment variables:** TracePulse spawns processes directly (not through a shell), so `VAR=value command` syntax doesn't work. Use the `env` field instead:
 ```json
 {
   "mcpServers": {
@@ -77,7 +77,7 @@ If you know your server command, pass it directly for immediate monitoring:
 }
 ```
 
-**Start script (bash):**
+**Start script:** If your project uses a shell script to start the server:
 ```json
 {
   "mcpServers": {
@@ -96,30 +96,41 @@ If you know your server command, pass it directly for immediate monitoring:
 { "args": ["start", "mvn spring-boot:run"] }
 ```
 
+Replace the command with whatever you type in your terminal to start the dev server.
+
 {% hint style="warning" %}
 **Don't use `VAR=value command` syntax** in args. TracePulse spawns processes directly, not through a shell. Use the `env` field for environment variables, or wrap in `bash -c '...'`.
 {% endhint %}
 
 ## Other modes
 
-### Attach - tail existing logs
+### `attach` - tail existing logs
 
-For servers managed by Docker, tmux, pm2, or scripts:
+Use when your servers are already running (managed by Docker, tmux, pm2, or scripts). TracePulse tails the log file without spawning any process:
 ```json
 { "args": ["attach", "--log-file", "./logs/server.log"] }
 ```
 
-### Multi-service
+Multiple log files with service names:
+```json
+{ "args": ["attach", "--log-file", "api=./logs/api.log", "--log-file", "worker=./logs/worker.log"] }
+```
 
+### `start --service` - multiple services
+
+Spawn and monitor multiple services at once. Each service's output is tagged with its name:
 ```json
 { "args": ["start", "--service", "api=npm run dev:api", "--service", "worker=npm run worker"] }
 ```
 
-### Docker Compose
+### `compose` - Docker Compose
 
+Discover services from a Docker Compose file and tail their container logs:
 ```json
 { "args": ["compose", "--file", "docker-compose.yml"] }
 ```
+
+For full details on all CLI options, see [CLI Commands](../reference/cli-commands.md).
 
 ## npx (alternative for Node.js projects)
 
