@@ -9,7 +9,7 @@ GIT: Branch before code, commit after phase, merge after milestone
 TDD: RED test first, GREEN implementation
 COMMENTS: File-level JSDoc + function JSDoc + inline comments
 CHOKEPOINT: Log blockers as CP-### with full format BEFORE moving on
-MARKETING: After milestone, update token savings numbers in docs/marketing/mission-and-positioning.md, gitbook/README.md, and gitbook/why-tracepulse.md
+MARKETING: After milestone, update token savings numbers in docs/product/mission-and-positioning.md, gitbook/README.md, and gitbook/why-tracepulse.md
 MERGE: git checkout main && git merge feat/M18-token-wave2 --no-edit && git push origin main && git branch -d feat/M18-token-wave2
 ```
 

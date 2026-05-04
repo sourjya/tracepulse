@@ -3,7 +3,7 @@
 
 ## Purpose
 
-This policy governs when and how automated code reviews are triggered during development. All reviews are powered by hooks in `.kiro/hooks/`. Results are stored in `docs/security/` and `docs/reviews/` respectively.
+This policy governs when and how automated code reviews are triggered during development. All reviews are powered by hooks in `.kiro/hooks/`. Results are stored in `docs/audits/security/` and `docs/audits/maintainability/` respectively.
 
 The security review system follows a three-tier model - one prompt, three hooks, three scopes - that matches review depth to development context. See `docs/tiered-review-methodology.md` for full rationale.
 
@@ -41,7 +41,7 @@ The security review system follows a three-tier model - one prompt, three hooks,
 
 **Checks:** All Tier 1 categories plus OWASP S1-S13, BOLA/IDOR, cryptographic quality, file upload security
 
-**Output:** Full SRR report - `docs/security/SRR-{###}-{YYYY-MM-DD}-T2.md`
+**Output:** Full SRR report - `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T2.md`
 - SECURITY_LOG.md updated
 - CRITICAL/HIGH findings create immediate fix tasks
 - MEDIUM/LOW findings added to roadmap
@@ -62,11 +62,11 @@ The security review system follows a three-tier model - one prompt, three hooks,
 
 **Checks:** All Tier 1 and Tier 2 categories plus supply chain (D1-D5), secure headers and CORS (S15), logging security (S16), rate limiting systemic review (S14-EXT), AI-generation artifact review, test coverage delta
 
-**Output:** Full SRR report - `docs/security/SRR-{###}-{YYYY-MM-DD}-T3.md`
+**Output:** Full SRR report - `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T3.md`
 - SECURITY_LOG.md updated
 - CRITICAL/HIGH findings create immediate fix tasks
 - MEDIUM/LOW findings added to roadmap
-- Dependency manifest snapshot recorded in `docs/security/dep-snapshot-{YYYY-MM-DD}.md`
+- Dependency manifest snapshot recorded in `docs/audits/security/dep-snapshot-{YYYY-MM-DD}.md`
 
 ---
 
@@ -81,7 +81,7 @@ The security review system follows a three-tier model - one prompt, three hooks,
 - At the end of each development sprint or phase
 - Manually triggered when structural drift is suspected
 
-**Output:** Full MRR report - `docs/reviews/MRR-{###}-{YYYY-MM-DD}.md`
+**Output:** Full MRR report - `docs/audits/maintainability/MRR-{###}-{YYYY-MM-DD}.md`
 - REVIEW_LOG.md updated
 - Phase 1 quick wins added to active sprint backlog
 - Phase 2 and Phase 3 items added to roadmap
@@ -104,10 +104,10 @@ Security findings may surface structural issues that the maintainability review 
 | Review Type | Output Path | Naming Pattern |
 |---|---|---|
 | Security Tier 1 | Inline only | No file |
-| Security Tier 2 | `docs/security/` | `SRR-{###}-{YYYY-MM-DD}-T2.md` |
-| Security Tier 3 | `docs/security/` | `SRR-{###}-{YYYY-MM-DD}-T3.md` |
-| Maintainability | `docs/reviews/` | `MRR-{###}-{YYYY-MM-DD}.md` |
-| Dep snapshot | `docs/security/` | `dep-snapshot-{YYYY-MM-DD}.md` |
+| Security Tier 2 | `docs/audits/security/` | `SRR-{###}-{YYYY-MM-DD}-T2.md` |
+| Security Tier 3 | `docs/audits/security/` | `SRR-{###}-{YYYY-MM-DD}-T3.md` |
+| Maintainability | `docs/audits/maintainability/` | `MRR-{###}-{YYYY-MM-DD}.md` |
+| Dep snapshot | `docs/audits/security/` | `dep-snapshot-{YYYY-MM-DD}.md` |
 
 ---
 
@@ -115,7 +115,7 @@ Security findings may surface structural issues that the maintainability review 
 
 - SRR numbers are sequential across all tiers: SRR-001, SRR-002, SRR-003, ...
 - MRR numbers are sequential: MRR-001, MRR-002, MRR-003, ...
-- Always check existing files in `docs/security/` and `docs/reviews/` to determine the next number before creating a new report
+- Always check existing files in `docs/audits/security/` and `docs/audits/maintainability/` to determine the next number before creating a new report
 - The tier suffix (T2 or T3) is appended after the date, not the number
 
 ---
@@ -135,12 +135,13 @@ Security findings may surface structural issues that the maintainability review 
   - review-policy.md
 
 docs/
-- security/
-  - SECURITY_LOG.md
-  - dep-snapshot-{YYYY-MM-DD}.md
-  - SRR-{###}-{YYYY-MM-DD}-T2.md
-  - SRR-{###}-{YYYY-MM-DD}-T3.md
-- reviews/
+- audits/
+  - security/
+    - SECURITY_LOG.md
+    - dep-snapshot-{YYYY-MM-DD}.md
+    - SRR-{###}-{YYYY-MM-DD}-T2.md
+    - SRR-{###}-{YYYY-MM-DD}-T3.md
+  - maintainability/
+    - MRR-{###}-{YYYY-MM-DD}.md
   - REVIEW_LOG.md
-  - MRR-{###}-{YYYY-MM-DD}.md
 ```

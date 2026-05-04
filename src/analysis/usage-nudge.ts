@@ -10,7 +10,7 @@
  * when run_and_watch provides structured output. This nudge puts
  * the reminder in the agent's workflow instead of relying on SKILL.md.
  *
- * @see docs/research/agent-feedback/agent-feedback-log.md for the pattern
+ * @see docs/feedback/agent-feedback-log.md for the pattern
  */
 
 import type { AuditRecord } from "@/store/audit-buffer.js";

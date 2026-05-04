@@ -8,7 +8,7 @@
  * endpoint, and this module normalizes it into a RuntimeEvent.
  *
  * @see src/correlation/sources/log-collector.ts for the HTTP endpoint
- * @see docs/research/agent-feedback/agent-feedback-log.md for the motivation
+ * @see docs/feedback/agent-feedback-log.md for the motivation
  */
 
 import type { RuntimeEvent } from "@/types/events.js";

@@ -105,7 +105,7 @@ Known shortcuts and items to fix before v1.0.0.
 
 <!-- ═══════════════════════════════════════════════════════════════
      CRR-001 (2026-04-30) — Full Codebase Review findings
-     See docs/reviews/CRR-001-2026-04-30-full-review.md
+     See docs/audits/code-review/CRR-001-2026-04-30-full-review.md
      ═══════════════════════════════════════════════════════════════ -->
 
 ## TD-008: ~~Config JSON.parse crashes on malformed config file - RESOLVED~~

@@ -51,7 +51,7 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 ### docs/engineering/
 - **Purpose**: Engineering process documentation, execution standards
 
-### docs/security/
+### docs/audits/security/
 - **Purpose**: Security review reports and findings log
 
 ### Placement Rules
