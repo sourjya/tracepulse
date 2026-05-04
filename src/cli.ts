@@ -140,6 +140,14 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
     return { command: "standalone", persist: true };
   }
 
+  // Handle global flags that should still start standalone
+  // --clustered alone (no subcommand) means zero-config + clustered mode
+  const globalFlags = new Set(["--clustered", "--persist", "--no-persist"]);
+  if (args.every(a => globalFlags.has(a))) {
+    const persist = !args.includes("--no-persist");
+    return { command: "standalone", persist };
+  }
+
   // Flag-only commands
   if (args.includes("--version") || args.includes("-v")) {
     return { command: "version" };
