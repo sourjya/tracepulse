@@ -40,6 +40,7 @@ import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
 import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
+import { createAuditBuffer } from "@/store/audit-buffer.js";
 import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
 import { detectProjectStacks, suggestStartCommands } from "@/diagnostics/project-detector.js";
 
@@ -634,6 +635,40 @@ async function main(): Promise<void> {
   });
   const transport = new StdioServerTransport();
 
+  // ── HTTP Transport (opt-in via --http) ──
+  // Adds REST endpoints alongside MCP Streamable HTTP for dashboard integration.
+  let httpCleanup: (() => void) | undefined;
+  const httpEnabled = parsed.command === "start" && "http" in parsed && parsed.http;
+  const httpPort = (parsed.command === "start" && "httpPort" in parsed ? parsed.httpPort : undefined) ?? 9800;
+
+  if (httpEnabled) {
+    const { createHttpTransport } = await import("@/transport/http-transport.js");
+    const { buildManifest, registerManifest, startPeriodicRegistration } = await import("@/transport/manifest-registration.js");
+
+    const restDeps = {
+      buffer,
+      auditBuffer: createAuditBuffer(),
+      getConnected: () => collector.isConnected(),
+      sessionStartedAt: buffer.sessionStartedAt,
+      patternAnalyzer,
+    };
+
+    const httpTransport = createHttpTransport(httpPort, restDeps);
+    try {
+      await httpTransport.start();
+    } catch {
+      process.stderr.write("[tracepulse] HTTP transport failed to start (continuing with stdio only)\n");
+    }
+
+    // Register with external dashboard if DASHBOARD_URL is set
+    const dashboardUrl = process.env.DASHBOARD_URL;
+    if (dashboardUrl) {
+      const manifest = buildManifest({ port: httpPort, version: VERSION });
+      void registerManifest(dashboardUrl, manifest);
+      httpCleanup = startPeriodicRegistration(dashboardUrl, manifest);
+    }
+  }
+
   // Graceful shutdown: stop collector, close MCP server.
   // Guard flag prevents double-shutdown from rapid Ctrl+C.
   let shuttingDown = false;
@@ -641,6 +676,7 @@ async function main(): Promise<void> {
     if (shuttingDown) return;
     shuttingDown = true;
     process.stderr.write("[tracepulse] Shutting down...\n");
+    if (httpCleanup) httpCleanup();
     if (healthProber) healthProber.stop();
     infraMonitor.stop();
     if (persistEnabled) {
