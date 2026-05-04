@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.11 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [39 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [953 tests](tests/) passing.
+🟡 **Alpha v0.9.13 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [39 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [953 tests](tests/) passing.
 
 ## Quick Start
 
@@ -302,10 +302,10 @@ tracepulse start --persist "npm run dev"
 ```
 
 ```bash
-# Clustered mode (7 gateways instead of 36 tools - 80% schema reduction)
+# Clustered mode (7 gateways instead of 39 tools - 80% schema reduction)
 tracepulse start --clustered "npm run dev"
 ```
-Collapses 36 tools into 7 semantic gateways. The agent discovers sub-tools on demand, loading only what it needs. Schema overhead drops from ~1,000 to ~200 tokens per turn.
+Collapses 39 tools into 7 semantic gateways. The agent discovers sub-tools on demand, loading only what it needs. Schema overhead drops from ~1,000 to ~200 tokens per turn.
 
 ```bash
 # With HTTP transport (for multi-client scenarios)

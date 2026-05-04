@@ -93,7 +93,7 @@ From live agent sessions across 4 projects (full-stack web app, TypeScript libra
 | Agent wishlist items shipped | 24/38 (63%) |
 | Real bugs caught per session | 3 |
 
-<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 36 tools to 7 gateways" width="960"></figure>
+<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 39 tools to 7 gateways" width="960"></figure>
 
 ---
 
