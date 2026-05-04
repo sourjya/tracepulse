@@ -15,11 +15,9 @@ import { resolve as resolvePath } from "node:path";
 import type { RuntimeEvent } from "@/types/events.js";
 import { createRingBuffer } from "@/store/ring-buffer.js";
 import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
-import { redact } from "@/pipeline/secret-redactor.js";
-import { normalizeEvent, normalizeRawLine } from "@/pipeline/event-normalizer.js";
-import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
 import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
+import { processRawLine } from "@/pipeline/process-line.js";
 
 /**
  * Generate a diagnostic hint when a command fails.
@@ -156,17 +154,10 @@ export async function handleRunAndWatch(
     /** Collect raw output lines for the raw_output field. */
     const rawLines: string[] = [];
 
-    /** Process a line through the parser pipeline into the temp buffer. */
+    /** Process a line through the shared pipeline into the temp buffer. */
     function processLine(line: string, source: "server-stdout" | "server-stderr"): void {
       rawLines.push(line);
-      const stripped = line.replace(ANSI_ESCAPE_REGEX, "");
-      const redacted = redact(stripped);
-      const parseInput = redacted.length > MAX_PARSE_INPUT_LENGTH
-        ? redacted.slice(0, MAX_PARSE_INPUT_LENGTH) : redacted;
-      const parsed = registry.parse(parseInput);
-      const event = parsed
-        ? normalizeEvent(parsed, redacted, source, true)
-        : normalizeRawLine(redacted, source);
+      const event = processRawLine(line, source, registry);
       tempBuffer.push(event);
     }
 
