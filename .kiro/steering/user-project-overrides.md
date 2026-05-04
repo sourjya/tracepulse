@@ -31,6 +31,7 @@ kiro-rails and will be overwritten on upgrade.
 ## Project-Specific Rules
 
 - This is an MCP server - stdout is reserved for JSON-RPC protocol messages. All debug/diagnostic output goes to stderr.
+- VERSION is read from package.json at runtime (src/index.ts). Never hardcode a version string. On version bump, only package.json needs updating.
 - The tool must work with ANY MCP-compatible agent (Kiro, Claude Code, Cursor, Copilot, Cline, Windsurf). No agent-specific code.
 - Zero config for basic usage - `npx tracepulse start "npm run dev"` must work without a config file.
 - Every RuntimeEvent must include `signal_score` (0-100) and `signal_strength` (high/medium/low) per Decision 7 in the architecture analysis.

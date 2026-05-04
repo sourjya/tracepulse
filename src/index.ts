@@ -10,4 +10,27 @@
  * @see docs/ideas/feature-architecture-analysis.md for architecture decisions
  */
 
-export const VERSION = "0.9.9";
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+/**
+ * Read version from package.json at runtime.
+ * Single source of truth - no manual VERSION constant to keep in sync.
+ */
+function readVersion(): string {
+  try {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    // In dist/, package.json is one level up. In src/, it's two levels up.
+    for (const rel of ["../package.json", "../../package.json"]) {
+      const pkgPath = resolve(__dirname, rel);
+      try {
+        const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+        if (pkg.version) return pkg.version;
+      } catch { /* try next */ }
+    }
+  } catch { /* fallback */ }
+  return "0.0.0";
+}
+
+export const VERSION = readVersion();
