@@ -938,3 +938,21 @@ Instead the agent started reasoning about the bug from the error message alone, 
 2. Improved metacharacter error message: now suggests `cwd` parameter instead of `cd dir && command`
 
 **Impact:** This was the root cause of 4 sessions of shell-over-TP violations. The agent tried to comply, got rejected, and gave up. Fixing the allowlist should break the cycle.
+
+---
+
+## 2026-05-04 - BUG-016 complete fix: mixed compliance continues
+
+**Violations:**
+1. **Shell for vitest** - `shell("npx vitest run tests/unit/components/CustomFieldValues.test.tsx")` instead of `run_and_watch("npx vitest run tests/unit/components/CustomFieldValues.test.tsx", cwd: "./frontend")`
+2. **Shell for git** - chained git add + commit + push
+
+**What went right:**
+- `verify_build` used correctly again (consistent adoption)
+- `acknowledge_error` used twice to clear fixed errors (consistent adoption)
+- Bug doc updated with second root cause (Axios response vs array)
+- Good commit message with test count
+
+**Note:** This is the same session as the earlier BUG-016 entry. The shell-for-vitest pattern persists even after self-correction. The allowlist fix shipped today hasn't reached this agent yet (it's using the installed version, not the latest source).
+
+**Key insight from the bug itself:** The `values.map is not a function` had TWO root causes - string vs array AND Axios response object vs data. TP caught both errors. The agent found the second root cause by re-checking after the first fix didn't fully resolve it. Good debugging loop, wrong tools for execution.
