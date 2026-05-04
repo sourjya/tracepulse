@@ -11,6 +11,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { AuditBuffer } from "@/store/audit-buffer.js";
+import { detectRunAndWatchGap } from "@/analysis/usage-nudge.js";
 
 /** Threshold: errors above this score should be investigated. */
 const INVESTIGATE_THRESHOLD = 50;
@@ -124,6 +125,12 @@ export function handleGetSessionInsights(
     recommendations.push(
       "No get_project_health() call in this session. Use it as a health gate before major work.",
     );
+  }
+
+  // Nudge: suggest run_and_watch if agent hasn't used it
+  const runAndWatchNudge = detectRunAndWatchGap(auditRecords);
+  if (runAndWatchNudge) {
+    recommendations.push(runAndWatchNudge);
   }
 
   return {
