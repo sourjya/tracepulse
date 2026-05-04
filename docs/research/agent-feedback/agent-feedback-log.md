@@ -900,3 +900,24 @@ Instead the agent started reasoning about the bug from the error message alone, 
 - Commit message referenced TracePulse capture and the behavioral gap
 
 **Net assessment:** Agent is adopting TP tools for verification (verify_build, acknowledge_error) but still defaults to shell for test execution and file creation. The verify/acknowledge pattern is new and positive - shows the SKILL.md guidance is partially landing.
+
+---
+
+## 2026-05-04 - End-of-day summary: 58 commits, zero run_and_watch for tests (Nexus)
+
+**Context:** Massive productivity day on Nexus - 58 commits, +79 backend tests (902 total), +55 frontend tests (629 total).
+
+**Violations (same as every session):**
+- `shell(".venv/bin/python -m pytest tests/unit/ -q --tb=no")` instead of run_and_watch
+- `shell("npx vitest run --reporter=dot")` instead of run_and_watch
+- `shell("git add ... && git commit ... && git push")` for all 58 commits
+
+**Why the agent skips TP tools:** At 58 commits/day, the agent is optimizing for throughput. Shell feels faster because it's one tool call with chained commands vs multiple structured calls. The agent knows the rule but trades compliance for velocity.
+
+**The real question:** Is this a SKILL.md problem or a tool ergonomics problem? If `run_and_watch` were as fast as shell for the agent to invoke (no separate cwd parameter, no thinking about the right format), compliance would be higher. The friction is:
+- Shell: `shell("cd backend && .venv/bin/python -m pytest -q")` - one call, familiar
+- TP: `run_and_watch(".venv/bin/python -m pytest tests/unit/ -q", cwd: "./backend")` - same effort but feels unfamiliar
+
+**Possible product fix:** Auto-detect when an agent uses shell for a command that run_and_watch supports, and inject a gentle reminder in the next get_errors response. "Tip: use run_and_watch for test commands to get structured pass/fail results."
+
+**Status:** Logged. 4th consecutive session with this pattern. SKILL.md guidance alone isn't sufficient for high-velocity sessions.
