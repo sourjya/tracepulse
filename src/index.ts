@@ -10,27 +10,9 @@
  * @see docs/ideas/feature-architecture-analysis.md for architecture decisions
  */
 
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
 /**
- * Read version from package.json at runtime.
- * Single source of truth - no manual VERSION constant to keep in sync.
+ * Version injected at build time by tsup from package.json.
+ * No runtime file reads, no relative paths, no drift.
+ * tsup.config.ts defines process.env.TRACEPULSE_VERSION = package.json version.
  */
-function readVersion(): string {
-  try {
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    // In dist/, package.json is one level up. In src/, it's two levels up.
-    for (const rel of ["../package.json", "../../package.json"]) {
-      const pkgPath = resolve(__dirname, rel);
-      try {
-        const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
-        if (pkg.version) return pkg.version;
-      } catch { /* try next */ }
-    }
-  } catch { /* fallback */ }
-  return "0.0.0";
-}
-
-export const VERSION = readVersion();
+export const VERSION: string = process.env.TRACEPULSE_VERSION ?? "0.0.0-dev";
