@@ -128,6 +128,34 @@ tracepulse standalone
 
 ---
 
+## Diagnostic commands
+
+### `tracepulse doctor`
+
+Run diagnostic checks on your environment. Reports pass/warn/fail for each check:
+
+- TracePulse version
+- Node.js version (requires 22+)
+- Project detection (what stacks were found)
+- Start command suggestions
+- Python virtualenv (if Python project)
+- Persistence directory
+- .gitignore coverage
+
+```bash
+tracepulse doctor
+```
+
+### `tracepulse analyze`
+
+Analyze cross-session bug patterns from fingerprint history. Requires persistence (enabled by default).
+
+```bash
+tracepulse analyze
+```
+
+---
+
 ## Which mode should I use?
 
 | Situation | Mode |
