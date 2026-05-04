@@ -159,7 +159,7 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/tracepulse
 ## Quick Links
 
 - [Quick Start (2 minutes) ->](getting-started/quick-start.md)
-- [36 MCP Tools ->](features/mcp-tools.md)
+- [39 MCP Tools ->](features/mcp-tools.md)
 - [23 Error Parsers ->](features/parsers.md)
 - [How It Works ->](architecture/how-it-works.md)
 - [Feature Matrix vs Competitors ->](comparison/feature-matrix.md)

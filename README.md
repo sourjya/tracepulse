@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-945%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-953%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [39 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [945 tests](tests/) passing.
+🟡 **Alpha v0.9.11 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [39 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [953 tests](tests/) passing.
 
 ## Quick Start
 
@@ -115,7 +115,7 @@ Replace the command with your dev server: `uvicorn main:app --reload`, `go run m
 }
 ```
 
-> ⚠️ **Don't use `VAR=value command` syntax** in the args - TracePulse spawns processes directly, not through a shell. Use the `env` field or wrap in `bash -c '...'` instead.
+> ⚠️ **Environment variables go in the `env` field, not in the command.** `"args": ["start", "PYTHONPATH=src python app.py"]` won't work. Put variables in `env` and keep the command clean.
 
 ### Attach mode - tail an existing log file
 

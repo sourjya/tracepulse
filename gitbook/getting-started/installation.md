@@ -99,7 +99,13 @@ If you know your server command, pass it directly for immediate error monitoring
 Replace the command with whatever you type in your terminal to start the dev server.
 
 {% hint style="warning" %}
-**Don't use `VAR=value command` syntax** in args. TracePulse spawns processes directly, not through a shell. Use the `env` field for environment variables, or wrap in `bash -c '...'`.
+**Environment variables go in the `env` field, not in the command.** This won't work: `"args": ["start", "PYTHONPATH=src python app.py"]`. Instead, put the variable in `env` and keep the command clean:
+```json
+{
+  "args": ["start", "python app.py"],
+  "env": { "PYTHONPATH": "src" }
+}
+```
 {% endhint %}
 
 ## Other modes
