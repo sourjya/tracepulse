@@ -1,6 +1,6 @@
 {
   "name": "tracepulse",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Runtime feedback MCP server for AI coding agents. ViewGraph sees the UI - TracePulse feels the backend.",
   "type": "module",
   "license": "AGPL-3.0",
@@ -25,7 +25,7 @@
     "model-context-protocol"
   ],
   "bin": {
-    "tracepulse": "./dist/cli.js"
+    "tracepulse": "./bin/tracepulse"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
