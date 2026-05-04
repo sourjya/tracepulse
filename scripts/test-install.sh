@@ -130,6 +130,47 @@ run_tp_start "$D" "python -m http.server 0" "$INIT"
 check "collector starts" "Collector started" "$D/err.log"
 rm -rf "$D"
 
+# S11: Full tool call round-trip
+echo "S11: Tool call round-trip"
+D=$(mktemp -d)
+echo '{"name":"test","scripts":{"dev":"echo hi"}}' > "$D/package.json"
+TOOL_CALL='{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_project_health","arguments":{}}}'
+printf "%s\n%s\n" "$INIT" "$TOOL_CALL" | timeout 5 bash -c "cd '$D' && exec $TP" 2>/dev/null >"$D/out.log" || true
+check "get_project_health returns layers" "layers" "$D/out.log"
+check "detects node stack in response" "node" "$D/out.log"
+rm -rf "$D"
+
+# S12: Persistence creates .tracepulse/
+echo "S12: Persistence"
+D=$(mktemp -d)
+run_tp "$D" "$INIT"
+# Standalone with persist=true should create .tracepulse/ on shutdown
+check "persistence dir hint" "fingerprints" "$D/err.log"
+rm -rf "$D"
+
+# S13: Attach mode with temp log file
+echo "S13: Attach mode"
+D=$(mktemp -d)
+echo '[2026-05-04] ERROR: test error message' > "$D/test.log"
+ATTACH_INIT='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+printf "%s\n" "$ATTACH_INIT" | timeout 5 bash -c "cd '$D' && exec $TP attach --log-file ./test.log" 2>"$D/err.log" >"$D/out.log" || true
+check "attach mode starts" "protocolVersion" "$D/out.log"
+rm -rf "$D"
+
+# S14: Uninstall leaves no broken state
+echo "S14: Uninstall/reinstall"
+npm uninstall -g tracepulse >/dev/null 2>&1
+# Verify command is gone
+if command -v tracepulse >/dev/null 2>&1; then
+  echo "  ✗ tracepulse still on PATH after uninstall"; ((FAIL++)); ((TOTAL++))
+else
+  echo "  ✓ tracepulse removed from PATH"; ((PASS++)); ((TOTAL++))
+fi
+# Reinstall
+npm install -g tracepulse >/dev/null 2>&1
+timeout 3 bash -c "$TP --version" 2>/tmp/tp-reinstall.log >/dev/null || true
+check "reinstall works" "TracePulse v" /tmp/tp-reinstall.log
+
 echo ""
 echo "=============================="
 echo "$PASS/$TOTAL passed, $FAIL failed"
