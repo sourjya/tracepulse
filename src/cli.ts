@@ -549,7 +549,7 @@ async function main(): Promise<void> {
     collector = {
       async start() { /* no-op */ },
       async stop() { /* no-op */ },
-      isConnected() { return true; },
+      isConnected() { return false; },
     };
   } else {
     process.stderr.write(`[tracepulse] Unknown command: ${(parsed as ParsedArgs).command}\n`);
