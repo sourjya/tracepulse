@@ -12,6 +12,7 @@
 
 import { createServer, type Server } from "node:http";
 import { DEFAULT_HTTP_PORT } from "@/constants/services.js";
+import { createRestHandler, type RestDeps, type RestResponse } from "@/transport/rest-endpoints.js";
 
 /** Public API for the HTTP transport wrapper. */
 export interface HttpTransport {
@@ -32,18 +33,34 @@ export interface HttpTransport {
 /**
  * Create an HTTP transport wrapper.
  *
- * The server is not started until start() is called. The MCP SDK's
- * StreamableHTTPServerTransport is wired to handle requests in the
- * pipeline integration phase.
+ * The server handles REST endpoints (GET /health, /api/*) directly and
+ * passes other requests to the MCP Streamable HTTP handler.
  *
  * @param port - Port to bind to. Defaults to DEFAULT_HTTP_PORT (9800).
+ * @param restDeps - Dependencies for REST endpoints. If not provided, REST endpoints are disabled.
  * @returns HttpTransport instance.
  */
-export function createHttpTransport(port: number = DEFAULT_HTTP_PORT): HttpTransport {
+export function createHttpTransport(port: number = DEFAULT_HTTP_PORT, restDeps?: RestDeps): HttpTransport {
   const host = "127.0.0.1";
   let listening = false;
 
   const server = createServer();
+  const restHandler = restDeps ? createRestHandler(restDeps) : null;
+
+  // Wire REST endpoints into the HTTP server's request handler
+  if (restHandler) {
+    server.on("request", (req, res) => {
+      const result = restHandler({ method: req.method ?? "GET", url: req.url ?? "/" });
+      if (result) {
+        res.writeHead(result.status, {
+          "Content-Type": result.contentType,
+          "Access-Control-Allow-Origin": "*",
+        });
+        res.end(result.body);
+      }
+      // If result is null, the default MCP handler (wired by SDK) processes it
+    });
+  }
 
   return {
     port,
