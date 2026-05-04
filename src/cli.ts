@@ -41,6 +41,7 @@ import { createHealthProber, type HealthProber } from "@/infra/health-prober.js"
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
 import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
 import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
+import { detectProjectStacks, suggestStartCommands } from "@/diagnostics/project-detector.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -134,7 +135,10 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
   // Skip node binary and script path
   const args = argv.slice(2);
 
-  if (args.length === 0) return null;
+  if (args.length === 0) {
+    // Zero-config default: start in standalone mode with persistence (M21)
+    return { command: "standalone", persist: true };
+  }
 
   // Flag-only commands
   if (args.includes("--version") || args.includes("-v")) {
@@ -486,6 +490,13 @@ async function main(): Promise<void> {
   const projectHints = readProjectHints(process.cwd());
   if (projectHints.language || projectHints.framework) {
     process.stderr.write(`[tracepulse] Project detected: ${projectHints.language ?? "unknown"} / ${projectHints.framework ?? "unknown"}\n`);
+  }
+
+  // Detect project stacks from marker files (M21 Layer 1)
+  const detectedStacks = detectProjectStacks(process.cwd());
+  if (detectedStacks.length > 0) {
+    const stackNames = detectedStacks.map(s => s.name).join(", ");
+    process.stderr.write(`[tracepulse] Stacks detected: ${stackNames}\n`);
   }
 
   // Create the appropriate collector based on command.
