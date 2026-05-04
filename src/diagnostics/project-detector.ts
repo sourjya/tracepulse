@@ -26,12 +26,14 @@ export interface ProjectStack {
   readonly detected_by: string;
 }
 
-/** A suggested start command. */
+/** A suggested start command with confidence. */
 export interface StartSuggestion {
   /** The command to run. */
   readonly command: string;
   /** Why this was suggested. */
   readonly reason: string;
+  /** How confident we are: high (file explicitly defines it), medium (inferred), low (guess). */
+  readonly confidence: "high" | "medium" | "low";
 }
 
 // ──────────────────────────────────────────────
@@ -119,8 +121,8 @@ export function suggestStartCommands(cwd: string): StartSuggestion[] {
     try {
       const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
       const scripts = pkg.scripts ?? {};
-      if (scripts.dev) suggestions.push({ command: "npm run dev", reason: "package.json scripts.dev" });
-      else if (scripts.start) suggestions.push({ command: "npm run start", reason: "package.json scripts.start" });
+      if (scripts.dev) suggestions.push({ command: "npm run dev", reason: "package.json scripts.dev", confidence: "high" });
+      else if (scripts.start) suggestions.push({ command: "npm run start", reason: "package.json scripts.start", confidence: "high" });
     } catch { /* malformed package.json */ }
   }
 
@@ -130,7 +132,7 @@ export function suggestStartCommands(cwd: string): StartSuggestion[] {
     try {
       const content = readFileSync(makefilePath, "utf-8");
       if (/^dev\s*:/m.test(content)) {
-        suggestions.push({ command: "make dev", reason: "Makefile has dev target" });
+        suggestions.push({ command: "make dev", reason: "Makefile has dev target", confidence: "high" });
       }
     } catch { /* unreadable */ }
   }
@@ -140,13 +142,31 @@ export function suggestStartCommands(cwd: string): StartSuggestion[] {
   for (const name of scriptNames) {
     const scriptPath = resolve(cwd, "scripts", name);
     if (existsSync(scriptPath)) {
-      suggestions.push({ command: `bash scripts/${name}`, reason: `scripts/${name} exists` });
+      suggestions.push({ command: `bash scripts/${name}`, reason: `scripts/${name} exists`, confidence: "high" });
     }
   }
 
   // manage.py (Django)
   if (existsSync(resolve(cwd, "manage.py"))) {
-    suggestions.push({ command: "python manage.py runserver", reason: "Django manage.py detected" });
+    suggestions.push({ command: "python manage.py runserver", reason: "Django manage.py detected", confidence: "high" });
+  }
+
+  // docker-compose.yml -> suggest compose mode
+  if (existsSync(resolve(cwd, "docker-compose.yml")) || existsSync(resolve(cwd, "docker-compose.yaml"))) {
+    suggestions.push({ command: "tracepulse compose", reason: "docker-compose.yml detected", confidence: "medium" });
+  }
+
+  // Python with uvicorn in requirements
+  const reqPath = resolve(cwd, "requirements.txt");
+  if (existsSync(reqPath) && suggestions.length === 0) {
+    try {
+      const content = readFileSync(reqPath, "utf-8");
+      if (content.includes("uvicorn")) {
+        suggestions.push({ command: "uvicorn main:app --reload", reason: "uvicorn in requirements.txt", confidence: "low" });
+      } else if (content.includes("flask")) {
+        suggestions.push({ command: "flask run --reload", reason: "flask in requirements.txt", confidence: "low" });
+      }
+    } catch { /* unreadable */ }
   }
 
   return suggestions;

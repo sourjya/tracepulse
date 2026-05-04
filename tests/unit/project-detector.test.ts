@@ -89,6 +89,7 @@ describe("suggestStartCommands", () => {
     });
     const suggestions = suggestStartCommands(dir);
     expect(suggestions.some(s => s.command.includes("npm run dev"))).toBe(true);
+    expect(suggestions[0].confidence).toBe("high");
   });
 
   it("suggests uvicorn from pyproject.toml", () => {
