@@ -1009,3 +1009,17 @@ Instead the agent started reasoning about the bug from the error message alone, 
 1. Investigate: does run_and_watch inherit the full user environment?
 2. Add `alembic` to the Python stack allowlist
 3. Consider: should run_and_watch log the PATH/PYTHONPATH it uses, so agents can debug env mismatches?
+
+---
+
+## 2026-05-05 - Agent uses shell for alembic (allowlist not published)
+
+**Context:** Agent ran `PYTHONPATH=src uv run alembic upgrade head` and `alembic revision --autogenerate` via shell on CoreIQ.
+
+**Why:** Two reasons:
+1. `alembic` was added to allowlist in source but not published to npm yet (still on v0.9.13)
+2. `PYTHONPATH=src` prefix forces shell usage - agent would need to use env parameter
+
+**Pattern:** Same as the pytest issue - allowlist fix exists in source but hasn't reached the agent. The publish cycle is the bottleneck.
+
+**Action:** Publish v0.9.14 with alembic allowlist + venv auto-detection.
