@@ -49,6 +49,7 @@ import { handleVerifyBuild } from "@/tools/verify-build.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
+import { buildAllowlist } from "@/tools/run-and-watch-allowlist.js";
 import { handleGetRequests } from "@/tools/get-requests.js";
 import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
 import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-status.js";
@@ -275,6 +276,7 @@ export function createMcpServer(
     errorLifecycle?: ErrorLifecycle;
     patternAnalyzer?: PatternAnalyzer;
     serverManager?: ServerManager;
+    detectedStacks?: readonly import("@/diagnostics/project-detector.js").ProjectStack[];
     clustered?: boolean;
   },
 ): McpServer {
@@ -635,6 +637,9 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleWaitForEvent(buffer, args as Record<string, unknown>));
 
+  // Build stack-aware allowlist for run_and_watch (M21 Phase 2)
+  const allowlist = options?.detectedStacks ? buildAllowlist(options.detectedStacks) : undefined;
+
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
@@ -645,7 +650,7 @@ export function createMcpServer(
       cwd: z.string().optional().describe("Working directory to run the command in. Use for monorepos (e.g., './frontend' or '/absolute/path')."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
-  }, (args) => handleRunAndWatch(args as Record<string, unknown>));
+  }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist));
 
   server.registerTool("get_requests", {
     title: "Get Requests",

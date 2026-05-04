@@ -72,9 +72,11 @@ const DEFAULT_ALLOWED_PREFIXES = [
  * Handle run_and_watch MCP tool call.
  *
  * @param args - { command: string, timeout_seconds?: number, cwd?: string }.
+ * @param allowedPrefixes - Optional custom allowlist. Defaults to DEFAULT_ALLOWED_PREFIXES.
  */
 export async function handleRunAndWatch(
   args: Record<string, unknown>,
+  allowedPrefixes?: readonly string[],
 ): Promise<CallToolResult> {
   const command = args.command as string | undefined;
   const cwd = args.cwd as string | undefined;
@@ -82,9 +84,10 @@ export async function handleRunAndWatch(
     return { content: [{ type: "text", text: "command parameter is required" }], isError: true };
   }
 
-  // Security: validate command against allowlist
+  // Security: validate command against allowlist (stack-aware when available)
   const cmdLower = command.trim().toLowerCase();
-  const allowed = DEFAULT_ALLOWED_PREFIXES.some((prefix) =>
+  const prefixes = allowedPrefixes ?? DEFAULT_ALLOWED_PREFIXES;
+  const allowed = prefixes.some((prefix) =>
     cmdLower.startsWith(prefix.toLowerCase()),
   );
   if (!allowed) {
