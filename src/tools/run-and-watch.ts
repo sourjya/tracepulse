@@ -137,10 +137,24 @@ export async function handleRunAndWatch(
     const startTime = Date.now();
     let resolved = false;
 
+    // Build environment: inherit process.env, add Python unbuffered mode,
+    // and auto-detect virtualenv in the working directory (M21 Phase 2).
+    const spawnEnv: Record<string, string | undefined> = { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" };
+    const spawnCwd = resolvedCwd ?? process.cwd();
+
+    // Auto-activate virtualenv if .venv exists in the working directory.
+    // MCP servers don't inherit the user's shell profile, so venvs activated
+    // in the terminal aren't active here. This fixes the env mismatch.
+    const venvBin = resolvePath(spawnCwd, ".venv", "bin");
+    if (existsSync(venvBin)) {
+      spawnEnv.PATH = `${venvBin}:${spawnEnv.PATH ?? ""}`;
+      spawnEnv.VIRTUAL_ENV = resolvePath(spawnCwd, ".venv");
+    }
+
     const child = spawn(command, {
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" },
+      env: spawnEnv,
       ...(resolvedCwd ? { cwd: resolvedCwd } : {}),
     });
 
