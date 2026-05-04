@@ -10,6 +10,7 @@ Last updated: 2026-05-02
 
 | Document | Date | Summary | Roadmap Items Derived |
 |----------|------|---------|----------------------|
+| [Environment Detection & Zero-Config Architecture](environment-detection-zero-config-research.md) | 2026-05-04 | Why MCP servers have different environments than user shells. Capability layers, centralized detection, venv auto-detection, startup diagnostics. 3 critical bugs found. | M21 (zero-config, start_server, project detection, bin wrapper) |
 | [Deep Research - Competitive Landscape & Roadmap 2026](agentic-debug-loop-deep-research-2-2026.md) | 2026-04-30 | Founder-grade competitive analysis. Lightrun, Sentry Seer, Replay.io, DAP-MCP, eBPF. 10 strategic recommendations. | M13 (hooks, token audit, drift), M14 (DAP bridge, Sentry export, dashboard, multi-agent) |
 | [MCP Tooling Research - Rearchitecting TP & VG](mcp-tooling-research--the-case-for-rearchitecting-tracepulse-and-viewgraph.md) | 2026-05-01 | Token overhead analysis. Tool clustering, progressive disclosure, environmental impact. | M15 (tool clustering, description compression, token audit) |
 | [Platform Strategy - v1.0 Priorities](viewgraph-tracepulse-v1-platform-strategy.md) | 2026-05-01 | Stack Overflow/JetBrains/GitHub data. Python gap, Go opportunity, testing ecosystem. | M16 (Pydantic parser, air hot-reload, Spring Boot, monorepo routing, pnpm/Bun docs) |
