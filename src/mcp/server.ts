@@ -648,6 +648,7 @@ export function createMcpServer(
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),
       cwd: z.string().optional().describe("Working directory to run the command in. Use for monorepos (e.g., './frontend' or '/absolute/path')."),
+      max_lines: z.number().optional().describe("Maximum output lines to return. Use instead of '| head -20'. Omit for full output (last 100 lines)."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist));

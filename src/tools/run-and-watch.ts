@@ -112,6 +112,7 @@ export async function handleRunAndWatch(
   }
 
   const timeout = ((args.timeout_seconds as number | undefined) ?? 60) * 1000;
+  const maxLines = args.max_lines as number | undefined;
 
   // Security: validate cwd is within the project root (no directory traversal)
   let resolvedCwd: string | undefined;
@@ -157,8 +158,12 @@ export async function handleRunAndWatch(
       ...(resolvedCwd ? { cwd: resolvedCwd } : {}),
     });
 
+    /** Collect raw output lines for the raw_output field. */
+    const rawLines: string[] = [];
+
     /** Process a line through the parser pipeline into the temp buffer. */
     function processLine(line: string, source: "server-stdout" | "server-stderr"): void {
+      rawLines.push(line);
       const stripped = line.replace(ANSI_ESCAPE_REGEX, "");
       const redacted = redact(stripped);
       const parseInput = redacted.length > MAX_PARSE_INPUT_LENGTH
@@ -208,6 +213,11 @@ export async function handleRunAndWatch(
               const hint = diagnoseFailure(command!, exitCode, process.cwd());
               return hint ? { diagnostic: hint } : {};
             })() : {}),
+            // Raw output with optional truncation (max_lines parameter)
+            raw_output: maxLines
+              ? rawLines.slice(0, maxLines).join("\n")
+              : rawLines.slice(-100).join("\n"), // default: last 100 lines
+            ...(maxLines && rawLines.length > maxLines ? { output_truncated: true, total_lines: rawLines.length } : {}),
           }),
         }],
       });

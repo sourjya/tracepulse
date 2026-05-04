@@ -348,7 +348,7 @@ Fix the invocation instead. Common failures and fixes:
 
 | Failure | Wrong reaction | Correct fix |
 |---------|---------------|-------------|
-| "shell metacharacters" error | `shell("cmd \| head")` | Remove pipes: `run_and_watch("cmd")` |
+| "shell metacharacters" error | `shell("cmd \| head")` | Remove pipes: `run_and_watch("cmd")` or use `max_lines: 20` |
 | Exit code 1 (tsc can't find tsconfig) | `shell("npx tsc --noEmit")` | `run_and_watch("npx tsc -p packages/x/tsconfig.json --noEmit")` |
 | Command hangs (dev server) | `shell("timeout 10 cmd")` | `run_and_watch("cmd", timeout_seconds: 10)` |
 | Need to background a process | `shell("cmd &")` | Don't. Use `check_port` + `navigate_page` to verify instead |
