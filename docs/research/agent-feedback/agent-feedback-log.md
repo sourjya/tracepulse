@@ -921,3 +921,20 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Possible product fix:** Auto-detect when an agent uses shell for a command that run_and_watch supports, and inject a gentle reminder in the next get_errors response. "Tip: use run_and_watch for test commands to get structured pass/fail results."
 
 **Status:** Logged. 4th consecutive session with this pattern. SKILL.md guidance alone isn't sufficient for high-velocity sessions.
+
+---
+
+## 2026-05-04 - Root cause found: run_and_watch allowlist rejection causes shell fallback
+
+**Context:** Agent revealed WHY it falls back to shell: `run_and_watch` rejected the pytest command with "Command not allowed" because the format didn't match the allowlist. After the first rejection, the agent defaulted to shell for all 20+ subsequent test runs.
+
+**This is a product bug, not just a behavioral issue.** The allowlist was too narrow:
+- Missing: `python` standalone (only had `.venv/bin/python`)
+- Missing: `pnpm`, `bun`, `cargo build`, `cargo check`, `mvn`, `gradle`, `make`
+- Error message didn't suggest the `cwd` parameter as alternative to `cd dir &&`
+
+**Fix applied:**
+1. Expanded allowlist: added `python`, `pnpm`, `bun`, `cargo build`, `cargo check`, `mvn`, `gradle`, `gradlew`, `./gradlew`, `make`, `cmake`, `uv run`
+2. Improved metacharacter error message: now suggests `cwd` parameter instead of `cd dir && command`
+
+**Impact:** This was the root cause of 4 sessions of shell-over-TP violations. The agent tried to comply, got rejected, and gave up. Fixing the allowlist should break the cycle.

@@ -61,8 +61,11 @@ function diagnoseFailure(command: string, exitCode: number | null, cwd?: string)
 /** Default allowed command prefixes. Only these can be executed. */
 const DEFAULT_ALLOWED_PREFIXES = [
   "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
-  "vitest", "jest", "go test", "cargo test", "uv",
+  "vitest", "jest", "go test", "cargo test", "cargo build", "cargo check",
+  "uv", "uv run", "pnpm", "bun",
   ".venv/bin/python", ".venv/bin/pytest",
+  "mvn", "gradle", "gradlew", "./gradlew",
+  "make", "cmake",
 ];
 
 /**
@@ -100,7 +103,7 @@ export async function handleRunAndWatch(
     return {
       content: [{
         type: "text",
-        text: "Command contains shell metacharacters (;, &, |, `, $, etc.) which are not allowed. Run one command at a time.",
+        text: `Command contains shell metacharacters (;, &, |, \`, $, etc.) which are not allowed. Run one command at a time. Use the cwd parameter instead of "cd dir && command".`,
       }],
       isError: true,
     };
