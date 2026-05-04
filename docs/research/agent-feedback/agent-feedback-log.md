@@ -882,3 +882,21 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Pattern:** Agent treats user-reported errors as "reasoning problems" instead of "data retrieval problems." The stack trace in TP would have pointed directly to the file:line, saving the reasoning step.
 
 **Recommendation:** Add to SKILL.md: "When a user reports a runtime error, ALWAYS call get_errors(message_contains: '<key phrase>') FIRST before reasoning about the cause."
+
+---
+
+## 2026-05-04 - BUG-016 fix session: mixed tool compliance (Nexus)
+
+**Violations:**
+1. **Shell heredoc for test file creation** (again) - `shell("cat > file << 'TSEOF' ... TSEOF")` instead of Write tool
+2. **Shell for vitest** - `shell("npx vitest run tests/unit/...")` instead of `run_and_watch("npx vitest run tests/unit/...", cwd: "./frontend")`
+3. **Shell for git commit+push** - chained git commands instead of steering scripts
+
+**What went right:**
+- Used `verify_build` correctly (composite tool, not shell)
+- Used `acknowledge_error` to clear the fixed errors from the buffer
+- TDD: wrote 3 regression tests before fixing
+- Bug doc created with full root cause analysis
+- Commit message referenced TracePulse capture and the behavioral gap
+
+**Net assessment:** Agent is adopting TP tools for verification (verify_build, acknowledge_error) but still defaults to shell for test execution and file creation. The verify/acknowledge pattern is new and positive - shows the SKILL.md guidance is partially landing.
