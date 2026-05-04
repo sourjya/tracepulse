@@ -1,110 +1,90 @@
 # MCP Client Setup
 
-Detailed setup instructions for each AI coding tool.
+Step-by-step setup for each AI coding tool. The config is the same everywhere - only the file location changes.
+
+## The config (same for all tools)
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse"
+    }
+  }
+}
+```
+
+If you also want live server monitoring, add your dev server command:
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "npm run dev"]
+    }
+  }
+}
+```
+
+Replace `npm run dev` with your server command. See [Quick Start](quick-start.md#optional-monitor-your-dev-server) for examples by language.
+
+---
 
 ## Kiro CLI
 
-Config file: `.kiro/settings/mcp.json` (in your project root)
+**Config file:** `.kiro/settings/mcp.json` in your project folder.
 
-> WARNING: **Common mistake:** Kiro uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`.
-
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
+Create the file if it doesn't exist:
+```bash
+mkdir -p .kiro/settings
 ```
 
-## Claude Desktop
+Paste the config above and restart Kiro. Verify with `/mcp list`.
 
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-**Linux:** `~/.config/Claude/claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+{% hint style="warning" %}
+The file is `.kiro/settings/mcp.json` - not `.kiro/mcp.json`. This is the most common setup mistake.
+{% endhint %}
 
 ## Cursor
 
-Config file: `.cursor/mcp.json` (in your project root)
+**Config file:** `.cursor/mcp.json` in your project folder.
 
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+Paste the config and restart Cursor.
+
+## Claude Desktop
+
+**Config file location:**
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux:** `~/.config/Claude/claude_desktop_config.json`
+
+Open the file, add the TracePulse entry inside the `mcpServers` object, and restart Claude Desktop.
 
 ## VS Code (GitHub Copilot)
 
-Config file: `.vscode/mcp.json` (in your project root)
+**Config file:** `.vscode/mcp.json` in your project folder.
 
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+Paste the config and reload the VS Code window.
 
 ## Windsurf
 
-Config file: `~/.codeium/windsurf/mcp_config.json`
+**Config file:** `~/.codeium/windsurf/mcp_config.json`
 
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+Paste the config and restart Windsurf.
 
 ## Generic (.mcp.json)
 
-For any MCP client that reads `.mcp.json` from the project root:
+For any MCP client that reads `.mcp.json` from the project root, create the file and paste the config.
 
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+---
 
-## Verifying the Connection
+## Verifying it works
 
-After adding the config, start a new chat session. Ask the agent:
+After adding the config and restarting your tool:
 
-```
-What TracePulse tools are available?
-```
+1. **Kiro CLI:** Type `/mcp list` - TracePulse should show `● running 39 tools`
+2. **Other tools:** Ask the agent "What TracePulse tools are available?" - it should list the tools
+3. **Quick test:** Ask "Check project health" - the agent should call `get_project_health` and report your project status
 
-It should list 36 tools. If tools don't appear, check:
-1. Config file is in the correct location
-2. Node.js >= 22 is installed
-3. `npx tracepulse --version` works from your terminal
+If it's not working, see [Troubleshooting](installation.md#troubleshooting).

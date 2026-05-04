@@ -1,28 +1,33 @@
 # Quick Start
 
-Get TracePulse running in 2 minutes.
+Get TracePulse running in 2 minutes. Works with any project - Node, Python, Go, Rust, Java, or anything else.
 
-## 1. Install
+## Step 1: Install TracePulse
+
+You need [Node.js 22+](https://nodejs.org/) installed (even if your project isn't Node.js).
 
 ```bash
 npm install -g tracepulse
 ```
 
-## 2. Add to your MCP config
+Verify it worked:
+```bash
+tracepulse --version
+```
 
-Find your MCP client's config file:
+## Step 2: Tell your AI tool about TracePulse
 
-| Client | Config File |
-|--------|-------------|
-| **Kiro CLI** | `.kiro/settings/mcp.json` (in your project) |
-| **Claude Desktop (macOS)** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| **Claude Desktop (Windows)** | `%APPDATA%\Claude\claude_desktop_config.json` |
-| **Cursor** | `.cursor/mcp.json` (in your project) |
-| **VS Code (Copilot)** | `.vscode/mcp.json` (in your project) |
+Find the config file for your AI tool and add TracePulse:
+
+| AI Tool | Config File |
+|---------|-------------|
+| **Kiro CLI** | `.kiro/settings/mcp.json` in your project |
+| **Cursor** | `.cursor/mcp.json` in your project |
+| **Claude Desktop** | See [MCP Client Setup](mcp-client-setup.md) for path |
+| **VS Code (Copilot)** | `.vscode/mcp.json` in your project |
 | **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
-| **Generic** | `.mcp.json` (in your project root) |
 
-Add TracePulse (works for any project - Node, Python, Go, Rust, Java):
+Paste this into the config file:
 
 ```json
 {
@@ -34,199 +39,81 @@ Add TracePulse (works for any project - Node, Python, Go, Rust, Java):
 }
 ```
 
-Replace `npm run dev` with your dev server command (`python manage.py runserver`, `go run main.go`, etc.).
+That's the entire setup. TracePulse figures out the rest automatically.
 
-> **Tip:** Not sure which config file to edit? Just paste the JSON above into your agent's chat and ask: "Add TracePulse to my MCP config." The agent knows where its own config file is and can add it for you.
+{% hint style="success" %}
+**Not sure which file to edit?** Paste the JSON above into your agent's chat and ask: "Add TracePulse to my MCP config." The agent knows where its own config lives.
+{% endhint %}
 
-### Examples by language
+## Step 3: Restart your AI tool
 
-**Python (Django/FastAPI/Flask):**
-```json
-{ "args": ["tracepulse", "start", "python manage.py runserver"] }
-{ "args": ["tracepulse", "start", "uvicorn main:app --reload"] }
-{ "args": ["tracepulse", "start", "flask run --reload"] }
-{ "args": ["tracepulse", "start", "bash scripts/start.sh"] }
-```
+Close and reopen your AI tool (or restart the session). TracePulse should now appear as connected.
 
-**Python with PYTHONPATH or env vars:** Use the `env` field, not `VAR=val cmd` syntax:
+In Kiro CLI, type `/mcp list` to verify - you should see `tracepulse ● running 39 tools`.
+
+## Step 4: Try it out
+
+Open a chat and ask:
+
+| You say | What happens |
+|---------|-------------|
+| "Check project health" | Full status report: server, errors, infrastructure |
+| "Any backend errors?" | Errors ranked by importance with file and line number |
+| "Run the tests" | Structured pass/fail results (not raw terminal output) |
+| "Verify the fix" | Watches for new errors after your code change, returns pass/fail |
+
+You don't need to remember tool names. Just describe what you want.
+
+## Optional: Monitor your dev server
+
+The basic setup gives you 39 tools for running commands, checking ports, detecting drift, and more. To also get **live error monitoring** (errors caught the moment they happen), tell TracePulse about your dev server.
+
+Add your server command to the config:
+
 ```json
 {
   "mcpServers": {
     "tracepulse": {
       "command": "tracepulse",
-      "args": ["start", "python -m myapp.server"],
-      "env": { "PYTHONPATH": "src" }
+      "args": ["start", "npm run dev"]
     }
   }
 }
 ```
 
-**Go:**
-```json
-{ "args": ["tracepulse", "start", "go run main.go"] }
-```
+Replace `npm run dev` with whatever you type in your terminal to start your server:
 
-**Java (Spring Boot / Gradle):**
-```json
-{ "args": ["tracepulse", "start", "mvn spring-boot:run"] }
-{ "args": ["tracepulse", "start", "./gradlew bootRun"] }
-```
+| Your project | Command |
+|-------------|---------|
+| Node.js | `npm run dev` or `pnpm run dev` |
+| Python (Django) | `python manage.py runserver` |
+| Python (FastAPI) | `uvicorn main:app --reload` |
+| Go | `go run main.go` |
+| Rust | `cargo run` |
+| Java (Spring) | `mvn spring-boot:run` |
+| Shell script | `bash scripts/start.sh` |
 
-**Rust:**
-```json
-{ "args": ["tracepulse", "start", "cargo run"] }
-```
+{% hint style="info" %}
+**Don't know your server command yet?** Skip this step. The agent can start the server later by calling `start_server()` - TracePulse will suggest the right command based on your project files.
+{% endhint %}
 
-**pnpm / Bun (modern Node.js):**
-```json
-{ "args": ["tracepulse", "start", "pnpm run dev"] }
-{ "args": ["tracepulse", "start", "bun run dev"] }
-```
+{% hint style="warning" %}
+**If your server needs environment variables** (like `PYTHONPATH`), put them in the `env` field - not in the command itself.
 
-TracePulse works with any package manager - npm, pnpm, Bun, yarn. The process spawner doesn't care which one starts the server.
+Won't work: `"args": ["start", "PYTHONPATH=src python app.py"]`
 
-### Prerequisites
-
-TracePulse is a Node.js tool. It requires **Node.js 22+** installed, but your project does not need to be Node.js. TracePulse runs alongside any dev server - Python, Go, Java, Rust, or anything that prints to stdout/stderr.
-
-**For non-Node projects (Python, Go, Java, Rust):** Install TracePulse globally once:
-```bash
-npm install -g tracepulse
-```
-Then use `"command": "tracepulse"` (not `"command": "npx"`):
+Works:
 ```json
 {
-  "mcpServers": {
-    "tracepulse": {
-      "command": "tracepulse",
-      "args": ["start", "python manage.py runserver"]
-    }
-  }
+  "args": ["start", "python app.py"],
+  "env": { "PYTHONPATH": "src" }
 }
 ```
+{% endhint %}
 
-**For Node.js projects:** `npx` works without global install:
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
-    }
-  }
-}
-```
+## Next steps
 
-If you don't have Node.js: [Install Node.js](https://nodejs.org/) (LTS recommended).
-
-## 2. Attach mode (servers already running)
-
-If your servers are managed by Docker, tmux, pm2, or scripts:
-
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "attach", "--log-file", "./logs/server.log"]
-    }
-  }
-}
-```
-
-## 2b. Standalone mode (fresh projects, libraries, no server yet)
-
-For projects without a dev server or log file - libraries, monorepos, CLI tools, fresh projects. You still get [`run_and_watch`](../features/mcp-tools.md#run_and_watch), [`verify_build`](../features/mcp-tools.md#verify_build), `check_port`, [`get_migration_status`](../features/mcp-tools.md#get_migration_status), and all other tools:
-
-```json
-{
-  "mcpServers": {
-    "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "standalone"]
-    }
-  }
-}
-```
-
-**Real-world validation:** A TypeScript library monorepo used TracePulse in standalone mode for 11 hours with 70+ tool calls. [`run_and_watch`](../features/mcp-tools.md#run_and_watch) replaced all shell commands for tests and type-checking, catching unused imports, type errors, and test failures with structured output. No dev server needed.
-
-Upgrade to `start` mode later when you add a dev server. No config change needed beyond swapping `standalone` for `start "your command"`.
-
-> **Note (v0.9.5+):** If you use `start` mode but the command fails (e.g., no `dev` script), TracePulse automatically falls back to standalone mode instead of crashing. You still get all tools.
-
-## 3. Start a chat
-
-Open your AI coding agent and start working. TracePulse connects automatically.
-
-Try asking:
-
-```
-Are there any backend errors?
-```
-
-The agent calls [`get_errors`](../features/mcp-tools.md#get_errors) and tells you what's wrong - with file, line number, error type, and importance score.
-
-Or let the agent check everything at once:
-
-```
-Check the project health.
-```
-
-The agent calls [`get_project_health`](../features/mcp-tools.md#get_project_health) - server status, infrastructure connectivity, error count, and build status in one call.
-
-## 4. Let the agent verify its own fixes
-
-After the agent makes a code change, it can verify the fix worked:
-
-```
-Verify the fix is clean.
-```
-
-The agent calls [`verify_fix`](../features/mcp-tools.md#verify_fix) - watches for new errors, checks the build, and returns a definitive pass/fail. No more "I think I fixed it."
-
-## That's it
-
-The agent now has 36 tools for backend debugging. It uses them automatically when investigating errors, verifying fixes, running tests, and monitoring your dev server.
-
-## Common Commands to Try
-
-| Ask the agent | What happens |
-|---------------|-------------|
-| "Any backend errors?" | [`get_errors`](../features/mcp-tools.md#get_errors) - errors ranked by importance |
-| "Check project health" | [`get_project_health`](../features/mcp-tools.md#get_project_health) - server + infra + errors in one call |
-| "Run the tests" | `run_and_watch("pytest tests/")` - structured pass/fail results |
-| "Verify the fix" | [`verify_fix`](../features/mcp-tools.md#verify_fix) - definitive pass/fail after a code change |
-| "What's the build status?" | [`get_build_errors`](../features/mcp-tools.md#get_build_errors) - TypeScript, ESLint, Vite/webpack errors |
-| "Check migration status" | [`get_migration_status`](../features/mcp-tools.md#get_migration_status) - pending migrations across frameworks |
-
-You don't need to remember tool names. Describe what you want and the agent picks the right tool.
-
-## Next Steps
-
-- [Installation options ->](installation.md)
-- [All 36 MCP tools ->](../features/mcp-tools.md)
-- [TracePulse in Action (real examples) ->](../tutorials/tracepulse-in-action.md)
-- [Why TracePulse? ->](../why-tracepulse.md)
-
-## Troubleshooting
-
-### "connection closed: initialize response"
-
-TracePulse started but crashed before completing the MCP handshake. Common causes:
-
-1. **Kiro IDE can't find tracepulse** - the IDE's PATH differs from your terminal. Find the absolute path with `which tracepulse` and use it directly: `"command": "/full/path/to/tracepulse"`
-2. **Dev server command doesn't exist** - check that the command in `args` works when you run it manually in the terminal
-3. **No Node.js installed** - `npx` requires Node.js. Install it from [nodejs.org](https://nodejs.org/) or use a global install
-4. **Old version** - standalone mode requires v0.9.3+. Update: `npm install -g tracepulse@latest`
-5. **No package.json** - if using `npm run dev`, the project needs a `package.json` with a `dev` script. For non-Node projects, use the actual server command directly
-
-### "tracepulse: command not found"
-
-Install globally: `npm install -g tracepulse`. If it still fails, use the absolute path from `which tracepulse`.
-
-### Tools don't appear in the agent
-
-Check you're editing the right config file. Kiro CLI uses `.kiro/settings/mcp.json` (not `.kiro/mcp.json`). Restart the agent after editing the config.
-
-For the full installation matrix with all edge cases, see [Installation Matrix](../../docs/engineering/installation-matrix.md).
+- [Installation options](installation.md) - attach mode, multi-service, Docker Compose
+- [All 39 MCP tools](../features/mcp-tools.md) - what TracePulse can do
+- [TracePulse in Action](../tutorials/tracepulse-in-action.md) - real-world examples
+- [Troubleshooting](installation.md#troubleshooting) - if something isn't working
