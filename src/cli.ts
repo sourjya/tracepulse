@@ -92,8 +92,13 @@ interface AnalyzeArgs {
   readonly command: "analyze";
 }
 
+/** Parsed CLI arguments for the doctor subcommand. */
+interface DoctorArgs {
+  readonly command: "doctor";
+}
+
 /** Union of all valid parsed argument shapes. */
-export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs;
+export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs | DoctorArgs;
 
 // ──────────────────────────────────────────────
 // Usage Text
@@ -107,6 +112,7 @@ Usage:
   tracepulse attach --log-file <path> Tail an existing log file
   tracepulse standalone               Tools only - no dev server or log file needed
   tracepulse analyze                  Analyze cross-session bug patterns
+  tracepulse doctor                   Check installation and environment
   tracepulse --version                Print version
   tracepulse --help                   Print this help
 
@@ -237,6 +243,10 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
 
   if (subcommand === "analyze") {
     return { command: "analyze" };
+  }
+
+  if (subcommand === "doctor") {
+    return { command: "doctor" as const };
   }
 
   if (subcommand === "compose") {
@@ -423,6 +433,14 @@ async function main(): Promise<void> {
     }
     process.stderr.write(`Summary: ${analysis.summary}\n`);
     return process.exit(0);
+  }
+
+  if (parsed.command === "doctor") {
+    const { runDoctorChecks, formatDoctorOutput } = await import("@/diagnostics/doctor.js");
+    const checks = runDoctorChecks(process.cwd());
+    process.stderr.write(formatDoctorOutput(checks) + "\n");
+    const failures = checks.filter(c => c.status === "fail").length;
+    return process.exit(failures > 0 ? 1 : 0);
   }
 
   // ── Global error handlers ──
