@@ -956,3 +956,29 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Note:** This is the same session as the earlier BUG-016 entry. The shell-for-vitest pattern persists even after self-correction. The allowlist fix shipped today hasn't reached this agent yet (it's using the installed version, not the latest source).
 
 **Key insight from the bug itself:** The `values.map is not a function` had TWO root causes - string vs array AND Axios response object vs data. TP caught both errors. The agent found the second root cause by re-checking after the first fix didn't fully resolve it. Good debugging loop, wrong tools for execution.
+
+---
+
+## 2026-05-04 - TracePulse startup friction on Python project (CoreIQ)
+
+**Context:** User tried to install TracePulse on a Python FastAPI project (CoreIQ). Failed with "connection closed: initialize response" in Kiro MCP panel.
+
+**Root causes (multiple):**
+
+1. **`PYTHONPATH=src python -m module` doesn't work with spawn.** TracePulse uses `child_process.spawn`, not a shell. `VAR=val cmd` is shell syntax. The env var was silently ignored, Python couldn't find the module, exited 1. TracePulse fell back to standalone but the MCP handshake timing may have caused the "connection closed" error.
+
+2. **No venv in this project.** Uses system Python with `pip install --break-system-packages`. The start script (`scripts/start.sh`) handles dep installation. TracePulse docs assume either venv or global Python with deps installed.
+
+3. **npx tracepulse vs node dist/cli.js.** The npm-published version (0.9.7) is behind the source. Using `node /path/to/dist/cli.js` works but isn't documented as the primary path for local dev.
+
+4. **The start script uses bash-specific features** (`BASH_SOURCE`, `cd`, conditional pip install). TracePulse needs to wrap the whole script, not just the Python command.
+
+**What worked:** `node /path/to/tracepulse/dist/cli.js start "bash scripts/start.sh"` with `cwd` set to the project root.
+
+**Docs gaps identified:**
+- README doesn't show env var pattern for Python projects
+- README doesn't show `bash scripts/start.sh` as a valid start command
+- No troubleshooting section for "connection closed" errors
+- No guidance for projects without venv (system Python)
+
+**Friction assessment:** A user trying to install TracePulse on a Python project hits 3-4 obstacles before getting it working. This needs to be a 30-second experience, not a 10-minute investigation.

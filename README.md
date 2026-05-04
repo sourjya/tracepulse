@@ -74,6 +74,33 @@ Then use the global binary directly:
 
 Replace the command with your dev server: `uvicorn main:app --reload`, `go run main.go`, `mvn spring-boot:run`, `cargo run`, etc.
 
+**If your server needs environment variables** (e.g., `PYTHONPATH`), use the `env` field:
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "python -m myapp.server"],
+      "env": { "PYTHONPATH": "src" }
+    }
+  }
+}
+```
+
+**If your server uses a start script** (bash, shell):
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "bash scripts/start.sh"]
+    }
+  }
+}
+```
+
+> ⚠️ **Don't use `VAR=value command` syntax** in the args - TracePulse spawns processes directly, not through a shell. Use the `env` field or wrap in `bash -c '...'` instead.
+
 ### Attach mode - tail an existing log file
 
 Use this when your servers are already running (managed by scripts, Docker, process managers, etc.):

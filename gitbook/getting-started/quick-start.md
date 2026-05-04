@@ -40,6 +40,20 @@ Replace `npm run dev` with your dev server command (`python manage.py runserver`
 { "args": ["tracepulse", "start", "python manage.py runserver"] }
 { "args": ["tracepulse", "start", "uvicorn main:app --reload"] }
 { "args": ["tracepulse", "start", "flask run --reload"] }
+{ "args": ["tracepulse", "start", "bash scripts/start.sh"] }
+```
+
+**Python with PYTHONPATH or env vars:** Use the `env` field, not `VAR=val cmd` syntax:
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "python -m myapp.server"],
+      "env": { "PYTHONPATH": "src" }
+    }
+  }
+}
 ```
 
 **Go:**
