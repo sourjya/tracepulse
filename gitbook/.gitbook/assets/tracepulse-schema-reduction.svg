@@ -10,109 +10,110 @@
   <text x="480" y="56" text-anchor="middle" font-size="13" fill="#6b7280">TracePulse cut its own schema overhead by 80%</text>
 
   <!-- LEFT CARD -->
-  <rect x="25" y="75" width="420" height="440" rx="12" fill="url(#beforeBg)" stroke="#fca5a5" stroke-width="1.5"/>
-  <text x="235" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626">Before: 36 Individual Tools</text>
+  <rect x="20" y="75" width="440" height="440" rx="12" fill="url(#beforeBg)" stroke="#fca5a5" stroke-width="1.5"/>
+  <text x="240" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626">Before: 39 Individual Tools</text>
 
-  <!-- Row 1 - with names -->
-  <rect x="45" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="76" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">get_errors</text>
+  <!-- Row 1 - labeled tools -->
+  <rect x="40" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="71" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">get_errors</text>
 
-  <rect x="113" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="144" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">verify_fix</text>
+  <rect x="108" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="139" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">verify_fix</text>
 
-  <rect x="181" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="212" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">run_watch</text>
+  <rect x="176" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="207" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">run_watch</text>
 
-  <rect x="249" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="280" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">health</text>
+  <rect x="244" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="275" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">health</text>
 
-  <rect x="317" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="348" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">build_err</text>
+  <rect x="312" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="343" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">build_err</text>
 
-  <rect x="385" y="115" width="50" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
-  <text x="410" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">infra</text>
+  <rect x="380" y="115" width="62" height="30" rx="4" fill="#ef4444" opacity="0.85"/>
+  <text x="411" y="134" text-anchor="middle" font-size="8" font-weight="600" fill="white">start_srv</text>
 
-  <!-- Row 2 -->
-  <rect x="45" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="76" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">watch</text>
+  <!-- Row 2 - labeled -->
+  <rect x="40" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="71" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">watch</text>
 
-  <rect x="113" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="144" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">context</text>
+  <rect x="108" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="139" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">context</text>
 
-  <rect x="181" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="212" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">timeline</text>
+  <rect x="176" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="207" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">timeline</text>
 
-  <rect x="249" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="280" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">logs</text>
+  <rect x="244" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="275" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">patterns</text>
 
-  <rect x="317" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="348" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">clusters</text>
+  <rect x="312" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="343" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">clusters</text>
 
-  <rect x="385" y="151" width="50" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
-  <text x="410" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">drift</text>
+  <rect x="380" y="151" width="62" height="30" rx="4" fill="#ef4444" opacity="0.75"/>
+  <text x="411" y="170" text-anchor="middle" font-size="8" font-weight="600" fill="white">drift</text>
 
-  <!-- Rows 3-6: smaller, no labels (representing the remaining 24) -->
-  <g fill="#ef4444" opacity="0.6">
-    <rect x="45" y="187" width="62" height="26" rx="4"/><rect x="113" y="187" width="62" height="26" rx="4"/><rect x="181" y="187" width="62" height="26" rx="4"/><rect x="249" y="187" width="62" height="26" rx="4"/><rect x="317" y="187" width="62" height="26" rx="4"/><rect x="385" y="187" width="50" height="26" rx="4"/>
-    <rect x="45" y="219" width="62" height="26" rx="4"/><rect x="113" y="219" width="62" height="26" rx="4"/><rect x="181" y="219" width="62" height="26" rx="4"/><rect x="249" y="219" width="62" height="26" rx="4"/><rect x="317" y="219" width="62" height="26" rx="4"/><rect x="385" y="219" width="50" height="26" rx="4"/>
-    <rect x="45" y="251" width="62" height="26" rx="4"/><rect x="113" y="251" width="62" height="26" rx="4"/><rect x="181" y="251" width="62" height="26" rx="4"/><rect x="249" y="251" width="62" height="26" rx="4"/><rect x="317" y="251" width="62" height="26" rx="4"/><rect x="385" y="251" width="50" height="26" rx="4"/>
-    <rect x="45" y="283" width="62" height="26" rx="4"/><rect x="113" y="283" width="62" height="26" rx="4"/><rect x="181" y="283" width="62" height="26" rx="4"/><rect x="249" y="283" width="62" height="26" rx="4"/><rect x="317" y="283" width="62" height="26" rx="4"/><rect x="385" y="283" width="50" height="26" rx="4"/>
+  <!-- Rows 3-6: remaining 27 tools -->
+  <g fill="#ef4444" opacity="0.55">
+    <rect x="40" y="187" width="62" height="24" rx="4"/><rect x="108" y="187" width="62" height="24" rx="4"/><rect x="176" y="187" width="62" height="24" rx="4"/><rect x="244" y="187" width="62" height="24" rx="4"/><rect x="312" y="187" width="62" height="24" rx="4"/><rect x="380" y="187" width="62" height="24" rx="4"/>
+    <rect x="40" y="215" width="62" height="24" rx="4"/><rect x="108" y="215" width="62" height="24" rx="4"/><rect x="176" y="215" width="62" height="24" rx="4"/><rect x="244" y="215" width="62" height="24" rx="4"/><rect x="312" y="215" width="62" height="24" rx="4"/><rect x="380" y="215" width="62" height="24" rx="4"/>
+    <rect x="40" y="243" width="62" height="24" rx="4"/><rect x="108" y="243" width="62" height="24" rx="4"/><rect x="176" y="243" width="62" height="24" rx="4"/><rect x="244" y="243" width="62" height="24" rx="4"/><rect x="312" y="243" width="62" height="24" rx="4"/><rect x="380" y="243" width="62" height="24" rx="4"/>
+    <rect x="40" y="271" width="62" height="24" rx="4"/><rect x="108" y="271" width="62" height="24" rx="4"/><rect x="176" y="271" width="62" height="24" rx="4"/><rect x="244" y="271" width="62" height="24" rx="4"/><rect x="312" y="271" width="62" height="24" rx="4"/><rect x="380" y="271" width="62" height="24" rx="4"/>
+    <rect x="40" y="299" width="62" height="24" rx="4"/><rect x="108" y="299" width="62" height="24" rx="4"/><rect x="176" y="299" width="62" height="24" rx="4"/>
   </g>
-  <text x="235" y="300" text-anchor="middle" font-size="9" fill="white" font-weight="600">+ 24 more tools</text>
+  <text x="240" y="290" text-anchor="middle" font-size="9" fill="white" font-weight="600">+ 27 more tools</text>
 
   <!-- Stats -->
-  <rect x="45" y="320" width="390" height="60" rx="8" fill="#7f1d1d" opacity="0.9"/>
-  <text x="240" y="347" text-anchor="middle" font-size="26" font-weight="800" fill="white">~1,000</text>
-  <text x="240" y="367" text-anchor="middle" font-size="13" fill="#fca5a5">tokens/turn (all 36 loaded every message)</text>
+  <rect x="40" y="335" width="410" height="60" rx="8" fill="#7f1d1d" opacity="0.9"/>
+  <text x="245" y="362" text-anchor="middle" font-size="26" font-weight="800" fill="white">~1,100</text>
+  <text x="245" y="380" text-anchor="middle" font-size="13" fill="#fca5a5">tokens/turn (all 39 loaded every message)</text>
 
-  <text x="235" y="405" text-anchor="middle" font-size="13" fill="#991b1b">Agents use 5-8 tools, not 36</text>
-  <text x="235" y="425" text-anchor="middle" font-size="13" fill="#991b1b">80% of schema tokens are waste</text>
-  <text x="235" y="448" text-anchor="middle" font-size="12" fill="#b91c1c">25 turns x 1,000 = 25,000 tokens/session</text>
+  <text x="240" y="415" text-anchor="middle" font-size="13" fill="#991b1b">Agents use 5-8 tools, not 39</text>
+  <text x="240" y="435" text-anchor="middle" font-size="13" fill="#991b1b">80% of schema tokens are waste</text>
+  <text x="240" y="458" text-anchor="middle" font-size="12" fill="#b91c1c">25 turns x 1,100 = 27,500 tokens/session wasted</text>
 
   <!-- ARROW -->
-  <polygon points="460,260 485,245 485,255 515,255 515,265 485,265 485,275" fill="#94a3b8"/>
+  <polygon points="475,260 500,245 500,255 530,255 530,265 500,265 500,275" fill="#94a3b8"/>
 
   <!-- RIGHT CARD -->
-  <rect x="515" y="75" width="420" height="440" rx="12" fill="url(#afterBg)" stroke="#86efac" stroke-width="1.5"/>
-  <text x="725" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a">After: 7 Smart Gateways</text>
+  <rect x="500" y="75" width="440" height="440" rx="12" fill="url(#afterBg)" stroke="#86efac" stroke-width="1.5"/>
+  <text x="720" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a">After: 7 Smart Gateways</text>
 
   <!-- Gateway boxes -->
-  <rect x="535" y="118" width="185" height="44" rx="8" fill="#16a34a" opacity="0.9"/>
-  <text x="627" y="139" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_health</text>
-  <text x="627" y="155" text-anchor="middle" font-size="11" fill="#bbf7d0">3 tools inside</text>
+  <rect x="520" y="118" width="185" height="44" rx="8" fill="#16a34a" opacity="0.9"/>
+  <text x="612" y="139" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_health</text>
+  <text x="612" y="155" text-anchor="middle" font-size="11" fill="#bbf7d0">3 tools inside</text>
 
-  <rect x="730" y="118" width="185" height="44" rx="8" fill="#16a34a" opacity="0.85"/>
-  <text x="822" y="139" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_triage</text>
-  <text x="822" y="155" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
+  <rect x="715" y="118" width="185" height="44" rx="8" fill="#16a34a" opacity="0.85"/>
+  <text x="807" y="139" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_triage</text>
+  <text x="807" y="155" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
 
-  <rect x="535" y="172" width="185" height="44" rx="8" fill="#16a34a" opacity="0.8"/>
-  <text x="627" y="193" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_watch</text>
-  <text x="627" y="209" text-anchor="middle" font-size="11" fill="#bbf7d0">5 tools inside</text>
+  <rect x="520" y="172" width="185" height="44" rx="8" fill="#16a34a" opacity="0.8"/>
+  <text x="612" y="193" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_watch</text>
+  <text x="612" y="209" text-anchor="middle" font-size="11" fill="#bbf7d0">5 tools inside</text>
 
-  <rect x="730" y="172" width="185" height="44" rx="8" fill="#16a34a" opacity="0.75"/>
-  <text x="822" y="193" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_investigate</text>
-  <text x="822" y="209" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
+  <rect x="715" y="172" width="185" height="44" rx="8" fill="#16a34a" opacity="0.75"/>
+  <text x="807" y="193" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_investigate</text>
+  <text x="807" y="209" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
 
-  <rect x="535" y="226" width="185" height="44" rx="8" fill="#16a34a" opacity="0.7"/>
-  <text x="627" y="247" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_correlate</text>
-  <text x="627" y="263" text-anchor="middle" font-size="11" fill="#bbf7d0">3 tools inside</text>
+  <rect x="520" y="226" width="185" height="44" rx="8" fill="#16a34a" opacity="0.7"/>
+  <text x="612" y="247" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_correlate</text>
+  <text x="612" y="263" text-anchor="middle" font-size="11" fill="#bbf7d0">3 tools inside</text>
 
-  <rect x="730" y="226" width="185" height="44" rx="8" fill="#16a34a" opacity="0.65"/>
-  <text x="822" y="247" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_infra</text>
-  <text x="822" y="263" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
+  <rect x="715" y="226" width="185" height="44" rx="8" fill="#16a34a" opacity="0.65"/>
+  <text x="807" y="247" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_infra</text>
+  <text x="807" y="263" text-anchor="middle" font-size="11" fill="#bbf7d0">4 tools inside</text>
 
-  <rect x="632" y="280" width="185" height="44" rx="8" fill="#16a34a" opacity="0.6"/>
-  <text x="724" y="301" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_manage</text>
-  <text x="724" y="317" text-anchor="middle" font-size="11" fill="#bbf7d0">8 tools inside</text>
+  <rect x="617" y="280" width="185" height="44" rx="8" fill="#16a34a" opacity="0.6"/>
+  <text x="709" y="301" text-anchor="middle" font-size="14" font-weight="600" fill="white">tp_manage</text>
+  <text x="709" y="317" text-anchor="middle" font-size="11" fill="#bbf7d0">14 tools inside</text>
 
   <!-- Stats -->
-  <rect x="535" y="338" width="380" height="60" rx="8" fill="#14532d" opacity="0.9"/>
-  <text x="725" y="365" text-anchor="middle" font-size="26" font-weight="800" fill="white">~200</text>
-  <text x="725" y="385" text-anchor="middle" font-size="13" fill="#86efac">tokens/turn (sub-tools load on demand)</text>
+  <rect x="520" y="338" width="400" height="60" rx="8" fill="#14532d" opacity="0.9"/>
+  <text x="720" y="365" text-anchor="middle" font-size="26" font-weight="800" fill="white">~200</text>
+  <text x="720" y="383" text-anchor="middle" font-size="13" fill="#86efac">tokens/turn (sub-tools load on demand)</text>
 
-  <text x="725" y="420" text-anchor="middle" font-size="13" fill="#166534">Agent sees 7 categories, not 36 tools</text>
-  <text x="725" y="440" text-anchor="middle" font-size="13" fill="#166534">80% reduction, zero behavior change</text>
-  <text x="725" y="463" text-anchor="middle" font-size="12" fill="#15803d">25 turns x 200 = 5,000 tokens. Saved: 20,000</text>
+  <text x="720" y="418" text-anchor="middle" font-size="13" fill="#166534">Agent sees 9 tools, not 39</text>
+  <text x="720" y="438" text-anchor="middle" font-size="13" fill="#166534">80% reduction, zero behavior change</text>
+  <text x="720" y="461" text-anchor="middle" font-size="12" fill="#15803d">25 turns x 200 = 5,000 tokens. Saved: 22,500</text>
 
   <!-- Bottom -->
   <text x="480" y="530" text-anchor="middle" font-size="14" font-weight="600" fill="#374151">If we preach token savings, we practice it on ourselves first.</text>
