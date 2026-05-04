@@ -27,6 +27,7 @@ import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
+import { handleStartServer, handleStopServer, createServerManager, type ServerManager } from "@/tools/start-server.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { annotateWithPatterns } from "@/analysis/pattern-injector.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
@@ -273,6 +274,7 @@ export function createMcpServer(
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
     patternAnalyzer?: PatternAnalyzer;
+    serverManager?: ServerManager;
     clustered?: boolean;
   },
 ): McpServer {
@@ -743,6 +745,34 @@ export function createMcpServer(
   }, () => options?.patternAnalyzer
     ? handleGetBugPatterns(options.patternAnalyzer)
     : errorResult("get_bug_patterns requires persistence (enabled by default). Was --no-persist used?"));
+
+  // ── M21: Server Lifecycle Tools ──
+
+  const serverManager = options?.serverManager ?? createServerManager();
+
+  server.registerTool("start_server", {
+    title: "Start Server",
+    description:
+      "Start a dev server for live error monitoring. Pre-validates the command and returns diagnostics if invalid. Use when TracePulse started without a server command.",
+    inputSchema: {
+      command: z.string().describe("Dev server command (e.g., 'npm run dev', 'python manage.py runserver', 'bash scripts/start.sh')."),
+      env: z.record(z.string(), z.string()).optional().describe("Environment variables for the server process (e.g., { PYTHONPATH: 'src' })."),
+      cwd: z.string().optional().describe("Working directory for the server."),
+      name: z.string().optional().describe("Service name for multi-server setups (default: 'main')."),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  }, (args) => handleStartServer(serverManager, args as Record<string, unknown>));
+
+  server.registerTool("stop_server", {
+    title: "Stop Server",
+    description:
+      "Stop a running dev server. Sends SIGTERM, waits, then SIGKILL if needed.",
+    inputSchema: {
+      name: z.string().optional().describe("Service name to stop (default: 'main')."),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleStopServer(serverManager, args as Record<string, unknown>));
+
   // ── Clustered Mode: Gateway Proxy Wiring ──
   // In clustered mode, copy all tool handlers into a registry for gateway dispatch,
   // then remove clustered tools from the MCP server and replace with 7 gateways.
