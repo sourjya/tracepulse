@@ -959,9 +959,9 @@ Instead the agent started reasoning about the bug from the error message alone, 
 
 ---
 
-## 2026-05-04 - TracePulse startup friction on Python project (CoreIQ)
+## 2026-05-04 - TracePulse startup friction on Python project (a Python/FastAPI project)
 
-**Context:** User tried to install TracePulse on a Python FastAPI project (CoreIQ). Failed with "connection closed: initialize response" in Kiro MCP panel.
+**Context:** User tried to install TracePulse on a Python FastAPI project (a Python/FastAPI project). Failed with "connection closed: initialize response" in Kiro MCP panel.
 
 **Root causes (multiple):**
 
@@ -995,7 +995,7 @@ Instead the agent started reasoning about the bug from the error message alone, 
 
 ---
 
-## 2026-05-04 - run_and_watch vs shell environment mismatch (CoreIQ)
+## 2026-05-04 - run_and_watch vs shell environment mismatch (a Python/FastAPI project)
 
 **Context:** Agent ran `uv run pytest tests/ -v --tb=short` via run_and_watch and got collection errors. Same command via shell worked. Agent concluded "run_and_watch using a different Python environment."
 
@@ -1014,7 +1014,7 @@ Instead the agent started reasoning about the bug from the error message alone, 
 
 ## 2026-05-05 - Agent uses shell for alembic (allowlist not published)
 
-**Context:** Agent ran `PYTHONPATH=src uv run alembic upgrade head` and `alembic revision --autogenerate` via shell on CoreIQ.
+**Context:** Agent ran `PYTHONPATH=src uv run alembic upgrade head` and `alembic revision --autogenerate` via shell on a Python/FastAPI project.
 
 **Why:** Two reasons:
 1. `alembic` was added to allowlist in source but not published to npm yet (still on v0.9.13)
@@ -1026,7 +1026,7 @@ Instead the agent started reasoning about the bug from the error message alone, 
 
 ---
 
-## 2026-05-05 - Shell fallback for tsc/vite debugging (CoreIQ frontend)
+## 2026-05-05 - Shell fallback for tsc/vite debugging (a Python/FastAPI project frontend)
 
 **Context:** Agent used `run_and_watch("npm run build", cwd: "./frontend")` correctly for the initial build. When it failed, fell back to `shell("npx tsc --noEmit")` and `shell("npx vite build")` for debugging.
 

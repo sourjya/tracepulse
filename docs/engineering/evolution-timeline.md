@@ -4,7 +4,7 @@ How TracePulse evolved from feedback, bugs, and real-world usage. Each entry lin
 
 ## v0.9.13 (2026-05-04) - Zero-Config & Installation Fixes
 
-**Driven by:** Real installation failure on CoreIQ (Python/FastAPI project)
+**Driven by:** Real installation failure on a Python/FastAPI project
 
 | Change | Source | Impact |
 |--------|--------|--------|

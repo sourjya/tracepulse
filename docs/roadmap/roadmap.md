@@ -31,7 +31,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M19: TracePulse Team Server | Enterprise | v1.2 | 🔲 Planned |
 | M20: Bug Pattern Detection | Error Intelligence | v1.1 | ✅ Complete |
 | M21: Zero-Config Capability Architecture | Core UX | v1.0 | 🔲 Phase 2 complete, Phase 3 planned |
-| M22: HTTP REST API + CoreIQ Integration | Platform | v1.0 | 🔲 Spec ready |
+| M22: HTTP REST API + Dashboard Integration | Platform | v1.0 | 🔲 Spec ready |
 | Docs: Tool Reference Deep-Linking | Documentation | v1.0 | ✅ Complete |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
 
