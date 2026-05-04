@@ -1023,3 +1023,15 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Pattern:** Same as the pytest issue - allowlist fix exists in source but hasn't reached the agent. The publish cycle is the bottleneck.
 
 **Action:** Publish v0.9.14 with alembic allowlist + venv auto-detection.
+
+---
+
+## 2026-05-05 - Shell fallback for tsc/vite debugging (CoreIQ frontend)
+
+**Context:** Agent used `run_and_watch("npm run build", cwd: "./frontend")` correctly for the initial build. When it failed, fell back to `shell("npx tsc --noEmit")` and `shell("npx vite build")` for debugging.
+
+**Pattern:** run_and_watch for first attempt, shell for debugging. The agent treats shell as the "debugging tool" when run_and_watch output isn't sufficient. Both `npx tsc` and `npx vite` are in the base allowlist - no reason to use shell.
+
+**Possible cause:** run_and_watch returns structured output but the agent may want raw output for debugging (e.g., `| head -20` to see first errors). run_and_watch doesn't support pipes, so the agent drops to shell.
+
+**Potential fix:** Add a `max_lines` parameter to run_and_watch that truncates output, giving the agent the "head -20" behavior without needing shell pipes.
