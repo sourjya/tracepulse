@@ -626,6 +626,7 @@ async function main(): Promise<void> {
     fingerprintHistory,
     cwd: process.cwd(),
     isAttachMode: parsed.command === "attach" || parsed.command === "standalone",
+    isStandalone: parsed.command === "standalone",
     restartFn,
     infraMonitor,
     errorLifecycle,

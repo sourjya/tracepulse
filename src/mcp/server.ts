@@ -269,6 +269,7 @@ export function createMcpServer(
     cwd?: string;
     correlationSource?: string;
     isAttachMode?: boolean;
+    isStandalone?: boolean;
     restartFn?: RestartFn;
     infraMonitor?: InfraMonitor;
     probeManager?: ProbeManager;
@@ -784,7 +785,9 @@ export function createMcpServer(
   // In standalone mode (no server connected), disable Layer 2 tools.
   // They return "not available" hints. When start_server succeeds,
   // the CLI layer re-enables them and calls sendToolListChanged().
-  if (options?.isAttachMode && !getConnected()) {
+  // In standalone mode (no server command), disable Layer 2 tools.
+  // Start mode keeps them enabled because the server will connect shortly.
+  if (options?.isStandalone) {
     const internal = server as unknown as {
       _registeredTools: Record<string, { enabled: boolean; disable: () => void }>;
     };
@@ -794,7 +797,7 @@ export function createMcpServer(
         internal._registeredTools[name].disable();
       }
     }
-    process.stderr.write(`[tracepulse] Layer 2 tools disabled (no server). Call start_server() to activate.\n`);
+    process.stderr.write(`[tracepulse] Layer 2 tools disabled (standalone mode). Call start_server() to activate.\n`);
   }
 
   // ── Clustered Mode: Gateway Proxy Wiring ──
