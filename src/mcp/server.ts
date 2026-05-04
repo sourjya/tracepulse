@@ -28,6 +28,7 @@ import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
 import { handleStartServer, handleStopServer, createServerManager, type ServerManager } from "@/tools/start-server.js";
+import { LAYER_2_TOOLS } from "@/mcp/tool-layers.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { annotateWithPatterns } from "@/analysis/pattern-injector.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
@@ -778,6 +779,23 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
   }, (args) => handleStopServer(serverManager, args as Record<string, unknown>));
+
+  // ── Dynamic Tool Layers (M21 Phase 3) ──
+  // In standalone mode (no server connected), disable Layer 2 tools.
+  // They return "not available" hints. When start_server succeeds,
+  // the CLI layer re-enables them and calls sendToolListChanged().
+  if (options?.isAttachMode && !getConnected()) {
+    const internal = server as unknown as {
+      _registeredTools: Record<string, { enabled: boolean; disable: () => void }>;
+    };
+    const layer2Set = new Set(LAYER_2_TOOLS);
+    for (const name of layer2Set) {
+      if (internal._registeredTools[name]) {
+        internal._registeredTools[name].disable();
+      }
+    }
+    process.stderr.write(`[tracepulse] Layer 2 tools disabled (no server). Call start_server() to activate.\n`);
+  }
 
   // ── Clustered Mode: Gateway Proxy Wiring ──
   // In clustered mode, copy all tool handlers into a registry for gateway dispatch,
