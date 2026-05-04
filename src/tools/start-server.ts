@@ -10,7 +10,7 @@
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { jsonResult, errorResult } from "@/mcp/response-helpers.js";
-import { diagnoseStartupFailure } from "@/diagnostics/startup-diagnostics.js";
+import { validateStartCommand } from "@/tools/start-server-validation.js";
 
 // ──────────────────────────────────────────────
 // Server Manager
@@ -45,14 +45,6 @@ export function createServerManager(): ServerManager {
 }
 
 // ──────────────────────────────────────────────
-// Shell syntax detection (pre-spawn validation)
-// ──────────────────────────────────────────────
-
-/** Patterns that indicate shell syntax in a command. */
-const SHELL_ENV_PATTERN = /^[A-Z_]+=\S+\s/;
-const SHELL_META = /[;&|`$(){}!<>]/;
-
-// ──────────────────────────────────────────────
 // Tool Handlers
 // ──────────────────────────────────────────────
 
@@ -84,28 +76,10 @@ export async function handleStartServer(
     return errorResult(`Server "${name}" already running (PID ${pid}). Call stop_server() first, or restart_server().`);
   }
 
-  // Pre-spawn validation: detect shell syntax before attempting to spawn
-  const diagnostics: Array<{ issue: string; fix: string }> = [];
-
-  if (SHELL_ENV_PATTERN.test(command)) {
-    const match = command.match(/^([A-Z_]+=\S+)\s+(.*)/);
-    if (match) {
-      diagnostics.push({
-        issue: `"${match[1]}" is shell syntax. TracePulse spawns processes directly, not through a shell.`,
-        fix: `Pass env parameter instead: start_server({ command: "${match[2]}", env: { "${match[1].split("=")[0]}": "${match[1].split("=")[1]}" } })`,
-      });
-    }
-  }
-
-  if (SHELL_META.test(command)) {
-    diagnostics.push({
-      issue: `Command contains shell operators. TracePulse doesn't use a shell.`,
-      fix: `Wrap in bash: start_server({ command: "bash -c '${command}'" }) or use cwd parameter instead of cd.`,
-    });
-  }
-
-  if (diagnostics.length > 0) {
-    return jsonResult({ status: "invalid", diagnostics });
+  // Pre-spawn validation: detect common issues before attempting to spawn
+  const validation = validateStartCommand(command, args.cwd as string | undefined);
+  if (!validation.valid) {
+    return jsonResult({ status: "invalid", diagnostics: validation.diagnostics });
   }
 
   // Command looks valid - return ready status
