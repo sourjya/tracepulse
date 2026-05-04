@@ -300,6 +300,9 @@ When TracePulse runs with `--clustered`, 36 tools collapse into 7 gateways + 2 s
 
 Gateways: `tp_health`, `tp_triage`, `tp_watch`, `tp_investigate`, `tp_correlate`, `tp_infra`, `tp_manage`. Standalone: `run_and_watch`, `get_requests`.
 
+### Standalone mode tool count
+In standalone mode (no server), 24 tools are available (Layer 0/1). When you call `start_server()`, 16 more tools activate (Layer 2: get_errors, verify_fix, watch_for_errors, etc.).
+
 ## Pro Tips
 
 ### Checkpoint before context compaction
