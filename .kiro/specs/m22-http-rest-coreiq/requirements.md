@@ -93,6 +93,25 @@ Per ADR-003, CoreIQ never stores TracePulse data. It pulls on demand:
 
 ## Security Model
 
+### Alignment with CoreIQ MCP Security Design
+
+CoreIQ's MCP security design (docs/ideas/mcp-security-design.md) establishes platform-wide security patterns. TracePulse adopts the relevant ones:
+
+| CoreIQ Pattern | TracePulse Adoption | Notes |
+|---------------|-------------------|-------|
+| Ephemeral tokens (SR-1, SR-2) | Not needed | TracePulse is a tool, not a multi-tenant server. API key is sufficient for tool-to-tool auth. |
+| Client identity (SR-3) | Adopted | REST requests include client identity via X-API-Key. Each key maps to a known consumer. |
+| Permission enforcement (SR-4) | Simplified | REST endpoints are read-only (GET only). No write scoping needed. MCP tools have their own annotations. |
+| Audit trail (SR-5) | Already exists | TracePulse's `get_audit_trail` logs every MCP tool call with tool, params, duration, response size. Extend to REST calls. |
+| Rate limiting (SR-6) | Adopted | Per-client rate limits on REST endpoints. 60 req/min default. |
+| Generic errors (SR-7) | Adopted | Auth failures return 401 with no details. No stack traces in responses. |
+
+### What TracePulse does NOT need from CoreIQ's design
+
+- **Ephemeral tokens** - TracePulse doesn't spawn subprocesses. It's a single long-running server.
+- **Permission YAML** - REST endpoints are all read-only. No tool_filter scoping needed.
+- **mcp_audit_log table** - TracePulse uses in-memory audit buffer (no database).
+
 ### Threat model for REST endpoints
 
 | Threat | Mitigation |
@@ -197,10 +216,13 @@ CoreIQ discovers TracePulse via manifest registration. No hardcoded URLs in Core
 - [ ] 4. GREEN: Implement all REST endpoints
 - [ ] 5. Wire into HTTP transport server
 
-### Phase 2: API Key Auth (0.5 day)
-- [ ] 6. RED: Tests for auth middleware (key present, key missing, key wrong)
+### Phase 2: API Key Auth + Rate Limiting (0.5 day)
+- [ ] 6. RED: Tests for auth middleware (key present, key missing, key wrong, generic error)
 - [ ] 7. GREEN: Implement timing-safe API key middleware
-- [ ] 8. Read TRACEPULSE_API_KEY from env, enable middleware when set
+- [ ] 8. RED: Tests for rate limiting (within limit, exceeded, per-client, reset)
+- [ ] 9. GREEN: Implement in-memory rate limiter (60 req/min default)
+- [ ] 10. Read TRACEPULSE_API_KEY from env, enable middleware when set
+- [ ] 11. Extend audit buffer to log REST calls (endpoint, client, status, duration)
 
 ### Phase 3: Manifest Registration (0.5 day)
 - [ ] 9. RED: Tests for manifest builder (generates correct JSON)
