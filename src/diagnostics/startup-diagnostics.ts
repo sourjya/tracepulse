@@ -11,6 +11,7 @@
 
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { hasVenv, isPythonProject, hasPackageJson, hasProjectFile } from "@/diagnostics/project-detector.js";
 
 /** A single diagnostic finding with severity and fix. */
 export interface DiagnosticFinding {
@@ -63,7 +64,7 @@ export function diagnoseStartupFailure(
   if (command.startsWith("npm run ") || command.startsWith("pnpm run ")) {
     const script = command.split(" ")[2];
     const pkgPath = resolve(cwd, "package.json");
-    if (!existsSync(pkgPath)) {
+    if (!hasPackageJson(cwd)) {
       findings.push({
         issue: `No package.json found in ${cwd}. "${command}" needs a package.json with a "${script}" script.`,
         fix: `Use the actual server command instead: "python manage.py runserver", "uvicorn main:app --reload", etc.`,
@@ -78,14 +79,14 @@ export function diagnoseStartupFailure(
     const moduleName = moduleMatch?.[1] ?? "unknown";
 
     // Check for venv
-    const hasVenv = existsSync(resolve(cwd, ".venv"));
-    if (hasVenv && !command.includes(".venv/")) {
+    const hasVenvDir = hasVenv(cwd);
+    if (hasVenvDir && !command.includes(".venv/")) {
       findings.push({
         issue: `Python module "${moduleName}" not found. A .venv/ exists but the command uses system Python.`,
         fix: `Use the venv Python: ".venv/bin/python -m ${command.replace(/^python\s+-m\s+/, "")}" or install deps: .venv/bin/pip install -r requirements.txt`,
         severity: "error",
       });
-    } else if (!hasVenv) {
+    } else if (!hasVenvDir) {
       findings.push({
         issue: `Python module "${moduleName}" not installed. No .venv/ found.`,
         fix: `Install dependencies: pip install ${moduleName} (or create a venv: python -m venv .venv && .venv/bin/pip install -r requirements.txt)`,
@@ -106,7 +107,7 @@ export function diagnoseStartupFailure(
 
   // ── Python PYTHONPATH likely needed ──
   if (command.includes("python -m ") && !command.includes("PYTHONPATH") && errorMessage.includes("ModuleNotFoundError")) {
-    const hasSrcDir = existsSync(resolve(cwd, "src"));
+    const hasSrcDir = hasProjectFile(cwd, "src");
     if (hasSrcDir) {
       findings.push({
         issue: `Python module import failed. The project has a src/ directory that may need to be on PYTHONPATH.`,
@@ -127,7 +128,7 @@ export function diagnoseStartupFailure(
   }
 
   // ── Generic: suggest bash wrapper for complex commands ──
-  if (findings.length === 0 && existsSync(resolve(cwd, "scripts"))) {
+  if (findings.length === 0 && hasProjectFile(cwd, "scripts")) {
     findings.push({
       issue: `Command failed. The project has a scripts/ directory.`,
       fix: `Try wrapping in bash: "bash scripts/start.sh" (or whatever your start script is).`,

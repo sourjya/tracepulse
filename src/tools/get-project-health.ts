@@ -10,17 +10,8 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
-import { detectProjectStacks, suggestStartCommands } from "@/diagnostics/project-detector.js";
+import { detectProjectStacks, suggestStartCommands, detectMigrationFramework } from "@/diagnostics/project-detector.js";
 import { existsSync } from "node:fs";
-
-/** Detect migration framework from project files. */
-function detectMigrationFramework(cwd: string): string | null {
-  if (existsSync(`${cwd}/alembic.ini`) || existsSync(`${cwd}/alembic`)) return "alembic";
-  if (existsSync(`${cwd}/prisma/schema.prisma`)) return "prisma";
-  if (existsSync(`${cwd}/manage.py`)) return "django";
-  if (existsSync(`${cwd}/knexfile.js`) || existsSync(`${cwd}/knexfile.ts`)) return "knex";
-  return null;
-}
 
 /**
  * Handle get_project_health tool call.

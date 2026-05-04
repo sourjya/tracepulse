@@ -36,6 +36,9 @@ function getApplyCommand(framework: string): string {
  *
  * @param cwd - Directory to scan for framework markers.
  * @returns Detected framework with its status command, or null if none found.
+ * NOTE: This duplicates detection from project-detector.ts but adds
+ * framework-specific commands. If detection logic changes, update both.
+ * See: src/diagnostics/project-detector.ts detectMigrationFramework()
  */
 function detectFramework(cwd: string): DetectedFramework | null {
   // Alembic (Python/SQLAlchemy)

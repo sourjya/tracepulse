@@ -19,6 +19,7 @@ import { redact } from "@/pipeline/secret-redactor.js";
 import { normalizeEvent, normalizeRawLine } from "@/pipeline/event-normalizer.js";
 import { ANSI_ESCAPE_REGEX, MAX_PARSE_INPUT_LENGTH } from "@/constants/limits.js";
 import { existsSync } from "node:fs";
+import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 
 /**
  * Generate a diagnostic hint when a command fails.
@@ -35,18 +36,16 @@ function diagnoseFailure(command: string, exitCode: number | null, cwd?: string)
 
   // Command not found (exit 127) or Python import errors
   if (exitCode === 127 || cmdLower.includes("pytest") || cmdLower.includes("python")) {
-    const hasVenv = existsSync(resolvePath(dir, ".venv"));
-    const hasPyproject = existsSync(resolvePath(dir, "pyproject.toml"));
-    const hasRequirements = existsSync(resolvePath(dir, "requirements.txt"));
-    const isPython = hasPyproject || hasRequirements;
+    const hasVenvDir = hasVenv(dir);
+    const isPython = isPythonProject(dir);
 
-    if (isPython && !hasVenv) {
+    if (isPython && !hasVenvDir) {
       return "Python project detected but no .venv/ found. Create one: python -m venv .venv && .venv/bin/pip install -e '.[dev]'";
     }
-    if (isPython && hasVenv && cmdLower.includes("pytest")) {
+    if (isPython && hasVenvDir && cmdLower.includes("pytest")) {
       return "pytest not found on system PATH. Use the venv binary directly: run_and_watch('.venv/bin/pytest tests/')";
     }
-    if (isPython && hasVenv) {
+    if (isPython && hasVenvDir) {
       return "Command failed. Try using the venv binary: .venv/bin/python -m <module>";
     }
   }
@@ -145,8 +144,8 @@ export async function handleRunAndWatch(
     // Auto-activate virtualenv if .venv exists in the working directory.
     // MCP servers don't inherit the user's shell profile, so venvs activated
     // in the terminal aren't active here. This fixes the env mismatch.
-    const venvBin = resolvePath(spawnCwd, ".venv", "bin");
-    if (existsSync(venvBin)) {
+    const venvBin = getVenvBinPath(spawnCwd);
+    if (venvBin) {
       spawnEnv.PATH = `${venvBin}:${spawnEnv.PATH ?? ""}`;
       spawnEnv.VIRTUAL_ENV = resolvePath(spawnCwd, ".venv");
     }

@@ -171,3 +171,56 @@ export function suggestStartCommands(cwd: string): StartSuggestion[] {
 
   return suggestions;
 }
+
+// ──────────────────────────────────────────────
+// Centralized Project File Checks
+// ──────────────────────────────────────────────
+// All project file detection MUST go through these helpers.
+// Do NOT use existsSync for project files in other modules.
+
+/**
+ * Check if a project has a specific file.
+ * Centralizes all project file detection to avoid scattered existsSync calls.
+ *
+ * @param cwd - Project root directory.
+ * @param file - Relative file path to check.
+ * @returns True if the file exists.
+ */
+export function hasProjectFile(cwd: string, file: string): boolean {
+  return existsSync(resolve(cwd, file));
+}
+
+/** Check if project has a Python virtualenv. */
+export function hasVenv(cwd: string): boolean {
+  return existsSync(resolve(cwd, ".venv", "bin"));
+}
+
+/** Get the venv bin path if it exists, or null. */
+export function getVenvBinPath(cwd: string): string | null {
+  const binPath = resolve(cwd, ".venv", "bin");
+  return existsSync(binPath) ? binPath : null;
+}
+
+/** Check if project has a package.json. */
+export function hasPackageJson(cwd: string): boolean {
+  return existsSync(resolve(cwd, "package.json"));
+}
+
+/** Check if project is a Python project (pyproject.toml or requirements.txt). */
+export function isPythonProject(cwd: string): boolean {
+  return existsSync(resolve(cwd, "pyproject.toml")) || existsSync(resolve(cwd, "requirements.txt"));
+}
+
+/** Check if project is a Django project (manage.py). */
+export function isDjangoProject(cwd: string): boolean {
+  return existsSync(resolve(cwd, "manage.py"));
+}
+
+/** Detect migration framework from project files. */
+export function detectMigrationFramework(cwd: string): string | null {
+  if (existsSync(resolve(cwd, "alembic.ini")) || existsSync(resolve(cwd, "alembic"))) return "alembic";
+  if (existsSync(resolve(cwd, "prisma", "schema.prisma"))) return "prisma";
+  if (existsSync(resolve(cwd, "manage.py"))) return "django";
+  if (existsSync(resolve(cwd, "knexfile.js")) || existsSync(resolve(cwd, "knexfile.ts"))) return "knex";
+  return null;
+}

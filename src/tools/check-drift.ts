@@ -16,6 +16,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { detectMigrationFramework, hasPackageJson, isPythonProject, hasProjectFile } from "@/diagnostics/project-detector.js";
 
 // ──────────────────────────────────────────────
 // Env Drift Detection
@@ -50,21 +51,12 @@ function checkEnvDrift(cwd: string): { present: string[]; missing: string[]; ext
 // Migration Drift Detection
 // ──────────────────────────────────────────────
 
-/** Detect migration framework from project files. */
+/** Check migration drift using centralized detection. */
 function checkMigrationDrift(cwd: string): { framework: string | null; hint: string } {
-  if (existsSync(resolve(cwd, "alembic.ini")) || existsSync(resolve(cwd, "alembic"))) {
-    return { framework: "alembic", hint: "Run get_migration_status() to check pending migrations" };
-  }
-  if (existsSync(resolve(cwd, "prisma/schema.prisma"))) {
-    return { framework: "prisma", hint: "Run get_migration_status() to check pending migrations" };
-  }
-  if (existsSync(resolve(cwd, "manage.py"))) {
-    return { framework: "django", hint: "Run get_migration_status() to check pending migrations" };
-  }
-  if (existsSync(resolve(cwd, "knexfile.js")) || existsSync(resolve(cwd, "knexfile.ts"))) {
-    return { framework: "knex", hint: "Run get_migration_status() to check pending migrations" };
-  }
-  return { framework: null, hint: "No migration framework detected" };
+  const framework = detectMigrationFramework(cwd);
+  return framework
+    ? { framework, hint: "Run get_migration_status() to check pending migrations" }
+    : { framework: null, hint: "No migration framework detected" };
 }
 
 // ──────────────────────────────────────────────
@@ -74,7 +66,7 @@ function checkMigrationDrift(cwd: string): { framework: string | null; hint: str
 /** Check for dependency manifest and lock file presence. */
 function checkDepsDrift(cwd: string): { manager: string | null; has_lockfile: boolean; hint: string } {
   // Node.js
-  if (existsSync(resolve(cwd, "package.json"))) {
+  if (hasPackageJson(cwd)) {
     const hasLock = existsSync(resolve(cwd, "package-lock.json")) ||
                     existsSync(resolve(cwd, "pnpm-lock.yaml")) ||
                     existsSync(resolve(cwd, "yarn.lock")) ||
@@ -85,8 +77,7 @@ function checkDepsDrift(cwd: string): { manager: string | null; has_lockfile: bo
       hint: hasLock ? "Lock file present" : "No lock file - run npm install to generate",
     };
   }
-  // Python
-  if (existsSync(resolve(cwd, "pyproject.toml")) || existsSync(resolve(cwd, "requirements.txt"))) {
+  if (isPythonProject(cwd)) {
     const hasLock = existsSync(resolve(cwd, "uv.lock")) ||
                     existsSync(resolve(cwd, "poetry.lock")) ||
                     existsSync(resolve(cwd, "Pipfile.lock"));

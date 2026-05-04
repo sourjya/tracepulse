@@ -8,8 +8,7 @@
  * @see .kiro/specs/m21-zero-config/requirements.md Phase 2
  */
 
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { hasPackageJson } from "@/diagnostics/project-detector.js";
 
 /** Validation result with diagnostics. */
 export interface ValidationResult {
@@ -56,7 +55,7 @@ export function validateStartCommand(command: string, cwd?: string): ValidationR
   }
 
   // npm run without package.json
-  if ((command.startsWith("npm run ") || command.startsWith("pnpm run ")) && !existsSync(resolve(dir, "package.json"))) {
+  if ((command.startsWith("npm run ") || command.startsWith("pnpm run ")) && !hasPackageJson(dir)) {
     diagnostics.push({
       issue: `No package.json found. "${command}" requires a package.json with the script defined.`,
       fix: `Use the actual server command instead (e.g., "python manage.py runserver", "uvicorn main:app --reload").`,
