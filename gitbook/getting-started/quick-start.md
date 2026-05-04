@@ -2,7 +2,13 @@
 
 Get TracePulse running in 2 minutes.
 
-## 1. Add to your MCP config
+## 1. Install
+
+```bash
+npm install -g tracepulse
+```
+
+## 2. Add to your MCP config
 
 Find your MCP client's config file:
 
@@ -16,14 +22,13 @@ Find your MCP client's config file:
 | **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
 | **Generic** | `.mcp.json` (in your project root) |
 
-Add TracePulse:
+Add TracePulse (works for any project - Node, Python, Go, Rust, Java):
 
 ```json
 {
   "mcpServers": {
     "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
+      "command": "tracepulse"
     }
   }
 }

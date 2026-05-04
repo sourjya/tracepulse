@@ -1,39 +1,58 @@
 # Installation
 
-## Which install method?
+## Quickest start (any project)
 
-| Your project | Recommended method |
-|---|---|
-| **Node.js / TypeScript** (has package.json) | `npx` - zero install, runs on demand |
-| **Python, Go, Java, Rust** (no Node in project) | Global install - one-time setup, works everywhere |
-| **Fresh project / library** (no server yet) | Global install + standalone mode |
+Install once:
+```bash
+npm install -g tracepulse
+```
 
-## npx (Node.js projects)
-
-If your project already has Node.js (npm/pnpm/Bun):
-
+Add to your MCP config:
 ```json
 {
   "mcpServers": {
     "tracepulse": {
-      "command": "npx",
-      "args": ["tracepulse", "start", "npm run dev"]
+      "command": "tracepulse"
     }
   }
 }
 ```
 
-No installation needed. The MCP client downloads and runs it on demand.
+That's it. TracePulse auto-detects your project type and provides 39 tools immediately. No server command needed - the agent calls `start_server()` when ready.
 
-## Global install (non-Node projects - recommended)
+{% hint style="info" %}
+**Don't have Node.js?** TracePulse requires Node.js 22+ to run, but your project doesn't need to be Node.js. Install Node from [nodejs.org](https://nodejs.org/) (LTS recommended), then `npm install -g tracepulse`.
+{% endhint %}
 
-For Python, Go, Java, Rust, or any project where Node.js isn't on the project PATH:
+## Config file locations
 
-```bash
-npm install -g tracepulse
+| MCP Client | Config File |
+|------------|-------------|
+| **Kiro CLI** | `.kiro/settings/mcp.json` (in your project) |
+| **Claude Desktop (macOS)** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| **Claude Desktop (Windows)** | `%APPDATA%\Claude\claude_desktop_config.json` |
+| **Cursor** | `.cursor/mcp.json` (in your project) |
+| **VS Code (Copilot)** | `.vscode/mcp.json` (in your project) |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
+| **Generic** | `.mcp.json` (in your project root) |
+
+## With a dev server command
+
+If you know your server command, pass it directly for immediate monitoring:
+
+**Node.js:**
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "npm run dev"]
+    }
+  }
+}
 ```
 
-Then in your MCP config:
+**Python:**
 ```json
 {
   "mcpServers": {
@@ -45,65 +64,114 @@ Then in your MCP config:
 }
 ```
 
-## Local development (from source)
-
+**Python with environment variables:**
 ```json
 {
   "mcpServers": {
     "tracepulse": {
-      "command": "node",
-      "args": ["/path/to/tracepulse/dist/cli.js", "start", "npm run dev"]
+      "command": "tracepulse",
+      "args": ["start", "python -m myapp.server"],
+      "env": { "PYTHONPATH": "src" }
     }
   }
 }
 ```
 
-## Modes
-
-### Start mode - spawn and monitor
-
-TracePulse spawns your dev server as a child process:
-
+**Start script (bash):**
 ```json
-{ "args": ["tracepulse", "start", "npm run dev"] }
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse",
+      "args": ["start", "bash scripts/start.sh"]
+    }
+  }
+}
 ```
 
-### Attach mode - tail existing log
-
-For servers already running (Docker, tmux, pm2, scripts):
-
+**Go / Rust / Java:**
 ```json
-{ "args": ["tracepulse", "attach", "--log-file", "./logs/server.log"] }
+{ "args": ["start", "go run main.go"] }
+{ "args": ["start", "cargo run"] }
+{ "args": ["start", "mvn spring-boot:run"] }
 ```
 
-### Multi-file attach - multiple services
+{% hint style="warning" %}
+**Don't use `VAR=value command` syntax** in args. TracePulse spawns processes directly, not through a shell. Use the `env` field for environment variables, or wrap in `bash -c '...'`.
+{% endhint %}
 
+## Other modes
+
+### Attach - tail existing logs
+
+For servers managed by Docker, tmux, pm2, or scripts:
 ```json
-{ "args": ["tracepulse", "attach", "--log-file", "backend=./logs/backend.log", "--log-file", "frontend=./logs/frontend.log"] }
+{ "args": ["attach", "--log-file", "./logs/server.log"] }
 ```
 
-### Multi-process - spawn multiple services
+### Multi-service
 
 ```json
-{ "args": ["tracepulse", "start", "--service", "api=npm run dev:api", "--service", "worker=npm run worker"] }
+{ "args": ["start", "--service", "api=npm run dev:api", "--service", "worker=npm run worker"] }
 ```
 
 ### Docker Compose
 
 ```json
-{ "args": ["tracepulse", "compose", "--file", "docker-compose.yml"] }
+{ "args": ["compose", "--file", "docker-compose.yml"] }
 ```
 
-## Which mode should I use?
+## npx (alternative for Node.js projects)
 
-| Situation | Mode |
-|-----------|------|
-| Simple `npm run dev` or `python manage.py runserver` | **start** |
-| Servers managed by scripts, Docker, tmux, pm2 | **attach** |
-| Multiple services (API + worker + frontend) | **start --service** or **multi-file attach** |
-| Docker Compose setup | **compose** |
+If you don't want a global install and your project has Node.js:
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "npx",
+      "args": ["tracepulse", "start", "npm run dev"]
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### "connection closed: initialize response"
+
+The MCP client couldn't complete the handshake. Common causes:
+
+1. **Old version** - update: `npm install -g tracepulse@latest`
+2. **Dev server command fails** - test it manually in your terminal first
+3. **Shell syntax in args** - `PYTHONPATH=src python app.py` doesn't work. Use the `env` field.
+4. **Missing dependencies** - TracePulse falls back to standalone mode and prints diagnostics explaining what's wrong
+
+### "tracepulse: command not found"
+
+```bash
+npm install -g tracepulse
+```
+
+If it still fails, check your PATH includes npm's global bin directory:
+```bash
+npm config get prefix
+# Add <prefix>/bin to your PATH
+```
+
+### Tools don't appear in the agent
+
+1. Check you're editing the right config file (Kiro uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`)
+2. Restart the agent/IDE after editing the config
+3. Check `/mcp list` in Kiro CLI to see server status
+
+### Server starts but no errors captured
+
+TracePulse only captures stdout/stderr from the spawned process. If your server logs to a file instead, use attach mode:
+```json
+{ "args": ["attach", "--log-file", "./logs/server.log"] }
+```
 
 ## Requirements
 
 - Node.js >= 22.0.0
-- Any MCP-compatible AI coding agent
+- Any MCP-compatible AI coding agent (Kiro, Claude Code, Cursor, Copilot, Windsurf, Cline)
