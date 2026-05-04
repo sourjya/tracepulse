@@ -861,3 +861,24 @@ This is the most common TP violation. The agent tries run_and_watch, it fails (p
 **Pattern:** Agent defaults to shell for Python projects because it "feels natural" to run pytest from shell. The SKILL.md guidance exists but isn't being followed. This is the 3rd session with this pattern.
 
 **Recommendation:** The SKILL.md "NEVER Use Raw Shell" section needs to be more prominent - possibly moved to the top of Pro Tips, or repeated in the Python virtualenv section with explicit pytest examples.
+
+---
+
+## 2026-05-04 - TP caught error but agent didn't check (Nexus dropdown bug)
+
+**Context:** User added a dropdown custom field in Nexus. Clicking it in the task list threw `values.map is not a function` - dropdown options stored as string, renderer expects array.
+
+**TP behavior:** TracePulse caught the error with full stack trace pointing to `CustomFieldValues.tsx:17`. It was in the buffer with signal_score high enough to surface in `get_errors`.
+
+**Gap:** The agent didn't call `get_errors` after the user reported the bug. The user had to ask "should TP have caught this?" before the agent checked. When it did check (`get_errors(message_contains: "values.map")`), the error was right there.
+
+**This is the "verify after user action" gap.** The agent should have:
+1. User reports error -> immediately call `get_errors` or `list_console_messages`
+2. Read the stack trace -> identify the file and line
+3. Fix the root cause
+
+Instead the agent started reasoning about the bug from the error message alone, without checking TP first.
+
+**Pattern:** Agent treats user-reported errors as "reasoning problems" instead of "data retrieval problems." The stack trace in TP would have pointed directly to the file:line, saving the reasoning step.
+
+**Recommendation:** Add to SKILL.md: "When a user reports a runtime error, ALWAYS call get_errors(message_contains: '<key phrase>') FIRST before reasoning about the cause."

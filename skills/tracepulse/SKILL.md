@@ -219,6 +219,13 @@ One call tells you: is the server running? Any errors? Are databases/Redis reach
 4. If build errors:         -> get_build_errors() -> fix code
 ```
 
+### "User reports a runtime error"
+**ALWAYS check TP first, before reasoning about the cause.** The stack trace tells you the exact file:line.
+```
+get_errors(message_contains: "key phrase from error message")
+```
+Then `get_error_context(fingerprint)` for the full stack trace. Don't guess - read the data.
+
 ### "Is the database connected?"
 ```
 get_infra_status()
