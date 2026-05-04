@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-894%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-945%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [37 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [894 tests](tests/) passing.
+🟡 **Alpha v0.9.8 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [39 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [945 tests](tests/) passing.
 
 ## Quick Start
 
@@ -39,6 +39,22 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 | **Generic** | `.mcp.json` (in your project root) |
 
 > ⚠️ **Common mistake:** Kiro CLI uses `.kiro/settings/mcp.json`, not `.kiro/mcp.json`. If TracePulse tools don't appear, check you're editing the right file.
+
+### Zero-config (works for any project)
+
+```json
+{
+  "mcpServers": {
+    "tracepulse": {
+      "command": "tracepulse"
+    }
+  }
+}
+```
+
+TracePulse auto-detects your project type (Node, Python, Go, Rust, Java) and provides tools immediately. No server command needed - the agent can call `start_server()` later when ready.
+
+For non-Node projects, install globally first: `npm install -g tracepulse`
 
 ### Start mode - spawn and monitor your dev server
 
