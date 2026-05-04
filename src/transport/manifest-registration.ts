@@ -23,7 +23,7 @@ export interface ToolManifest {
     readonly type: string;
     readonly description: string;
     readonly capabilities: readonly string[];
-    readonly widgets: readonly Array<{
+    readonly widgets: Array<{
       readonly id: string;
       readonly title: string;
       readonly type: string;
