@@ -152,11 +152,13 @@ export function handleRegisterProbe(
 ): CallToolResult {
   const name = args.name as string;
   if (!name) return { content: [{ type: "text", text: "name is required" }], isError: true };
+  const url = args.url as string;
+  if (!url) return { content: [{ type: "text", text: "url is required" }], isError: true };
 
   const probe: ProbeDefinition = {
     name,
     method: (args.method as string) ?? "GET",
-    url: args.url as string,
+    url,
     body: args.body as Record<string, unknown> | undefined,
     expect_status: (args.expect_status as number) ?? 200,
     expect_body_contains: args.expect_body_contains as string | undefined,

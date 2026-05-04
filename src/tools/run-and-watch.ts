@@ -57,15 +57,10 @@ function diagnoseFailure(command: string, exitCode: number | null, cwd?: string)
   return undefined;
 }
 
-/** Default allowed command prefixes. Only these can be executed. */
-const DEFAULT_ALLOWED_PREFIXES = [
-  "npx", "npm", "node", "pytest", "python", "tsc", "eslint",
-  "vitest", "jest", "go test", "cargo test", "cargo build", "cargo check",
-  "uv", "uv run", "pnpm", "bun",
-  ".venv/bin/python", ".venv/bin/pytest",
-  "mvn", "gradle", "gradlew", "./gradlew",
-  "make", "cmake",
-];
+import { buildAllowlist } from "@/tools/run-and-watch-allowlist.js";
+
+/** Fallback allowlist when no stack-aware list is provided. */
+const DEFAULT_ALLOWED_PREFIXES = buildAllowlist([]);
 
 /**
  * Handle run_and_watch MCP tool call.

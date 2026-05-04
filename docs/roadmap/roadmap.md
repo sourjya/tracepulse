@@ -32,6 +32,13 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M20: Bug Pattern Detection | Error Intelligence | v1.1 | ✅ Complete |
 | M21: Zero-Config Capability Architecture | Core UX | v1.0 | ✅ Complete (Phase 1-3) |
 | M22: HTTP REST API + Dashboard Integration | Platform | v1.0 | ✅ Complete |
+
+## Reviews
+
+| Review | Date | Scope | Report |
+|--------|------|-------|--------|
+| SRR-005 | 2026-05-05 | T3 security - full codebase (v0.9.16) | [Report](../security/SRR-005-2026-05-05-T3.md) |
+| MRR-003 | 2026-05-05 | Maintainability - full codebase (v0.9.16) | [Report](../reviews/MRR-003-2026-05-05.md) |
 | Docs: Tool Reference Deep-Linking | Documentation | v1.0 | ✅ Complete |
 | M6: Stable Release | Release | v1.0.0 | 🔲 Planned |
 
