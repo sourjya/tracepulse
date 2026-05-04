@@ -7,6 +7,7 @@
 
 import { MAX_TRUNCATED_LIST } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { errorResult } from "@/mcp/response-helpers.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import { redact } from "@/pipeline/secret-redactor.js";
 
@@ -46,7 +47,7 @@ export function handleGetInfraDetail(
 ): CallToolResult {
   const name = args.name as string | undefined;
   if (!name) {
-    return { content: [{ type: "text", text: "name parameter is required" }], isError: true };
+    return errorResult("name parameter is required");
   }
 
   const svc = monitor.getByName(name);

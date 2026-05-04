@@ -12,6 +12,7 @@
  */
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { errorResult } from "@/mcp/response-helpers.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import { watchForErrors } from "@/watch/watch-controller.js";
@@ -42,10 +43,10 @@ export async function handleVerifyBuild(
   const buildCmd = (args.build_command as string | undefined) ?? "npx vite build";
 
   if (!ALLOWED_TYPECHECK.includes(typecheckCmd)) {
-    return { content: [{ type: "text", text: `typecheck_command must be one of: ${ALLOWED_TYPECHECK.join(", ")}` }], isError: true };
+    return errorResult(`typecheck_command must be one of: ${ALLOWED_TYPECHECK.join(", ")}`);
   }
   if (!ALLOWED_BUILD.includes(buildCmd)) {
-    return { content: [{ type: "text", text: `build_command must be one of: ${ALLOWED_BUILD.join(", ")}` }], isError: true };
+    return errorResult(`build_command must be one of: ${ALLOWED_BUILD.join(", ")}`);
   }
   const duration = (args.duration_seconds as number | undefined) ?? 3;
 
