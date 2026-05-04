@@ -992,3 +992,20 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Irony level:** High. The agent building the tool that tells other agents to use structured tools... uses raw shell for code search.
 
 **Mitigation:** This is a Kiro CLI agent behavior, not a TracePulse issue. The steering file says "Use search tools rather than find, ls, or grep" but the agent defaults to shell grep for quick lookups. Same root cause as the pytest pattern: shell feels faster for one-off lookups.
+
+---
+
+## 2026-05-04 - run_and_watch vs shell environment mismatch (CoreIQ)
+
+**Context:** Agent ran `uv run pytest tests/ -v --tb=short` via run_and_watch and got collection errors. Same command via shell worked. Agent concluded "run_and_watch using a different Python environment."
+
+**This is a potential trust issue.** If run_and_watch gives different results than shell for the same command, agents will (correctly) stop trusting it and fall back to shell.
+
+**Root cause investigation needed:** run_and_watch uses `child_process.spawn` which inherits `process.env`. But the MCP server's environment may differ from the user's interactive shell (different PATH, missing virtualenv activation, different PYTHONPATH). The `uv run` prefix should handle this since uv manages its own environment, but there may be subtle differences.
+
+**Also noted:** Agent used shell for `alembic revision` and `alembic upgrade` - these aren't in the run_and_watch allowlist. Should `alembic` be added? It's a common Python dev command.
+
+**Action items:**
+1. Investigate: does run_and_watch inherit the full user environment?
+2. Add `alembic` to the Python stack allowlist
+3. Consider: should run_and_watch log the PATH/PYTHONPATH it uses, so agents can debug env mismatches?

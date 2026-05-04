@@ -22,6 +22,7 @@ const STACK_PREFIXES: Record<string, string[]> = {
   python: [
     "python", "pytest", ".venv/bin/python", ".venv/bin/pytest",
     "uv", "uv run", "pip", "mypy", "ruff", "black", "flake8",
+    "alembic", "django-admin",
   ],
   go: ["go test", "go run", "go build", "go vet"],
   rust: ["cargo test", "cargo build", "cargo run", "cargo check", "cargo clippy"],
