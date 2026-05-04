@@ -40,7 +40,7 @@ export function handleGetProjectHealth(
   const migrationFramework = cwd ? detectMigrationFramework(cwd) : null;
 
   const issues: string[] = [];
-  if (!connected) issues.push("Server is DISCONNECTED");
+  if (!connected) issues.push("Server is DISCONNECTED - TracePulse fell back to standalone mode. Check the start command in your MCP config.");
   if (errors.length > 0) issues.push(`${errors.length} runtime error(s)`);
   if (buildErrors.length > 0) issues.push(`${buildErrors.length} build error(s)`);
   if (unreachable.length > 0) issues.push(`${unreachable.length} unreachable service(s): ${unreachable.map((s) => s.service.name).join(", ")}`);

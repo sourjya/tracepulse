@@ -40,6 +40,7 @@ import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
 import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
+import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -550,6 +551,15 @@ async function main(): Promise<void> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     process.stderr.write(`[tracepulse] Failed to start collector: ${msg}\n`);
+
+    // Diagnose the failure and print actionable recommendations
+    const startCommand = parsed.command === "start" && "target" in parsed ? (parsed.target ?? "") : "";
+    const findings = diagnoseStartupFailure(startCommand, msg, process.cwd());
+    const diagnosticOutput = formatDiagnostics(findings);
+    if (diagnosticOutput) {
+      process.stderr.write(diagnosticOutput);
+    }
+
     process.stderr.write(`[tracepulse] Falling back to standalone mode (tools available, no passive monitoring)\n`);
     // Fall back to standalone - agent still gets all tools
     collector = {
