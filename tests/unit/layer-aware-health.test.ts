@@ -35,9 +35,12 @@ describe("Layer-aware get_project_health (M21)", () => {
     const text = (result as { content: Array<{ text: string }> }).content[0].text;
     const parsed = JSON.parse(text);
 
-    // Should have suggestions since we're in a Node project (tracepulse itself)
     expect(parsed.server).toBeDefined();
     expect(parsed.server.status).toBe("not_started");
+    // Suggestions should have confidence levels
+    if (parsed.server.suggestions) {
+      expect(parsed.server.suggestions[0].confidence).toBeDefined();
+    }
   });
 
   it("shows running status when connected", () => {

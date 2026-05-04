@@ -81,7 +81,11 @@ export function handleGetProjectHealth(
         return {
           status: "not_started" as const,
           ...(suggestions.length > 0 ? {
-            suggestions: suggestions.map(s => `start_server({ command: "${s.command}" }) - ${s.reason}`),
+          suggestions: suggestions.map(s => ({
+              command: `start_server({ command: "${s.command}" })`,
+              reason: s.reason,
+              confidence: s.confidence,
+            })),
           } : {
             hint: "No start command detected. Call start_server({ command: 'your dev server command' }) to begin monitoring.",
           }),
