@@ -182,6 +182,25 @@ check "rejects shell syntax" "invalid" "$D/out.log"
 check "provides fix" "env" "$D/out.log"
 rm -rf "$D"
 
+# ── I15: Dynamic tool layers ──
+echo "I15: Dynamic tool layers"
+D=$(mktemp -d)
+LIST='{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
+printf "%s\n%s\n" "$INIT" "$LIST" | timeout 5 bash -c "cd '$D' && exec $TP" 2>/dev/null >"$D/out.log" || true
+STANDALONE_TOOLS=$(grep -o '"name":"[^"]*"' "$D/out.log" | wc -l)
+if [ "$STANDALONE_TOOLS" -lt 30 ] && [ "$STANDALONE_TOOLS" -gt 15 ]; then
+  echo "  ✓ standalone has fewer tools ($STANDALONE_TOOLS)"; ((PASS++)); ((TOTAL++))
+else
+  echo "  ✗ standalone tool count unexpected ($STANDALONE_TOOLS)"; ((FAIL++)); ((TOTAL++))
+fi
+# Verify get_errors is NOT in standalone tool list
+if grep -q '"name":"get_errors"' "$D/out.log"; then
+  echo "  ✗ get_errors should be disabled in standalone"; ((FAIL++)); ((TOTAL++))
+else
+  echo "  ✓ get_errors disabled in standalone"; ((PASS++)); ((TOTAL++))
+fi
+rm -rf "$D"
+
 echo ""
 echo "=============================="
 echo "$PASS/$TOTAL passed, $FAIL failed"

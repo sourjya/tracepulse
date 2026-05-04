@@ -26,6 +26,8 @@ export interface ServerManager {
   setRunning(name: string, pid: number): void;
   /** Mark a server as stopped. */
   setStopped(name?: string): void;
+  /** Callback invoked when start_server validates successfully. CLI layer spawns the process. */
+  onSpawnRequest?: (command: string, env?: Record<string, string>, cwd?: string, name?: string) => Promise<{ pid: number } | { error: string }>;
 }
 
 /**
@@ -82,8 +84,27 @@ export async function handleStartServer(
     return jsonResult({ status: "invalid", diagnostics: validation.diagnostics });
   }
 
-  // Command looks valid - return ready status
-  // Actual spawning is done by the CLI layer which has access to the collector
+  // Command looks valid - spawn if callback available, otherwise return ready
+  if (manager.onSpawnRequest) {
+    const env = args.env as Record<string, string> | undefined;
+    const cwd = args.cwd as string | undefined;
+    const spawnResult = await manager.onSpawnRequest(command, env, cwd, name);
+
+    if ("error" in spawnResult) {
+      return jsonResult({ status: "failed", error: spawnResult.error, command, name });
+    }
+
+    manager.setRunning(name, spawnResult.pid);
+    return jsonResult({
+      status: "started",
+      pid: spawnResult.pid,
+      command,
+      name,
+      hint: "Server starting. Call get_project_health() to check status.",
+    });
+  }
+
+  // No spawn callback (testing or not wired) - return ready status
   return jsonResult({
     status: "ready",
     command,

@@ -41,6 +41,7 @@ import { createHealthProber, type HealthProber } from "@/infra/health-prober.js"
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
 import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
 import { createAuditBuffer } from "@/store/audit-buffer.js";
+import { createServerManager } from "@/tools/start-server.js";
 import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
 import { detectProjectStacks, suggestStartCommands } from "@/diagnostics/project-detector.js";
 
@@ -620,6 +621,32 @@ async function main(): Promise<void> {
     }
   } : undefined;
 
+  // Create server manager with spawn callback for start_server tool (M21)
+  const serverMgr = createServerManager();
+  serverMgr.onSpawnRequest = async (command, env, cwd, _name) => {
+    try {
+      const spawnCollector = createProcessSpawner(command);
+      await spawnCollector.start(processLine);
+      // Replace the no-op collector with the real one
+      collector = spawnCollector;
+      // Enable Layer 2 tools now that a server is running
+      const internal = server as unknown as {
+        _registeredTools: Record<string, { enable: () => void }>;
+        sendToolListChanged: () => void;
+      };
+      const { LAYER_2_TOOLS } = await import("@/mcp/tool-layers.js");
+      for (const name of LAYER_2_TOOLS) {
+        internal._registeredTools[name]?.enable();
+      }
+      internal.sendToolListChanged();
+      process.stderr.write(`[tracepulse] Server started: ${command}. Layer 2 tools activated.\n`);
+      return { pid: process.pid }; // Approximate - child PID not easily accessible
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { error: msg };
+    }
+  };
+
   const server = createMcpServer(buffer, () => collector.isConnected(), {
     registry: serviceRegistry,
     frontendBuffer,
@@ -632,6 +659,7 @@ async function main(): Promise<void> {
     errorLifecycle,
     patternAnalyzer,
     detectedStacks,
+    serverManager: serverMgr,
     clustered: process.argv.includes("--clustered") || process.env.TP_TOOL_MODE === "clustered",
   });
   const transport = new StdioServerTransport();
