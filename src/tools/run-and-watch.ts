@@ -107,16 +107,20 @@ export async function handleRunAndWatch(
   const timeout = ((args.timeout_seconds as number | undefined) ?? 60) * 1000;
   const maxLines = args.max_lines as number | undefined;
 
-  // Security: validate cwd is within the project root (no directory traversal)
+  // Security: validate cwd. Allow absolute paths (explicit user intent).
+  // For relative paths, ensure they don't escape the project root.
   let resolvedCwd: string | undefined;
   if (cwd) {
     const projectRoot = process.cwd();
     const resolved = resolvePath(projectRoot, cwd);
-    if (!resolved.startsWith(projectRoot)) {
+    // Reject relative paths that escape project root (path traversal)
+    // Allow absolute paths (user explicitly chose a directory)
+    const isAbsolute = cwd.startsWith("/");
+    if (!isAbsolute && !resolved.startsWith(projectRoot)) {
       return {
         content: [{
           type: "text",
-          text: `cwd must be within the project root. "${cwd}" resolves outside ${projectRoot}.`,
+          text: `cwd must be within the project root or an absolute path. "${cwd}" resolves outside ${projectRoot}. Use an absolute path like "/home/user/other-project" instead.`,
         }],
         isError: true,
       };

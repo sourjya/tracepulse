@@ -1049,3 +1049,15 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Possible product fix:** A Kiro hook that intercepts shell calls and checks if the command matches a pattern that TracePulse handles (grep -> grep tool, pytest -> run_and_watch, server start -> start_server). The hook would inject a warning BEFORE the shell call executes.
 
 **Status:** Logged. This is a Kiro/MCP client enforcement issue, not a TracePulse issue. TracePulse can't see shell calls from other tools.
+
+---
+
+## 2026-05-05 - run_and_watch cwd rejection caused full-session shell fallback (event-sdk)
+
+**Context:** Agent working on event-sdk tried to run tests in a sibling project (a sibling project) via run_and_watch with relative cwd. Got rejected: "cwd must be within the project root." Fell back to shell for ALL subsequent commands - including ones within event-sdk where run_and_watch would have worked.
+
+**Root cause:** cwd validation rejected all paths resolving outside project root, including absolute paths to other projects the user owns. Overly restrictive security check.
+
+**Fix:** Allow absolute paths (explicit user intent). Only reject relative paths that escape via `../`. Error message now suggests using absolute path.
+
+**Pattern:** Same as the allowlist rejection (v0.9.7-0.9.13): one rejection -> full session shell fallback. The agent gives up on the tool entirely after a single failure.
