@@ -1035,3 +1035,17 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Possible cause:** run_and_watch returns structured output but the agent may want raw output for debugging (e.g., `| head -20` to see first errors). run_and_watch doesn't support pipes, so the agent drops to shell.
 
 **Potential fix:** Add a `max_lines` parameter to run_and_watch that truncates output, giving the agent the "head -20" behavior without needing shell pipes.
+
+---
+
+## 2026-05-05 - Agent self-corrects on shell-for-grep when prompted
+
+**Context:** The agent on a Python project used `shell("grep -n 'uvicorn.run' ...")` instead of grep tool. When asked "why shell?", immediately self-corrected. When asked "why not TP?", identified `start_server` as the right tool.
+
+**Key insight:** The agent KNOWS the rules. It self-corrects instantly when prompted. The issue is that the rules don't fire automatically - they need an external trigger (human asking "why?").
+
+**This confirms:** The problem isn't documentation or SKILL.md. It's that agents don't have a "pre-action check" that fires before every tool call. They plan the action, execute it, and only reflect when challenged.
+
+**Possible product fix:** A Kiro hook that intercepts shell calls and checks if the command matches a pattern that TracePulse handles (grep -> grep tool, pytest -> run_and_watch, server start -> start_server). The hook would inject a warning BEFORE the shell call executes.
+
+**Status:** Logged. This is a Kiro/MCP client enforcement issue, not a TracePulse issue. TracePulse can't see shell calls from other tools.
