@@ -1061,3 +1061,18 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Fix:** Allow absolute paths (explicit user intent). Only reject relative paths that escape via `../`. Error message now suggests using absolute path.
 
 **Pattern:** Same as the allowlist rejection (v0.9.7-0.9.13): one rejection -> full session shell fallback. The agent gives up on the tool entirely after a single failure.
+
+---
+
+## 2026-05-06 - run_and_watch works cross-project with absolute cwd (portal)
+
+**Context:** Agent used `run_and_watch("npx vitest run", cwd: "/home/sourjya/coding/portal")` on a project that doesn't have TracePulse installed. Worked perfectly. User was surprised: "I haven't installed TracePulse here?"
+
+**What went right:**
+1. Absolute cwd fix (v0.9.16+) enabled cross-project usage
+2. Agent self-corrected from `cd /path && cmd` (rejected by metachar check) to `cwd` parameter on second attempt - SKILL.md guidance working
+3. Agent explained correctly: "TracePulse is session-level, not project-level"
+
+**Validation:** Zero-config architecture working as designed. TracePulse is a tool the agent carries with it, not something each project needs to install. The `run_and_watch` + absolute `cwd` pattern makes it universal.
+
+**User reaction:** "nicely done" - first positive feedback on the cross-project experience.
