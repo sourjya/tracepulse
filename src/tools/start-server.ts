@@ -100,7 +100,8 @@ export async function handleStartServer(
       pid: spawnResult.pid,
       command,
       name,
-      hint: "Server starting. Call get_project_health() to check status.",
+      hint: "Server starting. Call wait_for_build() to block until ready, or get_server_logs() if issues.",
+      next_steps: ["wait_for_build()", "get_server_logs(level: 'error')", "list_services()", "check_port()"],
     });
   }
 
@@ -109,7 +110,8 @@ export async function handleStartServer(
     status: "ready",
     command,
     name,
-    hint: "Server will start. Call get_project_health() to check when ready.",
+    hint: "Server will start. Call wait_for_build() to block until ready, or get_server_logs() if issues.",
+    next_steps: ["wait_for_build()", "get_server_logs(level: 'error')", "list_services()", "check_port()"],
   });
 }
 

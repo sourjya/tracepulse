@@ -52,6 +52,20 @@ For monorepos with separate frontend/backend dirs, use the `cwd` parameter:
 run_and_watch("npx vitest run", cwd: "./frontend")
 run_and_watch("pytest tests/", cwd: "./backend")
 ```
+
+### Error recovery ladder (after start_server)
+
+When `start_server` returns success but something seems wrong, follow this sequence:
+
+```
+1. wait_for_build()           → blocks until server emits ready signal
+2. get_server_logs(level: "error")  → see what went wrong
+3. list_services()            → check if the service registered
+4. check_port(port)           → verify the port is in use
+5. get_project_health()       → full status overview
+```
+
+Do NOT use `curl` or `shell` to verify the server. TracePulse has tools for every step.
 Commands must start with an allowed prefix (npx, npm, node, pytest, python, tsc, eslint, vitest, jest, go test, cargo test). Don't prefix with `cd`.
 
 ### The proven debugging loop (most productive workflow)

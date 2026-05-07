@@ -1076,3 +1076,26 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Validation:** Zero-config architecture working as designed. TracePulse is a tool the agent carries with it, not something each project needs to install. The `run_and_watch` + absolute `cwd` pattern makes it universal.
 
 **User reaction:** "nicely done" - first positive feedback on the cross-project experience.
+
+---
+
+## 2026-05-08 - Agent introspection: why it bypasses TracePulse (Claude)
+
+**Context:** Agent was asked directly why it used curl instead of TP tools. Gave an honest 3-part answer.
+
+**Root causes identified by the agent itself:**
+
+1. **Training bias** - "curl localhost:PORT" is muscle memory from millions of training examples. TP tools are new, no internalized patterns yet.
+2. **Unclear tool mapping** - When get_project_health showed "disconnected" after start_server succeeded, the agent's instinct was "verify independently" (curl). Didn't know list_services/get_server_logs were the next step.
+3. **Missing error recovery guidance** - start_server's hint says "call get_project_health" but when THAT also fails, no hint says what to try next. The recovery path isn't guided.
+
+**Agent's proposed fixes:**
+
+1. start_server hint should include: `"next_steps": ["wait_for_build() to confirm ready", "get_server_logs() if issues"]`
+2. Add `wait: true` option to start_server that blocks until ready
+3. SKILL.md should have an "error recovery ladder": start_server -> wait_for_build -> get_server_logs(level: 'error') -> check_port
+
+**Action items:**
+- [ ] Update start_server response hint to include next_steps
+- [ ] Add error recovery ladder to SKILL.md
+- [ ] Consider start_and_wait composite (or wait param on start_server)
