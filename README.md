@@ -31,6 +31,7 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 | MCP Client | Config File |
 |------------|-------------|
 | **Kiro CLI** | `.kiro/settings/mcp.json` (in your project) |
+| **Claude Code** | `~/.claude.json` under `projects["/path"].mcpServers` |
 | **Claude Desktop** | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) |
 | **Claude Desktop** | `%APPDATA%\Claude\claude_desktop_config.json` (Windows) |
 | **Cursor** | `.cursor/mcp.json` (in your project) |

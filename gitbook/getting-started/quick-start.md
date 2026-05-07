@@ -22,6 +22,7 @@ Find the config file for your AI tool and add TracePulse:
 | AI Tool | Config File |
 |---------|-------------|
 | **Kiro CLI** | `.kiro/settings/mcp.json` in your project |
+| **Claude Code** | `~/.claude.json` under `projects["/path"].mcpServers` |
 | **Cursor** | `.cursor/mcp.json` in your project |
 | **Claude Desktop** | See [MCP Client Setup](mcp-client-setup.md) for path |
 | **VS Code (Copilot)** | `.vscode/mcp.json` in your project |

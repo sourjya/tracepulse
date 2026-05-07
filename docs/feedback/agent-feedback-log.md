@@ -1099,3 +1099,22 @@ Instead the agent started reasoning about the bug from the error message alone, 
 - [ ] Update start_server response hint to include next_steps
 - [ ] Add error recovery ladder to SKILL.md
 - [ ] Consider start_and_wait composite (or wait param on start_server)
+
+---
+
+## 2026-05-07 - Claude Code installation failure: wrong config file (Prism project)
+
+**Context:** User tried to install TracePulse for Claude Code. Wrote config to `.claude/settings.json` (wrong file). Claude Code reads MCP servers from `~/.claude.json` under `projects[path].mcpServers`.
+
+**Two compounding issues:**
+1. Wrong config file - our docs list Claude Desktop paths but not Claude Code's `~/.claude.json`
+2. Non-existent CLI flags - user copied `--clustered --persist --service` from another config without verifying
+
+**Investigation took 7 steps** before finding the right file. The `/mcp` command in Claude Code reveals which file it reads from.
+
+**Docs gap:** Our installation page and MCP client setup page don't mention Claude Code's `~/.claude.json` structure. We only document Claude Desktop.
+
+**Fix needed:**
+- Add Claude Code to the config file table
+- Document the `~/.claude.json` projects structure
+- Add `tracepulse doctor` suggestion for verification

@@ -52,6 +52,33 @@ The file is `.kiro/settings/mcp.json` - not `.kiro/mcp.json`. This is the most c
 
 Paste the config and restart Cursor.
 
+## Claude Code (CLI)
+
+**Config file:** `~/.claude.json` (user home directory)
+
+Claude Code stores MCP servers per-project inside `~/.claude.json`. The structure is different from other tools:
+
+```json
+{
+  "projects": {
+    "/absolute/path/to/your/project": {
+      "mcpServers": {
+        "tracepulse": {
+          "command": "tracepulse",
+          "args": ["standalone"]
+        }
+      }
+    }
+  }
+}
+```
+
+Use `standalone` for library projects. Use `start "your command"` for projects with a dev server.
+
+{% hint style="warning" %}
+**Common mistake:** Don't put MCP servers in `.claude/settings.json` (project permissions file) or `~/.claude/settings.json` (user preferences). They go in `~/.claude.json` only. Run `/mcp` in Claude Code to verify which file it reads.
+{% endhint %}
+
 ## Claude Desktop
 
 **Config file location:**
