@@ -1137,3 +1137,20 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **Recommendation:** Option 3 (`tracepulse init`) is the best UX. It detects the MCP client and writes the right files. Option 1 (MCP Resources) is the long-term ideal but requires all clients to support resource reading.
 
 **Action:** Spec `tracepulse init` command + ship CLAUDE.md template as immediate fix.
+
+---
+
+## 2026-05-15 - Agent proposes MCP resources for skill discovery (follow-up)
+
+**Context:** Same agent elaborated on the skill discovery problem with 3 concrete options.
+
+**Key insight from agent:** "TracePulse could expose `tracepulse://skills/{name}` as readable MCP resources. Claude would call `list_skills()` at session start and load relevant ones."
+
+**Agent's recommendation:** `tracepulse init` that:
+1. Reads `~/.claude.json` to see what OTHER MCPs are configured alongside TracePulse
+2. Generates combined workflow skills based on what's available (e.g., if Chrome DevTools MCP is present, include full-stack debug workflow)
+3. Writes to project file and references from CLAUDE.md
+
+**This is smart** - the init command should be context-aware. If ViewGraph is also configured, include the visual regression workflow. If only TracePulse, include just the backend patterns.
+
+**Added to M23 spec scope:** `tracepulse init` should detect companion MCPs and generate appropriate combined skills.

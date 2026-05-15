@@ -32,6 +32,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M20: Bug Pattern Detection | Error Intelligence | v1.1 | ✅ Complete |
 | M21: Zero-Config Capability Architecture | Core UX | v1.0 | ✅ Complete (Phase 1-3) |
 | M22: HTTP REST API + Dashboard Integration | Platform | v1.0 | ✅ Complete |
+| M23: `tracepulse init` - Context-Aware Setup | Discoverability | v1.0 | 🔲 Spec ready |
 
 ## Reviews
 
