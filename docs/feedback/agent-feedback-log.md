@@ -1211,3 +1211,29 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 - `start_server` should call `check_port` before spawning. If occupied, return error with hint.
 - Consider adding `free_port(port)` tool that kills whatever is on that port.
 - Or extend `stop_server` to accept a port: `stop_server({ port: 8787 })`
+
+---
+
+## 2026-05-15 - Session ROI: +5 min saved, -2 min lost (Prism/Studio)
+
+**Measured savings:**
+| Tool | Moment | Time saved |
+|------|--------|-----------|
+| get_server_logs | Showed "vite: not found" + exit 127 instantly | ~3 min (vs manual log tailing) |
+| run_and_watch (8x) | Structured pass/fail, no ANSI parsing | ~4 min (30s x 8 runs) |
+| get_project_health | One call vs 3 separate commands | ~30 sec |
+
+**Time lost:**
+| Issue | Time cost |
+|-------|-----------|
+| start_server PATH issue (vite not found) | ~2 min until get_server_logs diagnosed it |
+
+**Net: +5 min saved, -2 min lost = +3 min net positive.**
+
+**Agent's assessment:** "Positive but modest. The real payoff will come when we're editing components and TP catches runtime errors live."
+
+**Key insight:** `get_server_logs` was the highest-value tool this session - instant root cause for a startup failure. `run_and_watch` x8 was the highest-volume saver.
+
+**What would have helped more:**
+- Pre-spawn PATH validation in start_server (would have caught "vite not found" before spawning)
+- The 2 min lost was entirely the start_server crash loop
