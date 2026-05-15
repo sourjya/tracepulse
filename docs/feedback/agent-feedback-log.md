@@ -1194,3 +1194,20 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 2. Optionally copy `skills/` to `.claude/commands/` (extended playbooks, user-invoked)
 
 **That's it.** One file in the right place = zero-intervention operation.
+
+---
+
+## 2026-05-15 - start_server crash loop + no tool to kill orphaned port process
+
+**Context:** Agent called start_server 5 times, all crashed. Port 8787 still occupied from previous session. Agent fell back to `Bash("lsof -ti:8787 | xargs kill -9")`.
+
+**Two issues:**
+
+1. **start_server doesn't handle port-in-use gracefully.** When the port is occupied, it should detect this BEFORE spawning and suggest: "Port 8787 in use. Call stop_server() or kill the process."
+
+2. **No TP tool to kill a process on a port.** `check_port` detects the problem but can't fix it. `stop_server` only works for TP-managed processes. Orphaned processes from crashed sessions need a `free_port(port)` tool or `stop_server` should accept a port number.
+
+**Proposed fix:**
+- `start_server` should call `check_port` before spawning. If occupied, return error with hint.
+- Consider adding `free_port(port)` tool that kills whatever is on that port.
+- Or extend `stop_server` to accept a port: `stop_server({ port: 8787 })`
