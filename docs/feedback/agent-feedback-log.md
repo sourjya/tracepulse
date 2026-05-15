@@ -1154,3 +1154,25 @@ Instead the agent started reasoning about the bug from the error message alone, 
 **This is smart** - the init command should be context-aware. If ViewGraph is also configured, include the visual regression workflow. If only TracePulse, include just the backend patterns.
 
 **Added to M23 spec scope:** `tracepulse init` should detect companion MCPs and generate appropriate combined skills.
+
+---
+
+## 2026-05-15 - Claude Code native skill discovery: .claude/commands/ (breakthrough)
+
+**Context:** Agent discovered that Claude Code has a native custom commands system. Files in `.claude/commands/` become slash commands that Claude auto-discovers.
+
+**The answer:** `tracepulse init` just copies skill files to `.claude/commands/`:
+```
+.claude/commands/
+├── tracepulse.md          ← main workflow (SKILL.md)
+├── full-stack-debug.md    ← TP + Chrome DevTools combined
+├── browser-errors.md      ← browser error capture
+├── edit-verify-loop.md    ← edit → verify cycle
+└── test-runner.md         ← test runner monitoring
+```
+
+Each becomes a `/tracepulse`, `/full-stack-debug` etc. slash command. Claude reads them when invoked or when context matches.
+
+**Implementation:** ~10 lines of code. Copy files from `skills/` to `.claude/commands/`. Done.
+
+**This replaces:** CLAUDE.md editing, manual skill copying, MCP resources complexity. The native mechanism is simpler than all our proposed solutions.

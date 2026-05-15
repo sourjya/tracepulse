@@ -26,9 +26,26 @@ tracepulse init
 | Client | Config written | Skills written |
 |--------|---------------|----------------|
 | Kiro CLI | `.kiro/settings/mcp.json` | Already auto-discovered from `skills/` |
-| Claude Code | `~/.claude.json` (projects section) | `CLAUDE.md` appended with TP skills |
+| Claude Code | `~/.claude.json` (projects section) | `.claude/commands/tracepulse.md` + companions |
 | Cursor | `.cursor/mcp.json` | `.cursor/tracepulse-skills.md` |
 | Generic | `.mcp.json` | `TRACEPULSE.md` in project root |
+
+## Claude Code: Native Slash Commands (simplest path)
+
+Claude Code auto-discovers files in `.claude/commands/` as slash commands. `tracepulse init` copies skill files there:
+
+```
+.claude/commands/
+├── tracepulse.md          ← main TP workflow (from skills/tracepulse/SKILL.md)
+├── full-stack-debug.md    ← TP + Chrome DevTools combined workflow
+├── browser-errors.md      ← browser error capture approaches
+├── edit-verify-loop.md    ← edit → verify cycle
+└── test-runner.md         ← test runner monitoring
+```
+
+Each becomes `/tracepulse`, `/full-stack-debug`, etc. No CLAUDE.md editing needed.
+
+Implementation: ~10 lines - copy from installed `skills/` to `.claude/commands/`.
 
 ## Companion MCP detection
 
