@@ -1,0 +1,46 @@
+# TracePulse Rules for Claude Code
+# Install: copy to ~/.claude/rules/tracepulse.md
+# Or run: tracepulse init --claude
+
+## Tool Usage Rules
+
+- Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
+- Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
+- Use `cwd` parameter for cross-project commands. Absolute paths are allowed.
+- Never use `curl`, `wget`, or shell to check if a server is running. Use `check_port` or `get_project_health`.
+- Never use `shell("grep ...")` for searching files. Use the grep tool directly.
+
+## After Code Changes
+
+- After ANY backend code change: call `get_errors()` to check for new errors
+- After fixing an error: call `verify_fix(10)` to confirm it's resolved
+- After `start_server`: call `wait_for_build()` before proceeding
+
+## Error Recovery
+
+If `start_server` succeeds but something seems wrong:
+1. `wait_for_build()` - blocks until server ready
+2. `get_server_logs(level: "error")` - see what went wrong
+3. `list_services()` - check service registered
+4. `check_port(port)` - verify port in use
+
+## Test Execution
+
+```
+run_and_watch("npx vitest run")              # Node tests
+run_and_watch("pytest tests/", cwd: "./backend")  # Python tests
+run_and_watch("npx tsc --noEmit")            # Type check
+run_and_watch("npm run build")               # Build
+```
+
+## Key Tools
+
+| Need | Tool |
+|------|------|
+| Any errors? | `get_errors(limit: 5)` |
+| Project health | `get_project_health()` |
+| Run tests | `run_and_watch("pytest tests/")` |
+| Verify fix | `verify_fix(10)` |
+| Build errors | `get_build_errors()` |
+| Bug patterns | `get_bug_patterns()` |
+| Check drift | `check_drift()` |

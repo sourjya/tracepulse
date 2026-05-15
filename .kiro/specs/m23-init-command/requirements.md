@@ -64,9 +64,19 @@ Each becomes `/tracepulse`, `/full-stack-debug`, etc. Agent invokes when it need
 
 ### Why two layers?
 
-- CLAUDE.md rules fire automatically every session (zero intervention)
+- Global rules fire automatically every session (zero intervention after init)
 - Slash commands provide depth without bloating every session's context
-- 20 lines in CLAUDE.md vs 522 lines of SKILL.md - 96% context savings
+- 30 lines in global rules vs 522 lines of SKILL.md - 94% context savings
+
+### Three-layer model (final)
+
+| Layer | Path | Loaded | Content |
+|-------|------|--------|---------|
+| Global rules | `~/.claude/rules/tracepulse.md` | Every session, automatic | 30 lines: behavioral overrides |
+| Project commands | `.claude/commands/*.md` | On `/slash` invocation | Full workflow skills |
+| Tool descriptions | MCP schema | On tool discovery | Per-tool one-liners |
+
+`tracepulse init --claude` writes layers 1 + 2. Layer 3 is already shipped in the MCP server.
 
 ## Companion MCP detection
 
