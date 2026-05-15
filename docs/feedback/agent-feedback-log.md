@@ -1182,3 +1182,15 @@ Each becomes a `/tracepulse`, `/full-stack-debug` etc. slash command. Claude rea
 ## 2026-05-15 - .claude/commands/ validated in production (Prism)
 
 Agent manually installed 6 skill files to .claude/commands/. Confirmed working. Agent's conclusion: 'just tracepulse init should do this automatically in the future.' M23 spec validated.
+
+---
+
+## 2026-05-15 - Final answer: ~/.claude/rules/ is the zero-intervention path
+
+**Agent confirmed:** Global rules (`~/.claude/rules/tracepulse.md`) are auto-loaded every session. Commands (`.claude/commands/`) are supplementary reference only.
+
+**The complete `tracepulse init --claude` implementation:**
+1. Copy `skills/claude-rules/tracepulse.md` to `~/.claude/rules/tracepulse.md` (30 lines, auto-loaded)
+2. Optionally copy `skills/` to `.claude/commands/` (extended playbooks, user-invoked)
+
+**That's it.** One file in the right place = zero-intervention operation.
