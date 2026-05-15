@@ -1118,3 +1118,22 @@ Instead the agent started reasoning about the bug from the error message alone, 
 - Add Claude Code to the config file table
 - Document the `~/.claude.json` projects structure
 - Add `tracepulse doctor` suggestion for verification
+
+---
+
+## 2026-05-15 - Skills not discoverable by Claude Code (Prism project)
+
+**Context:** Agent found `skills/browser-errors/` in TracePulse's npm package but couldn't use the patterns because Claude Code doesn't auto-discover skills from installed packages. Had to manually copy patterns into CLAUDE.md.
+
+**The gap:** TracePulse ships skills (SKILL.md, browser-errors/) but only Kiro auto-discovers them. Claude Code, Cursor, and other MCP clients have no mechanism to read them.
+
+**Agent's question:** "What would it take for Claude to understand these co-working skills between TracePulse, ViewGraph & Chrome DevTools?"
+
+**Options identified:**
+1. **MCP Resources** - expose skills as `resources/read` (ideal, any client can read)
+2. **CLAUDE.md template** - ship a template users copy (works today, manual)
+3. **`tracepulse init` command** - auto-generates client-specific config + skills
+
+**Recommendation:** Option 3 (`tracepulse init`) is the best UX. It detects the MCP client and writes the right files. Option 1 (MCP Resources) is the long-term ideal but requires all clients to support resource reading.
+
+**Action:** Spec `tracepulse init` command + ship CLAUDE.md template as immediate fix.
