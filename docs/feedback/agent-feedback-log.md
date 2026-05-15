@@ -1176,3 +1176,9 @@ Each becomes a `/tracepulse`, `/full-stack-debug` etc. slash command. Claude rea
 **Implementation:** ~10 lines of code. Copy files from `skills/` to `.claude/commands/`. Done.
 
 **This replaces:** CLAUDE.md editing, manual skill copying, MCP resources complexity. The native mechanism is simpler than all our proposed solutions.
+
+---
+
+## 2026-05-15 - .claude/commands/ validated in production (Prism)
+
+Agent manually installed 6 skill files to .claude/commands/. Confirmed working. Agent's conclusion: 'just tracepulse init should do this automatically in the future.' M23 spec validated.
