@@ -30,9 +30,26 @@ tracepulse init
 | Cursor | `.cursor/mcp.json` | `.cursor/tracepulse-skills.md` |
 | Generic | `.mcp.json` | `TRACEPULSE.md` in project root |
 
-## Claude Code: Native Slash Commands (simplest path)
+## Claude Code: Two-Layer Approach
 
-Claude Code auto-discovers files in `.claude/commands/` as slash commands. `tracepulse init` copies skill files there:
+### Layer 1: CLAUDE.md (always loaded, 20 lines)
+
+`tracepulse init` appends a small block to CLAUDE.md with the critical behavioral rules. This is what makes TP work without user intervention:
+
+```markdown
+### TracePulse (auto-injected by `tracepulse init`)
+- Use `run_and_watch` instead of Bash for ALL test/build/lint commands
+- Use `get_errors` after any backend code change
+- Use `verify_fix` after fixing an error
+- Never use curl to check server status - use `check_port` or `get_project_health`
+- After `start_server`, call `wait_for_build()` before proceeding
+- Use `cwd` parameter for cross-project commands (absolute paths allowed)
+- Use `max_lines` parameter instead of piping to `head`/`tail`
+```
+
+### Layer 2: .claude/commands/ (on-demand, full skills)
+
+Deep workflow guidance available as slash commands:
 
 ```
 .claude/commands/
@@ -43,9 +60,13 @@ Claude Code auto-discovers files in `.claude/commands/` as slash commands. `trac
 └── test-runner.md         ← test runner monitoring
 ```
 
-Each becomes `/tracepulse`, `/full-stack-debug`, etc. No CLAUDE.md editing needed.
+Each becomes `/tracepulse`, `/full-stack-debug`, etc. Agent invokes when it needs deeper guidance.
 
-Implementation: ~10 lines - copy from installed `skills/` to `.claude/commands/`.
+### Why two layers?
+
+- CLAUDE.md rules fire automatically every session (zero intervention)
+- Slash commands provide depth without bloating every session's context
+- 20 lines in CLAUDE.md vs 522 lines of SKILL.md - 96% context savings
 
 ## Companion MCP detection
 
@@ -78,3 +99,15 @@ resources/read("tracepulse://skills/main") → SKILL.md content
 ```
 
 This is the long-term ideal but requires MCP clients to support resource reading at session start.
+
+## Quick Win: Prescriptive Tool Descriptions (no init needed)
+
+Tool descriptions are the ONLY thing Claude reads automatically when an MCP connects. Current descriptions are neutral ("Run a command..."). Making them prescriptive costs zero and works immediately:
+
+| Tool | Current description | Prescriptive description |
+|------|-------------------|------------------------|
+| run_and_watch | "Run a command, parse output..." | "Run a command, parse output... Use INSTEAD OF shell for tests, builds, and linters." |
+| get_errors | "Get recent error and warning events..." | "Get recent errors. Call this after ANY backend code change." |
+| verify_fix | "Post-fix check..." | "Post-fix check. ALWAYS call after fixing an error to confirm it's resolved." |
+
+This is already partially done (run_and_watch says "Use INSTEAD OF shell"). Extend to other key tools.
