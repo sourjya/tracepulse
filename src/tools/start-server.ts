@@ -88,6 +88,7 @@ export async function handleStartServer(
   if (manager.onSpawnRequest) {
     const env = args.env as Record<string, string> | undefined;
     const cwd = args.cwd as string | undefined;
+    const wait = args.wait as boolean | undefined;
     const spawnResult = await manager.onSpawnRequest(command, env, cwd, name);
 
     if ("error" in spawnResult) {
@@ -95,6 +96,20 @@ export async function handleStartServer(
     }
 
     manager.setRunning(name, spawnResult.pid);
+
+    // If wait=true, block briefly to confirm server stays up
+    if (wait) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      if (!manager.isRunning(name)) {
+        return jsonResult({
+          status: "crashed",
+          command,
+          name,
+          hint: "Server started but crashed within 3 seconds. Check get_server_logs() for errors.",
+          next_steps: ["get_server_logs(level: 'error')", "check_port(port)"],
+        });
+      }
+    }
     return jsonResult({
       status: "started",
       pid: spawnResult.pid,

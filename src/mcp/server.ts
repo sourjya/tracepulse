@@ -130,8 +130,14 @@ export function handleGetErrors(
     ? events.filter((e) => e.service === serviceFilter)
     : events;
 
+  // Filter by file path if provided (W-C002: file-scoped errors)
+  const fileFilter = args.file as string | undefined;
+  const fileFiltered = fileFilter
+    ? filtered.filter((e) => e.context.file === fileFilter || (e.context.file as string | undefined)?.includes(fileFilter))
+    : filtered;
+
   // Apply score decay for transient errors and filter resolved/expired via lifecycle
-  const decayed = applyScoreDecay(filtered);
+  const decayed = applyScoreDecay(fileFiltered);
   const lifecycle = errorLifecycle;
   const active = lifecycle ? lifecycle.filterActive(decayed) : decayed;
 
@@ -304,6 +310,7 @@ export function createMcpServer(
       limit: z.number().optional().describe("Maximum number of results (default 20)"),
       message_contains: z.string().optional().describe("Case-insensitive substring match on message or raw log line. Use for URL/path filtering (e.g., '/api/export')."),
       status_code_min: z.number().optional().describe("Minimum HTTP status code (e.g., 400 for all errors, 500 for server errors only)."),
+      file: z.string().optional().describe("Filter errors by file path (exact match or substring). Use after editing a specific file."),
     },
     annotations: {
       readOnlyHint: true,
@@ -780,6 +787,7 @@ export function createMcpServer(
       env: z.record(z.string(), z.string()).optional().describe("Environment variables for the server process (e.g., { PYTHONPATH: 'src' })."),
       cwd: z.string().optional().describe("Working directory for the server."),
       name: z.string().optional().describe("Service name for multi-server setups (default: 'main')."),
+      wait: z.boolean().optional().describe("Block for 3s after starting to confirm server stays up. Returns 'crashed' if it dies immediately."),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleStartServer(serverManager, args as Record<string, unknown>));
