@@ -1254,3 +1254,35 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 3. SKILL.md guidance: "For large test suites (500+ tests), use timeout_seconds: 120 or higher"
 
 **Recommendation:** Fix #2 (better error message) + #3 (SKILL.md guidance). Don't change the default - 60s is correct for most commands.
+
+---
+
+## 2026-05-16 - Bulk feedback import from Claude Code agent (Prism project)
+
+**Source:** /mnt/d/Downloads/ - chokepoint logs, wishlists, installation debug
+
+### Key findings:
+
+**CP-C003 (CRITICAL):** start_server can't find vite because TP spawns with bare `sh`, not user's login shell. nvm/npx/node_modules/.bin not on PATH. Agent had to use absolute path to vite binary.
+- **This is the same env mismatch issue** we fixed for Python (.venv auto-detect) but NOT for Node.js (node_modules/.bin not auto-detected).
+- **Fix needed:** Auto-prepend `./node_modules/.bin` to PATH in run_and_watch and start_server, same as we do for .venv/bin.
+
+**Wishlist priorities (from real usage):**
+1. **W1: test_summary already exists** but agent doesn't see pass counts. Need to verify it's working.
+2. **W2: File-scoped errors** - `get_errors(file: "path")` filter. High value, easy to add.
+3. **W8: Local file preview** - already logged, not TP scope (Chrome DevTools MCP).
+4. **W9: Error context persistence** - errors age out of buffer before agent queries. Need longer retention for run_and_watch results.
+5. **W10: Stale build detection** - detect when a dependency was modified but not rebuilt.
+
+**Session stats (2026-05-08):**
+- 25 TP calls, ~10 min saved, ~3 min lost to start_server PATH issue
+- Most used: run_and_watch (15x), get_project_health, get_server_logs
+- Unused: watch_for_errors, correlate_with_diff, verify_fix (no running server)
+
+**Installation (CP-C002):** Already fixed in docs. 4 attempts to find the right config file.
+
+### Action items from this import:
+- [ ] Auto-prepend node_modules/.bin to PATH in run_and_watch/start_server
+- [ ] Add `file` filter parameter to get_errors
+- [ ] Verify test_summary field is working in run_and_watch response
+- [ ] Consider longer retention for run_and_watch error results

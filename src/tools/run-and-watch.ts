@@ -149,6 +149,14 @@ export async function handleRunAndWatch(
       spawnEnv.VIRTUAL_ENV = resolvePath(spawnCwd, ".venv");
     }
 
+    // Auto-add node_modules/.bin to PATH for Node.js projects.
+    // Same issue as venv: MCP servers don't inherit nvm/npx from user's shell.
+    // Without this, commands like "vite", "vitest", "tsc" fail with ENOENT.
+    const nodeModulesBin = resolvePath(spawnCwd, "node_modules", ".bin");
+    if (existsSync(nodeModulesBin)) {
+      spawnEnv.PATH = `${nodeModulesBin}:${spawnEnv.PATH ?? ""}`;
+    }
+
     const child = spawn(command, {
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],
