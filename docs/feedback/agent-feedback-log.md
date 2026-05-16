@@ -1096,8 +1096,8 @@ Instead the agent started reasoning about the bug from the error message alone, 
 3. SKILL.md should have an "error recovery ladder": start_server -> wait_for_build -> get_server_logs(level: 'error') -> check_port
 
 **Action items:**
-- [ ] Update start_server response hint to include next_steps
-- [ ] Add error recovery ladder to SKILL.md
+- [x] Update start_server response hint to include next_steps (DONE)
+- [x] Add error recovery ladder to SKILL.md (DONE)
 - [ ] Consider start_and_wait composite (or wait param on start_server)
 
 ---
@@ -1282,7 +1282,7 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 **Installation (CP-C002):** Already fixed in docs. 4 attempts to find the right config file.
 
 ### Action items from this import:
-- [ ] Auto-prepend node_modules/.bin to PATH in run_and_watch/start_server
+- [x] Auto-prepend node_modules/.bin to PATH in run_and_watch (DONE)
 - [ ] Add `file` filter parameter to get_errors
 - [ ] Verify test_summary field is working in run_and_watch response
 - [ ] Consider longer retention for run_and_watch error results
