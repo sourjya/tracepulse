@@ -6,9 +6,11 @@
 
 - Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
 - Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
+- Use `timeout_seconds: 120` for large test suites (500+ tests). Default is 60s.
 - Use `cwd` parameter for cross-project commands. Absolute paths are allowed.
 - Never use `curl`, `wget`, or shell to check if a server is running. Use `check_port` or `get_project_health`.
 - Never use `shell("grep ...")` for searching files. Use the grep tool directly.
+- If a port is occupied, use `free_port(port)` instead of `lsof | kill`.
 
 ## After Code Changes
 

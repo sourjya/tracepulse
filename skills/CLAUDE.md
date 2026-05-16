@@ -47,6 +47,9 @@ run_and_watch("npx tsc --noEmit", max_lines: 20)
 
 ### Rules
 - ALWAYS use `run_and_watch` instead of shell for tests/builds/linters
-- NEVER use `curl` to check if server is running - use `check_port` or `get_project_health`
+- Use `timeout_seconds: 120` for large test suites (500+ tests)
+- Use `max_lines: 20` instead of piping to `head`/`tail`
+- NEVER use `curl` to check server status - use `check_port` or `get_project_health`
+- Use `free_port(port)` instead of `lsof | kill` for occupied ports
 - After `start_server`, call `wait_for_build()` before proceeding
 - Use `cwd` parameter for cross-project commands (absolute paths allowed)
