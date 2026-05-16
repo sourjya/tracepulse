@@ -29,6 +29,7 @@ import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
 import { handleStartServer, handleStopServer, createServerManager, type ServerManager } from "@/tools/start-server.js";
 import { LAYER_2_TOOLS } from "@/mcp/tool-layers.js";
+import { registerSkillResources } from "@/mcp/register-resources.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { annotateWithPatterns } from "@/analysis/pattern-injector.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
@@ -794,6 +795,11 @@ export function createMcpServer(
   }, (args) => handleStopServer(serverManager, args as Record<string, unknown>));
 
   // ── Dynamic Tool Layers (M21 Phase 3) ──
+
+  // ── MCP Resources: Skill Discovery (M24) ──
+  // Expose skills as readable resources so any MCP client can discover them.
+  registerSkillResources(server);
+
   // In standalone mode (no server connected), disable Layer 2 tools.
   // They return "not available" hints. When start_server succeeds,
   // the CLI layer re-enables them and calls sendToolListChanged().
