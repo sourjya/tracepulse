@@ -8,7 +8,10 @@ You need [Node.js 22+](https://nodejs.org/) installed (even if your project isn'
 
 ```bash
 npm install -g tracepulse
+tracepulse init
 ```
+
+`tracepulse init` auto-detects your AI tool and writes the config. For Claude Code, it also installs behavioral rules that make TracePulse work without any manual setup.
 
 Verify it worked:
 ```bash
@@ -50,7 +53,7 @@ That's the entire setup. TracePulse figures out the rest automatically.
 
 Close and reopen your AI tool (or restart the session). TracePulse should now appear as connected.
 
-In Kiro CLI, type `/mcp list` to verify - you should see `tracepulse ● running 39 tools`.
+In Kiro CLI, type `/mcp list` to verify - you should see `tracepulse ● running 41 tools`.
 
 ## Step 4: Try it out
 
@@ -67,7 +70,7 @@ You don't need to remember tool names. Just describe what you want.
 
 ## Optional: Monitor your dev server
 
-The basic setup gives you 39 tools for running commands, checking ports, detecting drift, and more. To also get **live error monitoring** (errors caught the moment they happen), tell TracePulse about your dev server.
+The basic setup gives you 41 tools for running commands, checking ports, detecting drift, and more. To also get **live error monitoring** (errors caught the moment they happen), tell TracePulse about your dev server.
 
 Add your server command to the config:
 
@@ -115,6 +118,6 @@ Works:
 ## Next steps
 
 - [Installation options](installation.md) - attach mode, multi-service, Docker Compose
-- [All 39 MCP tools](../features/mcp-tools.md) - what TracePulse can do
+- [All 41 MCP tools](../features/mcp-tools.md) - what TracePulse can do
 - [TracePulse in Action](../tutorials/tracepulse-in-action.md) - real-world examples
 - [Troubleshooting](installation.md#troubleshooting) - if something isn't working

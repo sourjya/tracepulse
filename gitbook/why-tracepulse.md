@@ -123,9 +123,9 @@ That's it. Two minutes from install to first error caught. No SDK to add to your
 
 TracePulse saves agents 90%+ of tokens on error investigation. But we noticed our own tool was part of the problem: 36 tool schemas at ~1,000 tokens per turn. Over a 25-turn session, that's 25,000 tokens of overhead just for TracePulse to exist in the agent's context - before a single tool is called.
 
-<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 39 tools to 7 gateways, 80% fewer tokens" width="960"></figure>
+<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 41 tools to 7 gateways, 80% fewer tokens" width="960"></figure>
 
-So we fixed it. TracePulse's clustered mode (`--clustered`) collapses 39 tools into 7 semantic gateways. Schema overhead drops from ~1,100 to ~200 tokens per turn. The agent discovers sub-tools on demand - only loading what it actually needs.
+So we fixed it. TracePulse's clustered mode (`--clustered`) collapses 41 tools into 7 semantic gateways. Schema overhead drops from ~1,100 to ~200 tokens per turn. The agent discovers sub-tools on demand - only loading what it actually needs.
 
 **The math:**
 - Before: 36 schemas x ~28 tokens each = ~1,000 tokens/turn x 25 turns = 25,000 tokens/session

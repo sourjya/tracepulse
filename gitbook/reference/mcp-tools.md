@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-TracePulse exposes 39 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
+TracePulse exposes 41 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
 
 {% hint style="info" %}
 **Token costs** are approximate response sizes. The agent's MCP client loads all tool schemas (~1,000 tokens) once per session. Individual tool calls cost only their response size.
@@ -92,6 +92,7 @@ Tools for checking backend services and connectivity.
 | `get_infra_status` | none | All discovered backend services (databases, Redis, queues) with connectivity status. Reads from .env files, probes every 60s. | 200 |
 | `get_infra_detail` | `name` | Detailed status for a specific service including connection history. | 200 |
 | `check_port` | `port` or `ports` | Check if TCP port(s) are available or in use on localhost. | 50 |
+| `free_port` | `port` | Kill the process occupying a port. Use when start_server fails because a port is in use. | 50 |
 | `register_probe` | `name`, `url`, `method?`, `expect_status?`, `interval_seconds?` | Register a health endpoint for periodic checking. | 100 |
 | `list_probes` | none | All registered probes with their latest results (pass/fail/error). | 100 |
 
@@ -109,3 +110,5 @@ Tools for managing the current session, reviewing your workflow, and housekeepin
 | `clear_errors` | `fingerprint?` | Clear all events or a specific fingerprint from the buffer. | 50 |
 | `list_services` | none | All monitored services with status, error count, and last activity. | 200 |
 | `restart_server` | none | Kill and respawn the dev server process. Only works in start mode. | 100 |
+| `start_server` | `command`, `env?`, `cwd?`, `name?` | Start a dev server mid-session. Pre-validates command, activates Layer 2 tools on success. | 100 |
+| `stop_server` | `name?` | Stop a running dev server. Sends SIGTERM. | 50 |

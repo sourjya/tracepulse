@@ -146,6 +146,21 @@ Run diagnostic checks on your environment. Reports pass/warn/fail for each check
 tracepulse doctor
 ```
 
+### `tracepulse init`
+
+Set up TracePulse for your AI tool. Auto-detects the MCP client and writes the appropriate config and skill files.
+
+```bash
+tracepulse init            # auto-detect client
+tracepulse init --claude   # set up for Claude Code
+tracepulse init --kiro     # set up for Kiro CLI
+tracepulse init --cursor   # set up for Cursor
+```
+
+For Claude Code, this writes:
+- `~/.claude/rules/tracepulse.md` (behavioral rules, auto-loaded every session)
+- `.claude/commands/tracepulse.md` (slash command for extended guidance)
+
 ### `tracepulse analyze`
 
 Analyze cross-session bug patterns from fingerprint history. Requires persistence (enabled by default).

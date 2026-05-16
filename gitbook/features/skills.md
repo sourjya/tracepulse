@@ -6,7 +6,7 @@ TracePulse ships 8 skill files that teach AI agents structured debugging workflo
 
 | Skill | File | What it teaches |
 |-------|------|----------------|
-| **TracePulse** | [`skills/tracepulse/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/tracepulse/SKILL.md) | All 39 tools, when to use each, query mappings, pro tips |
+| **TracePulse** | [`skills/tracepulse/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/tracepulse/SKILL.md) | All 41 tools, when to use each, query mappings, pro tips |
 | **Backend Error Triage** | [`skills/backend-error-triage/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/backend-error-triage/SKILL.md) | 7-step debugging workflow |
 | **Edit-Verify Loop** | [`skills/edit-verify-loop/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/edit-verify-loop/SKILL.md) | Edit -> verify -> fix -> verify cycle |
 | **Full-Stack Debug** | [`skills/full-stack-debug/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/full-stack-debug/SKILL.md) | TracePulse + Chrome DevTools MCP |
@@ -17,6 +17,19 @@ TracePulse ships 8 skill files that teach AI agents structured debugging workflo
 
 ## How Agents Discover Skills
 
-Skills ship with the npm package in the `skills/` directory. MCP clients that support skill discovery (like Kiro) load them automatically when TracePulse is in your MCP config. The main [`skills/tracepulse/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/tracepulse/SKILL.md) is the primary entry point - it covers all 39 tools with workflow patterns, query mappings, and pro tips.
+Skills ship with the npm package in the `skills/` directory. MCP clients that support skill discovery (like Kiro) load them automatically when TracePulse is in your MCP config. The main [`skills/tracepulse/SKILL.md`](https://github.com/sourjya/tracepulse/blob/main/skills/tracepulse/SKILL.md) is the primary entry point - it covers all 41 tools with workflow patterns, query mappings, and pro tips.
+
+### MCP Resources (programmatic discovery)
+
+Skills are also exposed as MCP resources. Any client that supports `resources/read` can load them:
+
+```
+resources/list → tracepulse://skills/tracepulse, tracepulse://skills/claude-rules, ...
+resources/read("tracepulse://skills/tracepulse") → full SKILL.md content
+```
+
+### Claude Code setup
+
+Run `tracepulse init --claude` to install behavioral rules that auto-load every session. No manual file copying needed.
 
 For agents that don't auto-discover skills (Cursor, Claude Code), see the [Agent Integration](../getting-started/agent-integration.md) page for manual setup.
