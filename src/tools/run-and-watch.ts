@@ -133,6 +133,7 @@ export async function handleRunAndWatch(
   return new Promise((resolve) => {
     const startTime = Date.now();
     let resolved = false;
+    let timedOut = false;
 
     // Build environment: inherit process.env, add Python unbuffered mode,
     // and auto-detect virtualenv in the working directory (M21 Phase 2).
@@ -198,7 +199,9 @@ export async function handleRunAndWatch(
             ...(testSummary ? { test_summary: testSummary } : {}),
             summary: exitCode === 0
               ? `Command succeeded in ${Date.now() - startTime}ms, ${errors.length} warnings`
-              : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
+              : timedOut
+                ? `Command timed out after ${timeout / 1000}s. Increase with timeout_seconds: ${Math.ceil(timeout / 1000 * 2)}`
+                : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
             ...(exitCode !== 0 ? (() => {
               const hint = diagnoseFailure(command!, exitCode, process.cwd());
               return hint ? { diagnostic: hint } : {};
@@ -226,6 +229,8 @@ export async function handleRunAndWatch(
     const timer = setTimeout(() => {
       if (resolved) return;
       try { child.kill("SIGTERM"); } catch {}
+      // Mark as timed out so finish() can report it clearly
+      timedOut = true;
       finish(null);
     }, timeout);
 

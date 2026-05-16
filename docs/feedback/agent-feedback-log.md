@@ -1237,3 +1237,20 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 **What would have helped more:**
 - Pre-spawn PATH validation in start_server (would have caught "vite not found" before spawning)
 - The 2 min lost was entirely the start_server crash loop
+
+---
+
+## 2026-05-16 - run_and_watch timeout causes shell fallback (Nexus backend)
+
+**Context:** Agent ran `run_and_watch("pytest tests/unit/ -q", timeout_seconds: 60)`. Suite has 900+ tests, takes >60s. Timed out. Agent fell back to shell.
+
+**Root cause:** Default timeout (60s) too short for large test suites. Agent should have used `timeout_seconds: 120` or higher.
+
+**Why agent fell back:** After timeout, agent said "TP is timing out. Let me use shell directly." Same pattern as allowlist rejection - one failure -> abandon the tool.
+
+**Possible fixes:**
+1. Increase default timeout to 120s (breaking change for fast-fail expectations)
+2. Better timeout error message: "Timed out after 60s. Increase with timeout_seconds: 120"
+3. SKILL.md guidance: "For large test suites (500+ tests), use timeout_seconds: 120 or higher"
+
+**Recommendation:** Fix #2 (better error message) + #3 (SKILL.md guidance). Don't change the default - 60s is correct for most commands.
