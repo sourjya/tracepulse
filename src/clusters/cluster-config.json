@@ -28,7 +28,7 @@
     {
       "gateway": "tp_infra",
       "description": "Infrastructure status, service discovery, and port checks.",
-      "tools": ["get_infra_status", "get_infra_detail", "check_port", "list_services"]
+      "tools": ["get_infra_status", "get_infra_detail", "check_port", "free_port", "list_services"]
     },
     {
       "gateway": "tp_manage",

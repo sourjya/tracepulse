@@ -7,6 +7,67 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.16] - 2026-05-05
+
+### Added
+- **Zero-config startup**: bare `tracepulse` (no args) starts in standalone mode with project detection
+- **`start_server` tool**: start a dev server mid-session, activates Layer 2 tools dynamically
+- **`stop_server` tool**: clean shutdown of managed servers
+- **`tracepulse doctor`**: diagnostic command checking Node version, project detection, venv, persistence
+- **`tracepulse analyze`**: CLI command for cross-session bug pattern analysis
+- **Dynamic tool layers**: standalone shows 24 tools, start_server activates 16 more (40 total)
+- **HTTP REST API** (5 endpoints): /health, /api/session, /api/errors, /api/metrics, /api/patterns
+- **API key auth**: timing-safe comparison via TRACEPULSE_API_KEY env var
+- **Rate limiting**: 60 req/min per client on REST endpoints
+- **Dashboard manifest registration**: auto-registers with external dashboard via DASHBOARD_URL
+- **Bug pattern detection** (6 types): recurring, velocity, chains, flaky, fixed-but-back, degradation
+- **`get_bug_patterns` tool**: cross-session error intelligence with token cost estimates
+- **Clustered mode** (`--clustered`): 39 tools collapse to 7 gateways + 2 standalone (80% schema reduction)
+- **`max_lines` parameter** on run_and_watch: output truncation without shell pipes
+- **`raw_output` field** in run_and_watch response
+- **Compact field names** (`compactEvent`): 10-20% response size reduction
+- **Semantic error grouping**: errors at same file:line collapsed with variant_count
+- **Diff correlation cache**: cached for 30s after HMR events
+- **Pre-spawn validation**: start_server detects shell syntax, missing deps before spawning
+- **Startup diagnostics**: clear error messages when commands fail (shell syntax, missing modules, port conflicts)
+- **Project detection**: 7 stack types (node, python, go, rust, java, infra, docker)
+- **Start command suggestions**: reads package.json scripts, Makefile, scripts/*.sh, manage.py
+- **Stack-aware allowlist**: Python project auto-allows pytest, uv, mypy, ruff, alembic
+- **Usage nudge**: get_session_insights suggests run_and_watch when agent uses shell
+- **Persistence as default**: opt-out via --no-persist (was opt-in)
+- **Session history**: saves per-session fingerprints for pattern analysis
+- **Claude Code support**: `skills/claude-rules/tracepulse.md` for `~/.claude/rules/`, `skills/CLAUDE.md` template
+- **Cross-platform bin wrapper**: shell script (Unix) + .cmd (Windows) fixes npm global symlink ESM issue
+- **Pre-commit hook**: blocks commits containing private project names
+
+### Fixed
+- **BUG-017**: standalone isConnected returned true (hid start_server suggestions)
+- **BUG-018**: npm global symlink broke ESM import.meta.url resolution
+- **BUG-019**: bin/ directory missing from npm package files array
+- **VERSION drift**: now injected at build time via tsup define (reads from package.json)
+- **run_and_watch cwd**: absolute paths now allowed (was rejecting cross-project paths)
+- **run_and_watch venv**: auto-detects .venv/bin in cwd, prepends to PATH
+- **Allowlist expanded**: added python, pnpm, bun, cargo build/check, mvn, gradle, make, cmake, alembic, django-admin
+
+### Changed
+- Persistence is now default (use --no-persist to disable)
+- get_project_health is layer-aware (shows detected stacks, suggests start commands)
+- start_server response includes next_steps array for error recovery guidance
+- Error recovery ladder added to SKILL.md
+
+### Documentation
+- Installation pages rewritten for non-technical users
+- Claude Code config path documented (`~/.claude.json` projects structure)
+- CLI commands reference expanded (doctor, analyze, all flags)
+- How It Works: 4 Mermaid diagrams replaced with SVGs
+- All reference pages rewritten with human-friendly explanations
+- 84 tool deep-links across 23 gitbook pages
+- Schema reduction SVG updated for 39 tools
+- Environmental impact SVG text clipping fixed
+- Docs folder reorganized (audits/, feedback/, product/)
+- Evolution timeline documenting every change back to its source
+- Tech docs accessibility review prompt created
+
 ## [0.9.2] - 2026-04-30
 
 ### Added

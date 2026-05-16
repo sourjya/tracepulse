@@ -57,6 +57,7 @@ import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-st
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import { createNoOpInfraMonitor } from "@/infra/infra-monitor.js";
 import { handleCheckPort } from "@/tools/check-port.js";
+import { handleFreePort } from "@/tools/free-port.js";
 import { handleGetProjectHealth } from "@/tools/get-project-health.js";
 import { handleRegisterProbe, handleListProbes, createProbeManager, type ProbeManager } from "@/tools/register-probe.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
@@ -703,6 +704,17 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleCheckPort(args as Record<string, unknown>));
+
+  server.registerTool("free_port", {
+    title: "Free Port",
+    description:
+      "Kill the process occupying a port. Use when start_server fails because a port is in use from a crashed previous session.",
+    inputSchema: {
+      port: z.number().describe("Port number to free (e.g., 3000, 8080)."),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleFreePort(args as Record<string, unknown>));
+
 
   server.registerTool("get_project_health", {
     title: "Get Project Health",

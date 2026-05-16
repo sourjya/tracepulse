@@ -97,8 +97,14 @@ interface DoctorArgs {
   readonly command: "doctor";
 }
 
+/** Parsed CLI arguments for the init subcommand. */
+interface InitArgs {
+  readonly command: "init";
+  readonly client: string;
+}
+
 /** Union of all valid parsed argument shapes. */
-export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs | DoctorArgs;
+export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs | DoctorArgs | InitArgs;
 
 // ──────────────────────────────────────────────
 // Usage Text
@@ -113,6 +119,8 @@ Usage:
   tracepulse standalone               Tools only - no dev server or log file needed
   tracepulse analyze                  Analyze cross-session bug patterns
   tracepulse doctor                   Check installation and environment
+  tracepulse init                     Set up TracePulse for your AI tool (auto-detects)
+  tracepulse init --claude            Set up for Claude Code specifically
   tracepulse --version                Print version
   tracepulse --help                   Print this help
 
@@ -247,6 +255,11 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
 
   if (subcommand === "doctor") {
     return { command: "doctor" as const };
+  }
+
+  if (subcommand === "init") {
+    const clientFlag = args[1] as string | undefined;
+    return { command: "init" as const, client: clientFlag?.replace("--", "") ?? "auto" };
   }
 
   if (subcommand === "compose") {
@@ -441,6 +454,20 @@ async function main(): Promise<void> {
     process.stderr.write(formatDoctorOutput(checks) + "\n");
     const failures = checks.filter(c => c.status === "fail").length;
     return process.exit(failures > 0 ? 1 : 0);
+  }
+
+  if (parsed.command === "init") {
+    const { runInit } = await import("@/cli/init-command.js");
+    const actions = runInit(parsed.client as "auto" | "kiro" | "claude" | "cursor" | "generic", process.cwd());
+    process.stderr.write("\nTracePulse Init\n" + "=".repeat(30) + "\n\n");
+    for (const action of actions) {
+      process.stderr.write(`  ✓ ${action}\n`);
+    }
+    if (actions.length === 0) {
+      process.stderr.write("  Nothing to do (already configured).\n");
+    }
+    process.stderr.write("\nRestart your AI tool to activate TracePulse.\n");
+    return process.exit(0);
   }
 
   // ── Global error handlers ──
