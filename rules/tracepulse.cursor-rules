@@ -32,8 +32,22 @@ When debugging:
 - `verify_fix()` - post-fix pass/fail verdict (pass fingerprint to verify specific error)
 - `run_and_watch(command, cwd?)` - run tests/linter with parsed results. Use cwd for monorepos.
 - `get_project_health()` - server + infra + errors + build in one call
+- `get_cross_layer_diagnosis()` - correlates backend, frontend, git, and process signals when stuck
+- `correlate_with_diff()` - links errors to your recent uncommitted git changes
+- `verify_mcp(command)` - test that an MCP server starts and responds to initialize handshake
 - `get_error_clusters()` - group errors by type and module path
 - `get_migration_status()` - check pending migrations (alembic/prisma/django/knex)
+
+## When Stuck (2+ failed attempts)
+
+Call `get_cross_layer_diagnosis()` - it correlates signals across backend, frontend, git state, and process state to identify root causes that span multiple layers. Common diagnoses:
+- "Backend 200 OK but frontend TypeError — response format mismatch"
+- "Server running stale code — restart required"
+- "Rate limiter bucket full — wait or reset"
+
+## After Changing MCP Server Code
+
+Call `verify_mcp(command)` to confirm the server still starts and responds to the initialize handshake before declaring the work complete.
 
 ## Avoid
 
