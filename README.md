@@ -209,6 +209,7 @@ Point directly to the built CLI:
 | `verify_fix(duration_seconds?)` | All-in-one post-fix verification with pass/fail verdict | ~500 |
 | `wait_for_build(timeout_seconds?)` | Block until next build completes (event-driven) | ~200 |
 | `wait_for_event(type?, timeout_seconds?)` | Block until next error/warning/build/crash event | ~200 |
+| `verify_mcp(command, timeout_seconds?)` | Test that an MCP server starts and responds to the initialize handshake. Use after changing server code or deps. | ~200 |
 
 ### Error Intelligence
 

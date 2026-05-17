@@ -28,6 +28,7 @@ Tools for getting a fast read on the current state. Low token cost, high informa
 | `get_runtime_status` | none | Is the server running? Error count, session uptime. | 100 |
 | `get_health_summary` | none | One-line summary: error count, warning count, total events, uptime. | 100 |
 | `get_errors` | `since?`, `source?`, `service?`, `limit?`, `message_contains?`, `status_code_min?` | Errors sorted by signal score (highest first). Auto-filters resolved and expired transient errors. | 1,000 |
+| `verify_mcp` | `command`, `timeout_seconds?` | Test that an MCP server starts and responds to the initialize handshake. Returns server name, version, and capabilities. | 200 |
 
 ## Watch and Verify
 

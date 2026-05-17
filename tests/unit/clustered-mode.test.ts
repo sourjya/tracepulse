@@ -31,11 +31,11 @@ function getVisibleTools(server: ReturnType<typeof createMcpServer>): string[] {
 }
 
 describe("Flat mode (default)", () => {
-  it("registers all 41 tools", () => {
+  it("registers all 42 tools", () => {
     const buffer = createRingBuffer();
     const server = createMcpServer(buffer, () => true);
     const tools = getVisibleTools(server);
-    expect(tools.length).toBe(41);
+    expect(tools.length).toBe(42);
     expect(tools).toContain("get_errors");
     expect(tools).toContain("run_and_watch");
     expect(tools).toContain("get_requests");
@@ -203,12 +203,12 @@ describe("Destructive action guard", () => {
 });
 
 describe("Cluster config integrity", () => {
-  it("covers all 41 tools (clustered + standalone)", () => {
+  it("covers all 42 tools (clustered + standalone)", () => {
     const config = loadClusterConfig();
     const clustered = config.clusters.flatMap(c => [...c.tools]);
     const standalone = config.standalone ?? [];
     const total = clustered.length + standalone.length;
-    expect(total).toBe(41);
+    expect(total).toBe(42);
   });
 
   it("has no duplicate tool assignments", () => {

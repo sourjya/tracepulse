@@ -65,6 +65,7 @@ Every tool the agent can call, organized by workflow.
 | `check_port(port)` | Is a TCP port available or in use? | ~50 tokens |
 | `register_probe(name, url)` | Register a health endpoint for periodic checking | ~100 tokens |
 | `list_probes()` | All registered probes with latest results | ~100 tokens |
+| `verify_mcp(command, timeout_seconds?)` | Test that an MCP server starts and responds to initialize handshake | ~200 tokens |
 
 ## Error Intelligence
 

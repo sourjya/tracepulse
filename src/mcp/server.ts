@@ -60,6 +60,7 @@ import { createNoOpInfraMonitor } from "@/infra/infra-monitor.js";
 import { handleCheckPort } from "@/tools/check-port.js";
 import { handleFreePort } from "@/tools/free-port.js";
 import { handleGetCrossLayerDiagnosis } from "@/tools/get-cross-layer-diagnosis.js";
+import { handleVerifyMcp } from "@/tools/verify-mcp.js";
 import { handleGetProjectHealth } from "@/tools/get-project-health.js";
 import { handleRegisterProbe, handleListProbes, createProbeManager, type ProbeManager } from "@/tools/register-probe.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
@@ -753,6 +754,17 @@ export function createMcpServer(
     options?.cwd,
     options?.patternAnalyzer,
   ));
+
+  server.registerTool("verify_mcp", {
+    title: "Verify MCP Server",
+    description:
+      "Test that an MCP server starts and responds to the initialize handshake. Sends the same JSON-RPC message that Kiro/Claude/Cursor sends on connect. Use after changing MCP server code, imports, or dependencies.",
+    inputSchema: {
+      command: z.string().describe("Command to start the MCP server (e.g., 'node dist/cli.js', 'uv run python -m myapp.server')."),
+      timeout_seconds: z.number().optional().describe("Max seconds to wait for response (default 5, max 30)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  }, (args) => handleVerifyMcp(args as Record<string, unknown>));
 
   const probeManager = options?.probeManager ?? createProbeManager();
 
