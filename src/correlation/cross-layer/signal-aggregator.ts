@@ -27,6 +27,7 @@ const REPEATED_ERROR_THRESHOLD = 3;
  * Convert backend RuntimeEvents into LayerSignals.
  *
  * Maps events based on http_status context and level:
+ * - service === "frontend" → frontend layer (crash bridge events)
  * - http_status present → http-{status} or http-{category}
  * - error level without http_status → exception
  * - occurrence_count >= 3 → additional repeated-error signal
@@ -35,6 +36,23 @@ function collectBackendSignals(events: RuntimeEvent[]): LayerSignal[] {
   const signals: LayerSignal[] = [];
 
   for (const event of events) {
+    // Frontend crash bridge events go to frontend layer as type-error
+    if (event.service === "frontend") {
+      signals.push({
+        layer: "frontend",
+        type: "type-error",
+        timestamp: event.timestamp,
+        detail: event.message,
+        metadata: {
+          error_type: event.context.error_type,
+          file: event.context.file,
+          line: event.context.line,
+          error_message: event.message.replace("[Frontend] ", ""),
+        },
+      });
+      continue;
+    }
+
     const httpStatus = event.context.http_status;
 
     if (httpStatus) {
