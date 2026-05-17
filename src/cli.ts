@@ -671,7 +671,7 @@ async function main(): Promise<void> {
   const serverMgr = createServerManager();
   serverMgr.onSpawnRequest = async (command, env, cwd, _name) => {
     try {
-      const spawnCollector = createProcessSpawner(command);
+      const spawnCollector = createProcessSpawner(command, { cwd: cwd ?? undefined, env: env ?? undefined });
       await spawnCollector.start(processLine);
       // Replace the no-op collector with the real one
       collector = spawnCollector;

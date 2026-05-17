@@ -17,9 +17,30 @@
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
+import { resolve } from "node:path";
+import { existsSync } from "node:fs";
 import type { EventSource } from "@/constants/events.js";
 import { GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS } from "@/constants/limits.js";
 import type { Collector } from "@/types/collectors.js";
+
+/**
+ * Build PATH with node_modules/.bin and .venv/bin prepended.
+ * Ensures locally-installed binaries are found by start_server,
+ * matching the behavior of run_and_watch.
+ */
+function buildSpawnerPath(cwd?: string): string {
+  const base = process.env.PATH ?? "";
+  const dir = cwd ?? process.cwd();
+  const parts: string[] = [];
+
+  const nodeModulesBin = resolve(dir, "node_modules", ".bin");
+  if (existsSync(nodeModulesBin)) parts.push(nodeModulesBin);
+
+  const venvBin = resolve(dir, ".venv", "bin");
+  if (existsSync(venvBin)) parts.push(venvBin);
+
+  return parts.length > 0 ? `${parts.join(":")}:${base}` : base;
+}
 
 /**
  * Creates a process spawner collector for the given shell command.
@@ -30,9 +51,10 @@ import type { Collector } from "@/types/collectors.js";
  * exit event is emitted on stderr.
  *
  * @param command - Shell command to spawn (e.g., "npm run dev")
+ * @param options - Optional cwd and env overrides.
  * @returns Collector that manages the child process lifecycle
  */
-export function createProcessSpawner(command: string): Collector {
+export function createProcessSpawner(command: string, options?: { cwd?: string; env?: Record<string, string> }): Collector {
   /** Reference to the spawned child process. Null before start() or after exit. */
   let child: ChildProcess | null = null;
 
@@ -79,12 +101,18 @@ export function createProcessSpawner(command: string): Collector {
            * output buffering in common runtimes. Without these, Python
            * and Ruby dev servers block-buffer stdout when piped, causing
            * delayed error delivery to the agent.
+           *
+           * Also prepends node_modules/.bin and .venv/bin to PATH so
+           * locally-installed binaries are found (same as run_and_watch).
            */
           env: {
             ...process.env,
+            ...options?.env,
             PYTHONUNBUFFERED: "1",       // Python: disable stdout buffering
             PYTHONDONTWRITEBYTECODE: "1", // Python: skip .pyc files
+            PATH: buildSpawnerPath(options?.cwd),
           },
+          ...(options?.cwd ? { cwd: options.cwd } : {}),
         });
 
         // Prevent the detached child from keeping the parent alive if
