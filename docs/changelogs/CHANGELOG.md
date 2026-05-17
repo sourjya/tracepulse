@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-## [0.9.17] - 2026-05-17
+## [0.9.18] - 2026-05-17
 
 ### Added
 - **DevLoop Agent — Cross-Layer Correlation** (M24): `get_cross_layer_diagnosis` tool correlates backend logs, frontend errors, git state, and process state into actionable root-cause diagnoses
@@ -17,11 +17,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Confidence floor enforcement**: `proposed_fix` is null when confidence is below pattern's floor
 - **Snapshot metadata**: `snapshot_timestamp`, `missing_signals`, `active_layers` in every response
 - **Per-pattern `minSignals`**: unambiguous patterns (429, 422, 401) fire with 1 signal; cross-layer patterns require 2+
-- 42 MCP tools total, 1056 tests passing
+- **Frontend crash bridge classification**: React ErrorBoundary events correctly classified as frontend type-error signals
+- **Integration test suite**: 7 real-world failure scenarios as regression tests
+- 42 MCP tools total, 1064 tests passing
+
+### Changed
+- Updated all gitbook docs, README, and skill files to reflect 42 tools
+- New gitbook feature page: Cross-Layer Diagnosis
+- Rewritten three-layer-stack architecture page with real debugging scenarios
+- 3 new SVG infographics (stack diagram, cross-layer flow, debugging scenario)
 
 ---
 
-## [0.9.16] - 2026-05-05
+## [0.9.17] - 2026-05-16
 
 ### Added
 - **Zero-config startup**: bare `tracepulse` (no args) starts in standalone mode with project detection
