@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.16 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [41 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1012 tests](tests/) passing.
+🟡 **Alpha v0.9.16 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [42 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1052 tests](tests/) passing.
 
 ## Quick Start
 
@@ -189,6 +189,7 @@ Point directly to the built CLI:
 | Tool | Description | Tokens |
 |------|-------------|--------|
 | `get_correlated_errors(url?)` | Match browser HTTP failures with backend stack traces | ~2,000 |
+| `get_cross_layer_diagnosis(time_window_seconds?)` | Cross-layer failure diagnosis. Correlates backend, frontend, git, and process signals into actionable root-cause diagnoses. | ~500 |
 
 ### Proactive (Phase 5)
 

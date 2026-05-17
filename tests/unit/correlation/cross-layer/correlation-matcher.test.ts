@@ -201,4 +201,43 @@ describe("diagnose", () => {
     const result = diagnose(signals, PATTERNS);
     expect(result.length).toBeLessThanOrEqual(3);
   });
+
+  it("nulls proposed_fix when confidence is below pattern confidenceFloor", () => {
+    const now = Date.now();
+    const signals: LayerSignal[] = [
+      { layer: "backend", type: "http-200", timestamp: now - 2000, detail: "ok", metadata: { status: 200 } },
+      { layer: "frontend", type: "type-error", timestamp: now - 1000, detail: "err", metadata: {} },
+    ];
+    // Create a pattern with a high confidence floor that won't be met
+    const highFloorPattern: CrossLayerPattern = {
+      id: "test-high-floor",
+      name: "Test",
+      description: "Test",
+      requiredSignals: [
+        { layer: "backend", type: "http-200" },
+        { layer: "frontend", type: "type-error" },
+      ],
+      baseConfidence: 60,
+      confidenceFloor: 80, // Floor is higher than baseConfidence
+      diagnosisTemplate: "Diagnosis",
+      suggestedFix: "Fix it",
+      timeWindowMs: 5000,
+    };
+    const result = diagnose(signals, [highFloorPattern]);
+    expect(result).toHaveLength(1);
+    expect(result[0].proposed_fix).toBeNull();
+    expect(result[0].suggested_fix).toBe("Fix it"); // Still present for reference
+  });
+
+  it("includes proposed_fix when confidence meets or exceeds confidenceFloor", () => {
+    const now = Date.now();
+    const signals: LayerSignal[] = [
+      { layer: "backend", type: "http-429", timestamp: now - 2000, detail: "429", metadata: { status: 429 } },
+    ];
+    // rate-limited pattern has minSignals: 1 and baseConfidence: 85
+    const result = diagnose(signals, PATTERNS);
+    const rateLimited = result.find((d) => d.pattern_id === "rate-limited");
+    expect(rateLimited).toBeDefined();
+    expect(rateLimited!.proposed_fix).toBeTruthy(); // Should have a fix since confidence >= floor
+  });
 });

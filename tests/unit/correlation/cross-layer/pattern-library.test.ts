@@ -11,7 +11,7 @@ import type { CrossLayerPattern } from "@/correlation/cross-layer/types.js";
 
 describe("PATTERNS", () => {
   it("contains at least 7 initial patterns", () => {
-    expect(PATTERNS.length).toBeGreaterThanOrEqual(7);
+    expect(PATTERNS.length).toBeGreaterThanOrEqual(9);
   });
 
   it("all patterns have unique IDs", () => {
@@ -70,5 +70,17 @@ describe("PATTERNS", () => {
   it("includes schema-validation pattern", () => {
     const pattern = PATTERNS.find((p) => p.id === "schema-validation");
     expect(pattern).toBeDefined();
+  });
+
+  it("includes silent-failure pattern", () => {
+    const pattern = PATTERNS.find((p) => p.id === "silent-failure");
+    expect(pattern).toBeDefined();
+    expect(pattern!.confidenceFloor).toBe(95);
+  });
+
+  it("includes build-failed-silently pattern", () => {
+    const pattern = PATTERNS.find((p) => p.id === "build-failed-silently");
+    expect(pattern).toBeDefined();
+    expect(pattern!.confidenceFloor).toBe(75);
   });
 });
