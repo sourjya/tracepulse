@@ -92,7 +92,17 @@ export async function handleStartServer(
     const spawnResult = await manager.onSpawnRequest(command, env, cwd, name);
 
     if ("error" in spawnResult) {
-      return jsonResult({ status: "failed", error: spawnResult.error, command, name });
+      return jsonResult({
+        status: "failed",
+        error: spawnResult.error,
+        command,
+        name,
+        hint: "Server failed to start. Use run_and_watch with the same command to see full error output. Do NOT fall back to shell.",
+        next_steps: [
+          `run_and_watch("${command.replace(/"/g, '\\"')}", timeout_seconds: 5${cwd ? `, cwd: "${cwd}"` : ""})`,
+          "get_server_logs(level: 'error')",
+        ],
+      });
     }
 
     manager.setRunning(name, spawnResult.pid);

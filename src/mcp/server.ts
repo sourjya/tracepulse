@@ -810,7 +810,7 @@ export function createMcpServer(
   server.registerTool("start_server", {
     title: "Start Server",
     description:
-      "Start a dev server for live error monitoring. Pre-validates the command and returns diagnostics if invalid. Use when TracePulse started without a server command.",
+      "Start a dev server for live error monitoring. Pre-validates the command and returns diagnostics if invalid. Use when TracePulse started without a server command. On failure, use run_and_watch with the same command to see full error output — do not fall back to shell.",
     inputSchema: {
       command: z.string().describe("Dev server command (e.g., 'npm run dev', 'python manage.py runserver', 'bash scripts/start.sh')."),
       env: z.record(z.string(), z.string()).optional().describe("Environment variables for the server process (e.g., { PYTHONPATH: 'src' })."),
