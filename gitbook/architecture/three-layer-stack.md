@@ -64,6 +64,8 @@ This is by design:
 
 ## Real Debugging Scenarios
 
+<figure><img src="../.gitbook/assets/tracepulse-debugging-scenario.svg" alt="Real debugging scenario: form submits but nothing happens — solved in 4 tool calls" width="960"></figure>
+
 ### Scenario 1: "The export page is broken"
 
 ```
@@ -142,6 +144,8 @@ Agent's workflow:
 ---
 
 ## The Cross-Layer Synthesis
+
+<figure><img src="../.gitbook/assets/tracepulse-cross-layer-diagnosis.svg" alt="How cross-layer diagnosis works: signals → pattern matching → gating → diagnosis" width="960"></figure>
 
 TracePulse's `get_cross_layer_diagnosis` is the only tool that synthesizes across layers. It reads:
 - Its own backend signals (ring buffer)

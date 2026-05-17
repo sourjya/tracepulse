@@ -21,6 +21,8 @@ Each tool sees one slice. `get_cross_layer_diagnosis` sees all slices at once.
 
 ## How It Works
 
+<figure><img src="../.gitbook/assets/tracepulse-cross-layer-diagnosis.svg" alt="Cross-layer diagnosis flow: signal collection → pattern matching → output gating → diagnosis" width="960"></figure>
+
 ```
 ┌─────────────────────────────────────────────┐
 │         get_cross_layer_diagnosis            │
