@@ -55,3 +55,14 @@ Call `verify_mcp(command)` to confirm the server still starts and responds to th
 - Don't run `psql`, `mysql`, `redis-cli` directly - they hang on password prompts. Use `run_and_watch` with credentials from .env
 - Don't prefix `run_and_watch` commands with `cd` - use the `cwd` parameter instead
 - Don't run the full test suite after every edit - use `get_build_errors()` for quick checks
+
+## NEVER Do These (Anti-Patterns)
+
+No exceptions for "quick" or "temporary" or "debugging":
+
+- `nohup cmd &` in shell → use `start_server(command, cwd?, env?)`
+- `uvicorn`/`npm run dev`/`python manage.py runserver` in shell → use `start_server`
+- `pytest`/`vitest`/`jest`/`tsc` in shell → use `run_and_watch`
+- `curl localhost:PORT` → use `check_port` or `get_project_health`
+- `kill $(lsof -t -i:PORT)` → use `free_port(port)`
+- Background processes with `&` → use `start_server` (TracePulse manages lifecycle)

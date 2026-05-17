@@ -5,12 +5,29 @@
 ## Tool Usage Rules
 
 - Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
+- Use `start_server` for ALL server processes (dev servers, APIs, workers, background services). It gives live error monitoring, crash detection, and proper process management.
+- Use `check_port(port)` before starting any server to verify the port is free.
 - Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
 - Use `timeout_seconds: 120` for large test suites (500+ tests). Default is 60s.
 - Use `cwd` parameter for cross-project commands. Absolute paths are allowed.
 - Never use `curl`, `wget`, or shell to check if a server is running. Use `check_port` or `get_project_health`.
 - Never use `shell("grep ...")` for searching files. Use the grep tool directly.
 - If a port is occupied, use `free_port(port)` instead of `lsof | kill`.
+
+## NEVER Do These (Anti-Patterns)
+
+These are explicitly prohibited. No exceptions for "quick" or "temporary" or "debugging":
+
+| ❌ Never | ✅ Always |
+|----------|-----------|
+| `nohup cmd &` in shell | `start_server(command, cwd?, env?)` |
+| `uvicorn`/`gunicorn`/`flask run` in shell | `start_server("uvicorn app:main")` |
+| `npm run dev`/`node server.js` in shell | `start_server("npm run dev")` |
+| `python manage.py runserver` in shell | `start_server("python manage.py runserver")` |
+| `pytest`/`vitest`/`jest`/`tsc` in shell | `run_and_watch("pytest tests/")` |
+| `curl localhost:PORT` | `check_port(port)` |
+| `kill $(lsof -t -i:PORT)` | `free_port(port)` |
+| Background processes with `&` | `start_server` (TracePulse manages lifecycle) |
 
 ## After Code Changes
 

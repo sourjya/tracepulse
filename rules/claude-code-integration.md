@@ -34,6 +34,13 @@ Use `run_and_watch` instead of shell - structured output, WSL-reliable:
 - Don't read terminal manually - use TracePulse
 - Don't run psql/mysql directly - they hang on password prompts
 - Don't prefix run_and_watch with cd - use cwd parameter
+
+### NEVER (explicit prohibitions)
+- `nohup cmd &` → use `start_server(command, cwd?, env?)`
+- `uvicorn`/`npm run dev`/`python manage.py runserver` in shell → use `start_server`
+- `pytest`/`vitest`/`tsc` in shell → use `run_and_watch`
+- `curl localhost:PORT` → use `check_port` or `get_project_health`
+- Background processes with `&` → use `start_server`
 ```
 
 ## Hooks (PostToolUse)

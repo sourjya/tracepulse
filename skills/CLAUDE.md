@@ -47,9 +47,18 @@ run_and_watch("npx tsc --noEmit", max_lines: 20)
 
 ### Rules
 - ALWAYS use `run_and_watch` instead of shell for tests/builds/linters
+- ALWAYS use `start_server` for ALL server processes (dev servers, APIs, background services)
+- ALWAYS use `check_port` before starting any server
 - Use `timeout_seconds: 120` for large test suites (500+ tests)
 - Use `max_lines: 20` instead of piping to `head`/`tail`
-- NEVER use `curl` to check server status - use `check_port` or `get_project_health`
-- Use `free_port(port)` instead of `lsof | kill` for occupied ports
 - After `start_server`, call `wait_for_build()` before proceeding
 - Use `cwd` parameter for cross-project commands (absolute paths allowed)
+- Use `free_port(port)` instead of `lsof | kill` for occupied ports
+
+### NEVER do these (anti-patterns)
+- `nohup ... &` in shell → use `start_server(command, cwd?, env?)`
+- `uvicorn`/`gunicorn`/`npm run dev`/`python manage.py runserver` in shell → use `start_server`
+- `pytest`/`vitest`/`jest`/`tsc` in shell → use `run_and_watch`
+- `curl localhost:PORT` to check server status → use `check_port` or `get_project_health`
+- `kill $(lsof -t -i:PORT)` → use `free_port(port)`
+- Background processes with `&` → use `start_server` (TracePulse manages lifecycle)
