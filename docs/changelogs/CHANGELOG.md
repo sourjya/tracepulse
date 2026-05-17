@@ -7,6 +7,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.17] - 2026-05-17
+
+### Added
+- **DevLoop Agent — Cross-Layer Correlation** (M24): `get_cross_layer_diagnosis` tool correlates backend logs, frontend errors, git state, and process state into actionable root-cause diagnoses
+- **9 failure patterns**: backend-ok-frontend-error, stale-server, rate-limited, repeated-error, schema-validation, build-error-runtime, auth-expired, silent-failure, build-failed-silently
+- **Signal aggregator**: collects signals from 4 layers (backend, frontend, git, process) into unified snapshots
+- **Output gating** (quiet agent principle): 2-signal minimum before surfacing diagnoses to prevent alert fatigue
+- **Confidence floor enforcement**: `proposed_fix` is null when confidence is below pattern's floor
+- **Snapshot metadata**: `snapshot_timestamp`, `missing_signals`, `active_layers` in every response
+- **Per-pattern `minSignals`**: unambiguous patterns (429, 422, 401) fire with 1 signal; cross-layer patterns require 2+
+- 42 MCP tools total, 1056 tests passing
+
+---
+
 ## [0.9.16] - 2026-05-05
 
 ### Added
