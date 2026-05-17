@@ -182,4 +182,24 @@ describe("aggregateSignals", () => {
     expect(repeated).toHaveLength(1);
     expect(repeated[0].metadata).toHaveProperty("occurrence_count", 5);
   });
+
+  it("classifies frontend crash bridge events as frontend type-error", async () => {
+    const now = Date.now();
+    const deps = makeDeps({
+      getBackendEvents: () => [
+        makeEvent({
+          timestamp: now - 3000,
+          level: "error",
+          service: "frontend",
+          message: "[Frontend] TypeError: Cannot read property 'data' of undefined",
+          context: { error_type: "TypeError", file: "src/App.tsx", line: 42 },
+        }),
+      ],
+    });
+    const snapshot = await aggregateSignals(deps, now - 60_000);
+    expect(snapshot.signals).toHaveLength(1);
+    expect(snapshot.signals[0].layer).toBe("frontend");
+    expect(snapshot.signals[0].type).toBe("type-error");
+    expect(snapshot.signals[0].metadata).toHaveProperty("error_type", "TypeError");
+  });
 });
