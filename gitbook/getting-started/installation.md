@@ -18,7 +18,7 @@ Add to your MCP config:
 }
 ```
 
-That's it. TracePulse auto-detects your project type and provides 41 tools immediately. No server command needed - the agent calls `start_server()` when ready.
+That's it. TracePulse auto-detects your project type and provides 42 tools immediately. No server command needed - the agent calls `start_server()` when ready.
 
 {% hint style="info" %}
 **Don't have Node.js?** TracePulse requires Node.js 22+ to run, but your project doesn't need to be Node.js. Install Node from [nodejs.org](https://nodejs.org/) (LTS recommended), then `npm install -g tracepulse`.
