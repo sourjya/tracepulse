@@ -2,7 +2,7 @@
 
 ## Available Tools
 
-TracePulse (39 tools) monitors your dev server. Use these patterns:
+TracePulse (42 tools) monitors your dev server. Use these patterns:
 
 ### After ANY code change
 ```

@@ -34,3 +34,45 @@ If no frontend source is configured, `get_correlated_errors` returns empty with 
 
 The routing hints guide the agent to the right tool instead of leaving it stuck.
 
+---
+
+## Cross-Layer Diagnosis (DevLoop Agent)
+
+`get_cross_layer_diagnosis(time_window_seconds?)` goes beyond HTTP correlation. It watches **all layers simultaneously** — backend logs, frontend errors, git state, and process state — and produces a single actionable diagnosis.
+
+### When to use it
+
+When the agent is stuck debugging the wrong layer. Common scenarios:
+
+| What you see | What it actually is | DevLoop says |
+|---|---|---|
+| Backend 200 + frontend error | Auth token expired | "Backend OK but frontend TypeError — check response parsing" |
+| 429 errors | Rate limiter full from eval run | "Rate limiter bucket full — wait or reset" |
+| Code changed, same error | Server running stale code | "Server hasn't restarted — restart required" |
+| Same error 3x in 5 min | Not transient | "Not transient — root cause investigation needed" |
+
+### How it works
+
+1. Collects signals from all layers in a single atomic snapshot
+2. Matches signal combinations against 9 known failure patterns
+3. Returns diagnoses with confidence scores and proposed fixes
+4. Only surfaces diagnoses with 2+ corroborating signals (prevents alert fatigue)
+
+### Example response
+
+```json
+{
+  "diagnoses": [{
+    "pattern_id": "backend-ok-frontend-error",
+    "confidence": 85,
+    "diagnosis": "Backend returned 200 OK but frontend threw a TypeError...",
+    "proposed_fix": "Check the response structure at the frontend call site.",
+    "layers_involved": ["backend", "frontend"]
+  }],
+  "signals_collected": 4,
+  "layers_active": ["backend", "frontend", "git"],
+  "snapshot_timestamp": "2026-05-17T15:30:00.000Z",
+  "missing_signals": []
+}
+```
+

@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-TracePulse exposes 41 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
+TracePulse exposes 42 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
 
 {% hint style="info" %}
 **Token costs** are approximate response sizes. The agent's MCP client loads all tool schemas (~1,000 tokens) once per session. Individual tool calls cost only their response size.
@@ -69,6 +69,7 @@ Tools that connect errors to causes - git changes, frontend failures, historical
 |------|-----------|-------------|---------|
 | `correlate_with_diff` | none | Link recent errors to uncommitted git changes. Shows which errors may be caused by your recent edits. | 1,000 |
 | `get_correlated_errors` | `url?` | Match browser HTTP failures with backend stack traces. Returns paired errors with confidence scores. | 2,000 |
+| `get_cross_layer_diagnosis` | `time_window_seconds?` | Cross-layer failure diagnosis. Correlates backend logs, frontend errors, git state, and process state to identify root causes spanning multiple layers. Returns diagnoses with confidence scores and proposed fixes. | 500 |
 | `get_new_errors` | `limit?` | Only errors with fingerprints not seen in previous sessions. Requires `--persist`. | 1,000 |
 | `get_error_trends` | `fingerprint` | Cross-session frequency and history for a specific fingerprint. Requires `--persist`. | 500 |
 

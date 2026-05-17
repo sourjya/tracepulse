@@ -1,4 +1,4 @@
-# 41 MCP Tools
+# 42 MCP Tools
 
 Every tool the agent can call, organized by workflow.
 
@@ -41,6 +41,7 @@ Every tool the agent can call, organized by workflow.
 |------|-------------|------|
 | `correlate_with_diff()` | Link errors to uncommitted git changes | ~1,000 tokens |
 | `get_correlated_errors(url?)` | Match browser failures with backend traces | ~2,000 tokens |
+| `get_cross_layer_diagnosis(time_window_seconds?)` | Cross-layer failure diagnosis. Correlates backend, frontend, git, and process signals into root-cause diagnoses. | ~500 tokens |
 | `get_new_errors(limit?)` | Only errors with unseen fingerprints | ~1,000 tokens |
 | `get_error_trends(fingerprint)` | Cross-session frequency and history | ~500 tokens |
 
