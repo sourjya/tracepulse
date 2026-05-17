@@ -50,12 +50,23 @@ export interface RateLimiter {
 /**
  * Create a per-client sliding window rate limiter.
  *
+ * Evicts expired windows periodically to prevent unbounded memory growth.
+ *
  * @param maxRequests - Maximum requests per window.
  * @param windowMs - Window duration in milliseconds.
  * @returns RateLimiter instance.
  */
 export function createRateLimiter(maxRequests = 60, windowMs = 60000): RateLimiter {
   const windows = new Map<string, { count: number; start: number }>();
+
+  // Periodic eviction of expired windows to prevent memory leak (SRR-006 M-002)
+  const evictionTimer = setInterval(() => {
+    const now = Date.now();
+    for (const [key, window] of windows) {
+      if (now - window.start > windowMs) windows.delete(key);
+    }
+  }, windowMs);
+  if (typeof evictionTimer === "object" && "unref" in evictionTimer) evictionTimer.unref();
 
   return {
     check(clientId: string): boolean {

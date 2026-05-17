@@ -9,9 +9,7 @@
  * @see src/cli.ts for the auto-fallback path that calls this
  */
 
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
-import { hasVenv, isPythonProject, hasPackageJson, hasProjectFile } from "@/diagnostics/project-detector.js";
+import { hasVenv, hasPackageJson, hasProjectFile } from "@/diagnostics/project-detector.js";
 
 /** A single diagnostic finding with severity and fix. */
 export interface DiagnosticFinding {
@@ -63,7 +61,6 @@ export function diagnoseStartupFailure(
   // ── npm/pnpm script doesn't exist ──
   if (command.startsWith("npm run ") || command.startsWith("pnpm run ")) {
     const script = command.split(" ")[2];
-    const pkgPath = resolve(cwd, "package.json");
     if (!hasPackageJson(cwd)) {
       findings.push({
         issue: `No package.json found in ${cwd}. "${command}" needs a package.json with a "${script}" script.`,

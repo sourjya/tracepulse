@@ -12,9 +12,6 @@ const AUDIT_SUMMARY = /(\d+)\s+vulnerabilit(?:y|ies)\s*\(([^)]+)\)/i;
 /** "found 0 vulnerabilities" */
 const AUDIT_CLEAN = /found\s+0\s+vulnerabilities/i;
 
-/** "critical", "high" in the breakdown */
-const SEVERITY_PATTERN = /(\d+)\s+(critical|high|moderate|low)/gi;
-
 export const npmAuditParser: ErrorParser = {
   name: "npm-audit",
 
@@ -34,7 +31,6 @@ export const npmAuditParser: ErrorParser = {
 
     const match = line.match(AUDIT_SUMMARY);
     if (match) {
-      const total = parseInt(match[1], 10);
       const hasCritical = /critical/i.test(match[2]);
       const hasHigh = /high/i.test(match[2]);
 

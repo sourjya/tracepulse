@@ -7,7 +7,6 @@
 
 import { describe, it, expect } from "vitest";
 import { PATTERNS } from "@/correlation/cross-layer/pattern-library.js";
-import type { CrossLayerPattern } from "@/correlation/cross-layer/types.js";
 
 describe("PATTERNS", () => {
   it("contains at least 7 initial patterns", () => {

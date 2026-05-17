@@ -29,7 +29,7 @@ export interface DiffHunk {
  */
 export function execGit(args: string[], cwd: string): Promise<string | null> {
   return new Promise((resolve) => {
-    const child = execFile("git", args, { cwd, timeout: 5000 }, (err, stdout) => {
+    const _child = execFile("git", args, { cwd, timeout: 5000 }, (err, stdout) => {
       if (err) {
         resolve(null);
         return;

@@ -1,6 +1,19 @@
 # Agent Feedback Log
 
-Real-world feedback from AI coding agents using TracePulse. Used to prioritize improvements.
+## Purpose
+
+This is the canonical log for real-world agent behavior observations, tool usage feedback, chokepoints, and process violations. **If you are an AI agent and you observe any of the following during a session, append an entry to this file:**
+
+- TracePulse tool that didn't work as expected, returned unhelpful output, or was missing a needed capability
+- Shell fallback when `run_and_watch` should have been used
+- Process violation (no verification before deploy, no chokepoint logged on repeated failure, no browser check)
+- Time saved or lost due to TracePulse tools (with estimates)
+- Chokepoint analysis (how many attempts before green, what tool helped)
+- Gap identification (what tool/feature would have prevented the issue)
+
+**Format:** Use a `## YYYY-MM-DD - <short description> (<project name>)` header. Include: context, what happened, root cause, what should have happened, TP gap assessment, and status.
+
+**Do NOT delete or edit existing entries.** This is an append-only log.
 
 ---
 
@@ -1283,6 +1296,57 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 
 ### Action items from this import:
 - [x] Auto-prepend node_modules/.bin to PATH in run_and_watch (DONE)
-- [ ] Add `file` filter parameter to get_errors
-- [ ] Verify test_summary field is working in run_and_watch response
-- [ ] Consider longer retention for run_and_watch error results
+- [x] Add `file` filter parameter to get_errors (DONE - W-C002, schema + handler + test)
+- [x] Verify test_summary field is working in run_and_watch response (DONE - confirmed working)
+- [x] Longer retention for run_and_watch results (DONE - errors now pushed to main buffer)
+
+---
+
+## 2026-05-18 - Shell panic-fix pattern: sentinel integration crash (Nexus project)
+
+**Context:** Agent integrated `@chaoslabz/sentinel` ErrorBoundary and BeaconProvider into the app. Deployed. App crashed in production with `useSentinelConfig must be used within an <ErrorProvider>`. Agent panic-fixed with a monolithic shell pipeline.
+
+### The incident
+
+1. Agent added sentinel's `ErrorBoundary` (requires `<ErrorProvider>` context wrapper that wasn't configured)
+2. Also added `BeaconProvider` (needs config that doesn't exist yet)
+3. Deployed without verifying in browser
+4. Site crashed — blank page with console error
+5. Agent fixed by reverting to local ErrorBoundary via raw shell chain
+
+### Bad behavior: monolithic shell pipeline
+
+Agent ran everything in one shell command:
+```
+sed -i (revert imports) && npx vite build | tail -1 && docker compose build | tail -1 && docker compose up -d | tail -1 && git add -A && git commit -m "..." && git push origin master
+```
+
+**Violations:**
+- Should have used `run_and_watch` for `vite build` and `tsc --noEmit`
+- Should have verified with Chrome DevTools MCP (navigate + take_snapshot) before declaring fixed
+- Should have logged a chokepoint (CP-003+) since this was attempt #2 on the same issue
+- No structured verification — just piped to `tail -1` and hoped
+
+### Root cause analysis
+
+**Why the agent panicked:** Production site was down. Urgency overrode process discipline. The agent optimized for speed (one shell command) over reliability (structured verification).
+
+**Why TP wasn't used:** The agent was working on a Docker-deployed project. TracePulse wasn't monitoring the production container. However, `run_and_watch("npx vite build")` would have caught build errors, and Chrome DevTools MCP could have verified the fix.
+
+### What should have happened
+
+1. `run_and_watch("npx tsc --noEmit", cwd: "frontend")` — verify types after revert
+2. `run_and_watch("npx vite build", cwd: "frontend")` — verify build succeeds
+3. Shell for docker compose build/up (legitimate shell use — not pass/fail parsing)
+4. Chrome DevTools: `navigate_page` → `wait_for` → `take_snapshot` — verify site loads
+5. Only then: git commit + push
+
+### TracePulse gap
+
+None — this is a process discipline issue, not a tooling gap. TP tools were available but not used.
+
+### Lesson for SKILL.md
+
+"Production-down urgency does not override structured verification. A broken fix deployed fast is worse than a verified fix deployed 60 seconds later. Always: build → verify → deploy → browser-check."
+
+**Status:** Logged. Agent self-identified the violations. No TP feature needed.

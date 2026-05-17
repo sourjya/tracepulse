@@ -11,7 +11,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import {
   validateConfig,
-  type TracePulseConfig,
   type ServiceConfig,
   type ConfigValidationResult,
 } from "@/config/config-schema.js";

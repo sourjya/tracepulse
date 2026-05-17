@@ -67,7 +67,7 @@ describe("run_and_watch", () => {
   });
 
   it("captures non-zero exit code", async () => {
-    const result = await handleRunAndWatch({ command: "node --eval process.exit\\(1\\)", timeout_seconds: 5 });
+    const _result = await handleRunAndWatch({ command: "node --eval process.exit\\(1\\)", timeout_seconds: 5 });
     // This may fail due to escaping - the point is the allowlist + metachar check works
     // The actual exit code test is less important than the security tests above
   });

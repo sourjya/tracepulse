@@ -12,7 +12,6 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import { resolve as resolvePath } from "node:path";
-import type { RuntimeEvent } from "@/types/events.js";
 import { createRingBuffer } from "@/store/ring-buffer.js";
 import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { existsSync } from "node:fs";
@@ -65,10 +64,13 @@ const DEFAULT_ALLOWED_PREFIXES = buildAllowlist([]);
  *
  * @param args - { command: string, timeout_seconds?: number, cwd?: string }.
  * @param allowedPrefixes - Optional custom allowlist. Defaults to DEFAULT_ALLOWED_PREFIXES.
+ * @param mainBuffer - Optional main event buffer. When provided, error-level events are
+ *   pushed into it so they persist beyond this tool call and appear in get_errors.
  */
 export async function handleRunAndWatch(
   args: Record<string, unknown>,
   allowedPrefixes?: readonly string[],
+  mainBuffer?: import("@/types/collectors.js").EventBuffer,
 ): Promise<CallToolResult> {
   const command = args.command as string | undefined;
   const cwd = args.cwd as string | undefined;
@@ -160,6 +162,7 @@ export async function handleRunAndWatch(
     const child = spawn(command, {
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],
+      detached: true, // Create process group so we can kill the entire tree on timeout
       env: spawnEnv,
       ...(resolvedCwd ? { cwd: resolvedCwd } : {}),
     });
@@ -187,6 +190,13 @@ export async function handleRunAndWatch(
 
       const allEvents = tempBuffer.query({});
       const errors = allEvents.filter((e) => e.level === "error" || e.level === "warn");
+
+      // Push errors to main buffer so they persist for get_errors (W9: longer retention)
+      if (mainBuffer && errors.length > 0) {
+        for (const err of errors) {
+          mainBuffer.push(err);
+        }
+      }
 
       // Extract test summary from info-level events (pytest/vitest/jest/cargo/junit summaries)
       const testSummary = allEvents
@@ -236,10 +246,24 @@ export async function handleRunAndWatch(
 
     const timer = setTimeout(() => {
       if (resolved) return;
-      try { child.kill("SIGTERM"); } catch {}
+      // Kill the entire process group (shell + children like pytest/vitest).
+      // With shell: true, child.kill() only kills the shell wrapper, leaving
+      // the actual command running as an orphan. process.kill(-pid) sends
+      // SIGTERM to the entire process group created by detached: true.
+      try {
+        if (child.pid) process.kill(-child.pid, "SIGTERM");
+      } catch {
+        try { child.kill("SIGTERM"); } catch {}
+      }
       // Mark as timed out so finish() can report it clearly
       timedOut = true;
-      finish(null);
+      // Force-resolve after 3s if the process group doesn't exit cleanly
+      setTimeout(() => {
+        if (!resolved) {
+          try { if (child.pid) process.kill(-child.pid, "SIGKILL"); } catch {}
+          finish(null);
+        }
+      }, 3000);
     }, timeout);
 
     if (typeof timer === "object" && "unref" in timer) timer.unref();

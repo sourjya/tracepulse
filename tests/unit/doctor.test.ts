@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { runDoctorChecks, type DoctorCheck } from "@/diagnostics/doctor.js";
+import { runDoctorChecks } from "@/diagnostics/doctor.js";
 
 describe("doctor checks", () => {
   it("returns an array of checks", () => {

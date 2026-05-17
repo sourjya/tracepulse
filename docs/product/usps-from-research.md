@@ -103,7 +103,7 @@ Key data points (all cited):
 
 ## Schema Overhead USP
 
-**USP: "30 tools at ~200 tokens each = 6,000 tokens of overhead per turn. We're cutting that by 83%."**
+**USP: "42 tools collapsed into 7 gateways via tool clustering — 80% schema reduction. Agents load sub-tools on demand."**
 
 Research: Speakeasy Dynamic Toolsets (96% reduction), arXiv 2603.20313 (99.6% reduction at 97.1% accuracy)
 

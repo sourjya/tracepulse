@@ -16,7 +16,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { detectMigrationFramework, hasPackageJson, isPythonProject, hasProjectFile } from "@/diagnostics/project-detector.js";
+import { detectMigrationFramework, hasPackageJson, isPythonProject } from "@/diagnostics/project-detector.js";
 
 // ──────────────────────────────────────────────
 // Env Drift Detection

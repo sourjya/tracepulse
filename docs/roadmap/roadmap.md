@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
+v0.9.20 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 
 ## Milestones
 
@@ -24,9 +24,9 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M-Harden: Code Quality & Hardening | CRR-001 | v0.9.2 | ✅ Complete (13/13 items) |
 | M13: Discoverability & Integration | Deep Research | v0.9.3 | ✅ Complete |
 | M14: Category Extension | Deep Research | v0.9.4-v1.0 | 🔲 Planned |
-| M15: Tool Schema Optimization | MCP Tooling Research | v1.0 | 🔲 Planned |
+| M15: Tool Schema Optimization | MCP Tooling Research | v1.0 | ✅ Complete |
 | M16: Platform Coverage Expansion | Platform Strategy Research | v1.0 | 🔲 Planned |
-| M17: Token Savings Wave 1 (Quick Wins) | Advanced Token Research | v1.0 | 🔲 Planned |
+| M17: Token Savings Wave 1 (Quick Wins) | Advanced Token Research | v1.0 | ✅ Complete |
 | M18: Token Savings Wave 2 (Medium Effort) | Advanced Token Research | v1.1 | 🔲 Planned |
 | M24: DevLoop Agent — Cross-Layer Correlation | Agent Feedback | v1.0 | ✅ Complete (Phase 1-3) |
 | M19: TracePulse Team Server | Enterprise | v1.2 | 🔲 Planned |
@@ -46,7 +46,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 
 ---
 
-## M13: Discoverability & Integration (Next - informed by Deep Research 2026-04-30)
+## M13: Discoverability & Integration ✅ COMPLETE (informed by Deep Research 2026-04-30)
 
 Source: [Deep Research - Competitive Landscape & Roadmap 2026](../research/agentic-debug-loop-deep-research-2-2026.md)
 

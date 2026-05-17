@@ -12,7 +12,6 @@
 import { describe, it, expect } from "vitest";
 import { handleGetCrossLayerDiagnosis } from "@/tools/get-cross-layer-diagnosis.js";
 import { createRingBuffer } from "@/store/ring-buffer.js";
-import { createFrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import { makeEvent } from "../helpers/make-event.js";
 
 describe("DevLoop Agent - Real-World Scenarios", () => {

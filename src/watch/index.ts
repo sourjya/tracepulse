@@ -9,4 +9,4 @@
 
 export { DEFAULT_PATTERNS, type HotReloadPattern } from "./hot-reload-patterns.js";
 export { detectHotReload } from "./hot-reload-detector.js";
-export { watchForErrors, type WatchResult } from "./watch-controller.js";
+export { watchForErrors, type WatchResult, type HmrEvent } from "./watch-controller.js";

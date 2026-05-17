@@ -7,7 +7,7 @@
  * @see src/config/config-loader.ts for the implementation
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { loadConfig, parseServiceFlag } from "@/config/config-loader.js";
 import * as node_fs from "node:fs";
 

@@ -8,9 +8,20 @@
  * @see .kiro/specs/m23-init-command/requirements.md
  */
 
-import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
+/**
+ * Check if source file is newer than destination, or destination doesn't exist.
+ * Used to update steering/skills assets when TracePulse is updated.
+ */
+function shouldCopyFile(src: string, dest: string): boolean {
+  if (!existsSync(dest)) return true;
+  try {
+    return statSync(src).mtimeMs > statSync(dest).mtimeMs;
+  } catch { return true; }
+}
 
 /** Supported MCP clients. */
 export type McpClient = "kiro" | "claude" | "cursor" | "generic";
@@ -79,7 +90,7 @@ export function runInit(client: McpClient | "auto", cwd: string): string[] {
     }
 
     case "kiro": {
-      // Kiro auto-discovers from skills/ in the npm package. Just verify config.
+      // MCP config
       const configPath = resolve(cwd, ".kiro", "settings", "mcp.json");
       if (!existsSync(configPath)) {
         mkdirSync(dirname(configPath), { recursive: true });
@@ -89,6 +100,21 @@ export function runInit(client: McpClient | "auto", cwd: string): string[] {
         actions.push(`Wrote ${configPath}`);
       } else {
         actions.push(`Config already exists: ${configPath}`);
+      }
+
+      // Steering files: always install/update (newer source overwrites older dest)
+      const steeringDest = resolve(cwd, ".kiro", "steering");
+      const steeringSrc = resolve(skillsDir, "kiro-steering");
+      if (existsSync(steeringSrc)) {
+        mkdirSync(steeringDest, { recursive: true });
+        for (const file of readdirSync(steeringSrc).filter(f => f.endsWith(".md"))) {
+          const src = resolve(steeringSrc, file);
+          const dest = resolve(steeringDest, file);
+          if (shouldCopyFile(src, dest)) {
+            copyFileSync(src, dest);
+            actions.push(`Installed steering: ${file}`);
+          }
+        }
       }
       break;
     }

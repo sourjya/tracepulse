@@ -17,6 +17,16 @@ import {
   MAX_WATCH_DURATION_SECONDS,
 } from "@/constants/watch.js";
 
+/** Details of a single HMR event detected during the watch window. */
+export interface HmrEvent {
+  /** Dev tool that triggered the reload (e.g., "Vite", "nodemon"). */
+  readonly tool: string;
+  /** Pattern ID that matched (e.g., "vite-hmr", "nodemon-restart"). */
+  readonly pattern_id: string;
+  /** Timestamp when the HMR event was detected. */
+  readonly timestamp: number;
+}
+
 /**
  * Result returned by watchForErrors after the watch window expires.
  */
@@ -27,6 +37,8 @@ export interface WatchResult {
   readonly watch_duration_ms: number;
   /** Whether any hot-reload event was detected during the window. null = unknown (attach mode). */
   readonly hot_reload_detected: boolean | null;
+  /** HMR events seen during the window with tool and pattern details. Empty if none detected. */
+  readonly hmr_events: readonly HmrEvent[];
   /** Total events seen during window (all levels, not just errors). */
   readonly total_events_seen: number;
   /** Number of pre-existing error/warn events already in buffer. */
@@ -67,14 +79,22 @@ export function watchForErrors(
     const startTime = Date.now();
     const collected: RuntimeEvent[] = [];
     let hotReloadDetected = false;
+    const hmrEvents: HmrEvent[] = [];
     let totalEventsSeen = 0;
 
     const unsubscribe = buffer.subscribe((event: RuntimeEvent) => {
       totalEventsSeen++;
 
-      // Track hot-reload events
+      // Track hot-reload events and extract details
       if (event.fingerprint.startsWith("hotreload:")) {
         hotReloadDetected = true;
+        const patternId = event.fingerprint.slice("hotreload:".length);
+        const tool = (event.context as Record<string, unknown>)?.framework as string ?? "unknown";
+        hmrEvents.push({
+          tool: tool.charAt(0).toUpperCase() + tool.slice(1),
+          pattern_id: patternId,
+          timestamp: event.timestamp,
+        });
         return;
       }
 
@@ -94,6 +114,7 @@ export function watchForErrors(
         events: collected,
         watch_duration_ms: Date.now() - startTime,
         hot_reload_detected: hotReloadDetected ? true : (isAttachMode ? null : false),
+        hmr_events: hmrEvents,
         total_events_seen: totalEventsSeen,
         pre_existing_errors: preExisting,
       });

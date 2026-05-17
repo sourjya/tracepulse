@@ -4,7 +4,7 @@
  * @see src/correlation/frontend-error-buffer.ts for the implementation
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createFrontendErrorBuffer } from "@/correlation/frontend-error-buffer.js";
 import type { FrontendError } from "@/correlation/types.js";
 

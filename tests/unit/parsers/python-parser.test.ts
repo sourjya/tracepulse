@@ -8,7 +8,6 @@
 
 import { describe, it, expect } from "vitest";
 import { pythonParser } from "@/parsers/python-parser";
-import { MAX_STACK_FRAMES } from "@/constants/limits";
 
 // ──────────────────────────────────────────────
 // canParse

@@ -17,7 +17,6 @@ import { createRingBuffer } from "@/store/ring-buffer";
 import { createDefaultRegistry } from "@/pipeline/parser-registry";
 import type { EventBuffer } from "@/types/collectors";
 import type { ParserRegistry } from "@/pipeline/parser-registry";
-import type { RuntimeEvent } from "@/types/events";
 
 // ──────────────────────────────────────────────
 // Shared Setup

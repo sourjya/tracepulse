@@ -5,7 +5,7 @@
  * @see .kiro/specs/m12-ecosystem-features/design.md for drift detection design
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 
 // Mock fs for env/dep file detection

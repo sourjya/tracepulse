@@ -140,6 +140,7 @@ describe("watch controller", () => {
       makeEvent({
         level: "info",
         fingerprint: "hotreload:vite-compiled",
+        context: { framework: "vite" },
         signal_score: 5,
       }),
     );
@@ -148,8 +149,51 @@ describe("watch controller", () => {
     const result = await promise;
 
     expect(result.hot_reload_detected).toBe(true);
+    expect(result.hmr_events).toHaveLength(1);
+    expect(result.hmr_events[0].tool).toBe("Vite");
+    expect(result.hmr_events[0].pattern_id).toBe("vite-compiled");
+    expect(result.hmr_events[0].timestamp).toBeGreaterThan(0);
     // Hot-reload events are info level, so not in the error results
     expect(result.events).toHaveLength(0);
+  });
+
+  it("returns empty hmr_events when no hot-reload detected", async () => {
+    const buffer = createRingBuffer(100);
+    const promise = watchForErrors(buffer, 2);
+
+    buffer.push(makeEvent({ level: "error" }));
+
+    await vi.advanceTimersByTimeAsync(3000);
+    const result = await promise;
+
+    expect(result.hot_reload_detected).toBe(false);
+    expect(result.hmr_events).toEqual([]);
+  });
+
+  it("collects multiple hmr_events from different tools", async () => {
+    const buffer = createRingBuffer(100);
+    const promise = watchForErrors(buffer, 5);
+
+    buffer.push(makeEvent({
+      level: "info",
+      fingerprint: "hotreload:vite-hmr",
+      context: { framework: "vite" },
+      signal_score: 5,
+    }));
+    buffer.push(makeEvent({
+      level: "info",
+      fingerprint: "hotreload:nodemon-restart",
+      context: { framework: "nodemon" },
+      signal_score: 5,
+    }));
+
+    await vi.advanceTimersByTimeAsync(6000);
+    const result = await promise;
+
+    expect(result.hot_reload_detected).toBe(true);
+    expect(result.hmr_events).toHaveLength(2);
+    expect(result.hmr_events[0].tool).toBe("Vite");
+    expect(result.hmr_events[1].tool).toBe("Nodemon");
   });
 
   it("throws for duration_seconds outside 1-120", async () => {

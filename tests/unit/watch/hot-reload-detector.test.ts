@@ -10,7 +10,6 @@
 
 import { describe, it, expect } from "vitest";
 import { detectHotReload } from "@/watch/hot-reload-detector.js";
-import { DEFAULT_PATTERNS } from "@/watch/hot-reload-patterns.js";
 
 describe("hot-reload detector", () => {
   it("matches a Vite compilation success line and produces a RuntimeEvent", () => {

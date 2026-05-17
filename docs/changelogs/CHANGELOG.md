@@ -7,6 +7,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.20] - 2026-05-17
+
+### Fixed
+- **run_and_watch timeout** — process group kill. Previously `child.kill("SIGTERM")` with `shell: true` only killed the shell wrapper, leaving the actual command (pytest, vitest) running indefinitely. Now spawns with `detached: true` and kills the entire process group via `process.kill(-pid)`. Includes 3s SIGKILL fallback.
+- **free_port multi-PID** — `lsof` returns multiple PIDs when several processes listen on a port. Old code passed the multi-line string as a single argument to `kill`, failing silently. Now splits and kills each PID individually.
+
+### Added
+- **`tracepulse init` installs Kiro steering files** — re-running `init` on an existing project now installs/updates steering files from `skills/kiro-steering/` into `.kiro/steering/`. Uses mtime comparison so package upgrades propagate new rules.
+- **Subagent tool rules steering file** — `tracepulse-subagent-rules.md` instructs agents to use `run_and_watch` instead of Shell for test/build/lint commands in subagent prompts.
+
+### Changed
+- Strengthened `run_and_watch` tool description: explicit "never fall back to shell" and timeout guidance.
+- Strengthened `free_port` tool description: "do not use shell with lsof/kill".
+
+---
+
 ## [0.9.18] - 2026-05-17
 
 ### Added

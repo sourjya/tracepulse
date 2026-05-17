@@ -40,11 +40,11 @@ import { createMultiProcessCollector } from "@/collectors/multi-process-collecto
 import { FINGERPRINT_PERSISTENCE_PATH } from "@/constants/services.js";
 import { createHealthProber, type HealthProber } from "@/infra/health-prober.js";
 import { createInfraMonitor } from "@/infra/infra-monitor.js";
-import { createErrorLifecycle, type ErrorLifecycle } from "@/store/error-lifecycle.js";
+import { createErrorLifecycle } from "@/store/error-lifecycle.js";
 import { createAuditBuffer } from "@/store/audit-buffer.js";
 import { createServerManager } from "@/tools/start-server.js";
 import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
-import { detectProjectStacks, suggestStartCommands } from "@/diagnostics/project-detector.js";
+import { detectProjectStacks } from "@/diagnostics/project-detector.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types

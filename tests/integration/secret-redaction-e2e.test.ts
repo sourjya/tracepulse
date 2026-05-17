@@ -18,7 +18,6 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry";
 import { handleGetErrors, handleGetServerLogs } from "@/mcp/server";
 import { REDACTION_REPLACEMENT } from "@/constants/redaction";
 import type { EventBuffer } from "@/types/collectors";
-import type { RuntimeEvent } from "@/types/events";
 
 // ──────────────────────────────────────────────
 // Test Helpers

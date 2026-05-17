@@ -98,7 +98,7 @@ describe("Parser Accuracy Benchmark", () => {
     it(`${sample.name}: matches ${sample.expectedParser} parser`, () => {
       const parsed = registry.parse(sample.input);
       const matched = parsed !== null;
-      const parserName = matched ? (parsed as any).context?.framework ?? "unknown" : "none";
+      const _parserName = matched ? (parsed as any).context?.framework ?? "unknown" : "none";
 
       // For test runners, the framework is set in context
       const correctParser = matched; // Parser matched something

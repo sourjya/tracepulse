@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { parseMonorepoPrefix, type PrefixResult } from "@/pipeline/monorepo-prefix.js";
+import { parseMonorepoPrefix } from "@/pipeline/monorepo-prefix.js";
 
 describe("parseMonorepoPrefix", () => {
   it("extracts Turborepo prefix", () => {

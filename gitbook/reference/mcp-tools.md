@@ -81,6 +81,7 @@ Tools for pattern detection and codebase-level insights.
 | Tool | Parameters | Description | ~Tokens |
 |------|-----------|-------------|---------|
 | `get_error_clusters` | `min_count?` | Group errors by type + module path. Reveals patterns across the codebase. | 500 |
+| `get_bug_patterns` | none | Cross-session patterns: recurring bugs, velocity changes, error chains, flaky errors, regressions. Requires `--persist`. | 500 |
 | `get_perf_baseline` | `path?`, `limit?` | Per-endpoint response time percentiles (P50, P95, max) from HTTP access logs. | 500 |
 | `get_migration_status` | `framework?`, `apply?` | Check or run pending migrations. Auto-detects alembic, prisma, django, knex. | 200 |
 | `check_drift` | none | Unified env, dependency, and migration drift detection in one call. | 300 |

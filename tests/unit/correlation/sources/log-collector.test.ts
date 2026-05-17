@@ -4,7 +4,7 @@
  * @see src/correlation/sources/log-collector.ts for the implementation
  */
 
-import { describe, it, expect, afterAll } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createLogCollector } from "@/correlation/sources/log-collector.js";
 import type { FrontendError } from "@/correlation/types.js";
 

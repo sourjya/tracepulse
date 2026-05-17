@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { detectMcpClient, type McpClient } from "@/cli/init-command.js";
-import { mkdtempSync, writeFileSync, mkdirSync } from "node:fs";
+import { detectMcpClient } from "@/cli/init-command.js";
+import { mkdtempSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 

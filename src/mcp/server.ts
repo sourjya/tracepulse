@@ -672,7 +672,7 @@ export function createMcpServer(
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
-      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters.",
+      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (up to 120). Never fall back to shell for commands that produce pass/fail output.",
     inputSchema: {
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),
@@ -680,7 +680,7 @@ export function createMcpServer(
       max_lines: z.number().optional().describe("Maximum output lines to return. Use instead of '| head -20'. Omit for full output (last 100 lines)."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
-  }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist));
+  }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist, buffer));
 
   server.registerTool("get_requests", {
     title: "Get Requests",
@@ -734,7 +734,7 @@ export function createMcpServer(
   server.registerTool("free_port", {
     title: "Free Port",
     description:
-      "Kill the process occupying a port. Use when start_server fails because a port is in use from a crashed previous session.",
+      "Kill the process occupying a port. Use when start_server fails because a port is in use from a crashed previous session. Do not use shell with lsof/kill — this tool does it safely.",
     inputSchema: {
       port: z.number().describe("Port number to free (e.g., 3000, 8080)."),
     },

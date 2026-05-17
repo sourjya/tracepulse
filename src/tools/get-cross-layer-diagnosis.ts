@@ -70,7 +70,7 @@ export async function handleGetCrossLayerDiagnosis(
     getFrontendErrors: (s) => frontendBuffer
       ? frontendBuffer.getAll().filter((e) => e.timestamp >= s)
       : [],
-    getGitChanges: async (s) => {
+    getGitChanges: async (_s) => {
       const gitRoot = await detectGitRoot(cwd);
       if (!gitRoot) return null;
       const output = await execGit(["diff", "--name-only", "HEAD"], gitRoot);

@@ -13,11 +13,10 @@
 
 import { describe, it, expect } from "vitest";
 import { createAuditBuffer } from "@/store/audit-buffer.js";
-import { createRingBuffer } from "@/store/ring-buffer.js";
 import { abbreviateMessage, filterFrameworkFrames } from "@/pipeline/response-compression.js";
 import type { RuntimeEvent } from "@/types/events.js";
 
-function makeEvent(overrides: Partial<RuntimeEvent> = {}): RuntimeEvent {
+function _makeEvent(overrides: Partial<RuntimeEvent> = {}): RuntimeEvent {
   const now = Date.now();
   return {
     id: crypto.randomUUID(), timestamp: now, source: "server-stderr", service: "main",

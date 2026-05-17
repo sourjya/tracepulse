@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join } from "node:path";
 import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 
 /** Expected parse result for a fixture. */

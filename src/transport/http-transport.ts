@@ -75,7 +75,7 @@ export function createHttpTransport(port: number = DEFAULT_HTTP_PORT, restDeps?:
 
         res.writeHead(result.status, {
           "Content-Type": result.contentType,
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": "http://localhost",
         });
         res.end(result.body);
       }

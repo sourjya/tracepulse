@@ -9,7 +9,6 @@ import { MAX_TRUNCATED_LIST } from "@/constants/limits.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { errorResult } from "@/mcp/response-helpers.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
-import { redact } from "@/pipeline/secret-redactor.js";
 
 /**
  * Handle get_infra_status - summary of all services.

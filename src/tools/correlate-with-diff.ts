@@ -13,7 +13,6 @@ import {
   detectGitRoot,
   execGit,
   parseChangedFiles,
-  parseDiffHunks,
   matchErrorToFile,
 } from "@/correlation/git-diff-correlator.js";
 

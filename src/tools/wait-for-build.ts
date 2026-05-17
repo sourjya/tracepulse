@@ -15,7 +15,6 @@ export async function handleWaitForBuild(
   args: Record<string, unknown>,
 ): Promise<CallToolResult> {
   const timeout = ((args.timeout_seconds as number | undefined) ?? 30) * 1000;
-  const startBuildAt = buffer.lastBuildAt;
 
   return new Promise((resolve) => {
     let resolved = false;

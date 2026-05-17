@@ -11,7 +11,6 @@
 
 import { describe, it, expect } from "vitest";
 import { javaParser } from "@/parsers/java-parser";
-import { MAX_STACK_FRAMES } from "@/constants/limits";
 
 // ──────────────────────────────────────────────
 // canParse - positive matches

@@ -9,7 +9,7 @@
  */
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { createConnection } from "node:net";
 import { jsonResult, errorResult } from "@/mcp/response-helpers.js";
 
@@ -37,30 +37,44 @@ export async function handleFreePort(args: Record<string, unknown>): Promise<Cal
   const port = args.port as number | undefined;
   if (!port) return errorResult("port parameter is required (e.g., free_port({ port: 8080 }))");
 
-  const inUse = await isPortInUse(port);
-  if (!inUse) {
-    return jsonResult({ status: "already_free", port, message: `Port ${port} is not in use.` });
+  // Security: validate port is a finite integer in valid range (prevents command injection)
+  const portNum = Number(port);
+  if (!Number.isFinite(portNum) || !Number.isInteger(portNum) || portNum < 1 || portNum > 65535) {
+    return errorResult("port must be an integer between 1 and 65535");
   }
 
-  // Find and kill the process
+  const inUse = await isPortInUse(portNum);
+  if (!inUse) {
+    return jsonResult({ status: "already_free", port: portNum, message: `Port ${portNum} is not in use.` });
+  }
+
+  // Find and kill the process using execFileSync (no shell interpretation)
   try {
-    const pid = execSync(`lsof -ti:${port} 2>/dev/null`, { encoding: "utf-8" }).trim();
-    if (pid) {
-      execSync(`kill -9 ${pid} 2>/dev/null`);
+    const output = execFileSync("lsof", ["-ti", `:${portNum}`], { encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] }).trim();
+    if (output) {
+      // lsof can return multiple PIDs (one per line) if multiple processes listen on the port
+      const pids = output.split("\n").map(p => p.trim()).filter(Boolean);
+      const killed: number[] = [];
+      for (const pid of pids) {
+        try {
+          execFileSync("kill", ["-9", pid], { stdio: ["pipe", "pipe", "pipe"] });
+          killed.push(parseInt(pid, 10));
+        } catch { /* process may have already exited */ }
+      }
       return jsonResult({
         status: "freed",
-        port,
-        killed_pid: parseInt(pid, 10),
-        message: `Killed process ${pid} on port ${port}.`,
+        port: portNum,
+        killed_pids: killed,
+        message: `Killed ${killed.length} process(es) on port ${portNum}: ${killed.join(", ")}`,
       });
     }
   } catch {
-    // lsof not available or kill failed
+    // lsof not available or no process found
   }
 
   return jsonResult({
     status: "in_use",
-    port,
-    message: `Port ${port} is in use but could not identify/kill the process. Try manually: lsof -ti:${port} | xargs kill -9`,
+    port: portNum,
+    message: `Port ${portNum} is in use but could not identify/kill the process. Try manually: lsof -ti:${portNum} | xargs kill -9`,
   });
 }

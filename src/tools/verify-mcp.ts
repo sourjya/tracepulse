@@ -56,6 +56,15 @@ export async function handleVerifyMcp(
     };
   }
 
+  // Security: reject shell metacharacters (SRR-006 M-003)
+  const SHELL_META = /[;&|`$(){}!<>]/;
+  if (SHELL_META.test(command)) {
+    return {
+      content: [{ type: "text", text: JSON.stringify({ error: "Command contains shell metacharacters which are not allowed. MCP server commands should be simple (e.g., 'node dist/cli.js')." }) }],
+      isError: true,
+    };
+  }
+
   let timeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
   if (args.timeout_seconds !== undefined) {
     const t = Number(args.timeout_seconds);

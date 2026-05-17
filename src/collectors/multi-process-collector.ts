@@ -100,7 +100,7 @@ export function createMultiProcessCollector(
       running = false;
       const killPromises: Promise<void>[] = [];
 
-      for (const [name, child] of children) {
+      for (const [_name, child] of children) {
         killPromises.push(
           new Promise<void>((resolve) => {
             // If child already exited, resolve immediately (avoids exit-race)

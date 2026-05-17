@@ -12,8 +12,6 @@ import { describe, it, expect } from "vitest";
 import {
   loadClusterConfig,
   createToolRegistry,
-  type ClusterConfig,
-  type ToolRegistry,
 } from "@/clusters/gateway.js";
 
 describe("loadClusterConfig", () => {
