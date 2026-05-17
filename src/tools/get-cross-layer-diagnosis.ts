@@ -95,6 +95,7 @@ export async function handleGetCrossLayerDiagnosis(
       confidence: d.confidence,
       diagnosis: d.diagnosis,
       suggested_fix: d.suggested_fix,
+      proposed_fix: d.proposed_fix,
       layers_involved: d.layers_involved,
     })),
     signals_collected: snapshot.signals.length,

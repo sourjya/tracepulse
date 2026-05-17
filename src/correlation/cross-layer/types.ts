@@ -80,6 +80,12 @@ export interface CrossLayerPattern {
    * Default: 2 (enforced by the matcher if omitted).
    */
   readonly minSignals?: number;
+  /**
+   * Minimum confidence required before proposed_fix is included in output.
+   * Below this floor, the diagnosis is surfaced but without an actionable fix.
+   * Default: pattern's baseConfidence (always include fix if pattern fires).
+   */
+  readonly confidenceFloor?: number;
 }
 
 // ──────────────────────────────────────────────
@@ -97,8 +103,14 @@ export interface Diagnosis {
   readonly confidence: number;
   /** Human-readable diagnosis (filled template). */
   readonly diagnosis: string;
-  /** Suggested fix (filled template). */
+  /** Suggested fix (filled template). Always present for reference. */
   readonly suggested_fix: string;
+  /**
+   * Actionable fix to apply. Null when confidence is below the pattern's
+   * confidenceFloor — the diagnosis is shown but the fix is withheld to
+   * avoid incorrect auto-intervention.
+   */
+  readonly proposed_fix: string | null;
   /** Signals that matched this pattern. */
   readonly signals_used: readonly LayerSignal[];
   /** Which layers participated in this diagnosis. */

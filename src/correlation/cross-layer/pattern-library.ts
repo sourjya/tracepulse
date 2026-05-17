@@ -153,4 +153,43 @@ export const PATTERNS: readonly CrossLayerPattern[] = [
     timeWindowMs: 10_000,
     minSignals: 1, // 401 is unambiguous — single signal is sufficient
   },
+
+  // ──────────────────────────────────────────────
+  // Pattern 8: Silent failure (v2 spec Gap 5)
+  // ──────────────────────────────────────────────
+  {
+    id: "silent-failure",
+    name: "Silent Failure — Backend OK, Frontend Empty",
+    description: "Backend returned 200 but frontend shows error or empty response. The agent may have suppressed an error.",
+    requiredSignals: [
+      { layer: "backend", type: "http-200" },
+      { layer: "frontend", type: "http-failure" },
+    ],
+    baseConfidence: 70,
+    confidenceFloor: 95, // High floor — always surface as warning, never auto-fix
+    diagnosisTemplate: "Backend returned 200 OK but the frontend received an error or empty response. This is a silent failure pattern — the backend may be swallowing an error and returning a success status.",
+    suggestedFix: "Check the backend response body for empty or malformed data. Look for try/catch blocks that return 200 on error. The frontend error is likely caused by unexpected response shape, not a network failure.",
+    timeWindowMs: 10_000,
+  },
+
+  // ──────────────────────────────────────────────
+  // Pattern 9: Build failed silently
+  // ──────────────────────────────────────────────
+  {
+    id: "build-failed-silently",
+    name: "Build Failed Silently — TS Error, No Runtime Error",
+    description: "TypeScript compilation error exists but no runtime error has appeared. The build may have failed without the server noticing.",
+    requiredSignals: [
+      { layer: "backend", type: "exception" },
+      { layer: "git", type: "file-changed" },
+    ],
+    optionalSignals: [
+      { layer: "process", type: "hot-reload" },
+    ],
+    baseConfidence: 60,
+    confidenceFloor: 75, // Require higher confidence before suggesting fix
+    diagnosisTemplate: "A runtime error occurred after recent file changes. The build may have partially failed or the TypeScript compiler may have errors that didn't prevent the server from starting.",
+    suggestedFix: "Run the type checker (tsc --noEmit) to check for compilation errors. The runtime error may be caused by a type mismatch that TypeScript would have caught.",
+    timeWindowMs: 30_000,
+  },
 ];

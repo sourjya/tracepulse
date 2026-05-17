@@ -164,6 +164,7 @@ export function diagnose(
       confidence,
       diagnosis,
       suggested_fix: suggestedFix,
+      proposed_fix: confidence >= (pattern.confidenceFloor ?? pattern.baseConfidence) ? suggestedFix : null,
       signals_used: matchedSignals,
       layers_involved: layers,
     });
