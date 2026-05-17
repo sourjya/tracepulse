@@ -23,6 +23,13 @@ Use `run_and_watch` instead of shell - structured output, WSL-reliable:
 - `run_and_watch("pytest tests/", cwd: "./backend")`
 - `run_and_watch("npx vitest run", cwd: "./frontend")`
 
+### When stuck (2+ failed attempts)
+- `get_cross_layer_diagnosis()` - correlates backend, frontend, git, and process signals
+- `correlate_with_diff()` - links errors to your recent uncommitted changes
+
+### After changing MCP server code
+- `verify_mcp(command)` - confirm the server starts and responds to initialize
+
 ### Avoid
 - Don't read terminal manually - use TracePulse
 - Don't run psql/mysql directly - they hang on password prompts
