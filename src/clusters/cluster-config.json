@@ -3,7 +3,7 @@
     {
       "gateway": "tp_health",
       "description": "Runtime and project health checks. Use first to establish baseline status.",
-      "tools": ["get_runtime_status", "get_health_summary", "get_project_health"]
+      "tools": ["get_runtime_status", "get_health_summary", "get_project_health", "verify_mcp"]
     },
     {
       "gateway": "tp_triage",
