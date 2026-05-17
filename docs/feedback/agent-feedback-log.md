@@ -15,6 +15,8 @@ This is the canonical log for real-world agent behavior observations, tool usage
 
 **Do NOT delete or edit existing entries.** This is an append-only log.
 
+**⚠️ PRIVATE NAME SCRUBBING — MANDATORY:** This is a PUBLIC repo. Never use real private project or package names. Use anonymized names: "Nexus" (full-stack app), "Prism" (library monorepo), "Studio" (creative tool), or generic descriptions. The pre-commit hook will reject commits containing private names. See `.kiro/steering/user-project-overrides.md` for the full list of banned names.
+
 ---
 
 ## 2026-04-28 - Kiro CLI agent on Nexus project
@@ -688,7 +690,7 @@ TP caught: `timedelta not defined` in project_health.py - imported `date, dateti
 
 ### run_and_watch can't reach sibling repos due to cwd restriction
 
-Agent in uai project used run_and_watch for local tests but fell back to shell for beacon and beacon-ts (sibling repos). The cwd validation rejects paths outside the project root.
+Agent in a monorepo project used run_and_watch for local tests but fell back to shell for sibling packages. The cwd validation rejects paths outside the project root.
 
 **Tension:** SRR-004 H-002 added cwd validation to prevent directory traversal. But monorepo/multi-repo workflows need to run commands in sibling directories.
 
@@ -1304,12 +1306,12 @@ Agent manually installed 6 skill files to .claude/commands/. Confirmed working. 
 
 ## 2026-05-18 - Shell panic-fix pattern: sentinel integration crash (Nexus project)
 
-**Context:** Agent integrated `@chaoslabz/sentinel` ErrorBoundary and BeaconProvider into the app. Deployed. App crashed in production with `useSentinelConfig must be used within an <ErrorProvider>`. Agent panic-fixed with a monolithic shell pipeline.
+**Context:** Agent integrated a third-party ErrorBoundary and context provider into the app. Deployed. App crashed in production with `useSentinelConfig must be used within an <ErrorProvider>`. Agent panic-fixed with a monolithic shell pipeline.
 
 ### The incident
 
-1. Agent added sentinel's `ErrorBoundary` (requires `<ErrorProvider>` context wrapper that wasn't configured)
-2. Also added `BeaconProvider` (needs config that doesn't exist yet)
+1. Agent added the library's `ErrorBoundary` (requires a context wrapper that wasn't configured)
+2. Also added a telemetry provider (needs config that doesn't exist yet)
 3. Deployed without verifying in browser
 4. Site crashed — blank page with console error
 5. Agent fixed by reverting to local ErrorBoundary via raw shell chain
