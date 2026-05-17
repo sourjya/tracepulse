@@ -22,7 +22,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M11: Agent Workflow Intelligence | Agent Feedback | v0.9.2 | ✅ Complete |
 | M12: Ecosystem Research Features | Research | v0.9.2 | ✅ Complete |
 | M-Harden: Code Quality & Hardening | CRR-001 | v0.9.2 | ✅ Complete (13/13 items) |
-| M13: Discoverability & Integration | Deep Research | v0.9.3 | 🔲 Next |
+| M13: Discoverability & Integration | Deep Research | v0.9.3 | ✅ Complete |
 | M14: Category Extension | Deep Research | v0.9.4-v1.0 | 🔲 Planned |
 | M15: Tool Schema Optimization | MCP Tooling Research | v1.0 | 🔲 Planned |
 | M16: Platform Coverage Expansion | Platform Strategy Research | v1.0 | 🔲 Planned |
