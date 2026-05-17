@@ -28,6 +28,7 @@ v0.9.2 (alpha - 30 MCP tools, 23 parsers, 709 tests)
 | M16: Platform Coverage Expansion | Platform Strategy Research | v1.0 | 🔲 Planned |
 | M17: Token Savings Wave 1 (Quick Wins) | Advanced Token Research | v1.0 | 🔲 Planned |
 | M18: Token Savings Wave 2 (Medium Effort) | Advanced Token Research | v1.1 | 🔲 Planned |
+| M24: DevLoop Agent — Cross-Layer Correlation | Agent Feedback | v1.0 | 🔧 In Progress |
 | M19: TracePulse Team Server | Enterprise | v1.2 | 🔲 Planned |
 | M20: Bug Pattern Detection | Error Intelligence | v1.1 | ✅ Complete |
 | M21: Zero-Config Capability Architecture | Core UX | v1.0 | ✅ Complete (Phase 1-3) |
@@ -62,6 +63,19 @@ The research identifies discoverability and cross-tool integration as the highes
 | 7 | Dynamic toolsets for less-frequent tools | 1 week | Medium | 7.7 |
 | 8 | ViewGraph routing hints in empty responses (`suggested_next` field) | 2 days | Medium | [Design](../engineering/designs/viewgraph-handover.md) |
 | 9 | Read Kiro steering files (tech.md) for project-aware defaults | 3 days | Medium | [Design](../engineering/designs/kiro-steering-integration.md) |
+
+## M24: DevLoop Agent — Cross-Layer Correlation (In Progress)
+
+Source: [Idea doc](../ideas/devloop-agent-cross-layer-correlation.md) | [Spec](../../.kiro/specs/devloop-agent/)
+
+Correlates signals across all layers (backend, frontend, git, process, build) to produce single actionable diagnoses. Eliminates the "call 3 tools and guess which layer is broken" pattern.
+
+| # | Feature | Effort | Impact |
+|---|---------|--------|--------|
+| 1 | Signal aggregator (collect from all layers into unified buffer) | 2 days | Foundation |
+| 2 | Pattern library (7 known cross-layer failure signatures) | 1 day | HIGH |
+| 3 | Correlation matcher (match signals against patterns) | 2 days | HIGH |
+| 4 | `get_cross_layer_diagnosis` MCP tool | 1 day | HIGH |
 
 ## M14: Category Extension (informed by Deep Research)
 

@@ -17,6 +17,7 @@
  */
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createSafeStdout } from "@/transport/safe-stdout.js";
 import { VERSION } from "@/index.js";
 import { createRingBuffer } from "@/store/ring-buffer.js";
 import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
@@ -707,7 +708,7 @@ async function main(): Promise<void> {
     serverManager: serverMgr,
     clustered: process.argv.includes("--clustered") || process.env.TP_TOOL_MODE === "clustered",
   });
-  const transport = new StdioServerTransport();
+  const transport = new StdioServerTransport(process.stdin, createSafeStdout(process.stdout) as unknown as NodeJS.WriteStream);
 
   // ── HTTP Transport (opt-in via --http) ──
   // Adds REST endpoints alongside MCP Streamable HTTP for dashboard integration.

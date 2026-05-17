@@ -23,7 +23,7 @@
     {
       "gateway": "tp_correlate",
       "description": "Cross-reference errors with diffs, clusters, and correlated signals.",
-      "tools": ["correlate_with_diff", "get_correlated_errors", "check_drift"]
+      "tools": ["correlate_with_diff", "get_correlated_errors", "get_cross_layer_diagnosis", "check_drift"]
     },
     {
       "gateway": "tp_infra",
