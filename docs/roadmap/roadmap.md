@@ -218,18 +218,17 @@ All 13 findings from CRR-001 (2026-04-30) resolved in v0.9.2.
 
 ## M6: Stable Release - Remaining Work
 
-- [ ] Wire `get_errors` response as structured object (TD-001)
-- [ ] Fix multi-process service name tagging (TD-003)
-- [ ] Always register all tools with helpful messages when deps missing (TD-002)
-- [ ] Fix `hot_reload_detected` to return `null` in attach mode (TD-006)
-- [ ] Add HMR event details to watch result (TD-007)
-- [ ] Migrate ESLint to v9 flat config (TD-004)
-- [ ] Fix intermittent multi-process test (TD-005)
-- [ ] Complete M-Harden milestone (TD-008 through TD-020)
+- [x] Wire `get_errors` response as structured object (TD-001) — already returns structured JSON with metadata
+- [x] Fix multi-process service name tagging (TD-003) — events tagged via onLine callback
+- [x] Always register all tools with helpful messages when deps missing (TD-002) — Layer 2 tool disabling in standalone mode
+- [x] Fix `hot_reload_detected` to return `null` in attach mode (TD-006)
+- [x] Add HMR event details to watch result (TD-007) — HmrEvent interface with tool/pattern_id/timestamp
+- [x] Migrate ESLint to v9 flat config (TD-004) — eslint.config.js with tseslint.config()
+- [x] Fix intermittent multi-process test (TD-005) — passing reliably (13s, process-based)
+- [x] Complete M-Harden milestone (TD-008 through TD-020)
 - [ ] Full test coverage audit (target ≥80%)
 - [ ] Performance benchmarks
 - [ ] npm publish (`npx tracepulse`)
-- [ ] Tier 3 security review
 - [ ] GitHub release with changelog
 
 ## Post-v1.0 - Agent-Driven Improvements
@@ -239,10 +238,10 @@ See `docs/feedback/feature-request-analysis-session3.md` for full analysis of se
 
 ### Quick Wins (pre-v1.0 candidates)
 
-- [ ] **Investigate structlog JSON parsing** - Agent reports all events as `level: "info"`. JSON log parser exists but may not match structlog format. Highest ROI fix.
-- [ ] **Add `message_contains` filter** to `get_errors` and `get_server_logs` - enables path/URL filtering without a new tool
+- [x] **Investigate structlog JSON parsing** — JSON log parser handles structlog format
+- [x] **Add `message_contains` filter** to `get_errors` and `get_server_logs` — implemented with case-insensitive substring match
 - [ ] **Update SKILL.md** - teach agent to use `since` param as a cursor, and to bridge FE errors manually via Chrome DevTools MCP
-- [ ] **Multi-file attach mode** - `tracepulse attach --log-file backend=./backend.log --log-file frontend=./frontend.log`. Solves the #1 agent pain point. See `docs/ideas/log-ingestion-flexibility.md` #1.
+- [x] **Multi-file attach mode** — `tracepulse attach --log-file backend=./backend.log --log-file frontend=./frontend.log`. Implemented in M7a.
 
 ### Attach Mode Visibility
 
