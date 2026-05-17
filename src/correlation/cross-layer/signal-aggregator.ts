@@ -14,7 +14,7 @@
 
 import type { RuntimeEvent } from "@/types/events.js";
 import type { FrontendError } from "@/correlation/types.js";
-import type { AggregatorDeps, LayerSignal } from "@/correlation/cross-layer/types.js";
+import type { AggregatorDeps, LayerSignal, SignalSnapshot } from "@/correlation/cross-layer/types.js";
 
 // ──────────────────────────────────────────────
 // Backend Signal Collection
@@ -193,16 +193,19 @@ function collectProcessSignals(
  *
  * Calls each layer collector with the provided dependencies, merges results,
  * and sorts by timestamp ascending. Best-effort: unavailable layers produce
- * empty arrays rather than errors.
+ * empty arrays rather than errors. Returns a SignalSnapshot with metadata
+ * about which layers contributed and which failed.
  *
  * @param deps - Injected dependencies for each layer.
  * @param since - Unix ms cutoff. Only signals after this time are collected.
- * @returns Merged LayerSignal[] sorted by timestamp ascending.
+ * @returns SignalSnapshot with signals, timestamp, and missing layer info.
  */
 export async function aggregateSignals(
   deps: AggregatorDeps,
   since: number,
-): Promise<LayerSignal[]> {
+): Promise<SignalSnapshot> {
+  const snapshotTimestamp = Date.now();
+
   // Collect from all layers in parallel where possible
   const [backendEvents, frontendErrors, gitChanges] = await Promise.all([
     Promise.resolve(deps.getBackendEvents(since)),
@@ -220,11 +223,24 @@ export async function aggregateSignals(
   const git = collectGitSignals(gitChanges, since);
   const process = collectProcessSignals(lastHotReload, lastRestart, since, hasGitChanges);
 
+  // Track which layers are missing (failed or returned empty)
+  const missingSignals: string[] = [];
+  if (backend.length === 0) missingSignals.push("backend");
+  if (frontend.length === 0) missingSignals.push("frontend");
+  if (gitChanges === null) missingSignals.push("git");
+
   // Merge and sort by timestamp ascending
   const all = [...backend, ...frontend, ...git, ...process];
   all.sort((a, b) => a.timestamp - b.timestamp);
 
-  return all;
+  const activeLayers = [...new Set(all.map((s) => s.layer))];
+
+  return {
+    signals: all,
+    snapshot_timestamp: snapshotTimestamp,
+    missing_signals: missingSignals,
+    active_layers: activeLayers,
+  };
 }
 
 // ──────────────────────────────────────────────

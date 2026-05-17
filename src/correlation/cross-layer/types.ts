@@ -73,6 +73,13 @@ export interface CrossLayerPattern {
   readonly suggestedFix: string;
   /** Maximum time span (ms) for all signals to correlate. */
   readonly timeWindowMs: number;
+  /**
+   * Minimum number of distinct signals (required + optional) that must match
+   * before this pattern's diagnosis is surfaced. Implements the "quiet agent"
+   * principle from v2 spec: single-signal matches are logged but not shown.
+   * Default: 2 (enforced by the matcher if omitted).
+   */
+  readonly minSignals?: number;
 }
 
 // ──────────────────────────────────────────────
@@ -101,6 +108,21 @@ export interface Diagnosis {
 // ──────────────────────────────────────────────
 // Aggregator Dependencies
 // ──────────────────────────────────────────────
+
+/**
+ * Result of signal aggregation including metadata about collection.
+ * Used by the tool handler to populate snapshot_timestamp and missing_signals.
+ */
+export interface SignalSnapshot {
+  /** Collected signals from all layers. */
+  readonly signals: readonly LayerSignal[];
+  /** Unix ms when collection started. */
+  readonly snapshot_timestamp: number;
+  /** Layers that failed to return data or returned empty. */
+  readonly missing_signals: readonly string[];
+  /** Which layers contributed at least one signal. */
+  readonly active_layers: readonly string[];
+}
 
 /**
  * Dependencies injected into the signal aggregator.

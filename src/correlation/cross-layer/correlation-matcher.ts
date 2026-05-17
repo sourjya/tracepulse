@@ -21,6 +21,13 @@ const MAX_DIAGNOSES = 3;
 /** Confidence boost when an optional signal matches. */
 const OPTIONAL_SIGNAL_BOOST = 10;
 
+/**
+ * Default minimum signals required before a diagnosis is surfaced.
+ * Implements the "quiet agent" principle: single-signal observations
+ * are logged internally but not shown to the developer.
+ */
+const DEFAULT_MIN_SIGNALS = 2;
+
 // ──────────────────────────────────────────────
 // Signal Matching
 // ──────────────────────────────────────────────
@@ -147,6 +154,10 @@ export function diagnose(
 
     // Deduplicate layers
     const layers = [...new Set(matchedSignals.map((s) => s.layer))];
+
+    // Enforce minimum signal count (v2 "quiet agent" principle)
+    const minRequired = pattern.minSignals ?? DEFAULT_MIN_SIGNALS;
+    if (matchedSignals.length < minRequired) continue;
 
     diagnoses.push({
       pattern_id: pattern.id,
