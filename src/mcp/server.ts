@@ -59,6 +59,7 @@ import type { InfraMonitor } from "@/infra/infra-monitor.js";
 import { createNoOpInfraMonitor } from "@/infra/infra-monitor.js";
 import { handleCheckPort } from "@/tools/check-port.js";
 import { handleFreePort } from "@/tools/free-port.js";
+import { handleGetCrossLayerDiagnosis } from "@/tools/get-cross-layer-diagnosis.js";
 import { handleGetProjectHealth } from "@/tools/get-project-health.js";
 import { handleRegisterProbe, handleListProbes, createProbeManager, type ProbeManager } from "@/tools/register-probe.js";
 import type { ServiceRegistry } from "@/services/service-registry.js";
@@ -595,6 +596,22 @@ export function createMcpServer(
       openWorldHint: false,
     },
   }, () => handleCorrelateWithDiff(buffer, options?.cwd ?? process.cwd()));
+
+  server.registerTool("get_cross_layer_diagnosis", {
+    title: "Get Cross-Layer Diagnosis",
+    description:
+      "Cross-layer failure diagnosis. Correlates backend logs, frontend errors, git state, and process state to identify root causes that span multiple layers.",
+    inputSchema: {
+      time_window_seconds: z.number().optional().describe("How far back to look for signals (default 60, max 300)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleGetCrossLayerDiagnosis(
+    buffer,
+    args as Record<string, unknown>,
+    options?.cwd ?? process.cwd(),
+    options?.frontendBuffer,
+    buffer.lastBuildAt,
+  ));
 
   server.registerTool("get_health_summary", {
     title: "Get Health Summary",
