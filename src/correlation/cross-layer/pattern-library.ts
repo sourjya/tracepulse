@@ -74,6 +74,7 @@ export const PATTERNS: readonly CrossLayerPattern[] = [
     diagnosisTemplate: "Rate limiter is rejecting requests (429 Too Many Requests). The bucket is likely full from a recent burst of requests.",
     suggestedFix: "Wait for the rate limit window to reset, or increase the rate limit threshold in your configuration. If this was caused by a test/eval run, the bucket will refill automatically.",
     timeWindowMs: 30_000,
+    minSignals: 1, // 429 is unambiguous — single signal is sufficient
   },
 
   // ──────────────────────────────────────────────
@@ -90,6 +91,7 @@ export const PATTERNS: readonly CrossLayerPattern[] = [
     diagnosisTemplate: "The same error has occurred multiple times. This is not transient — investigate the root cause rather than retrying.",
     suggestedFix: "Look at the file:line in the error context. The issue is systematic, not a one-off. Check recent code changes that might have introduced the regression.",
     timeWindowMs: 300_000, // 5 minutes
+    minSignals: 1, // Repetition itself is the corroboration
   },
 
   // ──────────────────────────────────────────────
@@ -109,6 +111,7 @@ export const PATTERNS: readonly CrossLayerPattern[] = [
     diagnosisTemplate: "Request was rejected with 422 Unprocessable Entity. A field in the request payload failed validation.",
     suggestedFix: "Check the validation error details in the backend response body. Common causes: missing required field, value exceeds max_length, wrong type, or enum value not in allowed set.",
     timeWindowMs: 10_000,
+    minSignals: 1, // 422 is unambiguous — single signal is sufficient
   },
 
   // ──────────────────────────────────────────────
@@ -148,5 +151,6 @@ export const PATTERNS: readonly CrossLayerPattern[] = [
     diagnosisTemplate: "Receiving 401 Unauthorized responses. The authentication token has likely expired or is invalid.",
     suggestedFix: "Re-authenticate to get a fresh token. If using JWT, check the token expiry. If using session cookies, the session may have been invalidated.",
     timeWindowMs: 10_000,
+    minSignals: 1, // 401 is unambiguous — single signal is sufficient
   },
 ];

@@ -83,15 +83,12 @@ export async function handleGetCrossLayerDiagnosis(
   };
 
   // Aggregate signals from all layers
-  const signals = await aggregateSignals(deps, since);
+  const snapshot = await aggregateSignals(deps, since);
 
   // Run diagnosis
-  const diagnoses = diagnose(signals, PATTERNS);
+  const diagnoses = diagnose(snapshot.signals, PATTERNS);
 
-  // Determine which layers are active
-  const activeLayers = [...new Set(signals.map((s) => s.layer))];
-
-  // Build response
+  // Build response with v2 spec fields
   const result: Record<string, unknown> = {
     diagnoses: diagnoses.map((d) => ({
       pattern_id: d.pattern_id,
@@ -100,16 +97,18 @@ export async function handleGetCrossLayerDiagnosis(
       suggested_fix: d.suggested_fix,
       layers_involved: d.layers_involved,
     })),
-    signals_collected: signals.length,
-    layers_active: activeLayers,
+    signals_collected: snapshot.signals.length,
+    layers_active: snapshot.active_layers,
+    snapshot_timestamp: new Date(snapshot.snapshot_timestamp).toISOString(),
+    missing_signals: snapshot.missing_signals,
   };
 
   // Add helpful context when no diagnosis found
   if (diagnoses.length === 0) {
-    if (signals.length === 0) {
+    if (snapshot.signals.length === 0) {
       result.no_diagnosis_reason = "No signals in the time window. The server may be idle, or no errors have occurred recently.";
     } else {
-      result.no_diagnosis_reason = `${signals.length} signal(s) collected from ${activeLayers.join(", ")} but no known cross-layer pattern matched. The issue may be single-layer — try get_errors or get_correlated_errors.`;
+      result.no_diagnosis_reason = `${snapshot.signals.length} signal(s) collected from ${snapshot.active_layers.join(", ")} but no known cross-layer pattern matched with sufficient corroboration (2+ signals required). The issue may be single-layer — try get_errors or get_correlated_errors.`;
     }
   }
 

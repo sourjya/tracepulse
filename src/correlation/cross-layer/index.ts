@@ -16,5 +16,6 @@ export type {
   CrossLayerPattern,
   SignalMatcher,
   Diagnosis,
+  SignalSnapshot,
   AggregatorDeps,
 } from "@/correlation/cross-layer/types.js";
