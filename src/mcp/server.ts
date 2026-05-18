@@ -53,6 +53,7 @@ import { handleWaitForEvent } from "@/tools/wait-for-event.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import { buildAllowlist } from "@/tools/run-and-watch-allowlist.js";
 import { handleGetRequests } from "@/tools/get-requests.js";
+import { autoCorrelate } from "@/correlation/auto-correlator.js";
 import { handleRestartServer, type RestartFn } from "@/tools/restart-server.js";
 import { handleGetInfraStatus, handleGetInfraDetail } from "@/tools/get-infra-status.js";
 import type { InfraMonitor } from "@/infra/infra-monitor.js";
@@ -109,6 +110,7 @@ export function handleGetErrors(
   args: Record<string, unknown>,
   errorLifecycle?: ErrorLifecycle,
   patternAnalyzer?: PatternAnalyzer,
+  changedFiles?: readonly string[],
 ): CallToolResult {
   const validation = validateEventFilters(args);
   if (!validation.valid) {
@@ -159,11 +161,20 @@ export function handleGetErrors(
     ? annotateWithPatterns(correlated, patternAnalyzer)
     : correlated;
 
+  // Enrich with likely_cause from auto-correlation (M26 Phase 2)
+  const enriched = changedFiles && changedFiles.length > 0
+    ? annotated.map((e) => {
+        if (e.signal_score < 30) return e;
+        const cause = autoCorrelate(e.context, changedFiles as string[]);
+        return cause ? { ...e, likely_cause: cause } : e;
+      })
+    : annotated;
+
   // Inject loop warning if detected (W1.6)
   const loopWarning = args._auditBuffer ? (args._auditBuffer as AuditBuffer).detectLoop() : null;
 
   return jsonResult(addEmptyDiagnostics("get_errors", {
-    errors: annotated,
+    errors: enriched,
     total_matching: unacknowledged.length,
     session_started_at: buffer.sessionStartedAt,
     oldest_event_at: buffer.oldestEventAt,
@@ -290,6 +301,8 @@ export function createMcpServer(
     serverManager?: ServerManager;
     detectedStacks?: readonly import("@/diagnostics/project-detector.js").ProjectStack[];
     clustered?: boolean;
+    /** Getter for recently changed files (git diff). Used for auto-correlation in get_errors. */
+    getChangedFiles?: () => readonly string[];
   },
 ): McpServer {
   const server = new McpServer({
@@ -320,7 +333,7 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer));
+  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer, options?.getChangedFiles?.()));
 
   server.registerTool("get_server_logs", {
     title: "Get Server Logs",
