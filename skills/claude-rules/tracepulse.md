@@ -2,6 +2,10 @@
 # Install: copy to ~/.claude/rules/tracepulse.md
 # Or run: tracepulse init --claude
 
+## Session Start (MANDATORY - first action every session)
+
+Call `get_project_health()` before doing ANY work. This primes TracePulse monitoring and gives you server status, error count, and infrastructure health in one call. Skip this and you'll forget TP exists for the rest of the session.
+
 ## Tool Usage Rules
 
 - Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
@@ -65,3 +69,9 @@ run_and_watch("npm run build")               # Build
 | Bug patterns | `get_bug_patterns()` |
 | Check drift | `check_drift()` |
 | Test MCP server starts | `verify_mcp(command: "...")` |
+
+## Self-Check (every 30 minutes or before major commits)
+
+If you've been using Bash for test/build commands, STOP and switch to `run_and_watch`. Ask yourself before every Bash call: "Does TracePulse have a tool for this?" If yes, use it.
+
+Quick self-audit: `get_session_insights()` — shows missed opportunities and tool usage gaps.

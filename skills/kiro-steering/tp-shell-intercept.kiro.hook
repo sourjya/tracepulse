@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "TracePulse Shell Intercept",
+  "description": "After a shell call, checks if the command should have used a TracePulse tool instead (run_and_watch, start_server, verify_mcp, free_port).",
+  "version": "1",
+  "when": {
+    "type": "postToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check the shell command that just ran. If it matches ANY of these patterns, emit a one-line reminder (do NOT block or undo — just note it for next time):\n\n- `pytest`, `vitest`, `jest`, `tsc`, `eslint`, `npm test`, `npm run build`, `npx vite build`, `cargo test`, `go test`, `mvn test` → 'Next time: use run_and_watch(\"<cmd>\") for structured pass/fail output.'\n- `uvicorn`, `gunicorn`, `flask run`, `npm run dev`, `python manage.py runserver`, `node server` → 'Next time: use start_server(\"<cmd>\") for live error monitoring.'\n- `python -m <module>` where module looks like an MCP server → 'Next time: use verify_mcp(command: \"<cmd>\") to test MCP handshake.'\n- `lsof -ti:PORT | xargs kill`, `kill $(lsof`, `fuser -k` → 'Next time: use free_port(port) for safe port cleanup.'\n- `pkill -f` → 'Next time: use stop_server(name) if TracePulse manages the process.'\n\nIf the command does NOT match any pattern (git, cd, cat, ls, docker compose, deploy scripts, etc.), respond with just 'OK' and take no action. Do NOT suggest changes for git operations, deploy scripts, or commands that have no TracePulse equivalent."
+  }
+}

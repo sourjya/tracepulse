@@ -1471,3 +1471,49 @@ Same as the shell-for-grep and shell-for-pytest patterns: agent defaults to manu
 3. **Kiro hook** — detect when agent writes subprocess code that sends JSON-RPC initialize, suggest verify_mcp instead
 
 **Status:** ✅ Agent self-corrected. Enforcement improvements needed to prevent recurrence.
+
+---
+
+## 2026-05-19 - Agent chains git+build+deploy in one shell command (Nexus project)
+
+**Context:** Agent committed files, ran `npm run build`, and deployed — all in one chained shell command. When asked "why not TP?", correctly identified the split:
+
+### Agent's self-correction
+
+> 1. shell for git operations (no structured output needed)
+> 2. run_and_watch for npm run build (structured pass/fail, error parsing)
+> 3. shell for bash scripts/deploy.sh (custom script, no parser)
+
+> "I was being lazy by chaining everything into one mega-command."
+
+### Agent discovered get_session_insights flags this
+
+Agent called `get_session_insights` and found:
+- "No TracePulse tools called this session."
+- "No get_project_health() call in this session."
+
+> "TP already has the mechanism to flag my bad behavior — I just never called it."
+
+### Gap identified: passive shell-command detection
+
+Agent's feature request:
+
+> "If TP had a way to passively detect when I use shell for commands that have a dedicated parser (like npm run build, pytest, tsc) and flag it in get_session_insights without me needing to ask. Like a 'missed opportunities' section that says 'You ran npm run build via shell 3 times — use run_and_watch or verify_build instead.'"
+
+### Analysis
+
+This is the same pattern as every previous shell fallback, but with a new insight: **the agent never calls the self-check tools**. `get_session_insights` and `get_audit_trail` already exist to catch this, but agents don't call them proactively.
+
+**Three enforcement layers, in order of effectiveness:**
+
+1. **Passive detection (new feature)** — TracePulse can't see shell calls from other MCP tools directly. BUT: the audit trail records which TP tools were called. If a session has 0 run_and_watch calls but the agent has been active for 30+ minutes, `get_session_insights` could flag "No test/build commands run through TracePulse this session — are you using shell instead?"
+
+2. **Kiro hook (existing mechanism)** — A PostToolUse hook that fires after shell calls, checks if the command matches run_and_watch patterns (pytest, vitest, tsc, npm run build, cargo test), and injects a reminder. This is the only way to intercept shell calls in real-time.
+
+3. **SKILL.md "session opener" rule** — Require agents to call `get_project_health()` at session start. This primes the TP habit loop. Already in SKILL.md but agents skip it.
+
+**The real gap:** TracePulse cannot observe shell calls made through other MCP tools. It only sees its own tool invocations. The "missed opportunities" feature would need either:
+- A Kiro/Claude hook that intercepts shell calls and reports them to TP
+- Or inference from absence: "You've been active 45 min with 0 run_and_watch calls — likely using shell for builds"
+
+**Status:** 🔲 Planned — "missed opportunities" inference in get_session_insights (detect absence of expected tool usage). Kiro hook for real-time shell interception is a separate M13 item.

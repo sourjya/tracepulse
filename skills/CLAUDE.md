@@ -1,5 +1,11 @@
 # TracePulse + Chrome DevTools MCP - Agent Skills
 
+## FIRST ACTION EVERY SESSION
+```
+get_project_health()
+```
+Call this before ANY work. Primes TracePulse monitoring. Skip it and you'll default to Bash for everything.
+
 ## Available Tools
 
 TracePulse (42 tools) monitors your dev server. Use these patterns:
