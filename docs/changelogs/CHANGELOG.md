@@ -7,6 +7,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.22] - 2026-05-19
+
+### Added
+- **`verify_loop(claim, since, fingerprint?)`** — composite fix verification. Checks new errors, pinned fingerprint resolved, build clean, HMR detected. Returns confidence-scored verdict (high/medium/low). Collapses 5-7 tool calls into 1.
+- **`get_prompt_context(fingerprint)`** — pre-assembled, token-budgeted reasoning packet. Error + stack + surrounding logs + file snippet + git diff in one call.
+- **`test_counts` in `run_and_watch` response** — structured `{passed, failed, skipped, warnings, total}` parsed from pytest/vitest/jest/go/cargo test output.
+- **Auto-correlation in `get_errors`** — errors with file context are automatically enriched with `likely_cause` when the file was recently modified (git diff match).
+
+---
+
 ## [0.9.21] - 2026-05-18
 
 ### Fixed
