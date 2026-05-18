@@ -48,6 +48,7 @@ import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
 import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import { handleVerifyFix } from "@/tools/verify-fix.js";
 import { handleVerifyLoop } from "@/tools/verify-loop.js";
+import { handleGetPromptContext } from "@/tools/get-prompt-context.js";
 import { handleVerifyBuild } from "@/tools/verify-build.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
@@ -658,6 +659,17 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyLoop(buffer, args as Record<string, unknown>));
+
+  server.registerTool("get_prompt_context", {
+    title: "Get Prompt Context",
+    description:
+      "Pre-assembled reasoning packet for an error: message + stack + surrounding logs + file context. Token-budgeted. One call instead of 4-5.",
+    inputSchema: {
+      fingerprint: z.string().describe("Error fingerprint from get_errors."),
+      max_tokens: z.number().optional().describe("Token budget for the context (default 3000)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, (args) => handleGetPromptContext(buffer, args as Record<string, unknown>, options?.cwd));
 
   server.registerTool("verify_build", {
     title: "Verify Build",
