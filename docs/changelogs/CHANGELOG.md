@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.21] - 2026-05-18
+
+### Fixed
+- **stop_server now actually kills the process** — previously only updated in-memory state without sending SIGTERM. Now wires through `onStopRequest` callback to `process-spawner.stop()` (SIGTERM → wait → SIGKILL). State only marked stopped on successful kill.
+
+---
+
 ## [0.9.20] - 2026-05-17
 
 ### Fixed

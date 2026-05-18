@@ -51,6 +51,43 @@ describe("handleStopServer", () => {
     const text = (result as { content: Array<{ text: string }> }).content[0].text;
     expect(text).toContain("No server");
   });
+
+  it("calls onStopRequest callback to kill the process", async () => {
+    const mgr = createServerManager();
+    mgr.setRunning("main", 12345);
+    let stopCalled = false;
+    mgr.onStopRequest = async () => {
+      stopCalled = true;
+      return { success: true, message: "Server process killed (SIGTERM)." };
+    };
+    const result = await handleStopServer(mgr, {});
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    const parsed = JSON.parse(text);
+    expect(stopCalled).toBe(true);
+    expect(parsed.success).toBe(true);
+    expect(mgr.isRunning()).toBe(false);
+  });
+
+  it("does not mark stopped if onStopRequest fails", async () => {
+    const mgr = createServerManager();
+    mgr.setRunning("main", 12345);
+    mgr.onStopRequest = async () => ({ success: false, message: "SIGTERM failed" });
+    const result = await handleStopServer(mgr, {});
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    const parsed = JSON.parse(text);
+    expect(parsed.success).toBe(false);
+    expect(mgr.isRunning()).toBe(true);
+  });
+
+  it("falls back to state-only update without onStopRequest", async () => {
+    const mgr = createServerManager();
+    mgr.setRunning("main", 12345);
+    const result = await handleStopServer(mgr, {});
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    const parsed = JSON.parse(text);
+    expect(parsed.status).toBe("stopped");
+    expect(mgr.isRunning()).toBe(false);
+  });
 });
 
 describe("createServerManager", () => {

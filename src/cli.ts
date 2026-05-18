@@ -693,6 +693,18 @@ async function main(): Promise<void> {
     }
   };
 
+  // Wire stop callback so stop_server actually kills the managed process
+  serverMgr.onStopRequest = async (_name) => {
+    try {
+      await collector.stop();
+      process.stderr.write(`[tracepulse] Server stopped via stop_server tool.\n`);
+      return { success: true, message: "Server process killed (SIGTERM)." };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, message: `Failed to stop server: ${msg}` };
+    }
+  };
+
   const server = createMcpServer(buffer, () => collector.isConnected(), {
     registry: serviceRegistry,
     frontendBuffer,

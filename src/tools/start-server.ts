@@ -28,6 +28,8 @@ export interface ServerManager {
   setStopped(name?: string): void;
   /** Callback invoked when start_server validates successfully. CLI layer spawns the process. */
   onSpawnRequest?: (command: string, env?: Record<string, string>, cwd?: string, name?: string) => Promise<{ pid: number } | { error: string }>;
+  /** Callback invoked when stop_server is called. CLI layer kills the process. */
+  onStopRequest?: (name: string) => Promise<{ success: boolean; message: string }>;
 }
 
 /**
@@ -158,6 +160,17 @@ export async function handleStopServer(
   }
 
   const pid = manager.getPid(name);
+
+  // Kill the process via CLI callback if available
+  if (manager.onStopRequest) {
+    const result = await manager.onStopRequest(name);
+    if (result.success) {
+      manager.setStopped(name);
+    }
+    return jsonResult({ ...result, name, pid });
+  }
+
+  // No callback wired (testing or standalone) - just update state
   manager.setStopped(name);
 
   return jsonResult({

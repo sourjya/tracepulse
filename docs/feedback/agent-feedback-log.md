@@ -1352,3 +1352,53 @@ None — this is a process discipline issue, not a tooling gap. TP tools were av
 "Production-down urgency does not override structured verification. A broken fix deployed fast is worse than a verified fix deployed 60 seconds later. Always: build → verify → deploy → browser-check."
 
 **Status:** Logged. Agent self-identified the violations. No TP feature needed.
+
+---
+
+## 2026-05-18 - Shell fallback for process kill: no kill_process tool (Nexus project)
+
+**Context:** Agent needed to kill a running MCP server process (`devqueue.mcp_server`) so it would restart with new code. Used `shell("pkill -f 'devqueue.mcp_server' || true")`. User asked "why not TP?"
+
+### Agent's reasoning (correct)
+
+1. **free_port** — doesn't apply. The MCP server communicates over stdio, not a known TCP port.
+2. **run_and_watch** — designed for pass/fail output (tests, builds). `pkill` produces no meaningful output.
+3. **stop_server** — only works for TP-managed processes. This MCP server was started externally.
+4. **No `kill_process(pattern)` tool exists** in TracePulse.
+
+### Gap identified
+
+TracePulse manages server starts (`start_server`) and restarts (`restart_server`) but has no way to kill arbitrary processes by name/pattern. The existing `stop_server` only works for processes TracePulse spawned.
+
+**Two sub-gaps:**
+
+1. **stop_server is half-implemented** — `handleStopServer` calls `manager.setStopped(name)` (updates in-memory map) but never actually sends SIGTERM to the process. The `process-spawner.stop()` method exists with proper SIGTERM→wait→SIGKILL logic, but it's not wired to the tool handler via an `onStopRequest` callback.
+
+2. **No tool for externally-managed processes** — When the agent needs to kill a process it didn't start (e.g., an MCP server started by another tool, a background worker from a previous session), there's no TP tool for it.
+
+### Proposed fixes
+
+**Fix 1 (bug fix): Wire stop_server to actually kill the process**
+- Add `onStopRequest` callback to `ServerManager` interface (mirrors `onSpawnRequest`)
+- CLI layer wires it to `spawner.stop()` (SIGTERM → wait → SIGKILL)
+- `handleStopServer` calls the callback before marking stopped
+
+**Fix 2 (new tool): `kill_process(pattern, signal?)`**
+- Kills processes matching a name/pattern (like `pkill -f`)
+- Logs the kill in audit trail
+- Confirms the process actually died
+- Returns PID(s) killed and confirmation
+- Useful for: orphaned servers, external MCP servers, background workers from crashed sessions
+
+**Alternative:** If the external MCP server were started via `start_server(name: "devqueue-mcp", command: "python -m devqueue.mcp_server")`, then `stop_server(name: "devqueue-mcp")` would work. But this requires the user to route all process management through TP.
+
+### Impact
+
+Without this, agents fall back to `shell("pkill -f ...")` for any process kill that isn't port-based (`free_port`) or TP-managed (`stop_server`). This is a common operation during development (restarting MCP servers, killing stale workers, clearing orphaned processes).
+
+### Priority assessment
+
+- **Fix 1 (wire stop_server):** HIGH — it's a bug. The tool claims to stop servers but doesn't actually kill them.
+- **Fix 2 (kill_process):** MEDIUM — nice to have, but `free_port` covers the most common case (port-bound servers). The remaining case (stdio-based processes, pattern-matched kills) is less frequent.
+
+**Status:** 🔲 Planned. Fix 1 is a bug fix. Fix 2 is a new feature for the roadmap.
