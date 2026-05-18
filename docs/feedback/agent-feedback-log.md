@@ -1402,3 +1402,37 @@ Without this, agents fall back to `shell("pkill -f ...")` for any process kill t
 - **Fix 2 (kill_process):** MEDIUM — nice to have, but `free_port` covers the most common case (port-bound servers). The remaining case (stdio-based processes, pattern-matched kills) is less frequent.
 
 **Status:** 🔲 Planned. Fix 1 is a bug fix. Fix 2 is a new feature for the roadmap.
+
+---
+
+## 2026-05-18 - run_and_watch allowlist rejects `uv run` with env var prefix (SecurIQ project)
+
+**Context:** Agent ran full pytest suite on a Python project. Used `shell("cd /path && PYTHONPATH=src uv run pytest --tb=short -q 2>&1 | tail -5")` instead of run_and_watch.
+
+### Agent's reasoning
+
+run_and_watch rejected the command because `PYTHONPATH=src uv run pytest ...` starts with an env var prefix, not an allowed command prefix. After the rejection, agent fell back to shell for all subsequent test runs.
+
+**Error message received:** "Command not allowed. Must start with one of: npx, npm, node, tsc, eslint, vitest, jest, pnpm, bun, make, cmake, bash."
+
+### Agent's self-correction
+
+Agent identified the workaround: `bash -c 'PYTHONPATH=src uv run pytest ...'` — since `bash` is in the allowlist. Committed to using this pattern going forward.
+
+### Two issues
+
+1. **`uv` is in the allowlist (added v0.9.14)** but `uv run` preceded by env vars (`PYTHONPATH=src uv run ...`) fails because the allowlist checks the first token, which is `PYTHONPATH=src` not `uv`.
+
+2. **Same root cause as the original allowlist rejection pattern (v0.9.7-0.9.13):** One rejection → full session shell fallback. Agent gives up on the tool entirely after a single failure.
+
+### Fix options
+
+1. **Strip leading env var assignments before checking allowlist** — detect `KEY=val` prefix pattern and skip to the actual command. This is the correct fix since `child_process.spawn` doesn't support inline env vars anyway (they should go in the `env` parameter).
+2. **Better error message** — when env var prefix detected, suggest: "Move PYTHONPATH=src to the env parameter: `run_and_watch('uv run pytest ...', env: {PYTHONPATH: 'src'})`"
+3. **Document the `bash -c` workaround** in SKILL.md as immediate mitigation.
+
+### Pattern
+
+This is the 5th+ instance of "allowlist rejection → full session shell fallback." The allowlist is the #1 cause of agents abandoning run_and_watch. Each fix (adding commands, fixing formats) catches one variant but new ones keep appearing. The env-var-prefix variant is particularly common in Python projects.
+
+**Status:** ✅ Fixed v0.9.21 — Allowlist now strips leading `KEY=val` env var assignments before checking the command prefix. Also emits a stderr hint suggesting the `env` parameter instead.

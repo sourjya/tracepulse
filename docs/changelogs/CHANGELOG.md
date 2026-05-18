@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 - **stop_server now actually kills the process** — previously only updated in-memory state without sending SIGTERM. Now wires through `onStopRequest` callback to `process-spawner.stop()` (SIGTERM → wait → SIGKILL). State only marked stopped on successful kill.
+- **run_and_watch allowlist accepts env var prefixes** — commands like `PYTHONPATH=src uv run pytest` were rejected because the allowlist checked the first token (`PYTHONPATH=src`) instead of the actual command (`uv`). Now strips leading `KEY=val` assignments before checking. Emits a stderr hint suggesting the `env` parameter instead.
 
 ---
 

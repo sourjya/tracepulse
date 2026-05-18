@@ -69,3 +69,39 @@ describe("buildAllowlist", () => {
     expect(unique.size).toBe(list.length);
   });
 });
+
+describe("run_and_watch env var prefix stripping", () => {
+  it("allows commands with leading KEY=val env var prefix", async () => {
+    // PYTHONPATH=src uv run pytest → should strip PYTHONPATH=src and check "uv run pytest"
+    const { handleRunAndWatch } = await import("@/tools/run-and-watch.js");
+    const pythonAllowlist = buildAllowlist([stack("python")]);
+    const result = await handleRunAndWatch(
+      { command: "PYTHONPATH=src uv run pytest --version", timeout_seconds: 5 },
+      pythonAllowlist,
+    );
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    // Should not be "Command not allowed" - it should attempt to run
+    expect(text).not.toContain("Command not allowed");
+  });
+
+  it("allows multiple env var prefixes", async () => {
+    const { handleRunAndWatch } = await import("@/tools/run-and-watch.js");
+    const pythonAllowlist = buildAllowlist([stack("python")]);
+    const result = await handleRunAndWatch(
+      { command: "PYTHONPATH=src DEBUG=1 uv run pytest --version", timeout_seconds: 5 },
+      pythonAllowlist,
+    );
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    expect(text).not.toContain("Command not allowed");
+  });
+
+  it("still rejects unknown commands even with env var prefix", async () => {
+    const { handleRunAndWatch } = await import("@/tools/run-and-watch.js");
+    const result = await handleRunAndWatch(
+      { command: "FOO=bar rm -rf /", timeout_seconds: 5 },
+      buildAllowlist([]),
+    );
+    const text = (result as { content: Array<{ text: string }> }).content[0].text;
+    expect(text).toContain("Command not allowed");
+  });
+});

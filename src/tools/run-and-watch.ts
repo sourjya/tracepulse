@@ -79,7 +79,12 @@ export async function handleRunAndWatch(
   }
 
   // Security: validate command against allowlist (stack-aware when available)
-  const cmdLower = command.trim().toLowerCase();
+  // Strip leading env var assignments (KEY=val) before checking - they don't work
+  // with child_process.spawn anyway and should use the `env` parameter instead.
+  const ENV_VAR_PREFIX = /^(?:[A-Z_][A-Z0-9_]*=[^\s]*\s+)+/i;
+  const envMatch = command.trim().match(ENV_VAR_PREFIX);
+  const cmdForCheck = envMatch ? command.trim().slice(envMatch[0].length) : command.trim();
+  const cmdLower = cmdForCheck.toLowerCase();
   const prefixes = allowedPrefixes ?? DEFAULT_ALLOWED_PREFIXES;
   const allowed = prefixes.some((prefix) =>
     cmdLower.startsWith(prefix.toLowerCase()),
@@ -92,6 +97,12 @@ export async function handleRunAndWatch(
       }],
       isError: true,
     };
+  }
+  // Warn if env vars were inline - suggest the env parameter instead
+  if (envMatch) {
+    const vars = envMatch[0].trim().split(/\s+/).map(v => v.split("="));
+    const envHint = vars.map(([k, v]) => `${k}: "${v}"`).join(", ");
+    process.stderr.write(`[tracepulse] Hint: move inline env vars to the env parameter: run_and_watch("${cmdForCheck.trim()}", env: {${envHint}})\n`);
   }
 
   // Security: reject shell metacharacters to prevent command chaining
