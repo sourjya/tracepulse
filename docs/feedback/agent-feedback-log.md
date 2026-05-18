@@ -1517,3 +1517,44 @@ This is the same pattern as every previous shell fallback, but with a new insigh
 - Or inference from absence: "You've been active 45 min with 0 run_and_watch calls — likely using shell for builds"
 
 **Status:** 🔲 Planned — "missed opportunities" inference in get_session_insights (detect absence of expected tool usage). Kiro hook for real-time shell interception is a separate M13 item.
+
+---
+
+## 2026-05-19 - run_and_watch rejects `uv run pytest` despite uv being in allowlist (PilotIQ project)
+
+**Context:** Agent needed to run `uv run pytest` on a Python project. run_and_watch rejected it. Agent fell back to shell, then self-corrected by creating a `scripts/test.sh` wrapper and using `bash scripts/test.sh`.
+
+### Root cause
+
+The agent used `cd /path && uv run pytest` which was rejected for shell metacharacters (`&&`). When it tried `uv run pytest` with `cwd`, it worked — but the agent had already given up after the first rejection.
+
+**However**, the agent also reported that `uv run pytest` was rejected by the allowlist earlier in the session. This shouldn't happen — `uv` and `uv run` are in the Python stack allowlist (added v0.9.14). Possible causes:
+1. The project doesn't have a Python stack detected (no `requirements.txt`, `pyproject.toml`, or `.venv`)
+2. The agent is using an older TracePulse version without the Python stack detection
+3. The `cd /path &&` prefix caused the metachar rejection, not the allowlist
+
+### The workaround pattern
+
+Agent created `scripts/test.sh`:
+```bash
+#!/bin/bash
+exec uv run pytest --tb=short -v "$@"
+```
+Then used `run_and_watch("bash scripts/test.sh", cwd: "/path/to/project")`.
+
+This works but is unnecessary friction. The correct invocation should be:
+```
+run_and_watch("uv run pytest --tb=short -v", cwd: "/home/sourjya/coding/pilotiq")
+```
+
+### Pattern (6th+ instance)
+
+Same as every previous allowlist rejection: one failure → agent creates workaround → never tries the direct approach again. The `bash scripts/test.sh` pattern is a valid workaround but adds a file to every project.
+
+### Action needed
+
+1. Verify `uv run` is detected correctly when project has `pyproject.toml` with `[tool.uv]` or `uv.lock`
+2. The env var prefix fix (v0.9.21) may not cover this case — need to check if `cd /path &&` was the actual rejection reason (metachar, not allowlist)
+3. SKILL.md should explicitly show: `run_and_watch("uv run pytest", cwd: "/absolute/path")` as the canonical Python pattern
+
+**Status:** 🔲 Investigate — likely a metachar rejection misreported as allowlist rejection by the agent.
