@@ -7,6 +7,11 @@ Install once:
 npm install -g tracepulse
 ```
 
+Or install the latest version directly from GitHub:
+```bash
+npm install -g github:sourjya/tracepulse
+```
+
 Add to your MCP config:
 ```json
 {

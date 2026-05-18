@@ -53,6 +53,8 @@ Every tool the agent can call, organized by workflow.
 | `list_services()` | Service names, statuses, error counts | ~200 tokens |
 | `get_health_summary()` | One-line health check replacing 3 calls | ~100 tokens |
 | `verify_fix(duration_seconds?)` | All-in-one post-fix: watch + build + pass/fail | ~500 tokens |
+| `start_server(command, env?, cwd?, name?)` | Start a dev server mid-session. Pre-validates, activates monitoring. | ~100 tokens |
+| `stop_server(name?)` | Stop a running dev server. SIGTERM → wait → SIGKILL. | ~50 tokens |
 | `restart_server()` | Kill and respawn dev server (start mode only) | ~100 tokens |
 
 ## Infrastructure & Project Health

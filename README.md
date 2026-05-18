@@ -57,6 +57,11 @@ TracePulse auto-detects your project type (Node, Python, Go, Rust, Java) and pro
 
 For non-Node projects, install globally first: `npm install -g tracepulse`
 
+To install the latest unreleased version directly from GitHub:
+```bash
+npm install -g github:sourjya/tracepulse
+```
+
 ### Start mode - spawn and monitor your dev server
 
 **Node.js projects** (npm/pnpm/Bun available in project):
@@ -183,6 +188,9 @@ Point directly to the built CLI:
 | Tool | Description | Tokens |
 |------|-------------|--------|
 | `list_services()` | Service names, statuses, error counts, last activity | ~200 |
+| `start_server(command, env?, cwd?, name?)` | Start a dev server mid-session. Pre-validates command, activates monitoring. | ~100 |
+| `stop_server(name?)` | Stop a running dev server. Sends SIGTERM, waits, then SIGKILL if needed. | ~50 |
+| `restart_server()` | Kill and respawn the dev server (start mode only). Auto-clears error buffer. | ~100 |
 
 ### Correlation (Phase 4)
 

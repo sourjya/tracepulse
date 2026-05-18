@@ -114,4 +114,4 @@ Tools for managing the current session, reviewing your workflow, and housekeepin
 | `list_services` | none | All monitored services with status, error count, and last activity. | 200 |
 | `restart_server` | none | Kill and respawn the dev server process. Only works in start mode. | 100 |
 | `start_server` | `command`, `env?`, `cwd?`, `name?` | Start a dev server mid-session. Pre-validates command, activates Layer 2 tools on success. | 100 |
-| `stop_server` | `name?` | Stop a running dev server. Sends SIGTERM. | 50 |
+| `stop_server` | `name?` | Stop a running dev server. Sends SIGTERM, waits, then SIGKILL if needed. | 50 |
