@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.9.20 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
+v0.9.21 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 
 ## Milestones
 
@@ -34,6 +34,7 @@ v0.9.20 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 | M21: Zero-Config Capability Architecture | Core UX | v1.0 | ✅ Complete (Phase 1-3) |
 | M22: HTTP REST API + Dashboard Integration | Platform | v1.0 | ✅ Complete |
 | M23: `tracepulse init` - Context-Aware Setup | Discoverability | v1.0 | 🔲 Spec ready |
+| M25: Agent Compliance & Self-Correction | Agent Feedback | v1.0 | 🔲 Planned |
 
 ## Reviews
 
@@ -76,6 +77,56 @@ Correlates signals across all layers (backend, frontend, git, process, build) to
 | 2 | Pattern library (7 known cross-layer failure signatures) | 1 day | HIGH |
 | 3 | Correlation matcher (match signals against patterns) | 2 days | HIGH |
 | 4 | `get_cross_layer_diagnosis` MCP tool | 1 day | HIGH |
+
+## M23: `tracepulse init` - Context-Aware Setup
+
+Source: Agent feedback (skill discoverability gap across MCP clients)
+
+| # | Feature | Effort | Impact |
+|---|---------|--------|--------|
+| 1 | `tracepulse init` — detect project type, write MCP config | Done | HIGH |
+| 2 | `tracepulse init --kiro` — install steering files + hooks to `.kiro/` | Done | HIGH |
+| 3 | `tracepulse init --claude` — copy rules to `~/.claude/rules/tracepulse.md` | 2 hours | HIGH |
+| 4 | `tracepulse init --cursor` — write `.cursor/rules/tracepulse.md` | 2 hours | Medium |
+| 5 | Detect companion MCPs (ViewGraph, Chrome DevTools) and generate combined skills | 1 day | Medium |
+
+## M25: Agent Compliance & Self-Correction
+
+Source: Agent feedback log (5+ sessions of shell fallback, verify_mcp bypass, session-start skip)
+
+The #1 product problem is agents using shell for commands TracePulse handles better. This milestone addresses enforcement, self-correction, and passive detection.
+
+| # | Feature | Effort | Impact | Source |
+|---|---------|--------|--------|--------|
+| 1 | **Kiro shell-intercept hook** — postToolUse on shell, nudges toward TP tools | Done | HIGH | Feedback 2026-05-19 |
+| 2 | **Claude session-start mandate** — `get_project_health()` first rule in rules file | Done | HIGH | Feedback 2026-05-19 |
+| 3 | **`tracepulse init --claude`** — auto-install rules to `~/.claude/rules/` | 2 hours | HIGH | Feedback 2026-05-15 |
+| 4 | **Missed-opportunity detection in `get_session_insights`** — infer shell usage from absence of expected TP calls | 1 day | HIGH | Feedback 2026-05-19 |
+| 5 | **`stop_server` wired to process kill** — onStopRequest callback | Done | Medium | Feedback 2026-05-18 |
+| 6 | **`kill_process(pattern, signal?)`** — kill externally-managed processes by name | 1 day | Medium | Feedback 2026-05-18 |
+| 7 | **run_and_watch env var prefix stripping** — `PYTHONPATH=src uv run pytest` accepted | Done | HIGH | Feedback 2026-05-18 |
+| 8 | **Error escalation** — auto-escalate errors that accumulate without acknowledgment | 2 days | Medium | Wishlist #31 |
+| 9 | **HMR details in verify_fix** — report which files triggered reload | 1 day | Medium | Wishlist #18 |
+| 10 | **Quick-check composite** — instant build errors + last HMR + last error (no blocking) | 1 day | Medium | Wishlist #20 |
+
+### Unaddressed Wishlists (from feedback log)
+
+| Wishlist | Description | Priority | Effort |
+|----------|-------------|----------|--------|
+| #27 | Test runner summary parsing (pass/fail/warning counts as top-level fields) | Medium | 1 day |
+| #29 | Auto-correlate errors with recent file edits (post-HMR) | Medium | 2 days |
+| #31 | Auto-escalate unacknowledged accumulating errors | Medium | 2 days |
+
+### From Deep Research (not yet on any milestone)
+
+| Feature | Research Ref | Priority | Effort |
+|---------|-------------|----------|--------|
+| `verify_loop(claim, since)` — composite verify with confidence score | §6.1 | HIGH | 1 week |
+| `get_prompt_context(error_id)` — pre-assembled reasoning packet | §6.8 | Medium | 1 week |
+| Per-fingerprint anomaly detection (occurrence-rate baselines) | §5.7 | Medium | 2 weeks |
+| Inactivity detector — "no activity after file change" suggests restart | Untracked | Low | 2 days |
+| Stdin pipe mode — `tail -f | tracepulse pipe` | Untracked | Low | 1 week |
+| CI output parsing (GitHub Actions, GitLab CI) | Untracked | Low | 1 week |
 
 ## M14: Category Extension (informed by Deep Research)
 
