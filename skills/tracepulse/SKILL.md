@@ -348,6 +348,14 @@ Database CLIs (`psql`, `mysql`, `sqlite3`, `redis-cli`, `mongo`) prompt for pass
 - **For Redis/Mongo:** use `run_and_watch("redis-cli -a $REDIS_PASS ping")` with credentials from .env
 - **General rule:** if a CLI tool might prompt for input, pass credentials via environment variables or flags, never interactively
 
+### NEVER write manual MCP handshake/subprocess code
+To verify an MCP server starts and responds correctly, use `verify_mcp`:
+```
+verify_mcp(command: "uv run python -m myapp.server")
+verify_mcp(command: "node dist/cli.js", timeout_seconds: 10)
+```
+This sends the JSON-RPC initialize handshake (same as Kiro/Claude/Cursor), waits for the response, and returns pass/fail. **Never** write manual subprocess code to test MCP servers — stdio transport deadlocks are guaranteed when you manage stdin/stdout yourself.
+
 ### Python virtualenv projects
 **ALWAYS use run_and_watch for Python commands.** Never `shell(".venv/bin/pytest ...")`.
 

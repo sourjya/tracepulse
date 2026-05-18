@@ -28,6 +28,7 @@ These are explicitly prohibited. No exceptions for "quick" or "temporary" or "de
 | `curl localhost:PORT` | `check_port(port)` |
 | `kill $(lsof -t -i:PORT)` | `free_port(port)` |
 | Background processes with `&` | `start_server` (TracePulse manages lifecycle) |
+| Manual subprocess code to test MCP servers | `verify_mcp(command: "...")` |
 
 ## After Code Changes
 
@@ -63,3 +64,4 @@ run_and_watch("npm run build")               # Build
 | Build errors | `get_build_errors()` |
 | Bug patterns | `get_bug_patterns()` |
 | Check drift | `check_drift()` |
+| Test MCP server starts | `verify_mcp(command: "...")` |

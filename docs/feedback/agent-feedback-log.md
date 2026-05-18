@@ -1436,3 +1436,38 @@ Agent identified the workaround: `bash -c 'PYTHONPATH=src uv run pytest ...'` �
 This is the 5th+ instance of "allowlist rejection → full session shell fallback." The allowlist is the #1 cause of agents abandoning run_and_watch. Each fix (adding commands, fixing formats) catches one variant but new ones keep appearing. The env-var-prefix variant is particularly common in Python projects.
 
 **Status:** ✅ Fixed v0.9.21 — Allowlist now strips leading `KEY=val` env var assignments before checking the command prefix. Also emits a stderr hint suggesting the `env` parameter instead.
+
+---
+
+## 2026-05-18 - Agent wrote 160-line MCP handshake test instead of using verify_mcp (PilotIQ project)
+
+**Context:** Agent needed to verify an MCP server starts and responds to the initialize handshake. Wrote a manual 160-line subprocess test with `select` + Content-Length parsing. Got stuck for ~30 minutes on stdin/stdout deadlocks. Eventually used `verify_mcp` which solved it in 2.2 seconds.
+
+### What happened
+
+1. Agent needed to test `uv run python -m pilotiq.mcp.server` responds to MCP handshake
+2. Wrote manual subprocess code: spawn process, write JSON-RPC initialize, parse Content-Length header, read response
+3. Got stuck on stdio deadlock — MCP's stdio transport blocks when both sides wait for input
+4. Spent ~30 minutes debugging the subprocess test
+5. When prompted "why not TP?", immediately recognized `verify_mcp` is purpose-built for this
+6. `verify_mcp(command="uv run python -m pilotiq.mcp.server")` — passed in 2.2s
+
+### Agent's self-assessment
+
+> "The 160-line test file I wrote is redundant now — TracePulse handles it better. I violated the steering rule: 'Use dedicated tools instead of terminal commands when a relevant tool is available.'"
+
+### Root cause
+
+Agent didn't have `verify_mcp` in its mental model of available tools. It's a newer tool (shipped v0.9.8) and the agent's training data has many examples of manual subprocess MCP testing but few examples of `verify_mcp`.
+
+### Pattern
+
+Same as the shell-for-grep and shell-for-pytest patterns: agent defaults to manual implementation when a purpose-built tool exists. The difference here is severity — 30 minutes lost vs 30 seconds with the right tool.
+
+### Enforcement options
+
+1. **SKILL.md guidance** — add explicit rule: "To verify an MCP server starts correctly, ALWAYS use verify_mcp. Never write manual subprocess/handshake code."
+2. **Tool description enhancement** — make verify_mcp's description more discoverable: mention "MCP handshake", "initialize", "stdio transport deadlock" as keywords
+3. **Kiro hook** — detect when agent writes subprocess code that sends JSON-RPC initialize, suggest verify_mcp instead
+
+**Status:** ✅ Agent self-corrected. Enforcement improvements needed to prevent recurrence.
