@@ -1558,3 +1558,37 @@ Same as every previous allowlist rejection: one failure → agent creates workar
 3. SKILL.md should explicitly show: `run_and_watch("uv run pytest", cwd: "/absolute/path")` as the canonical Python pattern
 
 **Status:** 🔲 Investigate — likely a metachar rejection misreported as allowlist rejection by the agent.
+
+---
+
+## 2026-05-19 - Agent proposes "scripts/test.sh at project init" pattern (PilotIQ)
+
+**Context:** Follow-up to the previous entry. Agent clarified it DID use run_and_watch for subsequent test runs (via `bash scripts/test.sh`). The shell call was from before the wrapper existed.
+
+### Agent's lesson
+
+> "I should have created scripts/test.sh at the very start of the project (during M0 skeleton) so that TP was always the default path."
+
+> "Rule for future sessions: First thing in any new project → create scripts/test.sh so run_and_watch works from minute one."
+
+### Assessment
+
+The agent is solving the wrong problem. `scripts/test.sh` is unnecessary friction — the correct invocation is:
+```
+run_and_watch("uv run pytest --tb=short", cwd: "/path/to/project")
+```
+
+`uv` and `uv run` are in the Python stack allowlist. The agent's original rejection was from `cd /path && uv run pytest` (metachar `&&`), not from `uv run pytest` itself. The error message already says "Use cwd parameter instead."
+
+### The real fix
+
+The agent needs to internalize: **`cwd` replaces `cd`**. No wrapper script needed. Add to SKILL.md Python section:
+```
+# WRONG (metachar rejection):
+run_and_watch("cd /path && uv run pytest")
+
+# RIGHT:
+run_and_watch("uv run pytest --tb=short", cwd: "/path/to/project")
+```
+
+**Status:** ✅ Already documented in SKILL.md and error message. Agent will internalize on next session.
