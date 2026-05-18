@@ -17,6 +17,7 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
+import { extractTestCounts } from "@/tools/test-counts.js";
 
 /**
  * Generate a diagnostic hint when a command fails.
@@ -215,6 +216,9 @@ export async function handleRunAndWatch(
         .map((e) => e.message)
         .slice(-1)[0]; // last summary line
 
+      // Extract structured test counts from the summary string
+      const testCounts = testSummary ? extractTestCounts(testSummary) : null;
+
       resolve({
         content: [{
           type: "text",
@@ -226,6 +230,7 @@ export async function handleRunAndWatch(
             error_count: errors.length,
             errors: errors.slice(0, 10),
             ...(testSummary ? { test_summary: testSummary } : {}),
+            ...(testCounts ? { test_counts: testCounts } : {}),
             summary: exitCode === 0
               ? `Command succeeded in ${Date.now() - startTime}ms, ${errors.length} warnings`
               : timedOut
