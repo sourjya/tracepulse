@@ -1592,3 +1592,33 @@ run_and_watch("uv run pytest --tb=short", cwd: "/path/to/project")
 ```
 
 **Status:** ✅ Already documented in SKILL.md and error message. Agent will internalize on next session.
+
+---
+
+## 2026-05-19 - Agent chains git+merge+deploy+push in one mega shell command (Nexus M43)
+
+**Context:** Agent ran `git add && git commit && git checkout && git merge && bash scripts/deploy.sh && git push` as a single shell call. Build was correctly done via run_and_watch.
+
+### Agent's self-assessment
+
+> "The git+deploy chain is legitimately a shell use case — there's no TP parser for git commit or custom deploy scripts."
+
+This is correct. Git operations and deploy scripts are legitimate shell uses. The issue is readability and atomicity — one mega-command makes it impossible to see which step failed.
+
+### What's legitimate shell vs what should be TP
+
+| Command | Tool | Reason |
+|---------|------|--------|
+| `npm run build` | run_and_watch ✅ | Parseable output |
+| `git add + commit` | shell ✅ | No parser needed |
+| `git checkout + merge` | shell ✅ | No parser needed |
+| `bash scripts/deploy.sh` | shell ✅ | Custom script |
+| `git push` | shell ✅ | No parser needed |
+
+The agent is correct that these are all legitimate shell uses. The feedback is about **splitting them into readable atomic calls**, not about using TP instead.
+
+### No TP action needed
+
+This is a code hygiene issue, not a TracePulse gap. The steering files already say "Use dedicated tools instead of terminal commands when a relevant tool is available" — git and deploy scripts don't have dedicated tools.
+
+**Status:** ✅ Correct behavior. Agent self-corrected to split into smaller calls.
