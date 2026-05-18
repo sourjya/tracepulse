@@ -47,6 +47,7 @@ import { handleGetErrorTrends } from "@/tools/get-error-trends.js";
 import { handleCorrelateWithDiff } from "@/tools/correlate-with-diff.js";
 import { handleGetHealthSummary } from "@/tools/get-health-summary.js";
 import { handleVerifyFix } from "@/tools/verify-fix.js";
+import { handleVerifyLoop } from "@/tools/verify-loop.js";
 import { handleVerifyBuild } from "@/tools/verify-build.js";
 import { handleWaitForBuild } from "@/tools/wait-for-build.js";
 import { handleWaitForEvent } from "@/tools/wait-for-event.js";
@@ -644,6 +645,19 @@ export function createMcpServer(
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
+
+  server.registerTool("verify_loop", {
+    title: "Verify Loop",
+    description:
+      "Composite fix verification: checks new errors, pinned fingerprint resolved, build clean, HMR detected. Returns confidence-scored verdict (high/medium/low). Collapses 5-7 calls into 1.",
+    inputSchema: {
+      claim: z.string().describe("What you claim to have fixed (e.g., 'Fixed TypeError in auth.ts')"),
+      since: z.number().optional().describe("Unix ms timestamp of when the fix was applied. Default: 15s ago."),
+      fingerprint: z.string().optional().describe("Fingerprint to verify is resolved (from get_errors)."),
+      timeout_seconds: z.number().optional().describe("Max seconds to wait for HMR (default 10, max 30)."),
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, (args) => handleVerifyLoop(buffer, args as Record<string, unknown>));
 
   server.registerTool("verify_build", {
     title: "Verify Build",
