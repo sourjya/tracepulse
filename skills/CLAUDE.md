@@ -44,6 +44,7 @@ run_and_watch("npx tsc --noEmit", max_lines: 20)
 | "Build status" | `get_build_errors()` |
 | "What patterns?" | `get_bug_patterns()` |
 | "Check drift" | `check_drift()` |
+| "Test MCP server" | `verify_mcp(command: "...")` |
 
 ### Rules
 - ALWAYS use `run_and_watch` instead of shell for tests/builds/linters
@@ -62,3 +63,4 @@ run_and_watch("npx tsc --noEmit", max_lines: 20)
 - `curl localhost:PORT` to check server status → use `check_port` or `get_project_health`
 - `kill $(lsof -t -i:PORT)` → use `free_port(port)`
 - Background processes with `&` → use `start_server` (TracePulse manages lifecycle)
+- Manual subprocess code to test MCP servers → use `verify_mcp(command: "...")`
