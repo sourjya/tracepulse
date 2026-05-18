@@ -35,6 +35,7 @@ v0.9.21 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 | M22: HTTP REST API + Dashboard Integration | Platform | v1.0 | ✅ Complete |
 | M23: `tracepulse init` - Context-Aware Setup | Discoverability | v1.0 | 🔲 Spec ready |
 | M25: Agent Compliance & Self-Correction | Agent Feedback | v1.0 | 🔲 Planned |
+| M26: Intelligent Feedback | Deep Research + Feedback | v1.1 | 🔲 Spec ready |
 
 ## Reviews
 
@@ -127,6 +128,22 @@ The #1 product problem is agents using shell for commands TracePulse handles bet
 | Inactivity detector — "no activity after file change" suggests restart | Untracked | Low | 2 days |
 | Stdin pipe mode — `tail -f | tracepulse pipe` | Untracked | Low | 1 week |
 | CI output parsing (GitHub Actions, GitLab CI) | Untracked | Low | 1 week |
+
+## M26: Intelligent Feedback (~5 weeks)
+
+Source: Deep Research §5.7, §6.1, §6.8 | Feedback Wishlists #27, #29 | Untracked Ideas
+**Spec:** [`.kiro/specs/m26-intelligent-feedback/`](../../.kiro/specs/m26-intelligent-feedback/)
+
+Moves TracePulse from "passive error reporter" to "active debugging intelligence." Each feature reduces tool calls needed to diagnose and verify.
+
+| # | Feature | Effort | Impact | Source |
+|---|---------|--------|--------|--------|
+| 1 | **Test runner summary parsing** — structured pass/fail/skip counts from pytest/vitest/jest/go/cargo | 1 day | HIGH | Wishlist #27 |
+| 2 | **Auto-correlate errors with file edits** — new fingerprints auto-linked to recent changes | 2 days | HIGH | Wishlist #29 |
+| 3 | **`verify_loop(claim, since)`** — composite verify with confidence score (collapses 5-7 calls → 1) | 1 week | HIGH | §6.1 |
+| 4 | **`get_prompt_context(fingerprint)`** — pre-assembled, token-budgeted reasoning packet | 1 week | Medium | §6.8 |
+| 5 | **Per-fingerprint anomaly detection** — 3x baseline spike → auto-flag | 2 weeks | Medium | §5.7 |
+| 6 | **Stdin pipe mode + CI parsers** — `tracepulse pipe` + GitHub Actions/GitLab CI parsing | 1 week | Medium | Untracked |
 
 ## M14: Category Extension (informed by Deep Research)
 
