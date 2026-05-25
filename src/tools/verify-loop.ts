@@ -15,6 +15,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import { jsonResult } from "@/mcp/response-helpers.js";
+import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
 // ──────────────────────────────────────────────
 // Types
@@ -180,5 +181,6 @@ export async function handleVerifyLoop(
   };
 
   const result = computeVerdict(input);
-  return jsonResult({ ...result, claim, since });
+  const tip = result.confidence === "high" ? getPositiveNudge("verify_loop") : null;
+  return jsonResult({ ...result, claim, since, ...(tip ? { _tip: tip } : {}) });
 }

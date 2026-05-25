@@ -18,6 +18,7 @@ import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
 import { extractTestCounts } from "@/tools/test-counts.js";
+import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
 /**
  * Generate a diagnostic hint when a command fails.
@@ -236,6 +237,11 @@ export async function handleRunAndWatch(
               : timedOut
                 ? `Command timed out after ${timeout / 1000}s. Increase with timeout_seconds: ${Math.ceil(timeout / 1000 * 2)}`
                 : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
+            // Positive reinforcement: one-time nudge on first successful use
+            ...(exitCode === 0 ? (() => {
+              const tip = getPositiveNudge("run_and_watch");
+              return tip ? { _tip: tip } : {};
+            })() : {}),
             ...(exitCode !== 0 ? (() => {
               const hint = diagnoseFailure(command!, exitCode, process.cwd());
               return hint ? { diagnostic: hint } : {};

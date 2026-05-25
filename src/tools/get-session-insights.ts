@@ -12,6 +12,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { AuditBuffer } from "@/store/audit-buffer.js";
 import { detectRunAndWatchGap } from "@/analysis/usage-nudge.js";
+import { detectShellMisuse } from "@/analysis/shell-misuse.js";
 
 /** Threshold: errors above this score should be investigated. */
 const INVESTIGATE_THRESHOLD = 50;
@@ -133,12 +134,20 @@ export function handleGetSessionInsights(
     recommendations.push(runAndWatchNudge);
   }
 
+  // ── Shell misuse detection ──
+  // Flag shell calls that should have used run_and_watch
+  const shellMisuse = detectShellMisuse(auditRecords);
+  if (shellMisuse.recommendation) {
+    recommendations.push(shellMisuse.recommendation);
+  }
+
   return {
     content: [{
       type: "text",
       text: JSON.stringify({
         uninvestigated_errors: uninvestigated,
         verification_gaps: verificationGaps,
+        shell_misuse: shellMisuse,
         tool_usage: {
           most_called: mostCalled,
           least_called: leastCalled,

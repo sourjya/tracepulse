@@ -12,3 +12,4 @@ export * from "./redaction.js";
 export * from "./watch.js";
 export * from "./services.js";
 export * from "./correlation.js";
+export * from "./shell-misuse.js";

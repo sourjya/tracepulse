@@ -16,6 +16,7 @@ import { errorResult } from "@/mcp/response-helpers.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import { handleRunAndWatch } from "@/tools/run-and-watch.js";
 import { watchForErrors } from "@/watch/watch-controller.js";
+import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
 /**
  * Handle verify_build MCP tool call.
@@ -124,6 +125,10 @@ function result(
         summary,
         steps,
         ...(errors && errors.length > 0 ? { errors } : {}),
+        ...(verdict === "PASS" ? (() => {
+          const tip = getPositiveNudge("verify_build");
+          return tip ? { _tip: tip } : {};
+        })() : {}),
       }),
     }],
   };

@@ -7,6 +7,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.23] - 2026-05-25
+
+### Added
+- **Shell misuse detection** — `get_session_insights` now always includes a `shell_misuse` section that flags shell calls matching test/build/lint patterns (pytest, vitest, tsc, eslint, uv build, cargo test, etc.). Reports violations with command, timestamp, and whether output was truncated via pipes. Always present in response (even when clean) as a passive deterrent.
+- **Positive reinforcement nudges** — `run_and_watch`, `verify_build`, and `verify_loop` include a one-time `_tip` field on first successful use per session, reinforcing correct tool choice. Silent on subsequent calls to avoid token waste (~45 tokens max/session).
+- **Output truncation detection** — shell commands piped through `| tail`, `| head`, or `| grep` are flagged as data loss indicators in the shell misuse report.
+
+---
+
 ## [0.9.22] - 2026-05-19
 
 ### Added
