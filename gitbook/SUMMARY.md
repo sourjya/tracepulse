@@ -36,6 +36,7 @@
 * [Cross-Layer Diagnosis](features/cross-layer-diagnosis.md)
 * [Fingerprint Persistence](features/persistence.md)
 * [Bug Pattern Detection](features/bug-patterns.md)
+* [Shell Misuse Detection](features/shell-misuse-detection.md)
 * [Agent Skills](features/skills.md)
 * [Security](features/security.md)
 
