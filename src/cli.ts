@@ -460,7 +460,11 @@ async function main(): Promise<void> {
   if (parsed.command === "init") {
     const { runInit, checkForUpdate } = await import("@/cli/init-command.js");
 
-    process.stderr.write(`\n  ┌${"─".repeat(40)}┐\n  │\x1b[1m\x1b[36m  ⚡ TracePulse v${VERSION}${" ".repeat(Math.max(0, 23 - VERSION.length))}\x1b[0m│\n  │\x1b[2m  Runtime feedback for AI agents${" ".repeat(9)}\x1b[0m│\n  └${"─".repeat(40)}┘\n\n`);
+    // Banner: 40-char inner width. ⚡ takes 2 terminal columns, subtract 1 from padding.
+    const W = 40;
+    const l1 = `  ⚡ TracePulse v${VERSION}`;
+    const l2 = "  Runtime feedback for AI agents";
+    process.stderr.write(`\n  ┌${"─".repeat(W)}┐\n  │\x1b[1m\x1b[36m${l1}${" ".repeat(W - l1.length - 1)}\x1b[0m│\n  │\x1b[2m${l2}${" ".repeat(W - l2.length)}\x1b[0m│\n  └${"─".repeat(W)}┘\n\n`);
 
     // Non-blocking version check
     const updateMsg = await checkForUpdate(VERSION);
