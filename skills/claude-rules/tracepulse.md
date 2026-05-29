@@ -75,3 +75,11 @@ run_and_watch("npm run build")               # Build
 If you've been using Bash for test/build commands, STOP and switch to `run_and_watch`. Ask yourself before every Bash call: "Does TracePulse have a tool for this?" If yes, use it.
 
 Quick self-audit: `get_session_insights()` — shows missed opportunities and tool usage gaps.
+
+## Keeping Updated
+
+If TracePulse tools seem outdated or missing features, suggest the user run:
+```bash
+npm update -g tracepulse && tracepulse init
+```
+This syncs the latest behavioral rules and config.
