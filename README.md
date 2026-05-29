@@ -326,6 +326,31 @@ tracepulse start --http "npm run dev"
 ```
 Starts a Streamable HTTP server on `127.0.0.1:9800` alongside the default stdio transport. Allows multiple MCP clients to connect to the same TracePulse instance simultaneously.
 
+```bash
+# Project setup - install config, steering, hooks, and prompt shortcuts
+tracepulse init
+```
+Auto-detects your MCP client (Kiro, Claude Code, Cursor) and:
+- **Merges** TracePulse into your existing MCP config (preserves other servers)
+- **Installs steering files** and hooks for optimal agent behavior
+- **Installs prompt shortcuts** (`@tp-debug`, `@tp-health`, `@tp-test`, `@tp-diagnose`, `@tp-start`)
+- **Updates .gitignore** to exclude `.tracepulse/` session data
+- **Checks for updates** against the npm registry
+
+Re-run `tracepulse init` after updating TracePulse to sync the latest steering and prompts.
+
+### Prompt Shortcuts (Kiro)
+
+After running `tracepulse init`, these shortcuts are available in Kiro:
+
+| Shortcut | What it does |
+|----------|-------------|
+| `@tp-debug` | Investigate and fix the latest backend error |
+| `@tp-health` | Full project health check: server, infra, errors, build |
+| `@tp-test` | Run tests and fix failures |
+| `@tp-diagnose` | Cross-layer diagnosis: correlate backend, frontend, git, infra |
+| `@tp-start` | Start the dev server with live error monitoring |
+
 ## Why `run_and_watch` Instead of Shell
 
 `run_and_watch` isn't just a convenience - it solves real reliability problems:

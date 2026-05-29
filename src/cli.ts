@@ -458,16 +458,24 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === "init") {
-    const { runInit } = await import("@/cli/init-command.js");
+    const { runInit, checkForUpdate } = await import("@/cli/init-command.js");
+
+    process.stderr.write(`\n  TracePulse v${VERSION}\n  ${"─".repeat(28)}\n\n`);
+
+    // Non-blocking version check
+    const updateMsg = await checkForUpdate(VERSION);
+    if (updateMsg) {
+      process.stderr.write(`  ⚠  ${updateMsg}\n\n`);
+    }
+
     const actions = runInit(parsed.client as "auto" | "kiro" | "claude" | "cursor" | "generic", process.cwd());
-    process.stderr.write("\nTracePulse Init\n" + "=".repeat(30) + "\n\n");
     for (const action of actions) {
       process.stderr.write(`  ✓ ${action}\n`);
     }
     if (actions.length === 0) {
-      process.stderr.write("  Nothing to do (already configured).\n");
+      process.stderr.write("  Everything up to date.\n");
     }
-    process.stderr.write("\nRestart your AI tool to activate TracePulse.\n");
+    process.stderr.write("\n  Restart your AI tool to activate TracePulse.\n\n");
     return process.exit(0);
   }
 

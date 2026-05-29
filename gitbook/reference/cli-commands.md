@@ -148,7 +148,7 @@ tracepulse doctor
 
 ### `tracepulse init`
 
-Set up TracePulse for your AI tool. Auto-detects the MCP client and writes the appropriate config and skill files.
+Set up TracePulse for your AI tool. Auto-detects the MCP client and writes the appropriate config, steering, hooks, and prompt shortcuts.
 
 ```bash
 tracepulse init            # auto-detect client
@@ -157,7 +157,24 @@ tracepulse init --kiro     # set up for Kiro CLI
 tracepulse init --cursor   # set up for Cursor
 ```
 
-For Claude Code, this writes:
+**What it does:**
+
+| Action | Details |
+|--------|---------|
+| **MCP config** | Merges `tracepulse` into existing config (preserves other servers) |
+| **Steering** | Installs behavioral rules for optimal agent-TracePulse interaction |
+| **Hooks** | Shell intercept hook that nudges agents toward `run_and_watch` |
+| **Prompt shortcuts** | `@tp-debug`, `@tp-health`, `@tp-test`, `@tp-diagnose`, `@tp-start` |
+| **.gitignore** | Adds `.tracepulse/` to exclude session data from git |
+| **Version check** | Warns if a newer TracePulse version is available on npm |
+
+**Re-run after updating TracePulse** to sync the latest steering and prompts:
+```bash
+npm update -g tracepulse
+tracepulse init
+```
+
+For Claude Code specifically, this also writes:
 - `~/.claude/rules/tracepulse.md` (behavioral rules, auto-loaded every session)
 - `.claude/commands/tracepulse.md` (slash command for extended guidance)
 

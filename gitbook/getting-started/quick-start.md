@@ -11,7 +11,11 @@ npm install -g tracepulse
 tracepulse init
 ```
 
-`tracepulse init` auto-detects your AI tool and writes the config. For Claude Code, it also installs behavioral rules that make TracePulse work without any manual setup.
+`tracepulse init` auto-detects your AI tool and:
+- Merges TracePulse into your existing MCP config (preserves other servers)
+- Installs steering files, hooks, and prompt shortcuts (`@tp-debug`, `@tp-health`, `@tp-test`, `@tp-diagnose`, `@tp-start`)
+- Adds `.tracepulse/` to your .gitignore
+- Checks for updates against the npm registry
 
 Verify it worked:
 ```bash

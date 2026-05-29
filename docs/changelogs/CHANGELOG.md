@@ -7,6 +7,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [Unreleased]
+
+### Improved
+- **`tracepulse init` overhaul** — borrowed best patterns from ViewGraph's init:
+  - **MCP config merging** — reads existing config and merges the `tracepulse` key instead of skipping when file exists. Preserves other MCP servers (chrome-devtools, viewgraph, etc.)
+  - **Version update check** — fetches npm registry (3s timeout) and warns if a newer version is available
+  - **`.gitignore` management** — adds `.tracepulse/` to .gitignore if not already present
+  - **Prompt shortcuts** — installs `@tp-debug`, `@tp-health`, `@tp-test`, `@tp-diagnose`, `@tp-start` to `.kiro/prompts/`
+  - **Content-based file comparison** — replaces unreliable mtime comparison for steering/hook updates. Files are now updated when content differs, regardless of filesystem timestamps.
+  - **Hook routing fix** — `.kiro.hook` files now correctly install to `.kiro/hooks/` instead of `.kiro/steering/`
+  - **Idempotent** — second run shows "Everything up to date" when nothing changed
+
+---
+
 ## [0.9.23] - 2026-05-25
 
 ### Added

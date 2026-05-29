@@ -32,4 +32,13 @@ resources/read("tracepulse://skills/tracepulse") → full SKILL.md content
 
 Run `tracepulse init --claude` to install behavioral rules that auto-load every session. No manual file copying needed.
 
+### Kiro setup
+
+Run `tracepulse init` in your project. This installs:
+- **Steering files** — behavioral rules for optimal TracePulse usage
+- **Shell intercept hook** — nudges the agent toward `run_and_watch` when it uses Shell for tests/builds
+- **Prompt shortcuts** — `@tp-debug`, `@tp-health`, `@tp-test`, `@tp-diagnose`, `@tp-start`
+
+Re-run `tracepulse init` after updating TracePulse to sync the latest files.
+
 For agents that don't auto-discover skills (Cursor, Claude Code), see the [Agent Integration](../getting-started/agent-integration.md) page for manual setup.
