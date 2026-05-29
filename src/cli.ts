@@ -460,7 +460,7 @@ async function main(): Promise<void> {
   if (parsed.command === "init") {
     const { runInit, checkForUpdate } = await import("@/cli/init-command.js");
 
-    process.stderr.write(`\n  TracePulse v${VERSION}\n  ${"─".repeat(28)}\n\n`);
+    process.stderr.write(`\n  ┌${"─".repeat(40)}┐\n  │\x1b[1m\x1b[36m  ⚡ TracePulse v${VERSION}${" ".repeat(Math.max(0, 23 - VERSION.length))}\x1b[0m│\n  │\x1b[2m  Runtime feedback for AI agents${" ".repeat(9)}\x1b[0m│\n  └${"─".repeat(40)}┘\n\n`);
 
     // Non-blocking version check
     const updateMsg = await checkForUpdate(VERSION);
