@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-## [Unreleased]
+## [0.9.24] - 2026-05-29
 
 ### Improved
 - **`tracepulse init` overhaul** — borrowed best patterns from ViewGraph's init:
