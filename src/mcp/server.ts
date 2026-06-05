@@ -585,8 +585,11 @@ export function createMcpServer(
 
   server.registerTool("get_new_errors", {
     title: "Get New Errors",
-    description: "Get only errors with fingerprints not seen in previous sessions. Focus on what's actually new.",
-    inputSchema: { limit: z.number().optional().describe("Maximum results (default 10)") },
+    description: "Get only errors with fingerprints not seen in previous sessions. Use `since` (Unix ms) to scope to a specific time window — e.g., pass the timestamp from when a smoke test started to see only errors that appeared during that test run.",
+    inputSchema: {
+      limit: z.number().optional().describe("Maximum results (default 10)"),
+      since: z.number().optional().describe("Unix ms - only events after this timestamp. Use Date.now() captured before a test run to scope results to that window."),
+    },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => options?.fingerprintHistory
     ? handleGetNewErrors(buffer, options.fingerprintHistory, args as Record<string, unknown>)
@@ -852,6 +855,7 @@ export function createMcpServer(
       "Start a dev server for live error monitoring. Pre-validates the command and returns diagnostics if invalid. Use when TracePulse started without a server command. On failure, use run_and_watch with the same command to see full error output — do not fall back to shell.",
     inputSchema: {
       command: z.string().describe("Dev server command (e.g., 'npm run dev', 'python manage.py runserver', 'bash scripts/start.sh')."),
+      port: z.number().optional().describe("Expected port the server listens on. If provided, TracePulse checks the port is free before spawning and returns a clear error (with free_port hint) if occupied."),
       env: z.record(z.string(), z.string()).optional().describe("Environment variables for the server process (e.g., { PYTHONPATH: 'src' })."),
       cwd: z.string().optional().describe("Working directory for the server."),
       name: z.string().optional().describe("Service name for multi-server setups (default: 'main')."),

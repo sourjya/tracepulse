@@ -40,14 +40,23 @@ run_and_watch("pytest tests/", cwd: "./backend")
 run_and_watch("npx tsc --noEmit", max_lines: 20)
 ```
 
+### Smoke test pattern (scope to a time window)
+```
+const start = Date.now();
+// ... hit your endpoints ...
+get_new_errors({ since: start })   // only errors from this run
+```
+
 ### Key tools
 | Need | Tool |
 |------|------|
 | "Any errors?" | `get_errors(limit: 5)` |
+| "Errors since smoke test" | `get_new_errors({ since: startMs })` |
 | "Check health" | `get_project_health()` |
 | "Run tests" | `run_and_watch("pytest tests/")` |
 | "Verify fix" | `verify_fix(10)` |
 | "Build status" | `get_build_errors()` |
+| "Build timestamp" | `get_build_errors()` → `last_build_at` field |
 | "What patterns?" | `get_bug_patterns()` |
 | "Check drift" | `check_drift()` |
 | "Test MCP server" | `verify_mcp(command: "...")` |

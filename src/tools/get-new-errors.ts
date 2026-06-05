@@ -16,7 +16,7 @@ import type { FingerprintHistory } from "@/persistence/fingerprint-history.js";
  *
  * @param buffer - Backend event buffer.
  * @param history - Fingerprint history manager.
- * @param args - Tool input: { since_session_start?: boolean, limit?: number }.
+ * @param args - Tool input: { since?: number, limit?: number }.
  * @returns MCP CallToolResult with novel errors.
  */
 export function handleGetNewErrors(
@@ -25,9 +25,10 @@ export function handleGetNewErrors(
   args: Record<string, unknown>,
 ): CallToolResult {
   const limit = (args.limit as number | undefined) ?? DEFAULT_NEW_ERRORS_LIMIT;
+  const since = args.since as number | undefined;
 
-  // Get error/warn events
-  const events = buffer.query({ level: "warn" });
+  // Get error/warn events, optionally bounded to a time window
+  const events = buffer.query({ level: "warn", since });
 
   // Filter to only new fingerprints
   const novel = events.filter((e) => history.isNew(e.fingerprint));

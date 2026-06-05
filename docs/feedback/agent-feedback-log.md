@@ -1622,3 +1622,29 @@ The agent is correct that these are all legitimate shell uses. The feedback is a
 This is a code hygiene issue, not a TracePulse gap. The steering files already say "Use dedicated tools instead of terminal commands when a relevant tool is available" — git and deploy scripts don't have dedicated tools.
 
 **Status:** ✅ Correct behavior. Agent self-corrected to split into smaller calls.
+
+---
+
+## 2026-06-05 - get_new_errors `since` timestamp gap (M11 smoke test, TracePulse project)
+
+**Context:** Agent ran a smoke test hitting all three M11 endpoints and then called `get_new_errors`.
+
+### Feedback on `get_new_errors`
+
+> "Clean — confirmed zero errors after hitting all three M11 endpoints. Useful to verify no silent exceptions. Could be improved with a 'since timestamp' filter so I don't need to guess what 'new' means relative to the current smoke test window."
+
+**Root cause:** `get_new_errors` filtered by cross-session fingerprint novelty only. No way to scope to a specific time window (e.g., "errors since this smoke test run started").
+
+**Status:** ✅ Fixed — added `since?: number` (Unix ms) parameter to `get_new_errors` inputSchema and handler. Agent can now pass `Date.now()` captured before the first endpoint hit. Skills, Claude rules, and subagent steering updated to document the smoke test pattern.
+
+---
+
+## 2026-06-05 - verify_build efficiency confirmed (React/TypeScript project)
+
+**Context:** Agent used `verify_build` after a multi-file change in a React + TypeScript frontend project.
+
+### Feedback on `verify_build`
+
+> "Saved significant time — TypeScript + Vite build verified in one call with no manual output parsing. Clean verdict on a multi-file change confirms all imports resolved correctly."
+
+**Status:** ✅ Working as intended. `verify_build` (TypeScript + Vite composite) is the correct tool for multi-file frontend changes. Agent used it without prompting — adoption confirmed. No feature change needed.

@@ -79,6 +79,16 @@ When TracePulse surfaces real errors, this is the fastest resolution path:
 5. `verify_fix(10)` - watch 10s, confirm zero new errors, pass/fail verdict
 6. If PASS: move on. If FAIL: repeat from step 2.
 
+### Smoke test pattern — scope errors to a specific test window
+
+```
+const start = Date.now();
+// ... hit your endpoints (manually or via test runner) ...
+get_new_errors({ since: start })   // only errors from this run, not stale buffer
+```
+
+`since` accepts Unix ms. Use `Date.now()` captured before the first request. This is the correct tool when you need "did this specific test run introduce any new errors?" rather than "are there any new fingerprints since the last session?".
+
 This loop resolved a 25-occurrence migration error in under 2 minutes during real-world testing.
 
 ### Using watch mode (best for hot-reload servers)

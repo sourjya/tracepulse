@@ -103,12 +103,17 @@ The #1 product problem is agents using shell for commands TracePulse handles bet
 | 2 | **Claude session-start mandate** — `get_project_health()` first rule in rules file | Done | HIGH | Feedback 2026-05-19 |
 | 3 | **`tracepulse init --claude`** — auto-install rules to `~/.claude/rules/` | 2 hours | HIGH | Feedback 2026-05-15 |
 | 4 | **Missed-opportunity detection in `get_session_insights`** — infer shell usage from absence of expected TP calls | 1 day | HIGH | Feedback 2026-05-19 |
-| 5 | **`stop_server` wired to process kill** — onStopRequest callback | Done | Medium | Feedback 2026-05-18 |
+| 5 | **`stop_server` wired to process kill** — onStopRequest callback | 🔲 Open ([BUG-020](../bugs/BUG-020-stop-server-does-not-kill-process.md)) | HIGH | Feedback 2026-05-18 |
 | 6 | **`kill_process(pattern, signal?)`** — kill externally-managed processes by name | 1 day | Medium | Feedback 2026-05-18 |
 | 7 | **run_and_watch env var prefix stripping** — `PYTHONPATH=src uv run pytest` accepted | Done | HIGH | Feedback 2026-05-18 |
 | 8 | **Error escalation** — auto-escalate errors that accumulate without acknowledgment | 2 days | Medium | Wishlist #31 |
-| 9 | **HMR details in verify_fix** — report which files triggered reload | 1 day | Medium | Wishlist #18 |
+| 9 | **HMR details in verify_fix + watch_for_errors** — `files_changed` list in response | 🔲 Open ([FR](../feature-requests/FR-watch-for-errors-files-changed.md)) | Medium | Wishlist #18 |
 | 10 | **Quick-check composite** — instant build errors + last HMR + last error (no blocking) | 1 day | Medium | Wishlist #20 |
+| 11 | **`start_server` port pre-check** — detect EADDRINUSE before spawning, return structured hint | 🔲 Open ([BUG-021](../bugs/BUG-021-start-server-port-in-use-not-detected.md)) | Medium | Feedback 2026-05-15 |
+| 12 | **`get_build_errors` `last_build_at` timestamp** — parse "compiled successfully" line, expose separately from buffer metadata | 🔲 Open ([FR](../feature-requests/FR-get-build-errors-last-build-at.md)) | Medium | Feedback 2026-04-28 |
+| 13 | **`run_and_watch` timeout recovery message** — tell agent to use `timeout_seconds: 120` instead of abandoning tool | 🔲 Open ([FR](../feature-requests/FR-run-and-watch-timeout-guidance.md)) | Medium | Feedback 2026-05-16 |
+| 14 | **High-signal error pinning** — persist full event for signal_score ≥ 80 in FingerprintHistory so `get_error_context` survives buffer eviction | 🔲 Open ([FR](../feature-requests/FR-high-signal-error-pinning.md)) | Medium | Feedback 2026-04-28 |
+| 15 | **`get_new_errors` `since` timestamp filter** — time-window scoping for smoke test workflows | ✅ Done (v0.9.25) | Medium | Feedback 2026-06-05 |
 
 ### Unaddressed Wishlists (from feedback log)
 

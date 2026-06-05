@@ -7,6 +7,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.25] - 2026-06-05
+
+### Fixed
+- **BUG-021: `start_server` port pre-check** — `start_server` now accepts a `port` parameter and validates it is free before spawning. If the port is occupied, it returns a structured `{ status: "port_in_use", port, hint, next_steps }` response immediately instead of spawning and crashing with EADDRINUSE. Prevents the agent retry-loop pattern (5+ redundant `start_server` calls) caused by opaque spawn failures.
+
+### Added
+- **`get_new_errors` `since` timestamp filter** — `since` (Unix ms) parameter scopes results to events after a given timestamp. Use `Date.now()` captured before a smoke test to see only errors that appeared during that specific test run. Eliminates false positives from pre-existing errors.
+
+### Improved
+- **Steering / skill updates** — new chokepoint pattern categories added to all repos (`QUERY_OMISSION`, `QUERY_LOADING_STATE`, `SESSION_DEADLOCK`, `OPTIONAL_SERVICE_BLOCKING`, `AUTH_BYPASS`, `CONFIG_MISMATCH`, `ERROR_BOUNDARY_CASCADE`, `INFRA_SILENT_DEATH`, `MCP_PHANTOM_FAILURE`, `COMMIT_NOISE`). Subagent rules in `tracepulse-subagent-rules.md` extended with `get_new_errors({ since })` post-smoke-test guidance.
+
+---
+
 ## [0.9.24] - 2026-05-29
 
 ### Improved

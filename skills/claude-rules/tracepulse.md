@@ -39,6 +39,15 @@ These are explicitly prohibited. No exceptions for "quick" or "temporary" or "de
 - After ANY backend code change: call `get_errors()` to check for new errors
 - After fixing an error: call `verify_fix(10)` to confirm it's resolved
 - After `start_server`: call `wait_for_build()` before proceeding
+- After a smoke test: call `get_new_errors(since: <start_timestamp_ms>)` to scope results to that window only
+
+## Smoke Test Pattern
+
+```
+const start = Date.now();
+// ... hit your endpoints ...
+get_new_errors({ since: start })   // only errors from this test run
+```
 
 ## Error Recovery
 

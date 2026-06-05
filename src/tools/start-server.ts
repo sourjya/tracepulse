@@ -9,8 +9,20 @@
  */
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { createConnection } from "node:net";
 import { jsonResult, errorResult } from "@/mcp/response-helpers.js";
 import { validateStartCommand } from "@/tools/start-server-validation.js";
+
+/** TCP probe — resolves true if something is listening on the port. */
+function isPortOccupied(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = createConnection({ port, host: "127.0.0.1" });
+    socket.setTimeout(800);
+    socket.on("connect", () => { socket.destroy(); resolve(true); });
+    socket.on("error", () => resolve(false));
+    socket.on("timeout", () => { socket.destroy(); resolve(false); });
+  });
+}
 
 // ──────────────────────────────────────────────
 // Server Manager
@@ -69,6 +81,7 @@ export async function handleStartServer(
 ): Promise<CallToolResult> {
   const command = args.command as string | undefined;
   const name = (args.name as string | undefined) ?? "main";
+  const port = args.port as number | undefined;
 
   if (!command) {
     return errorResult("command parameter is required. Example: start_server({ command: 'npm run dev' })");
@@ -78,6 +91,20 @@ export async function handleStartServer(
   if (manager.isRunning(name)) {
     const pid = manager.getPid(name);
     return errorResult(`Server "${name}" already running (PID ${pid}). Call stop_server() first, or restart_server().`);
+  }
+
+  // Port pre-check: if the agent specified which port to use, verify it's free before spawning.
+  // Prevents the crash-loop pattern where start_server is retried 5+ times against an occupied port.
+  if (port !== undefined) {
+    const occupied = await isPortOccupied(port);
+    if (occupied) {
+      return jsonResult({
+        status: "port_in_use",
+        port,
+        hint: `Port ${port} is already in use. Call stop_server() if this is a TracePulse-managed server, or free_port(${port}) to kill whatever holds it.`,
+        next_steps: [`stop_server()`, `free_port(${port})`],
+      });
+    }
   }
 
   // Pre-spawn validation: detect common issues before attempting to spawn
