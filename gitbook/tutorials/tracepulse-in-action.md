@@ -52,10 +52,10 @@ The agent immediately knows: `activity.py`, line 50, HTTP 500. It opens the file
 
 **With TracePulse:**
 
-The agent calls `get_new_errors` to check for anything unusual:
+The agent calls `get_new_errors` to check for anything unusual, passing a `since` timestamp captured before it started hitting the endpoints (so it only sees errors from this run, not pre-existing ones):
 
 ```
-Agent: get_new_errors(limit: 5)
+Agent: get_new_errors(limit: 5, since: 1748980800000)
 ```
 
 TracePulse returns two errors it has never seen before:

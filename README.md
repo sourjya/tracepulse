@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.24 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [44 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1150 tests](tests/) passing.
+🟡 **Alpha v0.9.25 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [42 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1174 tests](tests/) passing.
 
 ## Quick Start
 

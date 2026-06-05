@@ -71,7 +71,7 @@ Tools that connect errors to causes - git changes, frontend failures, historical
 | `correlate_with_diff` | none | Link recent errors to uncommitted git changes. Shows which errors may be caused by your recent edits. | 1,000 |
 | `get_correlated_errors` | `url?` | Match browser HTTP failures with backend stack traces. Returns paired errors with confidence scores. | 2,000 |
 | `get_cross_layer_diagnosis` | `time_window_seconds?` | Cross-layer failure diagnosis. Correlates backend logs, frontend errors, git state, and process state to identify root causes spanning multiple layers. Returns diagnoses with confidence scores and proposed fixes. | 500 |
-| `get_new_errors` | `limit?` | Only errors with fingerprints not seen in previous sessions. Requires `--persist`. | 1,000 |
+| `get_new_errors` | `limit?`, `since?` | Only errors with fingerprints not seen in previous sessions. Pass `since` (Unix ms) to scope to a time window — e.g., errors during a specific smoke test run. Requires `--persist`. | 1,000 |
 | `get_error_trends` | `fingerprint` | Cross-session frequency and history for a specific fingerprint. Requires `--persist`. | 500 |
 
 ## Error Intelligence
@@ -113,5 +113,5 @@ Tools for managing the current session, reviewing your workflow, and housekeepin
 | `clear_errors` | `fingerprint?` | Clear all events or a specific fingerprint from the buffer. | 50 |
 | `list_services` | none | All monitored services with status, error count, and last activity. | 200 |
 | `restart_server` | none | Kill and respawn the dev server process. Only works in start mode. | 100 |
-| `start_server` | `command`, `env?`, `cwd?`, `name?` | Start a dev server mid-session. Pre-validates command, activates Layer 2 tools on success. | 100 |
+| `start_server` | `command`, `port?`, `env?`, `cwd?`, `name?` | Start a dev server mid-session. Pre-validates command; if `port` is given, checks it's free first (returns `port_in_use` error with `free_port` hint if occupied). Activates Layer 2 tools on success. | 100 |
 | `stop_server` | `name?` | Stop a running dev server. Sends SIGTERM, waits, then SIGKILL if needed. | 50 |
