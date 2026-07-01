@@ -247,9 +247,18 @@ export async function handleRunAndWatch(
               return hint ? { diagnostic: hint } : {};
             })() : {}),
             // Raw output with optional truncation (max_lines parameter)
-            raw_output: maxLines
-              ? rawLines.slice(0, maxLines).join("\n")
-              : rawLines.slice(-100).join("\n"), // default: last 100 lines
+            // Safety: cap raw_output at 32KB to prevent oversized MCP responses
+            // that exceed stdio transport buffer limits (INB-10).
+            raw_output: (() => {
+              const lines = maxLines
+                ? rawLines.slice(0, maxLines)
+                : rawLines.slice(-100);
+              let output = lines.join("\n");
+              if (output.length > 32_000) {
+                output = output.slice(0, 32_000) + "\n... [truncated: output exceeded 32KB safety limit]";
+              }
+              return output;
+            })(),
             ...(maxLines && rawLines.length > maxLines ? { output_truncated: true, total_lines: rawLines.length } : {}),
           }),
         }],
