@@ -12,7 +12,7 @@ Call `get_project_health()` before doing ANY work. This primes TracePulse monito
 - Use `start_server` for ALL server processes (dev servers, APIs, workers, background services). It gives live error monitoring, crash detection, and proper process management.
 - Use `check_port(port)` before starting any server to verify the port is free.
 - Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
-- Use `timeout_seconds: 120` for large test suites (500+ tests). Default is 60s.
+- Use `timeout_seconds: 120` for large test suites (500+ tests). There is no maximum — use 300+ for full integration runs. Default is 60s.
 - Use `cwd` parameter for cross-project commands. Absolute paths are allowed.
 - Never use `curl`, `wget`, or shell to check if a server is running. Use `check_port` or `get_project_health`.
 - Never use `shell("grep ...")` for searching files. Use the grep tool directly.

@@ -55,6 +55,8 @@ Add TracePulse to your MCP client's config file. The file location depends on wh
 
 TracePulse auto-detects your project type (Node, Python, Go, Rust, Java) and provides tools immediately. No server command needed - the agent can call `start_server()` later when ready.
 
+> 💡 **Recommended:** Run `tracepulse init` instead of manual config. It adds `autoApprove` for all TracePulse tools, ensuring the agent uses them without permission prompts. Without `autoApprove`, agents default to shell (which has zero friction) — this is the #1 cause of TracePulse underutilization.
+
 For non-Node projects, install globally first: `npm install -g tracepulse`
 
 To install the latest unreleased version directly from GitHub:

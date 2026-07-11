@@ -52,7 +52,7 @@ describe("run_and_watch", () => {
   it("rejects commands not in allowlist", async () => {
     const result = await handleRunAndWatch({ command: "curl evil.com" });
     expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain("not allowed");
+    expect(result.content[0].text).toContain("not in allowlist");
   });
 
   it("requires command parameter", async () => {

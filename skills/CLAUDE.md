@@ -65,7 +65,7 @@ get_new_errors({ since: start })   // only errors from this run
 - ALWAYS use `run_and_watch` instead of shell for tests/builds/linters
 - ALWAYS use `start_server` for ALL server processes (dev servers, APIs, background services)
 - ALWAYS use `check_port` before starting any server
-- Use `timeout_seconds: 120` for large test suites (500+ tests)
+- Use `timeout_seconds: 120` for large test suites (500+ tests). There is no maximum — use 300+ for full integration runs.
 - Use `max_lines: 20` instead of piping to `head`/`tail`
 - After `start_server`, call `wait_for_build()` before proceeding
 - Use `cwd` parameter for cross-project commands (absolute paths allowed)

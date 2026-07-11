@@ -134,7 +134,7 @@ describe("run_and_watch env var prefix stripping", () => {
       buildAllowlist([]),
     );
     const text = (result as { content: Array<{ text: string }> }).content[0].text;
-    expect(text).toContain("Command not allowed");
+    expect(text).toContain("not in allowlist");
   });
 });
 
@@ -252,6 +252,6 @@ describe("CIQ-605: handleRunAndWatch accepts Python/Go/Rust without stack detect
       buildAllowlist([]),
     );
     const text = (result as { content: Array<{ text: string }> }).content[0].text;
-    expect(text).toContain("Command not allowed");
+    expect(text).toContain("not in allowlist");
   });
 });

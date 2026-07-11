@@ -714,7 +714,7 @@ export function createMcpServer(
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
-      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (up to 120). Never fall back to shell for commands that produce pass/fail output.",
+      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites). Never fall back to shell for commands that produce pass/fail output.",
     inputSchema: {
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),

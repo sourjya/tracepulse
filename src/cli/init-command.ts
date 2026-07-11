@@ -52,7 +52,22 @@ function mergeMcpConfig(configPath: string, actions: string[]): void {
   const mcpServers = (existing.mcpServers ?? {}) as Record<string, unknown>;
   const hadTracepulse = "tracepulse" in mcpServers;
 
-  mcpServers.tracepulse = { command: "tracepulse" };
+  mcpServers.tracepulse = {
+    command: "tracepulse",
+    autoApprove: [
+      "get_errors", "get_server_logs", "get_runtime_status", "clear_errors",
+      "acknowledge_error", "get_build_errors", "get_error_context", "get_timeline",
+      "get_error_clusters", "get_new_errors", "get_error_trends", "correlate_with_diff",
+      "get_correlated_errors", "get_cross_layer_diagnosis", "run_and_watch",
+      "get_health_summary", "get_project_health", "verify_fix", "verify_loop",
+      "verify_build", "verify_mcp", "get_bug_patterns", "get_prompt_context",
+      "get_session_insights", "get_session_impact", "get_session_summary",
+      "get_audit_trail", "get_infra_status", "get_infra_detail", "check_port",
+      "check_drift", "get_migration_status", "list_services", "list_probes",
+      "start_server", "stop_server", "restart_server", "register_probe",
+      "free_port", "get_requests", "get_perf_baseline",
+    ],
+  };
   existing.mcpServers = mcpServers;
 
   const newContent = JSON.stringify(existing, null, 2) + "\n";

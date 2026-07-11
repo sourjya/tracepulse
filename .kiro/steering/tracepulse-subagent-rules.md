@@ -11,8 +11,8 @@ When spawning subagents via the `subagent` tool, every `prompt_template` MUST in
 ```
 MANDATORY TOOL RULES:
 - Use run_and_watch for ALL test, build, and lint commands (pytest, vitest, tsc, eslint, cargo test, go test, mvn test).
-- If run_and_watch times out, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites). Never fall back to Shell.
-- For large test suites (500+ tests), always use timeout_seconds: 120 from the start.
+- If run_and_watch times out, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites, 300 for full integration runs). Never fall back to Shell.
+- For large test suites (500+ tests), always use timeout_seconds: 120 or higher from the start. There is no maximum.
 - Use the cwd parameter instead of cd prefix. Absolute paths are allowed.
 - Shell is ONLY for non-execution tasks: file inspection, git status, environment checks.
 - Never use Shell for commands that produce pass/fail output.

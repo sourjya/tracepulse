@@ -36,6 +36,7 @@ v0.9.21 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 | M23: `tracepulse init` - Context-Aware Setup | Discoverability | v1.0 | 🔲 Spec ready |
 | M25: Agent Compliance & Self-Correction | Agent Feedback | v1.0 | 🔲 Planned |
 | M26: Intelligent Feedback | Deep Research + Feedback | v1.1 | 🔲 Spec ready |
+| M27: Effectiveness Telemetry | Field Usage + ROI | v1.1 | 🔲 Spec ready |
 
 ## Reviews
 
@@ -149,6 +150,23 @@ Moves TracePulse from "passive error reporter" to "active debugging intelligence
 | 4 | **`get_prompt_context(fingerprint)`** — pre-assembled, token-budgeted reasoning packet | 1 week | Medium | §6.8 |
 | 5 | **Per-fingerprint anomaly detection** — 3x baseline spike → auto-flag | 2 weeks | Medium | §5.7 |
 | 6 | **Stdin pipe mode + CI parsers** — `tracepulse pipe` + GitHub Actions/GitLab CI parsing | 1 week | Medium | Untracked |
+
+## M27: Effectiveness Telemetry (~3 weeks)
+
+Source: Consumer project field usage (feedback loop steering), shell-misuse enforcement patterns
+**Spec:** [`.kiro/specs/m27-effectiveness-telemetry/`](../../.kiro/specs/m27-effectiveness-telemetry/)
+**Ticket:** TRP-7, TRP-8
+
+Persistent cross-session telemetry that answers: "Is TracePulse actually helping?" Captures efficiency metrics, surfaces parser gaps, and generates data-driven steering.
+
+| # | Feature | Effort | Impact | Source |
+|---|---------|--------|--------|--------|
+| 1 | **Session effectiveness summary** — persist investigation/fix/misuse counts to `.tracepulse/telemetry.json` | 2 days | HIGH | Consumer project feedback loop |
+| 2 | **`get_effectiveness_report` tool** — cumulative metrics: savings_ratio, fix_rate, parser coverage | 2 days | HIGH | TRP-7 |
+| 3 | **Parser gap accumulator** — surface unmatched log patterns for parser development | 1 day | Medium | Field observation |
+| 4 | **Timeout guidance feedback** — P95-based `timeout_seconds` recommendations from actual data | 1 day | HIGH | TRP-6, AuthIQ field data |
+| 5 | **Efficiency delta metrics** — tokens saved, mean_time_to_fix, savings_ratio, energy/CO2/USD cumulative | 3 days | HIGH | ROI measurement |
+| 6 | **Effectiveness steering auto-generation** — `tracepulse init` produces data-driven `tracepulse-tuning.md` | 2 days | Medium | TRP-7 |
 
 ## M14: Category Extension (informed by Deep Research)
 

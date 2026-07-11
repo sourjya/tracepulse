@@ -92,10 +92,41 @@ export async function handleRunAndWatch(
     cmdLower.startsWith(prefix.toLowerCase()),
   );
   if (!allowed) {
+    // Build a helpful suggestion based on what the agent tried
+    const suggestions: string[] = [];
+    const cmdFirst = cmdForCheck.split(/\s+/)[0].toLowerCase();
+
+    // Python command hints
+    if (cmdFirst.includes("python") || cmdFirst.includes("pytest") || cmdFirst.includes("mypy") || cmdFirst.includes("ruff")) {
+      suggestions.push(
+        `Hint: Python commands are supported directly. Try: run_and_watch("pytest tests/", cwd: "/path/to/backend")`,
+        `TracePulse auto-activates .venv/ if present in the working directory — no .venv/bin/ prefix needed.`,
+      );
+    }
+    // If command starts with a path (e.g., .venv/bin/something or /usr/bin/something)
+    else if (cmdFirst.startsWith(".") || cmdFirst.startsWith("/")) {
+      suggestions.push(
+        `Hint: Use the command name directly with cwd parameter. TracePulse auto-activates .venv/ in the working directory.`,
+        `Example: run_and_watch("pytest tests/", cwd: "./backend")`,
+      );
+    }
+    // Generic suggestion
+    else {
+      // Find the closest matching prefix
+      const partial = prefixes.filter((p) => p.toLowerCase().startsWith(cmdFirst.slice(0, 3)));
+      if (partial.length > 0) {
+        suggestions.push(`Did you mean: ${partial.join(", ")}?`);
+      }
+    }
+
+    // Always show the top relevant prefixes, not the full list
+    const relevantPrefixes = prefixes.slice(0, 15).join(", ");
+    suggestions.push(`Allowed prefixes include: ${relevantPrefixes}, ...`);
+
     return {
       content: [{
         type: "text",
-        text: `Command not allowed. Must start with one of: ${prefixes.join(", ")}. This restriction prevents arbitrary shell execution.`,
+        text: `Command "${cmdForCheck.slice(0, 60)}" not in allowlist. ${suggestions.join(" ")}`,
       }],
       isError: true,
     };
@@ -162,6 +193,7 @@ export async function handleRunAndWatch(
     if (venvBin) {
       spawnEnv.PATH = `${venvBin}:${spawnEnv.PATH ?? ""}`;
       spawnEnv.VIRTUAL_ENV = resolvePath(spawnCwd, ".venv");
+      process.stderr.write(`[tracepulse] Using .venv from ${spawnCwd} (auto-activated)\n`);
     }
 
     // Auto-add node_modules/.bin to PATH for Node.js projects.
@@ -237,6 +269,8 @@ export async function handleRunAndWatch(
               : timedOut
                 ? `Command timed out after ${timeout / 1000}s. Increase with timeout_seconds: ${Math.ceil(timeout / 1000 * 2)}`
                 : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
+            // Surface venv auto-activation so agents know it happened
+            ...(venvBin ? { venv_activated: spawnCwd } : {}),
             // Positive reinforcement: one-time nudge on first successful use
             ...(exitCode === 0 ? (() => {
               const tip = getPositiveNudge("run_and_watch");
