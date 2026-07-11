@@ -50,6 +50,12 @@ export interface JournalBridge {
    */
   shutdown(): void;
 
+  /**
+   * Record a tool call in the journal.
+   * Used for correlating investigation effort with outcomes.
+   */
+  journalToolCall(tool: string, fingerprint?: string): void;
+
   /** Get the session ID for this bridge instance. */
   readonly sessionId: string;
 
@@ -153,6 +159,24 @@ export function createJournalBridge(config: JournalBridgeConfig): JournalBridge 
   });
 
   return {
+    journalToolCall(tool: string, fingerprint?: string): void {
+      if (isShutDown) return;
+      try {
+        const entry: JournalEntry = {
+          type: "tool_call",
+          ts: Date.now(),
+          sid: sessionId,
+          data: {
+            tool,
+            ...(fingerprint ? { fingerprint, investigating: true } : {}),
+          },
+        };
+        journal.append(entry);
+      } catch {
+        // Silently ignore journal write failures for tool calls
+      }
+    },
+
     shutdown(): void {
       if (isShutDown) return;
       isShutDown = true;

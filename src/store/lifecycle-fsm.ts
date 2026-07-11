@@ -252,7 +252,7 @@ export function createLifecycleFSM(): LifecycleFSM {
       // Timer management: start when entering edit_observed, cancel when leaving
       if (nextState === "edit_observed") {
         startResolutionTimer(fingerprint);
-      } else if (currentState === "edit_observed" && nextState !== "edit_observed") {
+      } else if ((currentState as string) === "edit_observed") {
         cancelResolutionTimer(fingerprint);
       }
 

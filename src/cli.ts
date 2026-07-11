@@ -45,6 +45,9 @@ import { createAuditBuffer } from "@/store/audit-buffer.js";
 import { createServerManager } from "@/tools/start-server.js";
 import { diagnoseStartupFailure, formatDiagnostics } from "@/diagnostics/startup-diagnostics.js";
 import { detectProjectStacks } from "@/diagnostics/project-detector.js";
+import { createLifecycleFSM } from "@/store/lifecycle-fsm.js";
+import { createLifecycleHooks } from "@/store/lifecycle-hooks.js";
+import { createJournalBridge, type JournalBridge } from "@/persistence/journal-bridge.js";
 
 // ──────────────────────────────────────────────
 // CLI Argument Types
@@ -529,6 +532,35 @@ async function main(): Promise<void> {
   });
   const persistEnabled = (parsed.command === "start" && parsed.persist) || (parsed.command === "standalone" && parsed.persist) || (parsed.command === "compose" && parsed.persist);
 
+  // Create lifecycle FSM + hooks for M27 effectiveness telemetry
+  const lifecycleFsm = createLifecycleFSM();
+  const lifecycleHooks = createLifecycleHooks(lifecycleFsm);
+
+  // Wire hot-reload events to lifecycle hooks (file_changed trigger)
+  buffer.subscribe((event) => {
+    if (event.fingerprint.startsWith("hotreload:")) {
+      lifecycleHooks.onFileChanged();
+    }
+    // Recurrence detection: error reappearing after edit_observed/suppressed/resolved
+    if (event.level === "error" || event.level === "warn") {
+      const state = lifecycleFsm.getState(event.fingerprint);
+      if (state === "edit_observed" || state === "suppressed" || state === "resolved") {
+        lifecycleHooks.onErrorRecurred(event.fingerprint);
+      }
+    }
+  });
+
+  // Create journal bridge for crash-proof telemetry persistence
+  let journalBridge: JournalBridge | undefined;
+  if (persistEnabled) {
+    journalBridge = createJournalBridge({
+      journalPath: ".tracepulse/events.jsonl",
+      telemetryPath: ".tracepulse/telemetry.json",
+      buffer,
+    });
+    process.stderr.write("[tracepulse] Event journal active (.tracepulse/events.jsonl)\n");
+  }
+
   // Load fingerprint history if persistence is enabled
   let patternAnalyzer: PatternAnalyzer | undefined;
   if (persistEnabled) {
@@ -727,6 +759,7 @@ async function main(): Promise<void> {
     restartFn,
     infraMonitor,
     errorLifecycle,
+    lifecycleFsm,
     patternAnalyzer,
     detectedStacks,
     serverManager: serverMgr,
@@ -792,6 +825,11 @@ async function main(): Promise<void> {
         });
       }
       process.stderr.write("[tracepulse] Fingerprints and session saved to disk\n");
+    }
+    // Shutdown journal bridge (writes session_end entry)
+    if (journalBridge) {
+      journalBridge.shutdown();
+      process.stderr.write("[tracepulse] Event journal closed\n");
     }
     await collector.stop();
     await server.close();
