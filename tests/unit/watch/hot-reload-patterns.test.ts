@@ -79,6 +79,38 @@ describe("hot-reload patterns", () => {
     expect(p.pattern.test("Compilation complete. Watching for file changes.")).toBe(true);
   });
 
+  it("uvicorn-reload matches uvicorn file change detection", () => {
+    const p = find("uvicorn-reload");
+    // Standard uvicorn --reload output
+    expect(p.pattern.test("WARNING:  WatchFiles detected changes in 'src/auth.py'. Reloading...")).toBe(true);
+    // Older uvicorn format
+    expect(p.pattern.test("WARNING: Detected changes in 'app/main.py'. Reloading...")).toBe(true);
+    // Reloader process start
+    expect(p.pattern.test("INFO:     Started reloader process [12345] using WatchFiles")).toBe(true);
+    // Application startup after reload
+    expect(p.pattern.test("INFO:     Application startup complete.")).toBe(true);
+    // Should NOT match regular HTTP logs
+    expect(p.pattern.test("INFO:     127.0.0.1:54321 - \"GET /api/users HTTP/1.1\" 200")).toBe(false);
+  });
+
+  it("django-reload matches Django dev server reload", () => {
+    const p = find("django-reload");
+    // Django watching
+    expect(p.pattern.test("Watching for file changes with StatReloader")).toBe(true);
+    // Django system check
+    expect(p.pattern.test("Performing system checks...")).toBe(true);
+    // Django system check complete
+    expect(p.pattern.test("System check identified no issues (0 silenced).")).toBe(true);
+    // Should NOT match regular Django request log
+    expect(p.pattern.test("[07/Jul/2026 12:00:00] \"GET /admin/ HTTP/1.1\" 200")).toBe(false);
+  });
+
+  it("flask-reload matches Flask dev server reload", () => {
+    const p = find("flask-reload");
+    expect(p.pattern.test(" * Restarting with stat")).toBe(true);
+    expect(p.pattern.test(" * Detected change in '/app/routes.py', reloading")).toBe(true);
+  });
+
   it("patterns do NOT match unrelated log lines", () => {
     const unrelated = [
       "Server listening on port 3000",

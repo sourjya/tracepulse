@@ -88,13 +88,13 @@ export const DEFAULT_PATTERNS: readonly HotReloadPattern[] = [
   {
     id: "uvicorn-reload",
     tool: "uvicorn",
-    pattern: /WatchFiles detected changes|Started reloader process|Shutting down$/i,
-    description: "uvicorn --reload detected file changes",
+    pattern: /WatchFiles detected changes|Detected changes in|Started reloader process|Application startup complete/i,
+    description: "uvicorn --reload detected file changes or restarted",
   },
   {
     id: "django-reload",
     tool: "Django",
-    pattern: /Watching for file changes|Performing system checks/i,
+    pattern: /Watching for file changes|Performing system checks|System check identified no issues/i,
     description: "Django dev server auto-reload",
   },
   {
