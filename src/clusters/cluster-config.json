@@ -13,12 +13,12 @@
     {
       "gateway": "tp_watch",
       "description": "Post-fix verification and event waiting. Use after a code change is applied.",
-      "tools": ["verify_fix", "verify_build", "watch_for_errors", "wait_for_build", "wait_for_event"]
+      "tools": ["verify_fix", "verify_build", "verify_loop", "watch_for_errors", "wait_for_build", "wait_for_event"]
     },
     {
       "gateway": "tp_investigate",
       "description": "Deep error context, timelines, and server logs. Load after triage identifies a target.",
-      "tools": ["get_error_context", "get_timeline", "get_server_logs", "get_error_clusters"]
+      "tools": ["get_error_context", "get_prompt_context", "get_timeline", "get_server_logs", "get_error_clusters"]
     },
     {
       "gateway": "tp_correlate",

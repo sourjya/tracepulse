@@ -11,21 +11,48 @@
 
 import type { ProjectStack } from "@/diagnostics/project-detector.js";
 
-/** Commands always allowed regardless of stack. */
+/**
+ * Commands always allowed regardless of detected stack.
+ *
+ * These are fundamental development commands that should never require
+ * stack detection to use. Python/Go/Rust are as common as Node in
+ * modern polyglot projects. The security boundary is the shell
+ * metacharacter check + prefix matching — not stack detection.
+ *
+ * CIQ-605: Added python, python3, pytest, sh, .venv/bin/ to fix
+ * forced shell fallback for Python projects.
+ */
 const BASE_PREFIXES = [
+  // Node ecosystem
   "npx", "npm", "node", "tsc", "eslint", "vitest", "jest",
-  "pnpm", "bun", "make", "cmake", "bash",
+  "pnpm", "bun",
+  // Python ecosystem — universal enough to be in base
+  "python", "python3", "pytest", ".venv/bin/",
+  "uv", "uv run",
+  // Shell scripts
+  "bash", "sh",
+  // Build tools
+  "make", "cmake",
+  // Go ecosystem
+  "go test", "go run", "go build", "go vet",
+  // Rust ecosystem
+  "cargo",
 ];
 
-/** Stack-specific command prefixes. */
+/**
+ * Stack-specific command prefixes (additive to BASE_PREFIXES).
+ *
+ * Only includes commands NOT already covered by BASE_PREFIXES.
+ * Stack detection enriches the allowlist with less common tools.
+ */
 const STACK_PREFIXES: Record<string, string[]> = {
   python: [
-    "python", "pytest", ".venv/bin/python", ".venv/bin/pytest",
-    "uv", "uv run", "pip", "mypy", "ruff", "black", "flake8",
+    // Less common Python tools that benefit from stack detection
+    "pip", "mypy", "ruff", "black", "flake8",
     "alembic", "django-admin",
   ],
-  go: ["go test", "go run", "go build", "go vet"],
-  rust: ["cargo test", "cargo build", "cargo run", "cargo check", "cargo clippy"],
+  go: [], // go test/run/build/vet now in BASE_PREFIXES
+  rust: [], // cargo now in BASE_PREFIXES
   java: ["mvn", "gradle", "gradlew", "./gradlew", "java"],
   node: [], // base already covers node
   infra: [],

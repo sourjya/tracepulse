@@ -7,6 +7,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.26] - 2026-07-11
+
+### Fixed
+- **CIQ-605: `run_and_watch` prefix allowlist too restrictive** — moved `python`, `python3`, `pytest`, `.venv/bin/`, `uv`, `go test/run/build/vet`, `cargo`, `sh` into BASE_PREFIXES so they work without needing stack detection. Python projects no longer force shell fallback.
+- **`verify_mcp` tests** — rewrote to use a fixture script (`tests/fixtures/mock-mcp-server.js`) instead of inline `node -e` commands that triggered the shell metacharacter security check.
+- **Clustered mode tool count** — added `get_prompt_context` and `verify_loop` to `cluster-config.json` (were registered in server but missing from config). Test now derives expected count from config instead of hardcoding.
+- **Error message accuracy** — `run_and_watch` rejection message now shows the actual allowlist, not a hardcoded default.
+
+### Changed
+- 44 MCP tools total (up from 42), 1196 tests passing
+- Updated all gitbook docs, README, CLAUDE.md, and product docs to reflect 44 tools
+
+---
+
 ## [0.9.25] - 2026-06-05
 
 ### Fixed

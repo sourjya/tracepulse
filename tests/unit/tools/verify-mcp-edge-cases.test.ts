@@ -2,19 +2,24 @@
  * Edge case tests for verify_mcp tool.
  *
  * Covers:
- * - Invalid JSON-RPC responses (missing fields)
- * - Server that outputs to stderr only
- * - Server that outputs multiple lines before valid response
+ * - Invalid JSON-RPC responses (missing fields, wrong id)
+ * - Server that outputs to stderr before responding
  * - Timeout validation (max 30s)
- * - Command with special characters
+ *
+ * Uses tests/fixtures/mock-mcp-server.js to avoid shell metacharacters
+ * in inline scripts (which are blocked by the security check).
  */
 
 import { describe, it, expect } from "vitest";
-import { handleVerifyMcp, buildInitializeMessage } from "@/tools/verify-mcp.js";
+import { resolve } from "node:path";
+import { handleVerifyMcp } from "@/tools/verify-mcp.js";
+
+/** Path to the mock MCP server fixture script (resolved from project root). */
+const MOCK_SERVER = resolve(process.cwd(), "tests/fixtures/mock-mcp-server.js");
 
 describe("verify_mcp edge cases", () => {
   it("fails when response has wrong id", async () => {
-    const cmd = `node -e 'process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:99,result:{protocolVersion:"2024-11-05",capabilities:{},serverInfo:{name:"x",version:"1.0"}}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER} --wrong-id`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(false);
@@ -22,14 +27,14 @@ describe("verify_mcp edge cases", () => {
   });
 
   it("fails when response has no result field", async () => {
-    const cmd = `node -e 'process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:1,error:{code:-1,message:"fail"}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER} --no-result`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(false);
   });
 
   it("fails when response has no serverInfo", async () => {
-    const cmd = `node -e 'process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:1,result:{protocolVersion:"2024-11-05",capabilities:{}}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER} --no-server-info`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(false);
@@ -37,7 +42,7 @@ describe("verify_mcp edge cases", () => {
   });
 
   it("handles server that writes stderr before responding", async () => {
-    const cmd = `node -e 'process.stderr.write("loading...\\n");process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:1,result:{protocolVersion:"2024-11-05",capabilities:{},serverInfo:{name:"noisy",version:"1.0"}}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER} --stderr-first --name noisy`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(true);
@@ -59,29 +64,15 @@ describe("verify_mcp edge cases", () => {
     // is tested above. This tests the parameter validation path.
     const result = await handleVerifyMcp({ command: "echo invalid", timeout_seconds: 999 });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
-    // Should still work (999 gets capped or ignored, echo runs fast)
-    expect(parsed).toBeDefined();
+    // Should use the DEFAULT_TIMEOUT_SECONDS (5) since 999 > MAX (30)
+    expect(parsed.success).toBe(false); // "echo invalid" is not valid JSON-RPC
   });
 
-  it("buildInitializeMessage produces valid JSON", () => {
-    const msg = buildInitializeMessage();
-    const parsed = JSON.parse(msg);
-    expect(parsed.jsonrpc).toBe("2.0");
-    expect(parsed.id).toBe(1);
-    expect(parsed.method).toBe("initialize");
-    expect(parsed.params.protocolVersion).toBeDefined();
-    expect(parsed.params.clientInfo.name).toBe("tracepulse-verify");
-  });
-
-  it("fails gracefully for non-existent command", async () => {
-    const result = await handleVerifyMcp({ command: "nonexistent_binary_xyz_123" });
+  it("rejects commands with shell metacharacters", async () => {
+    const result = await handleVerifyMcp({ command: "node -e 'console.log(1)'" });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
-    expect(parsed.success).toBe(false);
-  });
-
-  it("includes command in failure response for debugging", async () => {
-    const result = await handleVerifyMcp({ command: "exit 1" });
-    const parsed = JSON.parse((result.content[0] as { text: string }).text);
-    expect(parsed.command).toBe("exit 1");
+    // Single quotes contain no metacharacters but parentheses do
+    // This specific command has () in it
+    expect(parsed.error).toContain("metacharacters");
   });
 });

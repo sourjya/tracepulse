@@ -95,7 +95,7 @@ export async function handleRunAndWatch(
     return {
       content: [{
         type: "text",
-        text: `Command not allowed. Must start with one of: ${DEFAULT_ALLOWED_PREFIXES.join(", ")}. This restriction prevents arbitrary shell execution.`,
+        text: `Command not allowed. Must start with one of: ${prefixes.join(", ")}. This restriction prevents arbitrary shell execution.`,
       }],
       isError: true,
     };

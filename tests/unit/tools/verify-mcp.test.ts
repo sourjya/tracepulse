@@ -3,10 +3,17 @@
  *
  * Verifies that the tool sends an initialize handshake to a command,
  * parses the JSON-RPC response, and returns structured pass/fail.
+ *
+ * Uses tests/fixtures/mock-mcp-server.js to avoid shell metacharacters
+ * in inline scripts (which are blocked by the security check).
  */
 
 import { describe, it, expect } from "vitest";
+import { resolve } from "node:path";
 import { handleVerifyMcp, buildInitializeMessage } from "@/tools/verify-mcp.js";
+
+/** Path to the mock MCP server fixture script (resolved from project root). */
+const MOCK_SERVER = resolve(process.cwd(), "tests/fixtures/mock-mcp-server.js");
 
 describe("buildInitializeMessage", () => {
   it("returns valid JSON-RPC initialize message", () => {
@@ -42,8 +49,7 @@ describe("handleVerifyMcp", () => {
   });
 
   it("returns success for a valid MCP server response", async () => {
-    // Node script that reads stdin and responds with valid initialize result
-    const cmd = `node -e 'process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:1,result:{protocolVersion:"2024-11-05",capabilities:{},serverInfo:{name:"test-srv",version:"1.2.3"}}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER}`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(true);
@@ -62,7 +68,7 @@ describe("handleVerifyMcp", () => {
   });
 
   it("includes capabilities when present in response", async () => {
-    const cmd = `node -e 'process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:1,result:{protocolVersion:"2024-11-05",capabilities:{tools:{},resources:{}},serverInfo:{name:"rich",version:"2.0"}}}));process.exit(0)})'`;
+    const cmd = `node ${MOCK_SERVER} --capabilities`;
     const result = await handleVerifyMcp({ command: cmd });
     const parsed = JSON.parse((result.content[0] as { text: string }).text);
     expect(parsed.success).toBe(true);

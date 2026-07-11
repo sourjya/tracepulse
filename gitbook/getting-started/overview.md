@@ -24,7 +24,7 @@ Dev Server -> stdout/stderr -> TracePulse -> MCP Tools -> AI Agent
 4. **Parses** errors with 26 framework-specific parsers
 5. **Scores** each error 0-100 by importance
 6. **Stores** in a ring buffer (500 events max)
-7. **Serves** via 42 MCP tools the agent can call
+7. **Serves** via 44 MCP tools the agent can call
 
 ## Two Modes
 

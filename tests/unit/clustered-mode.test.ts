@@ -2,7 +2,7 @@
  * Tests for clustered mode gateway proxy wiring.
  *
  * Verifies that:
- * - Flat mode (default) registers all 36 tools directly
+ * - Flat mode (default) registers all tools directly (count derived from cluster-config.json)
  * - Clustered mode registers 7 gateways + 2 standalone = 9 visible tools
  * - Gateway discovery returns sub-tool listings
  * - Gateway dispatch routes to the correct sub-tool handler
@@ -31,11 +31,19 @@ function getVisibleTools(server: ReturnType<typeof createMcpServer>): string[] {
 }
 
 describe("Flat mode (default)", () => {
-  it("registers all 42 tools", () => {
+  /** Tool count derived from cluster config — single source of truth. */
+  const EXPECTED_TOOL_COUNT = (() => {
+    const config = loadClusterConfig();
+    const clustered = config.clusters.flatMap(c => [...c.tools]).length;
+    const standalone = (config.standalone ?? []).length;
+    return clustered + standalone;
+  })();
+
+  it(`registers all ${EXPECTED_TOOL_COUNT} tools`, () => {
     const buffer = createRingBuffer();
     const server = createMcpServer(buffer, () => true);
     const tools = getVisibleTools(server);
-    expect(tools.length).toBe(42);
+    expect(tools.length).toBe(EXPECTED_TOOL_COUNT);
     expect(tools).toContain("get_errors");
     expect(tools).toContain("run_and_watch");
     expect(tools).toContain("get_requests");
@@ -203,12 +211,17 @@ describe("Destructive action guard", () => {
 });
 
 describe("Cluster config integrity", () => {
-  it("covers all 42 tools (clustered + standalone)", () => {
+  it("covers all tools (clustered + standalone)", () => {
     const config = loadClusterConfig();
     const clustered = config.clusters.flatMap(c => [...c.tools]);
     const standalone = config.standalone ?? [];
     const total = clustered.length + standalone.length;
-    expect(total).toBe(42);
+    // This should match the number of tools registered in createMcpServer.
+    // If this fails, a tool was added to server.ts but not to cluster-config.json.
+    const buffer = createRingBuffer();
+    const server = createMcpServer(buffer, () => true);
+    const registered = getVisibleTools(server);
+    expect(total).toBe(registered.length);
   });
 
   it("has no duplicate tool assignments", () => {

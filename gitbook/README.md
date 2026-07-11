@@ -93,7 +93,7 @@ From live agent sessions across 4 projects (full-stack web app, TypeScript libra
 | Agent wishlist items shipped | 24/38 (63%) |
 | Real bugs caught per session | 3 |
 
-<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 42 tools to 7 gateways" width="960"></figure>
+<figure><img src=".gitbook/assets/tracepulse-schema-reduction.svg" alt="TracePulse schema reduction: 44 tools to 7 gateways" width="960"></figure>
 
 ---
 
@@ -159,7 +159,7 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/tracepulse
 ## Quick Links
 
 - [Quick Start (2 minutes) ->](getting-started/quick-start.md)
-- [42 MCP Tools ->](features/mcp-tools.md)
+- [44 MCP Tools ->](features/mcp-tools.md)
 - [26 Error Parsers ->](features/parsers.md)
 - [How It Works ->](architecture/how-it-works.md)
 - [Feature Matrix vs Competitors ->](comparison/feature-matrix.md)
