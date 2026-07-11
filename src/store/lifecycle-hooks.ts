@@ -21,6 +21,7 @@
  */
 
 import type { LifecycleFSM } from "@/store/lifecycle-fsm.js";
+import { MAX_COMMAND_FINGERPRINT_MAPPINGS } from "@/constants/lifecycle.js";
 
 // ──────────────────────────────────────────────
 // Types
@@ -163,6 +164,13 @@ export function createLifecycleHooks(fsm: LifecycleFSM): LifecycleHooks {
       // Merge with any new fingerprints (don't lose previously tracked ones that are still active)
       if (currentFps.size > 0) {
         commandFingerprints.set(normalized, currentFps);
+      }
+
+      // Evict oldest entries if over cap (LRU via Map insertion order)
+      while (commandFingerprints.size > MAX_COMMAND_FINGERPRINT_MAPPINGS) {
+        const oldestKey = commandFingerprints.keys().next().value;
+        if (oldestKey !== undefined) commandFingerprints.delete(oldestKey);
+        else break;
       }
     },
   };

@@ -169,6 +169,11 @@ export function createLifecycleFSM(): LifecycleFSM {
   /** Active resolution timers per fingerprint. */
   const resolutionTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+  /** Max fingerprints tracked before LRU eviction. */
+  const MAX_TRACKED = 1000;
+  /** Max completed episodes per fingerprint. */
+  const MAX_EPISODES_PER_FP = 10;
+
   /** Reference to the FSM instance for use in timer callbacks. */
   let fsmInstance: LifecycleFSM;
 
@@ -228,6 +233,10 @@ export function createLifecycleFSM(): LifecycleFSM {
     // Move to history
     const history = episodeHistory.get(fingerprint) ?? [];
     history.push({ ...episode } as Episode);
+    // Cap per-fingerprint history
+    if (history.length > MAX_EPISODES_PER_FP) {
+      history.shift();
+    }
     episodeHistory.set(fingerprint, history);
 
     activeEpisodes.delete(fingerprint);
@@ -248,6 +257,17 @@ export function createLifecycleFSM(): LifecycleFSM {
       if (nextState === undefined) return false;
 
       states.set(fingerprint, nextState);
+
+      // Evict oldest tracked fingerprint if over cap (LRU via Map insertion order)
+      if (states.size > MAX_TRACKED) {
+        const oldestFp = states.keys().next().value;
+        if (oldestFp !== undefined && oldestFp !== fingerprint) {
+          states.delete(oldestFp);
+          activeEpisodes.delete(oldestFp);
+          episodeHistory.delete(oldestFp);
+          cancelResolutionTimer(oldestFp);
+        }
+      }
 
       // Timer management: start when entering edit_observed, cancel when leaving
       if (nextState === "edit_observed") {
