@@ -65,6 +65,17 @@ export interface LifecycleHooks {
    * Transitions: suppressed → resolved (confirmed fix).
    */
   onReExercisedAbsent(fingerprint: string): void;
+
+  /**
+   * Called when `run_and_watch` completes.
+   * Records the command→fingerprint mapping. On subsequent runs of the same
+   * command, detects which previously-tracked fingerprints are now absent
+   * (→ resolved) and which still appear (→ recurred).
+   *
+   * @param command - The command string that was executed.
+   * @param fingerprints - Fingerprints of errors produced by this run (may be empty).
+   */
+  onCommandRun(command: string, fingerprints: readonly string[]): void;
 }
 
 // ──────────────────────────────────────────────
@@ -78,6 +89,18 @@ export interface LifecycleHooks {
  * @returns LifecycleHooks instance.
  */
 export function createLifecycleHooks(fsm: LifecycleFSM): LifecycleHooks {
+  /**
+   * Tracks which command produced which fingerprints.
+   * Key: normalized command string (trimmed).
+   * Value: Set of fingerprints last seen from that command.
+   */
+  const commandFingerprints = new Map<string, Set<string>>();
+
+  /** Normalize a command string for consistent matching. */
+  function normalizeCommand(command: string): string {
+    return command.trim();
+  }
+
   return {
     onErrorsSurfaced(fingerprints: readonly string[]): void {
       for (const fp of fingerprints) {
@@ -109,6 +132,38 @@ export function createLifecycleHooks(fsm: LifecycleFSM): LifecycleHooks {
     onReExercisedAbsent(fingerprint: string): void {
       // Attempt re-exercise transition — valid from suppressed only
       fsm.transition(fingerprint, "re_exercised_absent");
+    },
+
+    onCommandRun(command: string, fingerprints: readonly string[]): void {
+      const normalized = normalizeCommand(command);
+      const currentFps = new Set(fingerprints);
+
+      // Check previous fingerprints for this command
+      const previousFps = commandFingerprints.get(normalized);
+
+      if (previousFps && previousFps.size > 0) {
+        for (const prevFp of previousFps) {
+          const state = fsm.getState(prevFp);
+
+          if (currentFps.has(prevFp)) {
+            // Fingerprint still present — recurrence (if in a state that accepts it)
+            if (state === "suppressed" || state === "edit_observed" || state === "resolved") {
+              fsm.transition(prevFp, "recurred");
+            }
+          } else {
+            // Fingerprint absent — confirmed fix (if in suppressed state)
+            if (state === "suppressed") {
+              fsm.transition(prevFp, "re_exercised_absent");
+            }
+          }
+        }
+      }
+
+      // Update the mapping: store current fingerprints for this command
+      // Merge with any new fingerprints (don't lose previously tracked ones that are still active)
+      if (currentFps.size > 0) {
+        commandFingerprints.set(normalized, currentFps);
+      }
     },
   };
 }
