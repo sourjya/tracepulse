@@ -34,7 +34,7 @@
 * [Infrastructure Awareness](features/infra-awareness.md)
 * [Frontend-Backend Correlation](features/correlation.md)
 * [Cross-Layer Diagnosis](features/cross-layer-diagnosis.md)
-* [Fingerprint Persistence](features/persistence.md)
+* [Persistence & Event Journal](features/persistence.md)
 * [Bug Pattern Detection](features/bug-patterns.md)
 * [Shell Misuse Detection](features/shell-misuse-detection.md)
 * [Agent Skills](features/skills.md)

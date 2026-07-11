@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.9.21 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
+v0.9.28 (alpha - 44 MCP tools, 26 parsers, 1330 tests)
 
 ## Milestones
 
@@ -36,7 +36,7 @@ v0.9.21 (alpha - 42 MCP tools, 26 parsers, 1124 tests)
 | M23: `tracepulse init` - Context-Aware Setup | Discoverability | v1.0 | 🔲 Spec ready |
 | M25: Agent Compliance & Self-Correction | Agent Feedback | v1.0 | 🔲 Planned |
 | M26: Intelligent Feedback | Deep Research + Feedback | v1.1 | 🔲 Spec ready |
-| M27: Effectiveness Telemetry | Field Usage + ROI | v1.1 | 🔲 Spec ready |
+| M27: Effectiveness Telemetry | Field Usage + ROI | v1.1 | 🟡 In Progress (D1+D4+D16 shipped) |
 
 ## Reviews
 

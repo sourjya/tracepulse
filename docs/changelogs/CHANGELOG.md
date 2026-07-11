@@ -7,6 +7,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.28] - 2026-07-11
+
+### Added
+- **Event journal (D1)** — append-only JSONL persistence at `.tracepulse/events.jsonl`. Every error/warn event is flushed synchronously to disk, surviving crashes. On startup, the journal is compacted into `telemetry.json` (aggregated metrics per session and fingerprint). Eliminates survivorship bias — crash sessions are no longer lost from metrics.
+- **Lifecycle state machine (D4)** — per-fingerprint FSM tracks errors through 7 states: `first_seen → surfaced → investigated → edit_observed → suppressed → resolved → recurred`. Deterministic transition table with episode tracking (duration, tool calls, outcome per investigation episode).
+- **Resolution timer** — when a fingerprint enters `edit_observed`, a 30-second timer starts. If the error doesn't recur, it auto-transitions to `suppressed`. Recurrence before the timer fires cancels it and transitions to `recurred`.
+- **Suppressed vs resolved distinction (D16)** — default outcome is `suppressed` (fingerprint absent, unconfirmed). `resolved` requires re-exercise evidence (same command ran again, no recurrence). Honest metrics: `mean_time_to_fix` computed on confirmed fixes only.
+- **Lifecycle hooks** — decoupled integration layer (`lifecycle-hooks.ts`) connecting MCP tool handlers to the FSM. `get_errors` → surfaced, `get_error_context` → investigated, HMR → file_changed, recurrence → recurred.
+- **Spec**: `.kiro/specs/m27-event-journal/` (requirements, design, tasks)
+
+### Changed
+- 44 MCP tools, 1330 tests passing (up from 1199 — 131 new tests)
+- New source files: `journal-types.ts`, `event-journal.ts`, `journal-bridge.ts`, `lifecycle-fsm.ts`, `lifecycle-hooks.ts`
+
+---
+
 ## [0.9.27] - 2026-07-11
 
 ### Added

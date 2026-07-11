@@ -246,7 +246,7 @@ Log Line Arrives
 
 > **Source:** [`src/store/ring-buffer.ts`](../../src/store/ring-buffer.ts) | [`src/types/collectors.ts`](../../src/types/collectors.ts)
 
-All events live in an in-memory ring buffer. No database, no files (except optional fingerprint persistence).
+All events live in an in-memory ring buffer. The ring buffer is the hot path for MCP tool queries. For persistence, the event journal (`events.jsonl`) provides crash-proof telemetry recording alongside the ring buffer.
 
 ```
 Ring Buffer (500 slots)
@@ -264,6 +264,54 @@ Features:
 - Subscribe/unsubscribe: watch_for_errors gets real-time events
 - Query with filters: since, source, level, limit
 ```
+
+---
+
+## Event Journal & Lifecycle FSM (M27)
+
+> **Source:** [`src/persistence/event-journal.ts`](../../src/persistence/event-journal.ts) | [`src/store/lifecycle-fsm.ts`](../../src/store/lifecycle-fsm.ts) | [`src/store/lifecycle-hooks.ts`](../../src/store/lifecycle-hooks.ts)
+
+The event journal and lifecycle FSM provide crash-proof telemetry and per-fingerprint error lifecycle tracking.
+
+### Event Journal
+
+```
+.tracepulse/events.jsonl      (append-only, one JSON object per line)
+.tracepulse/telemetry.json    (compacted summary, written on startup)
+```
+
+Every error/warn event is flushed synchronously to `events.jsonl` via `appendFileSync`. If the process crashes, all events up to the last write are recoverable. On next startup, the journal is compacted into `telemetry.json` (aggregated per-session and per-fingerprint metrics) and truncated.
+
+### Lifecycle State Machine
+
+Each error fingerprint moves through a deterministic lifecycle:
+
+```
+first_seen → surfaced → investigated → edit_observed → suppressed → resolved
+                                              │                        ↑
+                                              └── recurred ────────────┘
+```
+
+| State | Meaning | Trigger |
+|-------|---------|---------|
+| `first_seen` | Fingerprint appeared but never shown to agent | Error arrives |
+| `surfaced` | Returned to agent via `get_errors` | Agent calls `get_errors` |
+| `investigated` | Agent dug deeper via `get_error_context` | Agent calls investigation tool |
+| `edit_observed` | File change detected after investigation | HMR/hot-reload |
+| `suppressed` | Error absent after 30s, unconfirmed fix | Resolution timer fires |
+| `resolved` | Confirmed fix — same command re-ran, no recurrence | Re-exercise evidence |
+| `recurred` | Error reappeared after suppressed/resolved | Fingerprint resurfaces |
+
+### Resolution Timer
+
+When a fingerprint enters `edit_observed`, a 30-second timer starts. If the error doesn't recur within that window, it auto-transitions to `suppressed`. If the error DOES recur, the timer is cancelled and the state goes to `recurred`.
+
+### Episodes
+
+An "investigation episode" is the span from `surfaced` to a terminal state. Each episode tracks:
+- `started_at` / `ended_at` — duration
+- `tool_calls` — how many investigation tools the agent used
+- `outcome` — `suppressed`, `resolved`, or `recurred`
 
 ---
 

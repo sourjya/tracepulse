@@ -1,6 +1,52 @@
-# Fingerprint Persistence
+# Persistence & Event Journal
 
-By default, TracePulse forgets everything when the session ends. With persistence enabled, it remembers which errors it has seen before - so the agent can distinguish "new bug" from "known issue" across sessions.
+TracePulse has two persistence mechanisms: the **fingerprint history** (cross-session error tracking) and the **event journal** (crash-proof telemetry).
+
+## Event Journal (v0.9.28+)
+
+The event journal writes every error/warn event to disk immediately as it happens. This means even if your dev server crashes (which is exactly when you need the data most), nothing is lost.
+
+### How It Works
+
+```
+Ring Buffer (live queries)  →  events.jsonl (crash-proof append)
+                                     ↓ (on next startup)
+                               telemetry.json (compacted metrics)
+```
+
+- **During session:** Events append to `.tracepulse/events.jsonl` synchronously
+- **On startup:** Previous session's journal is compacted into `telemetry.json`, journal is cleared
+- **No configuration needed** — the journal is always active when persistence is enabled
+
+### Lifecycle Tracking
+
+Each error fingerprint moves through a lifecycle:
+
+```
+first_seen → surfaced → investigated → edit_observed → suppressed → resolved
+```
+
+- **surfaced** — error was shown to the agent via `get_errors`
+- **investigated** — agent called `get_error_context` or `get_prompt_context`
+- **edit_observed** — file change detected after investigation
+- **suppressed** — error absent for 30s (likely fixed, unconfirmed)
+- **resolved** — same command re-ran, error still absent (confirmed fix)
+- **recurred** — error came back after being suppressed/resolved
+
+### What This Enables
+
+| Metric | Meaning |
+|--------|---------|
+| `suppressed_rate` | Errors that disappeared (unconfirmed) |
+| `confirmed_fix_rate` | Errors with re-exercise proof of fix |
+| `recurrence_rate` | Errors that came back after fix attempts |
+| `mean_time_to_fix` | Average time from surfaced to resolved (confirmed only) |
+
+---
+
+## Fingerprint Persistence
+
+With persistence enabled, TracePulse remembers which errors it has seen before - so the agent can distinguish "new bug" from "known issue" across sessions.
 
 ## Enable
 
