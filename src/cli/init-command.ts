@@ -13,7 +13,7 @@
  * @see .kiro/specs/m23-init-command/requirements.md
  */
 
-import { existsSync, mkdirSync, copyFileSync, writeFileSync, readdirSync, readFileSync, appendFileSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync, readdirSync, readFileSync, appendFileSync, chmodSync } from "node:fs";
 import { resolve, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -203,6 +203,19 @@ export function runInit(client: McpClient | "auto", cwd: string): string[] {
         mkdirSync(commandsDir, { recursive: true });
         copyFileSync(claudeMd, resolve(commandsDir, "tracepulse.md"));
         actions.push(`Wrote .claude/commands/tracepulse.md (/tracepulse slash command)`);
+      }
+
+      // Layer 3: PreToolUse deny hook (friction gradient inversion)
+      const hooksDir = resolve(cwd, ".claude", "hooks");
+      const hookSrc = resolve(skillsDir, "claude-hooks", "tracepulse-gate.sh");
+      if (existsSync(hookSrc)) {
+        mkdirSync(hooksDir, { recursive: true });
+        const hookDest = resolve(hooksDir, "tracepulse-gate.sh");
+        if (shouldCopyFile(hookSrc, hookDest)) {
+          copyFileSync(hookSrc, hookDest);
+          chmodSync(hookDest, 0o755);
+          actions.push(`Installed hook: .claude/hooks/tracepulse-gate.sh (denies Bash for test/build/lint)`);
+        }
       }
 
       // MCP config merging
