@@ -7,6 +7,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.27] - 2026-07-11
+
+### Added
+- **Friction gradient inversion** — `tracepulse init` now ships `autoApprove` for all 44 tools, ensuring agents use TracePulse without permission prompts. Without this, agents defaulted to shell (the #1 cause of TracePulse underutilization).
+- **Claude Code deny hook** — `tracepulse init --claude` installs `tracepulse-gate.sh` PreToolUse hook that blocks Bash for test/build/lint runners. Strips heredoc bodies and quoted spans before matching (prevents false positives on commit messages and fixture strings).
+- **Extended shell-fallback anti-pattern guide** — shipped in `skills/kiro-steering/tracepulse-subagent-rules.md` with command-type table, failure pattern documentation, correct/incorrect examples, and Python venv section.
+- **Venv auto-activation surfacing** — `run_and_watch` now reports `venv_activated` in the JSON response and logs to stderr when `.venv/` is auto-detected. Agents no longer need to guess whether venv is active.
+- **M27 Effectiveness Telemetry spec** — full requirements for persistent cross-session telemetry (6 features, 18 research-driven spec deltas). Roadmap entry added.
+- **`docs/how-we-improve.md`** — candid writeup of friction gradient discovery, discoverability gaps, guard hook fragility, and multiplier honesty.
+
+### Fixed
+- **TRP-4: `run_and_watch` schema description** — removed false "(up to 120)" timeout_seconds claim. There is no maximum.
+- **TRP-22: uvicorn/Django HMR detection** — expanded patterns to cover `"Detected changes in"` (common format), `"Application startup complete"` (reload finished signal), and Django's `"System check identified no issues"`. Removed false-positive `"Shutting down$"`.
+- **TRP-25: rejection message discoverability** — context-aware suggestions (Python hints, venv auto-activation note, closest prefix matches) instead of dumping the full 30-item allowlist.
+
+### Changed
+- 44 MCP tools, 1199 tests passing (up from 1196)
+- All shipped steering files updated to remove false 120s timeout cap
+- README Quick Start includes autoApprove callout
+- Roadmap updated with M27 milestone
+
+---
+
 ## [0.9.26] - 2026-07-11
 
 ### Fixed

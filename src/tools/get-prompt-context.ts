@@ -135,7 +135,7 @@ export function assembleContext(input: PromptContextInput): PromptContextResult 
 export async function handleGetPromptContext(
   buffer: EventBuffer,
   args: Record<string, unknown>,
-  cwd?: string,
+  _cwd?: string,
 ): Promise<CallToolResult> {
   const fingerprint = args.fingerprint as string | undefined;
   const maxTokens = (args.max_tokens as number | undefined) ?? 3000;
