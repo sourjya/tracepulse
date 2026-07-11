@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.29] - 2026-07-11
+
+### Fixed
+- **SRR-007 H-001:** Unbounded `commandFingerprints` Map in lifecycle-hooks.ts — added LRU eviction cap at 100 entries (CWE-400 fix)
+- **SRR-007 M-001:** Unbounded `states` Map in lifecycle-fsm.ts — capped at 1000 fingerprints with LRU eviction (also cleans up episodes and timers for evicted fps)
+- **SRR-007 M-002:** Unbounded `episodeHistory` per fingerprint — capped at 10 episodes per fingerprint, oldest dropped
+
+### Changed
+- 44 MCP tools, 1362 tests passing (up from 1330)
+
+---
+
 ## [0.9.28] - 2026-07-11
 
 ### Added
