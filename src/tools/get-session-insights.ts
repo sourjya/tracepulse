@@ -11,8 +11,10 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { AuditBuffer } from "@/store/audit-buffer.js";
+import type { LifecycleFSM } from "@/store/lifecycle-fsm.js";
 import { detectRunAndWatchGap } from "@/analysis/usage-nudge.js";
 import { detectShellMisuse } from "@/analysis/shell-misuse.js";
+import { computeLifecycleMetrics } from "@/store/lifecycle-metrics.js";
 
 /** Threshold: errors above this score should be investigated. */
 const INVESTIGATE_THRESHOLD = 50;
@@ -34,6 +36,7 @@ const VERIFY_GAP_THRESHOLD_MS = 60 * 1000; // 60 seconds
 export function handleGetSessionInsights(
   buffer: EventBuffer,
   auditBuffer: AuditBuffer,
+  lifecycleFsm?: LifecycleFSM,
 ): CallToolResult {
   const now = Date.now();
   const auditRecords = auditBuffer.query(500);
@@ -141,6 +144,9 @@ export function handleGetSessionInsights(
     recommendations.push(shellMisuse.recommendation);
   }
 
+  // ── Lifecycle metrics (M27) ──
+  const lifecycleMetrics = lifecycleFsm ? computeLifecycleMetrics(lifecycleFsm) : null;
+
   return {
     content: [{
       type: "text",
@@ -155,6 +161,7 @@ export function handleGetSessionInsights(
           session_duration_minutes: sessionMinutes,
         },
         parser_stats: parserStats,
+        ...(lifecycleMetrics ? { lifecycle_metrics: lifecycleMetrics } : {}),
         recommendations,
       }),
     }],

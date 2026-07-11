@@ -299,6 +299,7 @@ export function createMcpServer(
     auditBuffer?: AuditBuffer;
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
+    lifecycleFsm?: import("@/store/lifecycle-fsm.js").LifecycleFSM;
     patternAnalyzer?: PatternAnalyzer;
     serverManager?: ServerManager;
     detectedStacks?: readonly import("@/diagnostics/project-detector.js").ProjectStack[];
@@ -486,7 +487,7 @@ export function createMcpServer(
       "Analyze agent effectiveness: uninvestigated errors, verification gaps, tool usage patterns, parser stats. Use at end of session.",
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  }, () => handleGetSessionInsights(buffer, auditBuffer));
+  }, () => handleGetSessionInsights(buffer, auditBuffer, options?.lifecycleFsm));
 
   server.registerTool("check_drift", {
     title: "Check Drift",
