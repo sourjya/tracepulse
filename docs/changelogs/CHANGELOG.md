@@ -7,6 +7,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.9.30] - 2026-07-11
+
+### Added
+- **Agent steering updates** — `skills/tracepulse/SKILL.md`, `skills/CLAUDE.md`, and `skills/claude-rules/tracepulse.md` now document lifecycle tracking, `get_session_insights()` lifecycle metrics, and the `--persist` event journal. Agents are taught that lifecycle tracking is automatic and that `get_session_insights()` reports fix rates.
+
+### Changed
+- 44 MCP tools, 1362 tests passing
+- Re-run `tracepulse init` to sync updated steering files to your project
+
+---
+
 ## [0.9.29] - 2026-07-11
 
 ### Fixed

@@ -15,6 +15,8 @@ description: Uses TracePulse MCP server for backend runtime error monitoring. Us
 
 **Fingerprints**: Each unique error gets a stable fingerprint (hash). Same error = same fingerprint. This enables deduplication, occurrence counting, and cross-session tracking.
 
+**Lifecycle tracking** (v0.9.28+): When `--persist` is enabled, TracePulse tracks each error through a lifecycle: `first_seen → surfaced → investigated → edit_observed → suppressed → resolved`. This happens automatically — when you call `get_errors`, errors move to "surfaced"; when you call `get_error_context`, they move to "investigated"; when HMR fires, they move to "edit_observed". After 30 seconds without recurrence, errors are "suppressed". If you re-run the same command and the error is gone, it's "resolved" (confirmed fix). Call `get_session_insights()` to see lifecycle metrics: `suppressed_rate`, `confirmed_fix_rate`, `recurrence_rate`.
+
 ## Workflow Patterns
 
 ### After ANY backend code change (most common)

@@ -11,6 +11,7 @@ Call `get_project_health()` before doing ANY work. This primes TracePulse monito
 - Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
 - Use `start_server` for ALL server processes (dev servers, APIs, workers, background services). It gives live error monitoring, crash detection, and proper process management.
 - Use `check_port(port)` before starting any server to verify the port is free.
+- Use `get_session_insights()` at end of session — shows lifecycle metrics (fix rate, recurrence rate) and uninvestigated errors.
 - Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
 - Use `timeout_seconds: 120` for large test suites (500+ tests). There is no maximum — use 300+ for full integration runs. Default is 60s.
 - Use `cwd` parameter for cross-project commands. Absolute paths are allowed.

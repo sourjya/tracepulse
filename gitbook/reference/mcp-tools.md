@@ -106,7 +106,7 @@ Tools for managing the current session, reviewing your workflow, and housekeepin
 | Tool | Parameters | Description | ~Tokens |
 |------|-----------|-------------|---------|
 | `get_session_summary` | none | Compact session manifest: errors seen, builds detected, tools called. ~200 tokens. | 200 |
-| `get_session_insights` | none | Agent effectiveness report: uninvestigated errors, verification gaps, parser stats, recommendations. | 500 |
+| `get_session_insights` | none | Agent effectiveness: uninvestigated errors, verification gaps, lifecycle metrics (fix rate, recurrence), parser stats, recommendations. | 500 |
 | `get_session_impact` | none | Environmental report: tokens saved, energy in Wh, CO2 in grams. | 200 |
 | `get_audit_trail` | `limit?`, `since?` | Review your own MCP tool usage this session. Shows which tools were called, when, and response sizes. | 500 |
 | `acknowledge_error` | `fingerprint` | Mark an error as investigated. Excluded from future `get_errors` results. | 50 |

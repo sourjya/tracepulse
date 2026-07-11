@@ -47,6 +47,15 @@ const start = Date.now();
 get_new_errors({ since: start })   // only errors from this run
 ```
 
+### Effectiveness metrics (with --persist)
+```
+get_session_insights()  → includes lifecycle_metrics:
+  - confirmed_fix_rate: fraction of errors with re-exercise proof
+  - suppressed_rate: errors that disappeared (unconfirmed)
+  - recurrence_rate: errors that came back after fix attempts
+  - mean_time_to_fix: average duration of confirmed fixes
+```
+
 ### Key tools
 | Need | Tool |
 |------|------|
@@ -58,6 +67,7 @@ get_new_errors({ since: start })   // only errors from this run
 | "Build status" | `get_build_errors()` |
 | "Build timestamp" | `get_build_errors()` → `last_build_at` field |
 | "What patterns?" | `get_bug_patterns()` |
+| "Fix rate?" | `get_session_insights()` → `lifecycle_metrics` |
 | "Check drift" | `check_drift()` |
 | "Test MCP server" | `verify_mcp(command: "...")` |
 

@@ -83,7 +83,7 @@ Every tool the agent can call, organized by workflow.
 | Tool | What it does | Cost |
 |------|-------------|------|
 | `get_session_summary()` | Compact ~200-token session manifest: errors, builds, tools called | ~200 tokens |
-| `get_session_insights()` | Agent effectiveness: uninvestigated errors, verification gaps, shell misuse detection, recommendations | ~500 tokens |
+| `get_session_insights()` | Agent effectiveness: uninvestigated errors, verification gaps, shell misuse detection, lifecycle metrics (fix rate, recurrence rate), recommendations | ~500 tokens |
 | `get_session_impact()` | Environmental report: tokens saved, energy (Wh), CO2 (g) | ~200 tokens |
 | `acknowledge_error(fingerprint)` | Mark error as investigated. Excluded from future get_errors results. | ~50 tokens |
 | `check_drift()` | Check env, dependency, and migration drift in one call | ~300 tokens |
@@ -189,6 +189,6 @@ Check or run pending database migrations. Auto-detects alembic, prisma, django, 
 
 ### get\_session\_insights
 
-Agent effectiveness report: uninvestigated errors, verification gaps, tool usage patterns, parser stats. Use at end of session.
+Agent effectiveness report: uninvestigated errors, verification gaps, tool usage patterns, parser stats, lifecycle metrics (suppressed_rate, confirmed_fix_rate, recurrence_rate, mean_time_to_fix). Use at end of session.
 
 No parameters.
