@@ -31,7 +31,7 @@ Last updated: 2026-04-28
 | Browser console errors | via correlation | Yes | Yes | - | Yes |
 | Browser console warnings | via correlation | Yes | Yes | - | Yes |
 | Browser network failures (4xx/5xx) | via correlation | Yes | Yes | - | Yes |
-| Structured error parsing | Yes (10 parsers) | - (raw text) | - (raw text) | - | - (raw text) |
+| Structured error parsing | Yes (25 parsers) | - (raw text) | - (raw text) | - | - (raw text) |
 | File:line extraction | Yes | - | - | - | - |
 | Error type classification | Yes | - | - | - | - |
 | Stack trace parsing | Yes (15 frames max) | - | - | - | - |

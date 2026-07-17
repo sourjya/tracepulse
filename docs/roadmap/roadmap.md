@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.9.28 (alpha - 44 MCP tools, 26 parsers, 1330 tests)
+v0.9.31 (alpha - 44 MCP tools, 25 parsers, 1380 tests)
 
 ## Milestones
 
@@ -37,6 +37,7 @@ v0.9.28 (alpha - 44 MCP tools, 26 parsers, 1330 tests)
 | M25: Agent Compliance & Self-Correction | Agent Feedback | v1.0 | 🔲 Planned |
 | M26: Intelligent Feedback | Deep Research + Feedback | v1.1 | 🔲 Spec ready |
 | M27: Effectiveness Telemetry | Field Usage + ROI | v1.1 | 🟡 In Progress (D1+D4+D16 shipped) |
+| M28: Safe Agent Command Execution | Security — v0.9.31 Threat Model | v0.9.31+ | 🟡 Phase A build-ready (reviewed); Phase B gated on B-0 |
 
 ## Reviews
 
@@ -164,9 +165,30 @@ Persistent cross-session telemetry that answers: "Is TracePulse actually helping
 | 1 | **Session effectiveness summary** — persist investigation/fix/misuse counts to `.tracepulse/telemetry.json` | 2 days | HIGH | Consumer project feedback loop |
 | 2 | **`get_effectiveness_report` tool** — cumulative metrics: savings_ratio, fix_rate, parser coverage | 2 days | HIGH | TRP-7 |
 | 3 | **Parser gap accumulator** — surface unmatched log patterns for parser development | 1 day | Medium | Field observation |
-| 4 | **Timeout guidance feedback** — P95-based `timeout_seconds` recommendations from actual data | 1 day | HIGH | TRP-6, AuthIQ field data |
+| 4 | **Timeout guidance feedback** — P95-based `timeout_seconds` recommendations from actual data | 1 day | HIGH | TRP-6, field data |
 | 5 | **Efficiency delta metrics** — tokens saved, mean_time_to_fix, savings_ratio, energy/CO2/USD cumulative | 3 days | HIGH | ROI measurement |
 | 6 | **Effectiveness steering auto-generation** — `tracepulse init` produces data-driven `tracepulse-tuning.md` | 2 days | Medium | TRP-7 |
+
+## M28: Safe Agent Command Execution (Security)
+
+**Spec:** [`.kiro/specs/m28-safe-command-execution/`](../../.kiro/specs/m28-safe-command-execution/)
+**Origin:** v0.9.31 STRIDE threat model — [`docs/audits/security/THREAT_MODEL.md`](../audits/security/THREAT_MODEL.md) §6.5 · Design ticket TRP-53.
+
+Complements M25 (agents should use TracePulse's routes, not raw shell) by making that routing **safe**. TracePulse is
+the instrumented command-execution chokepoint by design; this milestone uses that chokepoint to add containment and
+sanitization that raw shell never had — **without removing any agent capability**:
+
+- **Contain:** scrub the child env (stop inheriting full `process.env` — defeats the `bash -c env` secret harvest;
+  TRP-55) and confine `cwd` to the project root (TRP-57).
+- **Sanitize:** redact **all** returned output incl. `raw_output` (TRP-54) and label output as untrusted (TRP-58).
+- **Govern:** reframe the ever-growing allowlist from a *gate* into a *classifier* — Green (auto/instrumented, the
+  95% fast path), Amber (escape hatch: runs, confirm-once then session-remember), Red (contain/confirm); apply the
+  same guardrail to `verify_mcp`/`start_server` (TRP-56); optional sandbox backend (TRP-59).
+- **Position:** document the net-new safety as a product differentiator in README + GitBook (TRP-60).
+
+Near-term (Contain + Sanitize + parity) lands in v0.9.31; the classifier + sandbox are the follow-on milestone.
+
+---
 
 ## M14: Category Extension (informed by Deep Research)
 
