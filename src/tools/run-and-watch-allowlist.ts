@@ -19,7 +19,7 @@ import type { ProjectStack } from "@/diagnostics/project-detector.js";
  * modern polyglot projects. The security boundary is the shell
  * metacharacter check + prefix matching — not stack detection.
  *
- * CIQ-605: Added python, python3, pytest, sh, .venv/bin/ to fix
+ * TRP-5: Added python, python3, pytest, sh, .venv/bin/ to fix
  * forced shell fallback for Python projects.
  */
 const BASE_PREFIXES = [

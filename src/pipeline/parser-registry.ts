@@ -81,7 +81,7 @@ export function createParserRegistry(parsers: readonly ErrorParser[]): ParserReg
 }
 
 // ──────────────────────────────────────────────
-// Factory - Default Registry (all 6 parsers)
+// Factory - Default Registry (all 25 parsers)
 // ──────────────────────────────────────────────
 
 /**
