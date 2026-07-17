@@ -106,4 +106,3 @@ The ONLY exceptions where you may write code before tests:
 - Every bug fix must include a regression test
 - Minimum 80% code coverage for new code
 - Both positive AND negative test cases required for every feature
-- **Every wired integration must have a test proving the wiring works** - if module A calls module B, test that the call actually happens. Defined-but-never-called code is a bug.

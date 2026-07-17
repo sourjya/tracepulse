@@ -2,7 +2,7 @@
 inclusion: always
 ---
 
-# Chokepoint Logging — MANDATORY
+# Chokepoint Logging - MANDATORY
 
 A chokepoint is any error, crash, or near-miss that required multiple attempts to fix or revealed a gap in process. Logging them creates institutional memory that prevents the same class of bug from recurring.
 
@@ -38,32 +38,22 @@ Any error that:
 | CSS_OVERSIGHT | Missing scrollbar/overflow/responsive handling |
 | LAYOUT_OVERFLOW | Flex/grid children exceeding viewport |
 | QUERY_INVALIDATION | Mutation not invalidating all affected queries |
-| QUERY_OMISSION | Active record query missing a required filter (e.g., expiry, deleted_at) |
-| QUERY_LOADING_STATE | isLoading used alone hides cached content during background refetch |
 | TYPE_MISMATCH | API returns different shape than frontend expects |
 | IMPORT_ERROR | Wrong export/import pattern causing runtime crash |
 | DEPLOY_REGRESSION | Build deployed without smoke test |
 | TOOL_MISUSE | Using wrong tool when a dedicated tool exists |
 | STATE_SYNC | Multiple sources of truth drifting apart |
-| SESSION_DEADLOCK | Code opens a new DB session inside code that already holds one |
 | RACE_CONDITION | Async operations executing in wrong order |
-| OPTIONAL_SERVICE_BLOCKING | Startup handler blocks on an optional dependency (NATS, Redis) with no timeout or skip |
-| AUTH_BYPASS | Component with data access mounted outside auth boundary (e.g., in App.tsx before Routes) |
-| CONFIG_MISMATCH | Runtime config (fly.toml, .env) points to wrong path or value (health check URL, DB name) |
-| ERROR_BOUNDARY_CASCADE | Single error boundary wrapping all routes — one crash kills all navigation |
-| INFRA_SILENT_DEATH | Service exits without alerting or auto-recovering (Docker daemon restart, WSL hibernation) |
-| MCP_PHANTOM_FAILURE | MCP server appears broken but failure is in connection layer, infrastructure, or client-side cache |
-| COMMIT_NOISE | Pushing after every single-line tweak instead of batching logically related changes |
 
 Add new categories as they emerge.
 
 ## Periodic Analysis
 
 At the end of each sprint (or every 20 chokepoints), review the log for:
-1. **Recurring patterns** — promote to steering rules
-2. **Tooling gaps** — file as feature requests or create scripts
-3. **Test gaps** — add regression tests or smoke tests
-4. **Process gaps** — update documentation or checklists
+1. **Recurring patterns** - promote to steering rules
+2. **Tooling gaps** - file as feature requests or create scripts
+3. **Test gaps** - add regression tests or smoke tests
+4. **Process gaps** - update documentation or checklists
 
 ## Guardrail Promotion
 

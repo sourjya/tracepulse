@@ -69,6 +69,29 @@
 
 ---
 
+### [UI Phase Template - use for any phase that modifies frontend]
+
+#### UX Intent (required before coding any UI)
+
+```
+Screen:
+Primary user:
+Primary task:
+Most frequent action:
+Least acceptable friction:
+Reference pattern (product + screen):
+Interaction placement rule:
+Density rule:
+Visual hierarchy (rank top 3 elements):
+Do not change:
+```
+
+#### Step N: [Component Name] - TDD Cycle
+
+[Follow standard RED/GREEN/REFACTOR structure above]
+
+---
+
 ## TDD Reminders
 
 **Before writing ANY implementation code, ask yourself:**
@@ -77,6 +100,28 @@
 3. Am I writing the MINIMAL code to make the test pass?
 
 **If the answer to any of these is NO, STOP and write the test first.**
+
+---
+
+### Final Phase: Completeness Verification
+
+**This phase is NON-NEGOTIABLE. Do not skip it.**
+
+- [ ] **Error states** - every API call has a visible error state (not just console.log)
+- [ ] **Loading states** - every async operation shows a loading indicator
+- [ ] **Empty states** - every list/collection has an empty state message
+- [ ] **Persistence** - any state that should survive page reload is persisted (localStorage, database, URL params). Intentionally ephemeral state is documented.
+- [ ] **Destructive actions** - delete/remove operations have confirmation dialogs with clear action labels
+- [ ] **Themed components** - no native `<select>`, `window.alert()`, `window.confirm()`, or `title` attributes
+- [ ] **API contract verified** - frontend types match actual backend response shape (log and verify)
+- [ ] **Cache invalidation** - after mutations, affected queries are invalidated or refetched
+- [ ] **Prop parity** - if reusing/extracting a shared component, every prop the original passes is matched (no empty defaults)
+- [ ] **Visual verification** - rendered output verified (or explicitly listed what user must check if verification unavailable)
+- [ ] **All tests passing** - `npm test` / `pytest` green
+- [ ] **No type errors** - `tsc --noEmit` / `ruff check` clean
+- [ ] **Changelog updated** - entry added for user-visible changes
+
+---
 
 ## Task Status Legend
 

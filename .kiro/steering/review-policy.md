@@ -3,9 +3,50 @@
 
 ## Purpose
 
-This policy governs when and how automated code reviews are triggered during development. All reviews are powered by hooks in `.kiro/hooks/`. Results are stored in `docs/audits/security/` and `docs/audits/maintainability/` respectively.
+This policy governs when and how automated code reviews are triggered during development. All reviews are powered by hooks in `.kiro/hooks/`. Results are stored in `docs/security/` and `docs/reviews/` respectively.
 
 The security review system follows a three-tier model - one prompt, three hooks, three scopes - that matches review depth to development context. See `docs/tiered-review-methodology.md` for full rationale.
+
+---
+
+## Quick Reference - Which Review, When
+
+Use `/review-guide` for interactive help. The short version:
+
+| You just... | Run this |
+|---|---|
+| Finished UI work | `/review-ux-live` (browser walk) or `/review-ux-audit` (from code) |
+| Completed a feature | `/review-code-security` (Tier 2) + `/review-code-maintainability` |
+| Changed auth/API code | `/review-code-security` + `/review-api-contracts` |
+| Added dependencies | `/review-dependency-risk` |
+| Wrote a spec | `/review-spec-readiness` |
+| End of sprint | `/review-code-security` (Tier 3) + `/review-test-quality` |
+| Shipping AI features | `/review-ai-agent-surface` |
+| Worried about perf | `/review-frontend-performance` or `/review-observability` |
+
+Full catalog: 17 prompts in `.kiro/prompts/review-*.md`
+
+---
+
+## Threat Modeling - Recommended Before First Review
+
+Before running your first Tier 2 or Tier 3 security review, build a threat model for the project using the [AWS Labs Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server). This produces a structured threat model (assets, trust boundaries, threat actors, data flows) that the security review prompts can reference to reduce false positives.
+
+**Setup:** Add to `.kiro/settings/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "threat-modeling": {
+      "command": "uvx",
+      "args": ["threat-modeling-mcp-server"]
+    }
+  }
+}
+```
+
+**Workflow:** Run the threat modeling process → export to `docs/security/THREAT_MODEL.md` or `.threatmodel/` → the security review prompt reads it before scanning.
+
+Without a threat model, the reviewer infers trust boundaries from code alone, which is the primary cause of false positives.
 
 ---
 
@@ -41,7 +82,7 @@ The security review system follows a three-tier model - one prompt, three hooks,
 
 **Checks:** All Tier 1 categories plus OWASP S1-S13, BOLA/IDOR, cryptographic quality, file upload security
 
-**Output:** Full SRR report - `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T2.md`
+**Output:** Full SRR report - `docs/security/SRR-{###}-{YYYY-MM-DD}-T2.md`
 - SECURITY_LOG.md updated
 - CRITICAL/HIGH findings create immediate fix tasks
 - MEDIUM/LOW findings added to roadmap
@@ -62,11 +103,11 @@ The security review system follows a three-tier model - one prompt, three hooks,
 
 **Checks:** All Tier 1 and Tier 2 categories plus supply chain (D1-D5), secure headers and CORS (S15), logging security (S16), rate limiting systemic review (S14-EXT), AI-generation artifact review, test coverage delta
 
-**Output:** Full SRR report - `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T3.md`
+**Output:** Full SRR report - `docs/security/SRR-{###}-{YYYY-MM-DD}-T3.md`
 - SECURITY_LOG.md updated
 - CRITICAL/HIGH findings create immediate fix tasks
 - MEDIUM/LOW findings added to roadmap
-- Dependency manifest snapshot recorded in `docs/audits/security/dep-snapshot-{YYYY-MM-DD}.md`
+- Dependency manifest snapshot recorded in `docs/security/dep-snapshot-{YYYY-MM-DD}.md`
 
 ---
 
@@ -81,10 +122,44 @@ The security review system follows a three-tier model - one prompt, three hooks,
 - At the end of each development sprint or phase
 - Manually triggered when structural drift is suspected
 
-**Output:** Full MRR report - `docs/audits/maintainability/MRR-{###}-{YYYY-MM-DD}.md`
+**Output:** Full MRR report - `docs/reviews/MRR-{###}-{YYYY-MM-DD}.md`
 - REVIEW_LOG.md updated
 - Phase 1 quick wins added to active sprint backlog
 - Phase 2 and Phase 3 items added to roadmap
+
+---
+
+## UX Review - Live Browser Walk
+
+**Prompt:** `.kiro/prompts/review-ux-live.md`
+**Agent:** `.kiro/agents/ux-reviewer.json` (restricted-tool: browser MCP + read + script exec only)
+**Rubric:** `.kiro/steering/ux-console-idiom.md` (loaded on-demand, NOT always-on)
+**Trigger:** Manual invocation at UI feature completion or pre-release
+**Scope:** All user-facing routes (or subset specified by the invoker)
+
+**Fires when:**
+- A `ui/` or `feat/` branch with frontend changes is marked feature-complete
+- Before any release (per the release checklist in `versioning.md`)
+- Manually triggered when UX regression is suspected
+- After a significant design system or layout change
+
+**Does NOT fire:**
+- On every commit (too expensive - browser automation)
+- On backend-only changes with no UI impact
+- As always-on context (per research evidence on context-bloat cost)
+
+**Checks:** Console-idiom rubric (9 families, 44 checks): Density & Type, Surfaces & Layout, Read-First Editing, Save Model, Tables & Lists, Empty States & Feedback, Copy & Correctness, Accessibility & States, Consistency & Tokens
+
+**Output:** Full UXR report - `docs/ux-reviews/UXR-{###}-{YYYY-MM-DD}.md`
+- Systemic findings + per-page findings with rubric IDs
+- Prioritized plan (ship-now / fix-soon / defer)
+- Mandatory Corrections/Retractions section
+- Gate: PASS (zero Sev-1, no page below 70) or FAIL
+
+**Gate behavior:**
+- FAIL blocks release (same weight as a Tier 2 security finding)
+- Sev-1 findings create immediate fix tasks
+- Sev-2 findings added to next sprint backlog
 
 ---
 
@@ -99,15 +174,54 @@ Security findings may surface structural issues that the maintainability review 
 
 ---
 
+## Adversarial Verification - Reducing False Positives
+
+Security reviews use a two-pass approach to reduce false positives:
+
+### Pass 1: Discovery (built into the security prompt)
+
+The `code-security-reviewer` agent scans the codebase and produces findings with the severity calibration rubric and self-verification pass built into the prompt.
+
+### Pass 2: Independent Verification (separate agent)
+
+For Tier 2 and Tier 3 reviews, after the discovery pass produces findings, spawn the `security-verifier` agent to adversarially disprove them:
+
+**Instruction to include in T2/T3 review workflow:**
+
+```
+After producing the SRR findings above, invoke the security-verifier agent
+with ONLY the list of HIGH+ findings (no reasoning, no context from this review).
+The verifier will independently search the codebase for compensating controls
+and report DISPROVED / CONFIRMED / DOWNGRADE for each finding.
+Update the SRR with the verification results before finalizing.
+```
+
+### When to use each approach
+
+| Context | Verification approach |
+|---------|----------------------|
+| Tier 1 (pre-commit) | None - speed matters, findings are high-confidence patterns |
+| Tier 2 (feature complete) | Self-verification pass (built into prompt) |
+| Tier 3 (sprint end) | Self-verification + spawn `security-verifier` agent for HIGH+ findings |
+| Pre-release or post-incident | Full independent verification - spawn verifier for ALL findings |
+
+### Why two agents matter
+
+The same agent that finds an issue is biased toward confirming it (confirmation bias). A separate agent with no access to the discovery reasoning and instructions to *disprove* each finding roughly halves false positives (per Anthropic's "Using LLMs to Secure Source Code" research, May 2026).
+
+---
+
 ## Output Convention
 
 | Review Type | Output Path | Naming Pattern |
 |---|---|---|
 | Security Tier 1 | Inline only | No file |
-| Security Tier 2 | `docs/audits/security/` | `SRR-{###}-{YYYY-MM-DD}-T2.md` |
-| Security Tier 3 | `docs/audits/security/` | `SRR-{###}-{YYYY-MM-DD}-T3.md` |
-| Maintainability | `docs/audits/maintainability/` | `MRR-{###}-{YYYY-MM-DD}.md` |
-| Dep snapshot | `docs/audits/security/` | `dep-snapshot-{YYYY-MM-DD}.md` |
+| Security Tier 2 | `docs/security/` | `SRR-{###}-{YYYY-MM-DD}-T2.md` |
+| Security Tier 3 | `docs/security/` | `SRR-{###}-{YYYY-MM-DD}-T3.md` |
+| AI Surface Review | `docs/security/` | `AISR-{###}-{YYYY-MM-DD}.md` |
+| Maintainability | `docs/reviews/` | `MRR-{###}-{YYYY-MM-DD}.md` |
+| UX Review | `docs/ux-reviews/` | `UXR-{###}-{YYYY-MM-DD}.md` |
+| Dep snapshot | `docs/security/` | `dep-snapshot-{YYYY-MM-DD}.md` |
 
 ---
 
@@ -115,7 +229,8 @@ Security findings may surface structural issues that the maintainability review 
 
 - SRR numbers are sequential across all tiers: SRR-001, SRR-002, SRR-003, ...
 - MRR numbers are sequential: MRR-001, MRR-002, MRR-003, ...
-- Always check existing files in `docs/audits/security/` and `docs/audits/maintainability/` to determine the next number before creating a new report
+- UXR numbers are sequential: UXR-001, UXR-002, UXR-003, ...
+- Always check existing files in `docs/security/`, `docs/reviews/`, and `docs/ux-reviews/` to determine the next number before creating a new report
 - The tier suffix (T2 or T3) is appended after the date, not the number
 
 ---
@@ -135,13 +250,14 @@ Security findings may surface structural issues that the maintainability review 
   - review-policy.md
 
 docs/
-- audits/
-  - security/
-    - SECURITY_LOG.md
-    - dep-snapshot-{YYYY-MM-DD}.md
-    - SRR-{###}-{YYYY-MM-DD}-T2.md
-    - SRR-{###}-{YYYY-MM-DD}-T3.md
-  - maintainability/
-    - MRR-{###}-{YYYY-MM-DD}.md
+- security/
+  - SECURITY_LOG.md
+  - dep-snapshot-{YYYY-MM-DD}.md
+  - SRR-{###}-{YYYY-MM-DD}-T2.md
+  - SRR-{###}-{YYYY-MM-DD}-T3.md
+- reviews/
   - REVIEW_LOG.md
+  - MRR-{###}-{YYYY-MM-DD}.md
+- ux-reviews/
+  - UXR-{###}-{YYYY-MM-DD}.md
 ```
