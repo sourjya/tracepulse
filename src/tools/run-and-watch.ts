@@ -17,6 +17,7 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
+import { redact } from "@/pipeline/secret-redactor.js";
 import { extractTestCounts } from "@/tools/test-counts.js";
 import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
@@ -284,10 +285,14 @@ export async function handleRunAndWatch(
             // Safety: cap raw_output at 32KB to prevent oversized MCP responses
             // that exceed stdio transport buffer limits (INB-10).
             raw_output: (() => {
-              const lines = maxLines
+              // TM-03 / TRP-54: redact secrets from raw_output before returning
+              // it to the agent. errors[] are already redacted via the pipeline;
+              // raw_output was previously returned verbatim, leaking any secret a
+              // command printed straight into the agent's context.
+              const selected = maxLines
                 ? rawLines.slice(0, maxLines)
                 : rawLines.slice(-100);
-              let output = lines.join("\n");
+              let output = selected.map(redact).join("\n");
               if (output.length > 32_000) {
                 output = output.slice(0, 32_000) + "\n... [truncated: output exceeded 32KB safety limit]";
               }
