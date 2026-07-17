@@ -14,13 +14,17 @@ TracePulse (44 tools) monitors your dev server. Use these patterns:
 ```
 verify_fix(10)  → watches 10s for new errors, returns PASS/FAIL
 ```
+Prefer event-driven waiting over polling: `wait_for_build()` blocks until the next
+build/hot-reload lands, `wait_for_event(type: "error")` blocks until the next error/crash.
+Both return the instant the event fires — never loop on `get_errors()`.
 
 ### Error recovery ladder (after start_server)
 ```
-1. wait_for_build()                    → blocks until server ready
-2. get_server_logs(level: "error")     → see what went wrong
-3. list_services()                     → check service registered
-4. check_port(port)                    → verify port in use
+1. wait_for_build()                    → blocks until server ready (event-driven, no polling)
+2. wait_for_event(type: "error")       → blocks until the next error/warning/crash
+3. get_server_logs(level: "error")     → see what went wrong
+4. list_services()                     → check service registered
+5. check_port(port)                    → verify port in use
 ```
 
 ### Full-stack debugging (with Chrome DevTools MCP)
@@ -60,6 +64,8 @@ get_session_insights()  → includes lifecycle_metrics:
 | Need | Tool |
 |------|------|
 | "Any errors?" | `get_errors(limit: 5)` |
+| "Wait for build (no polling)" | `wait_for_build()` |
+| "Block until next error/crash" | `wait_for_event(type: "error")` |
 | "Errors since smoke test" | `get_new_errors({ since: startMs })` |
 | "Check health" | `get_project_health()` |
 | "Run tests" | `run_and_watch("pytest tests/")` |

@@ -66,6 +66,6 @@ A correlation engine that watches the full stack simultaneously and produces act
 3. **Phase 3:** Auto-intervention — when diagnosis confidence > 90%, suggest fix directly
 4. **Phase 4:** Learning — track which diagnoses were correct, improve patterns
 
-## Relationship to CoreIQ
+## Relationship to Agent Fleet Management
 
-This is CoreIQ's "Agent Fleet Management" (pillar 5) applied to the development process. The DevLoop Agent is itself an agent being managed — it watches the developer's agent (Kiro/Claude) and intervenes when it's going in circles.
+This applies the "Agent Fleet Management" discipline (fleet pillar 5) to the development process. The DevLoop Agent is itself an agent being managed — it watches the developer's agent (Kiro/Claude) and intervenes when it's going in circles.

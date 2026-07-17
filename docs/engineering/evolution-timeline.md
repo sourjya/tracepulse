@@ -70,7 +70,7 @@ How TracePulse evolved from feedback, bugs, and real-world usage. Each entry lin
 
 | Change | Source | Impact |
 |--------|--------|--------|
-| 26 error parsers | Node, Python, Go, Java, Rust, JSON, structlog | Structured errors from any stack |
+| 25 error parsers | Node, Python, Go, Java, Rust, JSON, structlog | Structured errors from any stack |
 | Signal scoring (0-100) | Not all errors are equal | High-signal errors surface first |
 | Watch mode | Agent needed to verify fixes | `verify_fix` returns pass/fail |
 | Multi-process | Real projects have multiple services | `--service` flag, service tagging |

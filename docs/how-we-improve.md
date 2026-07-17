@@ -42,7 +42,7 @@ The real law:
 
 That was written in a chokepoint log *today* (2026-07-11). The feature has existed for weeks. Nobody knows.
 
-Same pattern with the expanded allowlist: `python`, `python3`, `pytest`, `.venv/bin/`, `uv` were added to the base allowlist in CIQ-605. But steering files across the fleet still say the old list. Agents try the old patterns, get rejected, conclude the tool can't do it, fall back to shell.
+Same pattern with the expanded allowlist: `python`, `python3`, `pytest`, `.venv/bin/`, `uv` were added to the base allowlist in TRP-5. But steering files across the fleet still say the old list. Agents try the old patterns, get rejected, conclude the tool can't do it, fall back to shell.
 
 **What we're doing about it:**
 - When `run_and_watch` rejects a command, the error message now includes relevant allowed prefixes
@@ -128,7 +128,7 @@ This is labor-intensive and unscaled. M27 (Effectiveness Telemetry) will automat
 |-------|--------|--------|
 | Friction gradient (autoApprove + hooks) | Spec ready, blocked on TRP-1 | TRP-21 |
 | Timeout "up to 120" false claim | ✅ Fixed this session | TRP-4, TRP-6 |
-| Python allowlist missing | ✅ Already fixed (CIQ-605) | TRP-5 |
+| Python allowlist missing | ✅ Already fixed | TRP-5 |
 | Venv auto-activation undiscovered | Documentation fix in progress | TRP-24 |
 | Rejection message discoverability | Open | TRP-25 |
 | Guard hook false positives | Open | TRP-23 |

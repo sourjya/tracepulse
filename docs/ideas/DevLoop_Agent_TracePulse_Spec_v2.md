@@ -395,13 +395,13 @@ Track which diagnoses were correct, which were dismissed, and what the actual ro
 
 ***
 
-# 8. Relationship to CoreIQ
+# 8. Relationship to Agent Fleet Management
 
-DevLoop Agent is CoreIQ's Agent Fleet Management pillar applied to the development process. The framing is precise: DevLoop Agent is itself an agent being managed. It watches the developer's coding agent (Claude/Kiro) and intervenes when that agent is going in circles or misdiagnosing.
+DevLoop Agent applies the Agent Fleet Management discipline to the development process. The framing is precise: DevLoop Agent is itself an agent being managed. It watches the developer's coding agent (Claude/Kiro) and intervenes when that agent is going in circles or misdiagnosing.
 
 This positions TracePulse not just as a backend observability tool but as the development session intelligence layer - the system that understands the full state of a development session and can reason about it. That is a materially different product positioning from a log viewer or a trace collector.
 
-| **CoreIQ Pillar**      | **DevLoop Application**                                   |
+| **Fleet-Management Pillar** | **DevLoop Application**                              |
 |------------------------|-----------------------------------------------------------|
 | Agent Fleet Management | DevLoop watches and corrects the coding agent             |
 | Cross-Layer Visibility | Full dev-session stack correlation is the core capability |

@@ -1,6 +1,6 @@
 # Parsers Reference
 
-TracePulse includes 26 error parsers that extract structured data from raw log lines. Parsers run in priority order on every line - the first match wins. If no parser matches, the line is stored as a raw info event.
+TracePulse includes 25 error parsers that extract structured data from raw log lines. Parsers run in priority order on every line - the first match wins. If no parser matches, the line is stored as a raw info event.
 
 ## How parsers work
 

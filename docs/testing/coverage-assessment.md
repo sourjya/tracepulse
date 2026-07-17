@@ -5,7 +5,7 @@
 ### Automated - Unit Tests (953 tests, 108 files)
 | Area | Tests | Coverage |
 |------|-------|----------|
-| 26 error parsers | ~200 | Golden file fixtures + unit tests |
+| 25 error parsers | ~200 | Golden file fixtures + unit tests |
 | 39 MCP tool handlers | ~150 | Each handler tested in isolation |
 | Pipeline (scoring, redaction, normalization) | ~100 | Signal scoring, secret patterns, ANSI stripping |
 | Clustering / gateway proxy | 14 | Flat mode, clustered mode, discovery, dispatch, destructive guard |

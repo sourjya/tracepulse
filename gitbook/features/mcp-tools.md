@@ -111,7 +111,7 @@ Call this after every code change. If you pass a fingerprint from `get_errors`, 
 
 ### run\_and\_watch
 
-Run any command through TracePulse's 26 parsers. Returns structured pass/fail with parsed errors. Use instead of shell for tests, builds, and linters.
+Run any command through TracePulse's 25 parsers. Returns structured pass/fail with parsed errors. Use instead of shell for tests, builds, and linters.
 
 **Parameters:** `command` (required), `timeout_seconds?` (default 60), `cwd?` (for monorepos)
 

@@ -10,7 +10,7 @@ TracePulse gives AI coding agents runtime visibility. Anyone using an AI agent t
 
 ### Backend developers (any language)
 
-Your agent writes Python, Node.js, Go, Java, or Rust. TracePulse parses errors from all of them - 26 parsers, zero configuration.
+Your agent writes Python, Node.js, Go, Java, or Rust. TracePulse parses errors from all of them - 25 parsers, zero configuration.
 
 - Agent calls [`get_errors`](features/mcp-tools.md#get_errors) after every edit - no manual log checking
 - [`verify_fix`](features/mcp-tools.md#verify_fix) confirms the fix worked with a definitive pass/fail
@@ -103,7 +103,7 @@ Contributors use different AI agents. TracePulse works with all of them.
 
 Your users hit errors in your framework. TracePulse parses them.
 
-- 26 parsers cover Node.js, Python, Go, Java, Rust, and more
+- 25 parsers cover Node.js, Python, Go, Java, Rust, and more
 - Custom parsers can be added via the plugin interface
 - Error narratives suggest fixes for common patterns (missing module, connection refused, pending migration)
 
