@@ -15,7 +15,7 @@ The pipeline processes every line of output through 7 stages:
 2. **Secret redaction** - 16 patterns (API keys, JWTs, connection strings, etc.) replaced with [REDACTED]
 3. **Hot-reload detection** - 12 framework patterns (Vite, webpack, nodemon, uvicorn, air, etc.)
 4. **Multi-line accumulation** - joins Python tracebacks, Java stack traces across lines
-5. **Parser registry** - 26 framework-specific parsers try to match in priority order
+5. **Parser registry** - 25 framework-specific parsers try to match in priority order
 6. **Signal scoring** - additive 0-100 score based on severity, stack trace, user code, HTTP status
 7. **Fingerprint deduplication** - SHA-256 hash of normalized message + file:line. Same error appears once with occurrence_count.
 
@@ -77,7 +77,7 @@ Events go into a 500-slot ring buffer with:
 **Execution (3 tools)**
 | Tool | What it returns | Tokens |
 |------|----------------|--------|
-| `run_and_watch(command, cwd?, timeout_seconds?)` | Run command through 26 parsers, structured pass/fail. Diagnostics on failure. | ~1,000 |
+| `run_and_watch(command, cwd?, timeout_seconds?)` | Run command through 25 parsers, structured pass/fail. Diagnostics on failure. | ~1,000 |
 | `get_requests(path?, status_code_min?)` | Recent HTTP requests filtered by path and status | ~1,000 |
 | `get_migration_status(framework?, apply?)` | Check or apply pending migrations (alembic/prisma/django/knex) | ~200 |
 
@@ -103,7 +103,7 @@ Events go into a 500-slot ring buffer with:
 | `get_audit_trail(limit?, since?)` | Tool usage this session | ~500 |
 | `get_perf_baseline(path?, limit?)` | Per-endpoint P50/P95/max response times | ~500 |
 
-### 26 Error Parsers
+### 25 Error Parsers
 
 **Runtime:** Node.js, Python, Pydantic, Go, Java/Spring Boot, Rust, JSON structured logs, Structlog key-value, HTTP access logs
 **Build:** TypeScript, ESLint, Vite/webpack, Build stats

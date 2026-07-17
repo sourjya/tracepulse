@@ -1,0 +1,28 @@
+# Private project-name denylist — TEMPLATE (placeholders only).
+#
+# This file is safe to commit: it contains NO real names. The real denylist is
+# DATA and must live OUTSIDE this public repo, or the guard leaks the very names
+# it protects.
+#
+# WHERE THE REAL FILE LIVES:
+#   Canonical copy is checked in PRIVATELY in a separate private fleet repo
+#   (durable, documented, version-controlled — but never public). Distribute it
+#   to public repos by symlinking it one level up, into ~/coding:
+#
+#     ln -s ~/coding/<private-fleet-repo>/path/to/fleet-private-refs ~/coding/fleet-private-refs
+#
+#   check-private-refs.sh then resolves it, first-existing-wins:
+#     1. $PRIVATE_NAMES_FILE                        (explicit override; CI)
+#     2. ~/.config/tracepulse/fleet-private-refs    (absolute fallback)
+#     3. <repo>/../fleet-private-refs               (the ~/coding symlink above)
+#
+# ALTERNATIVE bootstrap (no symlink) — copy to the absolute path:
+#     mkdir -p ~/.config/tracepulse
+#     cp scripts/private-names.example ~/.config/tracepulse/fleet-private-refs
+#     # then replace the placeholders below with the real names.
+#
+# Format: one name per line, case-insensitive match, '#' starts a comment.
+
+example-app-one
+example-app-two
+example-service

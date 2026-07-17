@@ -21,7 +21,7 @@ Dev Server -> stdout/stderr -> TracePulse -> MCP Tools -> AI Agent
 1. **Reads** log output from your dev server
 2. **Strips** ANSI color codes
 3. **Redacts** secrets (API keys, tokens, passwords)
-4. **Parses** errors with 26 framework-specific parsers
+4. **Parses** errors with 25 framework-specific parsers
 5. **Scores** each error 0-100 by importance
 6. **Stores** in a ring buffer (500 events max)
 7. **Tracks** each error through a lifecycle (surfaced → investigated → suppressed → resolved)

@@ -11,6 +11,7 @@ Call `get_project_health()` before doing ANY work. This primes TracePulse monito
 - Use `run_and_watch` instead of Bash/shell for ALL test, build, and lint commands. It returns structured pass/fail with parsed errors.
 - Use `start_server` for ALL server processes (dev servers, APIs, workers, background services). It gives live error monitoring, crash detection, and proper process management.
 - Use `check_port(port)` before starting any server to verify the port is free.
+- Prefer event-driven waiting over polling. `wait_for_build()` blocks until the next build/hot-reload completes; `wait_for_event(type: "error")` blocks until the next error/warning/build/crash. Both return the instant the event fires — never poll `get_errors()` in a loop.
 - Use `get_session_insights()` at end of session — shows lifecycle metrics (fix rate, recurrence rate) and uninvestigated errors.
 - Use `max_lines` parameter instead of piping to `head` or `tail` (e.g., `run_and_watch("npx tsc --noEmit", max_lines: 20)`)
 - Use `timeout_seconds: 120` for large test suites (500+ tests). There is no maximum — use 300+ for full integration runs. Default is 60s.
@@ -37,9 +38,9 @@ These are explicitly prohibited. No exceptions for "quick" or "temporary" or "de
 
 ## After Code Changes
 
-- After ANY backend code change: call `get_errors()` to check for new errors
+- After ANY backend code change: call `get_errors()` to check for new errors, or `wait_for_event(type: "error")` to block until the next one fires
 - After fixing an error: call `verify_fix(10)` to confirm it's resolved
-- After `start_server`: call `wait_for_build()` before proceeding
+- After `start_server`: call `wait_for_build()` before proceeding (event-driven — no polling)
 - After a smoke test: call `get_new_errors(since: <start_timestamp_ms>)` to scope results to that window only
 
 ## Smoke Test Pattern
@@ -72,6 +73,8 @@ run_and_watch("npm run build")               # Build
 | Need | Tool |
 |------|------|
 | Any errors? | `get_errors(limit: 5)` |
+| Block until build done (no polling) | `wait_for_build()` |
+| Block until next error/crash | `wait_for_event(type: "error")` |
 | Project health | `get_project_health()` |
 | Run tests | `run_and_watch("pytest tests/")` |
 | Verify fix | `verify_fix(10)` |

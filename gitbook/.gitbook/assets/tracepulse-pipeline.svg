@@ -51,7 +51,7 @@
   <!-- Stage 6: Parse -->
   <rect x="780" y="80" width="150" height="80" rx="10" fill="#16a34a" opacity="0.9"/>
   <text x="855" y="105" text-anchor="middle" font-size="20">🔍</text>
-  <text x="855" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Parse (26 parsers)</text>
+  <text x="855" y="125" text-anchor="middle" font-size="10" font-weight="600" fill="white">Parse (25 parsers)</text>
   <text x="855" y="140" text-anchor="middle" font-size="8" fill="#bbf7d0">First match wins</text>
 
   <!-- Row 2 arrow down -->
@@ -112,7 +112,7 @@
   <text x="120" y="360" text-anchor="middle" font-size="10" fill="#64748b">Secrets removed</text>
   <text x="120" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">before agent sees them</text>
 
-  <text x="320" y="360" text-anchor="middle" font-size="10" fill="#64748b">26 parsers extract</text>
+  <text x="320" y="360" text-anchor="middle" font-size="10" fill="#64748b">25 parsers extract</text>
   <text x="320" y="375" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">file:line:error_type</text>
 
   <text x="520" y="360" text-anchor="middle" font-size="10" fill="#64748b">Signal scoring ranks</text>

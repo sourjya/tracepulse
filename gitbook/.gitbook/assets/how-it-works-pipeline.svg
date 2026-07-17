@@ -58,7 +58,7 @@
 
   <!-- Step 5: Try parsers -->
   <rect x="225" y="318" width="250" height="40" rx="8" fill="url(#pStep)" stroke="#0ea5e9"/>
-  <text x="350" y="343" text-anchor="middle" font-size="13" font-weight="700" fill="#0c4a6e">Try 26 parsers</text>
+  <text x="350" y="343" text-anchor="middle" font-size="13" font-weight="700" fill="#0c4a6e">Try 25 parsers</text>
 
   <!-- Match branch -->
   <line x1="475" y1="338" x2="540" y2="338" stroke="#64748b" stroke-width="1.5" marker-end="url(#pArrow)"/>

@@ -5,7 +5,7 @@ description: Uses TracePulse MCP server for backend runtime error monitoring. Us
 
 ## Core Concepts
 
-**What TracePulse does**: Watches your dev server's output (stdout/stderr or a log file), parses errors from 26 sources (Node.js, Python, Go, Java, Rust, JSON structured logs, TypeScript compiler, ESLint, Vite/webpack), scores them by severity (0-100), and exposes them as MCP tools. You never need to read raw terminal output or log files.
+**What TracePulse does**: Watches your dev server's output (stdout/stderr or a log file), parses errors from 25 sources (Node.js, Python, Go, Java, Rust, JSON structured logs, TypeScript compiler, ESLint, Vite/webpack), scores them by severity (0-100), and exposes them as MCP tools. You never need to read raw terminal output or log files.
 
 **Two modes**:
 - **Start mode**: TracePulse spawns your dev server and captures its output
@@ -160,7 +160,7 @@ When a frontend page shows errors and you suspect a backend cause:
 3. `get_errors()` - see only errors from this action
 4. `get_new_errors()` - if persistence is enabled, shows only errors never seen before
 
-## Tool Reference (24 tools)
+## Tool Reference (29 tools)
 
 ### Quick checks (start here)
 
@@ -174,6 +174,8 @@ When a frontend page shows errors and you suspect a backend cause:
 | Tool | When to use | Cost |
 |------|-------------|------|
 | `watch_for_errors(duration_seconds?, source?)` | After editing code - blocks N seconds, returns new errors. Best with hot-reload servers. | ~1,000 tokens |
+| `wait_for_build(timeout_seconds?)` | Block until next build completes (event-driven). Use after `start_server` to wait for ready signal instead of polling. | ~200 tokens |
+| `wait_for_event(type?, timeout_seconds?)` | Block until next error/warning/build/crash event. Use for event-driven workflows instead of polling `get_errors`. | ~200 tokens |
 | `get_build_errors(limit?)` | Check TypeScript/ESLint/Vite/webpack compilation errors specifically. | ~1,500 tokens |
 
 ### Deep investigation
@@ -327,7 +329,7 @@ When TracePulse runs with `--clustered`, 36 tools collapse into 7 gateways + 2 s
 Gateways: `tp_health`, `tp_triage`, `tp_watch`, `tp_investigate`, `tp_correlate`, `tp_infra`, `tp_manage`. Standalone: `run_and_watch`, `get_requests`.
 
 ### Standalone mode tool count
-In standalone mode (no server), 24 tools are available (Layer 0/1). When you call `start_server()`, 16 more tools activate (Layer 2: get_errors, verify_fix, watch_for_errors, etc.).
+In standalone mode (no server), 28 tools are available (Layer 0/1). When you call `start_server()`, 16 more tools activate (Layer 2: get_errors, verify_fix, watch_for_errors, wait_for_build, wait_for_event, etc.).
 
 ## Pro Tips
 

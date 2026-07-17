@@ -172,7 +172,7 @@ As a developer, I want to pipe CI/CD output or any log stream into TracePulse fo
 
 ### Acceptance Criteria
 
-1. `tracepulse pipe` reads from stdin, parses through all 26 parsers, exposes via MCP tools
+1. `tracepulse pipe` reads from stdin, parses through all 25 parsers, exposes via MCP tools
 2. Works with: `tail -f app.log | tracepulse pipe`, `kubectl logs -f pod | tracepulse pipe`
 3. CI-specific parsers added:
    - GitHub Actions: `::error file=X,line=Y::message` annotation format

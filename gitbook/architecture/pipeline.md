@@ -28,7 +28,7 @@ Some errors span multiple lines. A Python traceback might be 15 lines. A Java ex
 
 ## Stage 6: Parser Registry
 
-The accumulated line hits 26 framework-specific parsers in priority order. The first parser that matches wins. Each parser extracts structured data: error type, message, file path, line number, and scoring hints. If no parser matches, the line becomes a raw info-level event (still searchable, just not structured).
+The accumulated line hits 25 framework-specific parsers in priority order. The first parser that matches wins. Each parser extracts structured data: error type, message, file path, line number, and scoring hints. If no parser matches, the line becomes a raw info-level event (still searchable, just not structured).
 
 **Parsers cover:** Node.js, Python, Pydantic, Go, Java/Spring Boot, Rust, JSON logs, Structlog, HTTP access logs, TypeScript, ESLint, Vite/webpack, pytest, Jest, vitest, Go test, cargo test, JUnit/Maven/Gradle, Celery, Sidekiq, BullMQ, npm audit, coverage, migration, build stats.
 

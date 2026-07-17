@@ -138,7 +138,7 @@ Monitor 9 cloud platforms with zero additional dependencies:
 | **[Heroku](https://devcenter.heroku.com/articles/heroku-cli)** | `run_and_watch("heroku logs --tail --app my-app")` |
 | **[Vercel](https://vercel.com/docs/cli)** / **[Railway](https://docs.railway.com/guides/cli)** / **[Fly.io](https://fly.io/docs/flyctl/install/)** | Same pattern with their CLIs |
 
-The same 26 parsers that catch local dev server errors catch cloud errors too.
+The same 25 parsers that catch local dev server errors catch cloud errors too.
 
 [Full cloud monitoring guide ->](tutorials/cloud-logs.md)
 
@@ -160,7 +160,7 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/tracepulse
 
 - [Quick Start (2 minutes) ->](getting-started/quick-start.md)
 - [44 MCP Tools ->](features/mcp-tools.md)
-- [26 Error Parsers ->](features/parsers.md)
+- [25 Error Parsers ->](features/parsers.md)
 - [How It Works ->](architecture/how-it-works.md)
 - [Feature Matrix vs Competitors ->](comparison/feature-matrix.md)
 - [The Three-Layer Stack ->](architecture/three-layer-stack.md)

@@ -1405,7 +1405,7 @@ Without this, agents fall back to `shell("pkill -f ...")` for any process kill t
 
 ---
 
-## 2026-05-18 - run_and_watch allowlist rejects `uv run` with env var prefix (SecurIQ project)
+## 2026-05-18 - run_and_watch allowlist rejects `uv run` with env var prefix (Python project)
 
 **Context:** Agent ran full pytest suite on a Python project. Used `shell("cd /path && PYTHONPATH=src uv run pytest --tb=short -q 2>&1 | tail -5")` instead of run_and_watch.
 
@@ -1439,18 +1439,18 @@ This is the 5th+ instance of "allowlist rejection → full session shell fallbac
 
 ---
 
-## 2026-05-18 - Agent wrote 160-line MCP handshake test instead of using verify_mcp (PilotIQ project)
+## 2026-05-18 - Agent wrote 160-line MCP handshake test instead of using verify_mcp (field report)
 
 **Context:** Agent needed to verify an MCP server starts and responds to the initialize handshake. Wrote a manual 160-line subprocess test with `select` + Content-Length parsing. Got stuck for ~30 minutes on stdin/stdout deadlocks. Eventually used `verify_mcp` which solved it in 2.2 seconds.
 
 ### What happened
 
-1. Agent needed to test `uv run python -m pilotiq.mcp.server` responds to MCP handshake
+1. Agent needed to test `uv run python -m myapp.mcp.server` responds to MCP handshake
 2. Wrote manual subprocess code: spawn process, write JSON-RPC initialize, parse Content-Length header, read response
 3. Got stuck on stdio deadlock — MCP's stdio transport blocks when both sides wait for input
 4. Spent ~30 minutes debugging the subprocess test
 5. When prompted "why not TP?", immediately recognized `verify_mcp` is purpose-built for this
-6. `verify_mcp(command="uv run python -m pilotiq.mcp.server")` — passed in 2.2s
+6. `verify_mcp(command="uv run python -m myapp.mcp.server")` — passed in 2.2s
 
 ### Agent's self-assessment
 
@@ -1520,7 +1520,7 @@ This is the same pattern as every previous shell fallback, but with a new insigh
 
 ---
 
-## 2026-05-19 - run_and_watch rejects `uv run pytest` despite uv being in allowlist (PilotIQ project)
+## 2026-05-19 - run_and_watch rejects `uv run pytest` despite uv being in allowlist (Python project)
 
 **Context:** Agent needed to run `uv run pytest` on a Python project. run_and_watch rejected it. Agent fell back to shell, then self-corrected by creating a `scripts/test.sh` wrapper and using `bash scripts/test.sh`.
 
@@ -1544,7 +1544,7 @@ Then used `run_and_watch("bash scripts/test.sh", cwd: "/path/to/project")`.
 
 This works but is unnecessary friction. The correct invocation should be:
 ```
-run_and_watch("uv run pytest --tb=short -v", cwd: "/home/sourjya/coding/pilotiq")
+run_and_watch("uv run pytest --tb=short -v", cwd: "/home/you/coding/myapp")
 ```
 
 ### Pattern (6th+ instance)
@@ -1561,7 +1561,7 @@ Same as every previous allowlist rejection: one failure → agent creates workar
 
 ---
 
-## 2026-05-19 - Agent proposes "scripts/test.sh at project init" pattern (PilotIQ)
+## 2026-05-19 - Agent proposes "scripts/test.sh at project init" pattern (field report)
 
 **Context:** Follow-up to the previous entry. Agent clarified it DID use run_and_watch for subsequent test runs (via `bash scripts/test.sh`). The shell call was from before the wrapper existed.
 
