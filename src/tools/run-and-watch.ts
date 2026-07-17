@@ -18,6 +18,7 @@ import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
 import { redact } from "@/pipeline/secret-redactor.js";
+import { buildExecEnv } from "@/tools/exec-env.js";
 import { extractTestCounts } from "@/tools/test-counts.js";
 import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
@@ -182,9 +183,21 @@ export async function handleRunAndWatch(
     let resolved = false;
     let timedOut = false;
 
-    // Build environment: inherit process.env, add Python unbuffered mode,
-    // and auto-detect virtualenv in the working directory (M21 Phase 2).
-    const spawnEnv: Record<string, string | undefined> = { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" };
+    // Build environment (TRP-55): least-privilege — pass through the developer's
+    // env MINUS secret-shaped vars so a spawned command cannot harvest secrets
+    // (e.g. `bash -c env`). The agent's declared `env` always passes through;
+    // `inherit_env` opts back into the full environment. Then add Python
+    // unbuffered mode + venv (M21 Phase 2).
+    const declaredEnv = args.env as Record<string, string> | undefined;
+    const inheritAllEnv = args.inherit_env === true;
+    if (inheritAllEnv) {
+      process.stderr.write("[tracepulse] inherit_env: full environment passed to child (secret scrub disabled)\n");
+    }
+    const spawnEnv: Record<string, string | undefined> = {
+      ...buildExecEnv(declaredEnv, { inheritAll: inheritAllEnv }),
+      PYTHONUNBUFFERED: "1",
+      FORCE_COLOR: "0",
+    };
     const spawnCwd = resolvedCwd ?? process.cwd();
 
     // Auto-activate virtualenv if .venv exists in the working directory.
