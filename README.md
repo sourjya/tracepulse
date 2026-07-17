@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1362%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-1380%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.30 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [26 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [44 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1362 tests](tests/) passing.
+🟡 **Alpha v0.9.31 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [25 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [44 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1380 tests](tests/) passing.
 
 ## Quick Start
 
@@ -245,6 +245,7 @@ TracePulse parses errors from 25 sources out of the box:
 - **Rust** - Panics with `RUST_BACKTRACE` output
 - **JSON** - Structured logs (pino, structlog JSON, logback) with level/message fields
 - **Structlog** - Python structlog key-value format (`[info]`, `[warning]`, `[error]` brackets)
+- **Pydantic** - FastAPI ValidationError, field required, type errors
 
 **Build errors:**
 - **TypeScript** - `tsc` compiler errors (TS####)
@@ -263,6 +264,8 @@ TracePulse parses errors from 25 sources out of the box:
 **Infrastructure:**
 - **HTTP Access Log** - uvicorn, express/morgan, nginx with status and duration
 - **Migration** - alembic and Django migration output
+- **npm audit** - vulnerability severity summary
+- **Coverage** - Istanbul/pytest-cov percentage extraction
 
 **Background workers:**
 - **Celery** - task raised/retry/timeout/succeeded
@@ -383,7 +386,7 @@ Monitor cloud service logs with zero additional dependencies - uses your existin
 | **[Heroku](https://devcenter.heroku.com/articles/heroku-cli)** | `run_and_watch("heroku logs --tail --app my-app")` |
 | **[Vercel](https://vercel.com/docs/cli)** / **[Railway](https://docs.railway.com/guides/cli)** / **[Fly.io](https://fly.io/docs/flyctl/install/)** | Same pattern with their CLIs |
 
-The same 26 parsers that catch local dev server errors catch cloud errors too.
+The same 25 parsers that catch local dev server errors catch cloud errors too.
 
 ## Hot-Reload Detection
 

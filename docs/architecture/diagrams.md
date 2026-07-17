@@ -29,7 +29,7 @@ flowchart TD
     B --> C[Secret Redaction]
     C --> D{Hot-Reload<br/>Pattern?}
     D -->|Yes| E[Inject Synthetic<br/>Marker Event]
-    D -->|No| F[Parser Registry<br/>9 parsers in order]
+    D -->|No| F[Parser Registry<br/>25 parsers in order]
     E --> G[Ring Buffer]
     F --> H{Parser<br/>Matched?}
     H -->|Yes| I[Normalize to<br/>RuntimeEvent]

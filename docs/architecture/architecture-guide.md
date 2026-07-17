@@ -66,7 +66,7 @@ Raw Log Line
          │
          ▼
 ┌─────────────────┐
-│ Error Parsing    │  Try 9 parsers in order (first match wins):
+│ Error Parsing    │  Try 25 parsers in order (first match wins):
 │                  │  JSON → Node.js → Python → Go → Java → Rust
 │                  │  → TypeScript → ESLint → Vite/webpack
 └────────┬────────┘
@@ -213,7 +213,7 @@ These handlers exist as standalone functions and will be registered in the MCP s
 
 > **Source:** [`src/parsers/`](../../src/parsers/) | [`src/pipeline/parser-registry.ts`](../../src/pipeline/parser-registry.ts)
 
-TracePulse has 9 parsers that run in priority order. The first parser that matches a log line wins.
+TracePulse has 25 parsers that run in priority order. The first parser that matches a log line wins.
 
 ```
 Log Line Arrives
@@ -486,7 +486,7 @@ src/
 │   └── server.ts                   # MCP server with 8 registered tools
 ├── pipeline/
 │   ├── secret-redactor.ts          # 16-pattern secret redaction
-│   ├── parser-registry.ts          # Ordered parser dispatch (9 parsers)
+│   ├── parser-registry.ts          # Ordered parser dispatch (25 parsers)
 │   ├── event-normalizer.ts         # Raw → RuntimeEvent conversion
 │   ├── fingerprinter.ts            # SHA-256 dedup key generation
 │   └── signal-scorer.ts            # 0-100 additive scoring
@@ -565,7 +565,7 @@ src/
 
 ## Test Coverage
 
-566 tests across 59 files. Every module has unit tests. Integration tests verify cross-module behavior.
+1380 tests across 158 files. Every module has unit tests. Integration tests verify cross-module behavior.
 
 ```
 tests/
