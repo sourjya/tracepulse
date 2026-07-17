@@ -45,3 +45,22 @@ export function redact(line: string): string {
   }
   return result;
 }
+
+/**
+ * Redact secrets but replace each match with a length hint — `[REDACTED:<n>]`
+ * — instead of an opaque `[REDACTED]` (F6). Used for run_and_watch raw_output,
+ * where the agent's debugging depends on knowing a value was present and its
+ * length, without leaking the value itself.
+ *
+ * @param line - Raw log line to redact.
+ * @returns The line with each detected secret replaced by `[REDACTED:<length>]`.
+ */
+export function redactWithHint(line: string): string {
+  if (!line) return line;
+
+  let result = line;
+  for (const [_name, source, flags] of COMPILED_PATTERNS) {
+    result = result.replace(new RegExp(source, flags), (m) => `[REDACTED:${m.length}]`);
+  }
+  return result;
+}

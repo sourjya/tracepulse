@@ -17,6 +17,8 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
+import { redactWithHint } from "@/pipeline/secret-redactor.js";
+import { buildExecEnv } from "@/tools/exec-env.js";
 import { extractTestCounts } from "@/tools/test-counts.js";
 import { getPositiveNudge } from "@/analysis/positive-nudge.js";
 
@@ -156,6 +158,7 @@ export async function handleRunAndWatch(
   // Security: validate cwd. Allow absolute paths (explicit user intent).
   // For relative paths, ensure they don't escape the project root.
   let resolvedCwd: string | undefined;
+  let cwdOutsideRoot = false;
   if (cwd) {
     const projectRoot = process.cwd();
     const resolved = resolvePath(projectRoot, cwd);
@@ -172,6 +175,13 @@ export async function handleRunAndWatch(
       };
     }
     resolvedCwd = resolved;
+    // TRP-57 / TM-12: an absolute cwd outside the project root is ALLOWED
+    // (running commands in another project is a documented capability), but
+    // surfaced to the agent for visibility/audit rather than silently allowed.
+    if (!resolved.startsWith(projectRoot)) {
+      cwdOutsideRoot = true;
+      process.stderr.write(`[tracepulse] note: command cwd "${resolved}" is outside the project root ${projectRoot}\n`);
+    }
   }
   const tempBuffer = createRingBuffer(200);
   const registry = createDefaultRegistry();
@@ -181,9 +191,21 @@ export async function handleRunAndWatch(
     let resolved = false;
     let timedOut = false;
 
-    // Build environment: inherit process.env, add Python unbuffered mode,
-    // and auto-detect virtualenv in the working directory (M21 Phase 2).
-    const spawnEnv: Record<string, string | undefined> = { ...process.env, PYTHONUNBUFFERED: "1", FORCE_COLOR: "0" };
+    // Build environment (TRP-55): least-privilege — pass through the developer's
+    // env MINUS secret-shaped vars so a spawned command cannot harvest secrets
+    // (e.g. `bash -c env`). The agent's declared `env` always passes through;
+    // `inherit_env` opts back into the full environment. Then add Python
+    // unbuffered mode + venv (M21 Phase 2).
+    const declaredEnv = args.env as Record<string, string> | undefined;
+    const inheritAllEnv = args.inherit_env === true;
+    if (inheritAllEnv) {
+      process.stderr.write("[tracepulse] inherit_env: full environment passed to child (secret scrub disabled)\n");
+    }
+    const spawnEnv: Record<string, string | undefined> = {
+      ...buildExecEnv(declaredEnv, { inheritAll: inheritAllEnv }),
+      PYTHONUNBUFFERED: "1",
+      FORCE_COLOR: "0",
+    };
     const spawnCwd = resolvedCwd ?? process.cwd();
 
     // Auto-activate virtualenv if .venv exists in the working directory.
@@ -271,6 +293,8 @@ export async function handleRunAndWatch(
                 : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
             // Surface venv auto-activation so agents know it happened
             ...(venvBin ? { venv_activated: spawnCwd } : {}),
+            // TRP-57 / TM-12: surface (do not block) a cwd outside the project root
+            ...(cwdOutsideRoot ? { cwd_outside_project_root: true } : {}),
             // Positive reinforcement: one-time nudge on first successful use
             ...(exitCode === 0 ? (() => {
               const tip = getPositiveNudge("run_and_watch");
@@ -284,10 +308,14 @@ export async function handleRunAndWatch(
             // Safety: cap raw_output at 32KB to prevent oversized MCP responses
             // that exceed stdio transport buffer limits (INB-10).
             raw_output: (() => {
-              const lines = maxLines
+              // TM-03 / TRP-54: redact secrets from raw_output before returning
+              // it to the agent. errors[] are already redacted via the pipeline;
+              // raw_output was previously returned verbatim, leaking any secret a
+              // command printed straight into the agent's context.
+              const selected = maxLines
                 ? rawLines.slice(0, maxLines)
                 : rawLines.slice(-100);
-              let output = lines.join("\n");
+              let output = selected.map(redactWithHint).join("\n");
               if (output.length > 32_000) {
                 output = output.slice(0, 32_000) + "\n... [truncated: output exceeded 32KB safety limit]";
               }

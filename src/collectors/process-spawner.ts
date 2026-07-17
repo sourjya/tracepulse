@@ -22,6 +22,7 @@ import { existsSync } from "node:fs";
 import type { EventSource } from "@/constants/events.js";
 import { GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS } from "@/constants/limits.js";
 import type { Collector } from "@/types/collectors.js";
+import { buildExecEnv } from "@/tools/exec-env.js";
 
 /**
  * Build PATH with node_modules/.bin and .venv/bin prepended.
@@ -106,8 +107,10 @@ export function createProcessSpawner(command: string, options?: { cwd?: string; 
            * locally-installed binaries are found (same as run_and_watch).
            */
           env: {
-            ...process.env,
-            ...options?.env,
+            // TRP-55: least-privilege env — scrub secret-shaped vars from the
+            // inherited environment so a spawned server can't leak developer
+            // secrets. The caller's declared env still passes through.
+            ...buildExecEnv(options?.env),
             PYTHONUNBUFFERED: "1",       // Python: disable stdout buffering
             PYTHONDONTWRITEBYTECODE: "1", // Python: skip .pyc files
             PATH: buildSpawnerPath(options?.cwd),
