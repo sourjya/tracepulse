@@ -158,6 +158,7 @@ export async function handleRunAndWatch(
   // Security: validate cwd. Allow absolute paths (explicit user intent).
   // For relative paths, ensure they don't escape the project root.
   let resolvedCwd: string | undefined;
+  let cwdOutsideRoot = false;
   if (cwd) {
     const projectRoot = process.cwd();
     const resolved = resolvePath(projectRoot, cwd);
@@ -174,6 +175,13 @@ export async function handleRunAndWatch(
       };
     }
     resolvedCwd = resolved;
+    // TRP-57 / TM-12: an absolute cwd outside the project root is ALLOWED
+    // (running commands in another project is a documented capability), but
+    // surfaced to the agent for visibility/audit rather than silently allowed.
+    if (!resolved.startsWith(projectRoot)) {
+      cwdOutsideRoot = true;
+      process.stderr.write(`[tracepulse] note: command cwd "${resolved}" is outside the project root ${projectRoot}\n`);
+    }
   }
   const tempBuffer = createRingBuffer(200);
   const registry = createDefaultRegistry();
@@ -285,6 +293,8 @@ export async function handleRunAndWatch(
                 : `Command failed (exit ${exitCode}) in ${Date.now() - startTime}ms, ${errors.length} errors`,
             // Surface venv auto-activation so agents know it happened
             ...(venvBin ? { venv_activated: spawnCwd } : {}),
+            // TRP-57 / TM-12: surface (do not block) a cwd outside the project root
+            ...(cwdOutsideRoot ? { cwd_outside_project_root: true } : {}),
             // Positive reinforcement: one-time nudge on first successful use
             ...(exitCode === 0 ? (() => {
               const tip = getPositiveNudge("run_and_watch");
