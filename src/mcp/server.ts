@@ -715,12 +715,14 @@ export function createMcpServer(
   server.registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
-      "Run a command, parse output through 26 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites). Never fall back to shell for commands that produce pass/fail output.",
+      "Run a command, parse output through 25 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites). Never fall back to shell for commands that produce pass/fail output.",
     inputSchema: {
       command: z.string().describe("Shell command to run (e.g., 'npx vitest run', 'pytest', 'tsc --noEmit')."),
       timeout_seconds: z.number().optional().describe("Max execution time (default 60s)."),
       cwd: z.string().optional().describe("Working directory to run the command in. Use for monorepos (e.g., './frontend' or '/absolute/path')."),
       max_lines: z.number().optional().describe("Maximum output lines to return. Use instead of '| head -20'. Omit for full output (last 100 lines)."),
+      env: z.record(z.string(), z.string()).optional().describe("Env vars to pass to the command (e.g., { DATABASE_URL: '...' }). Secret-shaped vars are scrubbed from the inherited environment by default — declare any the command needs here."),
+      inherit_env: z.boolean().optional().describe("Opt out of secret env scrubbing and inherit the full environment. Use only when a command needs vars TracePulse would otherwise drop."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist, buffer));
@@ -805,6 +807,8 @@ export function createMcpServer(
     inputSchema: {
       command: z.string().describe("Command to start the MCP server (e.g., 'node dist/cli.js', 'uv run python -m myapp.server')."),
       timeout_seconds: z.number().optional().describe("Max seconds to wait for response (default 5, max 30)."),
+      env: z.record(z.string(), z.string()).optional().describe("Env vars for the server process. Secret-shaped vars are scrubbed from the inherited environment by default — declare any the server needs here."),
+      inherit_env: z.boolean().optional().describe("Opt out of secret env scrubbing and inherit the full environment."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleVerifyMcp(args as Record<string, unknown>));

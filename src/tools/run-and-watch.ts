@@ -17,7 +17,7 @@ import { createDefaultRegistry } from "@/pipeline/parser-registry.js";
 import { existsSync } from "node:fs";
 import { hasVenv, isPythonProject, getVenvBinPath } from "@/diagnostics/project-detector.js";
 import { processRawLine } from "@/pipeline/process-line.js";
-import { redact } from "@/pipeline/secret-redactor.js";
+import { redactWithHint } from "@/pipeline/secret-redactor.js";
 import { buildExecEnv } from "@/tools/exec-env.js";
 import { extractTestCounts } from "@/tools/test-counts.js";
 import { getPositiveNudge } from "@/analysis/positive-nudge.js";
@@ -315,7 +315,7 @@ export async function handleRunAndWatch(
               const selected = maxLines
                 ? rawLines.slice(0, maxLines)
                 : rawLines.slice(-100);
-              let output = selected.map(redact).join("\n");
+              let output = selected.map(redactWithHint).join("\n");
               if (output.length > 32_000) {
                 output = output.slice(0, 32_000) + "\n... [truncated: output exceeded 32KB safety limit]";
               }
