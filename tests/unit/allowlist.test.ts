@@ -25,28 +25,28 @@ describe("buildAllowlist", () => {
   });
 
   // ──────────────────────────────────────────────
-  // CIQ-605: Python/Go/Rust must work WITHOUT stack detection
+  // TRP-5: Python/Go/Rust must work WITHOUT stack detection
   // ──────────────────────────────────────────────
 
-  it("CIQ-605: python is in base (no stack detection needed)", () => {
+  it("TRP-5: python is in base (no stack detection needed)", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("python");
     expect(list).toContain("python3");
     expect(list).toContain("pytest");
   });
 
-  it("CIQ-605: .venv/bin/ prefix works without stack detection", () => {
+  it("TRP-5: .venv/bin/ prefix works without stack detection", () => {
     const list = buildAllowlist([]);
     expect(list).toContain(".venv/bin/");
   });
 
-  it("CIQ-605: uv and uv run are in base", () => {
+  it("TRP-5: uv and uv run are in base", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("uv");
     expect(list).toContain("uv run");
   });
 
-  it("CIQ-605: go commands are in base", () => {
+  it("TRP-5: go commands are in base", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("go test");
     expect(list).toContain("go run");
@@ -54,17 +54,17 @@ describe("buildAllowlist", () => {
     expect(list).toContain("go vet");
   });
 
-  it("CIQ-605: cargo is in base", () => {
+  it("TRP-5: cargo is in base", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("cargo");
   });
 
-  it("CIQ-605: sh is in base (for sh scripts/)", () => {
+  it("TRP-5: sh is in base (for sh scripts/)", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("sh");
   });
 
-  it("CIQ-605: bash is in base", () => {
+  it("TRP-5: bash is in base", () => {
     const list = buildAllowlist([]);
     expect(list).toContain("bash");
   });
@@ -139,12 +139,12 @@ describe("run_and_watch env var prefix stripping", () => {
 });
 
 // ──────────────────────────────────────────────
-// CIQ-605 Regression: commands accepted without stack detection
+// TRP-5 Regression: commands accepted without stack detection
 // These test the actual handleRunAndWatch function with DEFAULT allowlist
 // (buildAllowlist([])) — the exact scenario that was broken.
 // ──────────────────────────────────────────────
 
-describe("CIQ-605: handleRunAndWatch accepts Python/Go/Rust without stack detection", () => {
+describe("TRP-5: handleRunAndWatch accepts Python/Go/Rust without stack detection", () => {
   it("accepts 'python -m pytest' without stack detection", async () => {
     const { handleRunAndWatch } = await import("@/tools/run-and-watch.js");
     const result = await handleRunAndWatch(

@@ -66,6 +66,7 @@ function mergeMcpConfig(configPath: string, actions: string[]): void {
       "check_drift", "get_migration_status", "list_services", "list_probes",
       "start_server", "stop_server", "restart_server", "register_probe",
       "free_port", "get_requests", "get_perf_baseline",
+      "watch_for_errors", "wait_for_build", "wait_for_event",
     ],
   };
   existing.mcpServers = mcpServers;

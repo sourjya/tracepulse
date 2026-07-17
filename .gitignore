@@ -14,3 +14,13 @@ coverage/
 .viewgraph/
 .kiro/settings/
 docs/tmp-*
+
+# Internal-only: machine/project overrides with private names, folder IDs, auth (TRP-37)
+.kiro/steering/user-project-overrides.md
+
+# Local dev agent config — ticketing routing IDs + local perms.
+# Shippable templates live in skills/ (tracked). Keep .claude/ out of the public repo (TRP-39).
+.claude/
+
+# AWS threat-modeling MCP server output (local review artifacts, TRP-41)
+.threatmodel/

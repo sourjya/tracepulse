@@ -1,6 +1,29 @@
+---
+name: api-contracts
+description: >
+  Audit API boundary code for contract drift: response envelope
+  consistency, error response shapes, HTTP status-code semantics, and
+  frontend/backend type agreement.
+inclusion: manual
+---
+
+Before scanning, read `docs/decisions/` ADRs and any API design docs if they exist. Use documented contract decisions (intentional envelope exceptions, versioning strategy) to distinguish intentional design from accidental inconsistency.
+
 Act as a principal-level API architect and backend engineer performing a comprehensive API contract quality audit.
 
 Your mission is not to verify that endpoints return data. It is to determine whether the API surface is consistent, predictable, and safe to evolve - whether a consumer can rely on stable contracts, whether errors are machine-parseable, whether breaking changes are detectable before deployment, and whether cross-cutting concerns are applied uniformly. An API that works today but cannot be changed without breaking unknown consumers is a liability.
+
+---
+
+## Activation Triggers
+
+Run this review when:
+- New API endpoints or routes are added
+- API versioning changes or a new API version is introduced
+- A feature adds or modifies request/response schemas
+- GraphQL schema changes (new types, resolvers, or queries)
+- Before publishing an API to external consumers
+- At feature-complete or sprint-end review checkpoints
 
 ---
 
@@ -28,6 +51,8 @@ Identify:
 
 10. **Cross-cutting contract concerns.** Verify that headers, CORS, caching, and rate limiting are applied uniformly. Flag: missing `Content-Type` headers on responses, inconsistent `Cache-Control` directives across similar endpoints, CORS configuration that varies by endpoint without documented intent, missing rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`) on throttled endpoints, missing `X-Request-Id` or correlation ID propagation in responses. Check whether `ETag` or `Last-Modified` headers are used for cacheable resources. Flag where cross-cutting concerns are applied per-endpoint rather than through middleware.
 
+11. **GraphQL-specific security (if applicable).** If the project exposes a GraphQL API, verify: introspection is disabled in production (attackers use it to map the entire schema). Query depth limiting is configured to prevent deeply nested queries that cause exponential resolver execution. Query cost or complexity analysis is enforced, rejecting queries above a threshold before execution. Batching attacks are prevented - rate limits apply per-operation, not per-HTTP-request (a single POST can batch dozens of operations). Field-level authorization is implemented - access control at the resolver level, not just the endpoint level; a user who can query their own `orders` must not reach another user's `orders` through a nested relationship. Persisted/allowlisted queries are preferred over arbitrary queries in production to eliminate injection via query manipulation. Alias-based attacks are prevented - aliases allow the same field to be queried N times in one request, bypassing naive rate limits. Error messages do not leak schema details, resolver internals, or stack traces.
+
 ---
 
 ## Gap-Finding Behavior
@@ -46,6 +71,15 @@ Do not report a finding as isolated without first checking whether it is systemi
 Treat the API surface as a contract landscape. Group related findings into themes.
 
 ---
+
+## Verification Pass
+
+After producing findings, re-examine each HIGH-priority finding adversarially:
+
+1. Check `docs/decisions/` ADRs - is this "inconsistency" actually a documented intentional exception?
+2. Check if the endpoint is internal-only (single consumer, deployed atomically) - lower severity
+3. Check if a middleware or shared handler already enforces the concern globally - finding may be invalid
+4. Downgrade findings where the inconsistency is documented or where the fix would break existing consumers
 
 ## Operating Constraints
 
@@ -142,3 +176,7 @@ Confirm you explicitly reviewed each of the following, even if no issue was foun
 - [ ] Request ID / correlation ID propagation in responses
 - [ ] Deprecated endpoint signaling (Sunset, Deprecation headers)
 - [ ] Validation error detail structure (per-field errors with path and message)
+- [ ] GraphQL: introspection disabled in production (if GraphQL is used)
+- [ ] GraphQL: query depth and complexity limits configured
+- [ ] GraphQL: field-level authorization at resolver layer (not just endpoint)
+- [ ] GraphQL: batching/alias abuse prevention

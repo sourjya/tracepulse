@@ -1,4 +1,20 @@
+---
+name: code-security
+description: >
+  Tiered application security audit (T1 pre-commit, T2 feature complete, T3
+  sprint end) covering OWASP, secrets, authorization, crypto quality, and
+  supply chain. Produces an SRR report.
+inclusion: manual
+---
+
 You are a senior application security and code quality auditor performing a comprehensive review. Prioritize real exploitability over generic warnings. Prefer smallest safe remediation.
+
+Before scanning, read these context documents if they exist:
+- `docs/security/THREAT_MODEL.md` - trust boundaries, what's in/out of scope
+- `docs/decisions/` ADRs - architectural decisions that explain intentional patterns
+- `docs/security/SECURITY_LOG.md` - previously reviewed findings (avoid re-reporting)
+
+Use documented trust boundaries to skip findings on explicitly trusted paths. Do not flag documented exceptions as findings.
 
 This prompt is tier-aware. Each hook invocation will specify which tier to run. Execute only the categories and rules defined for that tier. Do not run categories from higher tiers unless explicitly instructed.
 
@@ -175,19 +191,58 @@ All Tier 1 categories apply, plus:
 9. For S13 findings, describe the concrete abuse scenario an attacker would follow
 10. For S17 findings, note whether the upload destination is public or private
 
+### Severity Calibration Rubric (T2/T3)
+
+Before assigning severity to any finding, answer these questions:
+
+1. **Reachability:** Can an attacker reach this code from a real entry point?
+2. **Attacker control:** Does untrusted input reach the sink intact, or is it sanitized upstream?
+3. **Preconditions:** What must be true for the bug to trigger? (non-default setting, feature flag, time window)
+4. **Authentication:** Unauthenticated, authenticated user, or admin-only?
+5. **Impact type:** Read-only, write/modify, or full compromise?
+6. **Blast radius:** One user, all users, one tenant, or platform-wide?
+
+Scoring:
+- 0 preconditions + unauthenticated + write/compromise = **CRITICAL**
+- 1-2 preconditions OR authenticated user = **HIGH**
+- 3+ preconditions OR admin-only OR read-only = **MEDIUM**
+- Local-only OR requires physical access = **LOW**
+
+### Deduplication Rules (T2/T3)
+
+- Same file + same category + lines within 10 = **ONE finding**
+- Same root cause at multiple call sites = **ONE finding** listing all locations
+- Missing global protection (auth middleware, rate-limit, CORS) = **ONE finding**, not per-endpoint
+- Report the root cause, not each symptom
+- If a single fix would resolve multiple findings, group them
+
+### Verification Pass (T2/T3)
+
+After producing all findings, perform an independent verification pass:
+
+1. For each HIGH+ finding, **assume it is a FALSE POSITIVE**
+2. Search for compensating controls: upstream validation, auth gates, type constraints, WAF rules, unreachable code paths
+3. Check if the finding's prerequisites are actually satisfiable in the running system
+4. Read `docs/decisions/` ADRs and `docs/security/THREAT_MODEL.md` (if they exist) for documented trust boundaries
+5. Downgrade or remove findings where exploitation is blocked by existing controls
+6. Mark verified findings as CONFIRMED; unverified as NEEDS VALIDATION
+
+The verification pass must NOT reference your original reasoning. Re-read the code fresh for each finding.
+
 ### Tier 2 Periodic Review Workflow
 
-1. Read `docs/audits/security/SECURITY_LOG.md` to understand what has been reviewed before
+1. Read `docs/security/SECURITY_LOG.md` to understand what has been reviewed before
 2. Read `docs/roadmap/roadmap.md` to identify specs completed since the last SRR
-3. Identify the next SRR number by checking `docs/audits/security/` for existing reports
+3. Identify the next SRR number by checking `docs/security/` for existing reports
 4. Run the Tier 2 audit scope above
 5. For each finding:
    - Classify severity and category
    - Describe the attack scenario concretely
+   - Map to compliance frameworks: NIST CSF 2.0 category (e.g., PR.AC-03, DE.CM-01), MITRE ATT&CK technique ID (e.g., T1190, T1078), and MITRE D3FEND countermeasure (e.g., D3-WAF, D3-SPP) where applicable
    - Propose 2-3 remediation pathways with pros/cons
    - Recommend the best option with justification
-6. Create `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T2.md` with the full report
-7. Update `docs/audits/security/SECURITY_LOG.md` with new findings
+6. Create `docs/security/SRR-{###}-{YYYY-MM-DD}-T2.md` with the full report
+7. Update `docs/security/SECURITY_LOG.md` with new findings
 8. For CRITICAL/HIGH findings: create immediate fix tasks
 9. For MEDIUM/LOW findings: add to roadmap as future items
 10. Update `docs/roadmap/roadmap.md` security reviews table
@@ -262,21 +317,23 @@ All Tier 2 rules apply, plus:
 
 ### Tier 3 Periodic Review Workflow
 
-1. Read `docs/audits/security/SECURITY_LOG.md` to understand what has been reviewed before
+1. Read `docs/security/SECURITY_LOG.md` to understand what has been reviewed before
 2. Read `docs/roadmap/roadmap.md` to identify all specs completed in this sprint
-3. Identify the next SRR number by checking `docs/audits/security/` for existing reports
+3. Identify the next SRR number by checking `docs/security/` for existing reports
 4. Run the full Tier 3 audit scope
 5. For each finding:
    - Classify severity and category
    - Describe the attack scenario or maintainability cost concretely
+   - Map to compliance frameworks: NIST CSF 2.0 category, MITRE ATT&CK technique ID, and MITRE D3FEND countermeasure where applicable
    - Propose 2-3 remediation pathways with pros/cons
    - Recommend the best option with justification
-6. Create `docs/audits/security/SRR-{###}-{YYYY-MM-DD}-T3.md` with the full report
-7. Update `docs/audits/security/SECURITY_LOG.md` with new findings
-8. For CRITICAL/HIGH findings: create immediate fix tasks
-9. For MEDIUM/LOW findings: add to roadmap as future items
-10. Update `docs/roadmap/roadmap.md` security reviews table
-11. Record dependency manifest snapshot in `docs/audits/security/dep-snapshot-{YYYY-MM-DD}.md`
+6. **Spawn the `security-verifier` agent** with ONLY the list of HIGH+ findings (finding ID, description, file, line - no reasoning or context from this review). The verifier will independently search the codebase and report DISPROVED / CONFIRMED / DOWNGRADE for each. Update findings based on verifier results before finalizing the SRR.
+7. Create `docs/security/SRR-{###}-{YYYY-MM-DD}-T3.md` with the full report (include verifier results)
+8. Update `docs/security/SECURITY_LOG.md` with new findings
+9. For CRITICAL/HIGH CONFIRMED findings: create immediate fix tasks
+10. For MEDIUM/LOW findings: add to roadmap as future items
+11. Update `docs/roadmap/roadmap.md` security reviews table
+12. Record dependency manifest snapshot in `docs/security/dep-snapshot-{YYYY-MM-DD}.md`
 
 ---
 

@@ -50,22 +50,33 @@ python -m pytest tests/ -v --tb=short 2>&1 | tee logs/test_results.log
 ### Log File Location:
 - All command logs: `logs/`
 
-## Subagent Tool Rules - MANDATORY
 
-When spawning subagents via the `subagent` tool, every `prompt_template` MUST include these rules at the top (before the task description):
+## Reusable Utility Scripts - MANDATORY
 
+**When the first need arises for any repeated operation, write a parameterized reusable script with logging and error checking. Then use that script going forward. No ad-hoc multi-line shell commands for operations that will be repeated.**
+
+### Rules
+
+1. **First need = script.** The moment you do something manually that could recur (restart a service, run a migration, deploy, seed data, check health), write a script in `scripts/`.
+2. **Parameterized.** Scripts accept arguments (service name, environment, etc.) - not hardcoded for one case.
+3. **Verbose with logging.** Scripts log what they're doing with timestamps. On failure, they print useful diagnostics.
+4. **Error checking.** Scripts use `set -uo pipefail`, check exit codes, and fail loudly.
+5. **Reuse.** Once a script exists, always use it. Never rewrite the same logic inline.
+6. **Discoverable.** Scripts live in `scripts/` with descriptive names. Add a comment header explaining usage.
+
+### Anti-Patterns (BANNED)
+
+```bash
+# WRONG - ad-hoc multi-line restart
+fuser -k 8060/tcp 2>/dev/null
+sleep 2
+cd /path/to/project && nohup .venv/bin/python -m uvicorn ...
+echo $! > logs/server.pid
+sleep 5
+curl -s http://localhost:PORT/health
+
+# CORRECT - one-liner using the script
+bash scripts/restart-service.sh service-name
 ```
-MANDATORY TOOL RULES:
-- Use run_and_watch for ALL test, build, and lint commands (pytest, vitest, tsc, eslint, cargo test, go test, mvn test).
-- If run_and_watch times out, increase timeout_seconds (up to 120). Never fall back to Shell.
-- Shell is ONLY for non-execution tasks: file inspection, git status, environment checks.
-- Never use Shell for commands that produce pass/fail output.
-```
 
-### Why
-
-Shell bypasses TracePulse error tracking, fingerprinting, and structured parsing. Subagents that use Shell for tests produce unstructured output that can't feed into `get_errors`, `correlate_with_diff`, or cross-session `get_bug_patterns`.
-
-### Enforcement
-
-There is no system-level tool restriction for subagents. The prompt is the only lever. Place rules BEFORE the task, not after. Be explicit about fallback behavior (increase timeout, don't switch tools).
+**Minimize shell calls.** If you find yourself making the same type of shell call 3+ times in a session (restart, health check, token fetch, DB query pattern), that is a candidate for a reusable script. Write it in `scripts/`, then use it going forward. TracePulse `get_audit_trail` can help identify repeated patterns.

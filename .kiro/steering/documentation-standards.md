@@ -51,7 +51,7 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 ### docs/engineering/
 - **Purpose**: Engineering process documentation, execution standards
 
-### docs/audits/security/
+### docs/security/
 - **Purpose**: Security review reports and findings log
 
 ### Placement Rules
@@ -80,6 +80,7 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 - Numbered user stories with acceptance criteria (testable, not vague)
 - Non-functional requirements (performance, cost, reliability, accessibility)
 - Explicit "out of scope" section to prevent scope creep
+- **UX acceptance criteria for any user-facing feature** - not just "show data" but how it's shown: hierarchy, spacing, interaction placement, density expectations
 
 **Design.md** must include:
 - Architecture diagram showing service interactions
