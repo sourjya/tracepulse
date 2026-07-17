@@ -11,6 +11,8 @@
 
 import { spawn } from "node:child_process";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { buildExecEnv } from "@/tools/exec-env.js";
+import { redact } from "@/pipeline/secret-redactor.js";
 
 /** Default timeout for the handshake (seconds). */
 const DEFAULT_TIMEOUT_SECONDS = 5;
@@ -75,8 +77,14 @@ export async function handleVerifyMcp(
 
   const initMessage = buildInitializeMessage();
 
+  // TRP-56: parity with run_and_watch — least-privilege env (scrub secret-shaped
+  // vars; agent-declared `env` passes through; `inherit_env` opts back in).
+  const declaredEnv = args.env as Record<string, string> | undefined;
+  const inheritAllEnv = args.inherit_env === true;
+  const spawnEnv = buildExecEnv(declaredEnv, { inheritAll: inheritAllEnv });
+
   try {
-    const response = await spawnAndHandshake(command, initMessage, timeoutSeconds);
+    const response = await spawnAndHandshake(command, initMessage, timeoutSeconds, spawnEnv);
     return { content: [{ type: "text", text: JSON.stringify(response) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -108,6 +116,7 @@ function spawnAndHandshake(
   command: string,
   initMessage: string,
   timeoutSeconds: number,
+  spawnEnv: Record<string, string | undefined>,
 ): Promise<HandshakeResult> {
   return new Promise((resolve) => {
     const startTime = Date.now();
@@ -118,6 +127,7 @@ function spawnAndHandshake(
     const child = spawn(command, {
       shell: true,
       stdio: ["pipe", "pipe", "pipe"],
+      env: spawnEnv,
     });
 
     const timer = setTimeout(() => {
@@ -167,7 +177,7 @@ function spawnAndHandshake(
             resolved = true;
             clearTimeout(timer);
             child.kill("SIGTERM");
-            resolve({ success: false, error: `Failed to parse server response as JSON: ${firstLine.slice(0, 200)}`, command });
+            resolve({ success: false, error: `Failed to parse server response as JSON: ${redact(firstLine).slice(0, 200)}`, command });
           }
         }
       }
@@ -192,7 +202,7 @@ function spawnAndHandshake(
         if (code !== 0 && !stdout) {
           resolve({
             success: false,
-            error: `Command exited with code ${code}${stderr ? `: ${stderr.slice(0, 200)}` : ""}`,
+            error: `Command exited with code ${code}${stderr ? `: ${redact(stderr).slice(0, 200)}` : ""}`,
             command,
           });
         } else if (!stdout) {
@@ -215,7 +225,7 @@ function spawnAndHandshake(
               return;
             }
           } catch { /* fall through */ }
-          resolve({ success: false, error: `Failed to parse server response as JSON: ${firstLine.slice(0, 200)}`, command });
+          resolve({ success: false, error: `Failed to parse server response as JSON: ${redact(firstLine).slice(0, 200)}`, command });
         }
       }
     });
