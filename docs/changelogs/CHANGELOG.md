@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **TRP-76:** CI was red on `main` across multiple merges. Fixed all four causes: (1) `eslint.config.js` now declares Node globals for `tests/fixtures/**` (was 15 `no-undef` errors); (2) `src/store/lifecycle-fsm.ts` `fsmInstance` is now `const` (was a `prefer-const` error; no behavior change); (3) the CI `test` job now runs `npm run build` before `npm test` so `dist/cli.js` exists for the integration smoke tests; (4) all CI jobs run Node 22 (the project's required/target version), fixing the `doctor` Node-version check.
+
+---
+
 ## [0.9.30] - 2026-07-11
 
 ### Added
