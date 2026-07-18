@@ -81,3 +81,56 @@ describe("instrumentHandler", () => {
     await expect(wrapped({})).resolves.toEqual(textResult("safe"));
   });
 });
+
+describe("instrumentHandler token attribution (TRP-82)", () => {
+  function fakeFsm() {
+    const calls: Array<{ fingerprint: string; tokens: number }> = [];
+    return { calls, attributeTokens: (fingerprint: string, tokens: number) => { calls.push({ fingerprint, tokens }); } };
+  }
+
+  it("attributes response tokens to the episode for a token-attributable tool carrying a fingerprint", async () => {
+    const auditBuffer = createAuditBuffer();
+    const lifecycleFsm = fakeFsm();
+    const wrapped = instrumentHandler("get_error_context", () => textResult("a context blob"), { auditBuffer, lifecycleFsm });
+
+    await wrapped({ fingerprint: "fp-1" });
+    expect(lifecycleFsm.calls).toEqual([
+      { fingerprint: "fp-1", tokens: estimateResponseTokens(textResult("a context blob")) },
+    ]);
+  });
+
+  it("does NOT attribute for a non-token-attributable tool, even with a fingerprint (get_errors)", async () => {
+    const auditBuffer = createAuditBuffer();
+    const lifecycleFsm = fakeFsm();
+    const wrapped = instrumentHandler("get_errors", () => textResult("errors"), { auditBuffer, lifecycleFsm });
+
+    await wrapped({ fingerprint: "fp-1" });
+    expect(lifecycleFsm.calls).toEqual([]);
+  });
+
+  it("does NOT attribute for a shell tool, even with a fingerprint (verify_fix — F3)", async () => {
+    const auditBuffer = createAuditBuffer();
+    const lifecycleFsm = fakeFsm();
+    const wrapped = instrumentHandler("verify_fix", () => textResult("ran"), { auditBuffer, lifecycleFsm });
+
+    await wrapped({ fingerprint: "fp-1" });
+    expect(lifecycleFsm.calls).toEqual([]);
+  });
+
+  it("does NOT attribute when no fingerprint param is present", async () => {
+    const auditBuffer = createAuditBuffer();
+    const lifecycleFsm = fakeFsm();
+    const wrapped = instrumentHandler("get_error_context", () => textResult("x"), { auditBuffer, lifecycleFsm });
+
+    await wrapped({});
+    expect(lifecycleFsm.calls).toEqual([]);
+  });
+
+  it("never breaks the tool call if attribution throws", async () => {
+    const auditBuffer = createAuditBuffer();
+    const lifecycleFsm = { attributeTokens: () => { throw new Error("boom"); } };
+    const wrapped = instrumentHandler("get_error_context", () => textResult("safe"), { auditBuffer, lifecycleFsm });
+
+    await expect(wrapped({ fingerprint: "fp-1" })).resolves.toEqual(textResult("safe"));
+  });
+});

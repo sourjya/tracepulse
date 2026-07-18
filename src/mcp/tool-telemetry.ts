@@ -14,11 +14,14 @@
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { AuditBuffer } from "@/store/audit-buffer.js";
+import { isTokenAttributable } from "@/store/tool-arms.js";
 
-/** Sinks the middleware feeds. `journalBridge` is optional (persistence may be off). */
+/** Sinks the middleware feeds. `journalBridge`/`lifecycleFsm` are optional. */
 export interface ToolTelemetrySinks {
   readonly auditBuffer: AuditBuffer;
   readonly journalBridge?: { journalToolCall(tool: string, fingerprint?: string): void };
+  /** FSM sink for per-episode token attribution (TRP-82). Optional (lifecycle may be off). */
+  readonly lifecycleFsm?: { attributeTokens(fingerprint: string, tokens: number): void };
 }
 
 /** Concatenate the text content of a tool result (for a rough token estimate). */
@@ -60,18 +63,31 @@ export function instrumentHandler<A extends unknown[]>(
   return async (...args: A): Promise<CallToolResult> => {
     const start = now();
     const result = await handler(...args);
+    const params = (args[0] ?? {}) as Record<string, unknown>;
+    const responseTokens = estimateResponseTokens(result);
     try {
-      const params = (args[0] ?? {}) as Record<string, unknown>;
       sinks.auditBuffer.record({
         tool: toolName,
         params: typeof params === "object" && params !== null ? params : {},
-        response_tokens: estimateResponseTokens(result),
+        response_tokens: responseTokens,
         duration_ms: Math.max(0, now() - start),
         timestamp: start,
       });
       sinks.journalBridge?.journalToolCall(toolName);
     } catch {
       /* telemetry is best-effort — never break the tool call */
+    }
+    // Per-episode token attribution (TRP-82): only fingerprint-bearing read tools,
+    // and only when the call carries a resolvable fingerprint. Kept in its own
+    // best-effort block so it is independent of the audit/journal sinks above.
+    // Attribution is a no-op in the FSM if the fingerprint has no active episode.
+    try {
+      const fp = params.fingerprint;
+      if (sinks.lifecycleFsm && isTokenAttributable(toolName) && typeof fp === "string" && fp.length > 0) {
+        sinks.lifecycleFsm.attributeTokens(fp, responseTokens);
+      }
+    } catch {
+      /* best-effort — never break the tool call */
     }
     return result;
   };

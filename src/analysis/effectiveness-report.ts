@@ -12,6 +12,7 @@
  */
 
 import type { LifecycleMetrics } from "@/store/lifecycle-metrics.js";
+import type { PerEpisodeCost } from "@/analysis/episode-cost.js";
 
 /** A measured rate with its sample size and 95% confidence interval. */
 export interface RateWithCI {
@@ -42,11 +43,13 @@ export interface EffectivenessReport {
   };
   /** TracePulse's own response-token volume this session (context, not agent cost). */
   readonly tp_response_tokens_total: number;
+  /** Observational per-resolved-episode cost, stratified by arm (TRP-82). */
+  readonly per_episode_cost: PerEpisodeCost;
   readonly note: string;
 }
 
 /** Round to 4 decimal places. */
-function round4(x: number): number {
+export function round4(x: number): number {
   return Math.round(x * 10000) / 10000;
 }
 
@@ -87,7 +90,7 @@ function rateWithCI(successes: number, n: number): RateWithCI {
  */
 export function computeEffectivenessReport(
   metrics: LifecycleMetrics,
-  opts: { version: string; tpResponseTokensTotal: number },
+  opts: { version: string; tpResponseTokensTotal: number; perEpisodeCost: PerEpisodeCost },
 ): EffectivenessReport {
   const n = metrics.total_episodes;
   return {
@@ -104,9 +107,11 @@ export function computeEffectivenessReport(
       recurred: metrics.recurred_count,
     },
     tp_response_tokens_total: opts.tpResponseTokensTotal,
+    per_episode_cost: opts.perEpisodeCost,
     note:
       "Rates are this session's observed FSM episode outcomes with 95% Wilson score intervals (measured, not modeled). " +
-      "Cross-agent stratification and per-episode investigation-cost are pending (TRP-82/TRP-83). " +
+      "per_episode_cost adds observational per-resolved-episode cost by arm (TRP-82); cross-agent stratification and a " +
+      "real agent-token denominator remain pending (TRP-83). " +
       "tp_response_tokens_total is TracePulse's own response volume, not the agent's investigation cost.",
   };
 }

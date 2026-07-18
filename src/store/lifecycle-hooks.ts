@@ -113,8 +113,9 @@ export function createLifecycleHooks(fsm: LifecycleFSM): LifecycleHooks {
     onErrorInvestigated(fingerprint: string): void {
       // Attempt transition surfaced → investigated
       fsm.transition(fingerprint, "investigated");
-      // Always record the tool call regardless of transition success
-      fsm.recordToolCall(fingerprint);
+      // Always record the tool call regardless of transition success; this is a
+      // TracePulse investigation tool, so it stamps the episode's arm as tp (TRP-82).
+      fsm.recordToolCall(fingerprint, "tp");
     },
 
     onFileChanged(): void {
@@ -145,6 +146,11 @@ export function createLifecycleHooks(fsm: LifecycleFSM): LifecycleHooks {
       if (previousFps && previousFps.size > 0) {
         for (const prevFp of previousFps) {
           const state = fsm.getState(prevFp);
+
+          // This re-run is shell-arm activity for the fingerprint. Stamp shell on the
+          // active episode BEFORE any terminal transition freezes it (no-op if the
+          // episode already ended — e.g. suppressed; see TRP-82 F6). (TRP-82)
+          fsm.recordToolCall(prevFp, "shell");
 
           if (currentFps.has(prevFp)) {
             // Fingerprint still present — recurrence (if in a state that accepts it)

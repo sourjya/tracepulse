@@ -335,7 +335,7 @@ export function createMcpServer(
     rawRegister(
       name,
       config,
-      instrumentHandler(name, handler, { auditBuffer, journalBridge: options?.journalBridge }) as never,
+      instrumentHandler(name, handler, { auditBuffer, journalBridge: options?.journalBridge, lifecycleFsm: options?.lifecycleFsm }) as never,
     );
   };
 
