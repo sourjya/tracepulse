@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.9.31 (alpha - 44 MCP tools, 25 parsers, 1380 tests)
+v0.9.31 (alpha - 45 MCP tools, 25 parsers, 1380 tests)
 
 ## Milestones
 

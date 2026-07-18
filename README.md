@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/tracepulse)](https://www.npmjs.com/package/tracepulse)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1380%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-1411%20passing-brightgreen)]()
 
 **Runtime feedback MCP server for AI coding agents.**
 
@@ -20,7 +20,7 @@ TracePulse watches your dev server's stdout/stderr, parses errors into structure
 
 ## Status
 
-🟡 **Alpha v0.9.31 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [25 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [44 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1380 tests](tests/) passing.
+🟡 **Alpha v0.9.31 - Phases 1-5 complete.** [Core pipeline](docs/architecture/architecture-guide.md#the-data-pipeline), [watch mode](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [multi-process support](docs/architecture/architecture-guide.md#multi-process-architecture-phase-3), [frontend-backend correlation](docs/architecture/architecture-guide.md#frontend-backend-correlation-phase-4), proactive monitoring. [25 error parsers](docs/architecture/architecture-guide.md#error-parsers---what-languages-are-supported), [45 MCP tools](docs/architecture/architecture-guide.md#mcp-tools---what-the-agent-can-call), [1411 tests](tests/) passing.
 
 ## Quick Start
 
@@ -320,10 +320,10 @@ tracepulse start --persist "npm run dev"
 ```
 
 ```bash
-# Clustered mode (7 gateways instead of 44 tools - 80% schema reduction)
+# Clustered mode (7 gateways instead of 45 tools - 80% schema reduction)
 tracepulse start --clustered "npm run dev"
 ```
-Collapses 44 tools into 7 semantic gateways. The agent discovers sub-tools on demand, loading only what it needs. Schema overhead drops from ~1,000 to ~200 tokens per turn.
+Collapses 45 tools into 7 semantic gateways. The agent discovers sub-tools on demand, loading only what it needs. Schema overhead drops from ~1,000 to ~200 tokens per turn.
 
 ```bash
 # With HTTP transport (for multi-client scenarios)

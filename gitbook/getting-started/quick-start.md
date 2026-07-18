@@ -57,7 +57,7 @@ That's the entire setup. TracePulse figures out the rest automatically.
 
 Close and reopen your AI tool (or restart the session). TracePulse should now appear as connected.
 
-In Kiro CLI, type `/mcp list` to verify - you should see `tracepulse ● running 44 tools`.
+In Kiro CLI, type `/mcp list` to verify - you should see `tracepulse ● running 45 tools`.
 
 ## Step 4: Try it out
 
@@ -74,7 +74,7 @@ You don't need to remember tool names. Just describe what you want.
 
 ## Optional: Monitor your dev server
 
-The basic setup gives you 44 tools for running commands, checking ports, detecting drift, and more. To also get **live error monitoring** (errors caught the moment they happen), tell TracePulse about your dev server.
+The basic setup gives you 45 tools for running commands, checking ports, detecting drift, and more. To also get **live error monitoring** (errors caught the moment they happen), tell TracePulse about your dev server.
 
 Add your server command to the config:
 
@@ -122,6 +122,6 @@ Works:
 ## Next steps
 
 - [Installation options](installation.md) - attach mode, multi-service, Docker Compose
-- [All 44 MCP tools](../features/mcp-tools.md) - what TracePulse can do
+- [All 45 MCP tools](../features/mcp-tools.md) - what TracePulse can do
 - [TracePulse in Action](../tutorials/tracepulse-in-action.md) - real-world examples
 - [Troubleshooting](installation.md#troubleshooting) - if something isn't working

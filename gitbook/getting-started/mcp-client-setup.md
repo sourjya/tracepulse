@@ -114,7 +114,7 @@ For any MCP client that reads `.mcp.json` from the project root, create the file
 
 After adding the config and restarting your tool:
 
-1. **Kiro CLI:** Type `/mcp list` - TracePulse should show `● running 44 tools`
+1. **Kiro CLI:** Type `/mcp list` - TracePulse should show `● running 45 tools`
 2. **Other tools:** Ask the agent "What TracePulse tools are available?" - it should list the tools
 3. **Quick test:** Ask "Check project health" - the agent should call `get_project_health` and report your project status
 

@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-TracePulse exposes 44 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
+TracePulse exposes 45 MCP tools that any AI coding agent can call. Tools are organized by workflow - start with quick checks, then dig deeper as needed.
 
 {% hint style="info" %}
 **Token costs** are approximate response sizes. The agent's MCP client loads all tool schemas (~1,000 tokens) once per session. Individual tool calls cost only their response size.
