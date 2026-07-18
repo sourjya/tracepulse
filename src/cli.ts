@@ -557,6 +557,7 @@ async function main(): Promise<void> {
       journalPath: ".tracepulse/events.jsonl",
       telemetryPath: ".tracepulse/telemetry.json",
       buffer,
+      lifecycleFsm,
     });
     process.stderr.write("[tracepulse] Event journal active (.tracepulse/events.jsonl)\n");
   }

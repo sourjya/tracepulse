@@ -127,6 +127,39 @@ describe("journal-bridge", () => {
       expect(lastEntry.data.duration_ms).toBeGreaterThanOrEqual(0);
     });
 
+    // TRP-80: session_end must reflect real lifecycle outcomes, not hardcoded zeros.
+    it("populates session_end suppressed/resolved from the lifecycle FSM", () => {
+      // Partial FSM fake — computeLifecycleMetrics only reads exportStates + getEpisodeHistory.
+      const episodes: Record<string, Array<{ outcome: string; started_at: number; ended_at: number }>> = {
+        "fp-supp": [{ outcome: "suppressed", started_at: 0, ended_at: 100 }],
+        "fp-res-1": [{ outcome: "resolved", started_at: 0, ended_at: 50 }],
+        "fp-res-2": [{ outcome: "resolved", started_at: 0, ended_at: 70 }],
+      };
+      const fakeFsm = {
+        exportStates: () => new Map(Object.keys(episodes).map((fp) => [fp, "resolved"])),
+        getEpisodeHistory: (fp: string) => episodes[fp] ?? [],
+      } as unknown as import("@/store/lifecycle-fsm.js").LifecycleFSM;
+
+      const bridge = createJournalBridge({ journalPath, telemetryPath, buffer, lifecycleFsm: fakeFsm });
+      bridge.shutdown();
+
+      const lines = readFileSync(journalPath, "utf-8").trim().split("\n");
+      const end = JSON.parse(lines[lines.length - 1]);
+      expect(end.type).toBe("session_end");
+      expect(end.data.errors_suppressed).toBe(1);
+      expect(end.data.errors_resolved).toBe(2);
+    });
+
+    it("session_end falls back to zero suppressed/resolved when no FSM is wired", () => {
+      const bridge = createJournalBridge({ journalPath, telemetryPath, buffer });
+      bridge.shutdown();
+
+      const lines = readFileSync(journalPath, "utf-8").trim().split("\n");
+      const end = JSON.parse(lines[lines.length - 1]);
+      expect(end.data.errors_suppressed).toBe(0);
+      expect(end.data.errors_resolved).toBe(0);
+    });
+
     it("truncates message to 200 chars in journal entries", () => {
       const bridge = createJournalBridge({ journalPath, telemetryPath, buffer });
       const longMessage = "A".repeat(500);
