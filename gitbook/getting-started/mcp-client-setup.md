@@ -54,9 +54,13 @@ Paste the config and restart Cursor.
 
 ## Claude Code (CLI)
 
-**Config file:** `~/.claude.json` (user home directory)
+{% hint style="success" %}
+**Fastest path:** run `tracepulse init --claude` — it writes the MCP config to project-root `.mcp.json`, installs workflow rules, a `/tracepulse` command, and the friction gate. See the dedicated [Claude Code](claude-code.md) page.
+{% endhint %}
 
-Claude Code stores MCP servers per-project inside `~/.claude.json`. The structure is different from other tools:
+**Config file (manual):** project-root `.mcp.json` (committable, team-shared) or `~/.claude.json` (per-user, private).
+
+Claude Code reads project MCP servers from the project-root `.mcp.json`, or per-project inside `~/.claude.json`. The `~/.claude.json` structure is keyed by absolute project path:
 
 ```json
 {
@@ -76,7 +80,7 @@ Claude Code stores MCP servers per-project inside `~/.claude.json`. The structur
 Use `standalone` for library projects. Use `start "your command"` for projects with a dev server.
 
 {% hint style="warning" %}
-**Common mistake:** Don't put MCP servers in `.claude/settings.json` (project permissions file) or `~/.claude/settings.json` (user preferences). They go in `~/.claude.json` only. Run `/mcp` in Claude Code to verify which file it reads.
+**Common mistake:** Don't put MCP servers in `.claude/mcp.json` (Claude Code doesn't read it), `.claude/settings.json` (project permissions file), or `~/.claude/settings.json` (user preferences). They go in project-root `.mcp.json` or `~/.claude.json`. Run `/mcp` in Claude Code to verify which file it read.
 {% endhint %}
 
 ## Claude Desktop
