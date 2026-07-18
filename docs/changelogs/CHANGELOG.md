@@ -10,6 +10,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Fixed
+- **TRP-74:** `tracepulse init --claude` installed `tracepulse-gate.sh` into `.claude/hooks/` but never declared it in a settings file, so Claude Code never ran it — the friction-gradient gate shipped dormant. Init now registers a Bash `PreToolUse` entry in `.claude/settings.json` (deep-merged, idempotent) pointing at the copied gate.
+- **TRP-75:** `tracepulse init --claude` wrote MCP config to `.claude/mcp.json`, a path Claude Code does not read (it reads project-root `.mcp.json` or `~/.claude.json`), so consumers never got the TracePulse MCP server connected. Init now writes to project-root `.mcp.json`, matching the generic branch.
 - **TRP-76:** CI was red on `main` across multiple merges. Fixed all four causes: (1) `eslint.config.js` now declares Node globals for `tests/fixtures/**` (was 15 `no-undef` errors); (2) `src/store/lifecycle-fsm.ts` `fsmInstance` is now `const` (was a `prefer-const` error; no behavior change); (3) the CI `test` job now runs `npm run build` before `npm test` so `dist/cli.js` exists for the integration smoke tests; (4) all CI jobs run Node 22 (the project's required/target version), fixing the `doctor` Node-version check.
 
 ---

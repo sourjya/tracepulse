@@ -83,6 +83,45 @@ function mergeMcpConfig(configPath: string, actions: string[]): void {
   }
 }
 
+/**
+ * Register the TracePulse PreToolUse gate hook in a Claude Code settings file.
+ *
+ * Claude Code only executes hooks that are *declared* in a settings file
+ * (`.claude/settings.json` etc.) under `hooks.PreToolUse` — dropping the script
+ * into `.claude/hooks/` is not enough (TRP-74). This deep-merges a Bash-matched
+ * PreToolUse entry pointing at the copied gate, preserving any existing hooks,
+ * and is idempotent: a re-run detects the existing registration and no-ops.
+ */
+function registerClaudeGateHook(settingsPath: string, actions: string[]): void {
+  const existing = readJsonSafe(settingsPath);
+  const hooks = (existing.hooks ?? {}) as Record<string, unknown>;
+  const preToolUse = (Array.isArray(hooks.PreToolUse) ? hooks.PreToolUse : []) as Array<Record<string, unknown>>;
+
+  // Idempotency: bail if any PreToolUse entry already references the gate script.
+  const alreadyRegistered = preToolUse.some(entry => {
+    const inner = (Array.isArray(entry.hooks) ? entry.hooks : []) as Array<Record<string, unknown>>;
+    return inner.some(h => typeof h.command === "string" && h.command.includes("tracepulse-gate.sh"));
+  });
+  if (alreadyRegistered) return;
+
+  preToolUse.push({
+    matcher: "Bash",
+    hooks: [
+      {
+        type: "command",
+        command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/tracepulse-gate.sh"',
+        statusMessage: "TracePulse gate",
+      },
+    ],
+  });
+  hooks.PreToolUse = preToolUse;
+  existing.hooks = hooks;
+
+  mkdirSync(dirname(settingsPath), { recursive: true });
+  writeFileSync(settingsPath, JSON.stringify(existing, null, 2) + "\n");
+  actions.push(`Registered PreToolUse gate in ${relative(process.cwd(), settingsPath)}`);
+}
+
 // ──────────────────────────────────────────────
 // Public API
 // ──────────────────────────────────────────────
@@ -217,10 +256,13 @@ export function runInit(client: McpClient | "auto", cwd: string): string[] {
           chmodSync(hookDest, 0o755);
           actions.push(`Installed hook: .claude/hooks/tracepulse-gate.sh (denies Bash for test/build/lint)`);
         }
+        // The copied script is inert until Claude Code is told to run it (TRP-74).
+        registerClaudeGateHook(resolve(cwd, ".claude", "settings.json"), actions);
       }
 
-      // MCP config merging
-      mergeMcpConfig(resolve(cwd, ".claude", "mcp.json"), actions);
+      // MCP config merging — Claude Code reads project MCP servers from the
+      // project-root .mcp.json, NOT .claude/mcp.json (TRP-75).
+      mergeMcpConfig(resolve(cwd, ".mcp.json"), actions);
       break;
     }
 
