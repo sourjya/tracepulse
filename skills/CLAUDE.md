@@ -8,7 +8,7 @@ Call this before ANY work. Primes TracePulse monitoring. Skip it and you'll defa
 
 ## Available Tools
 
-TracePulse (44 tools) monitors your dev server. Use these patterns:
+TracePulse (45 tools) monitors your dev server. Use these patterns:
 
 ### After ANY code change
 ```

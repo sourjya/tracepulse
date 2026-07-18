@@ -28,12 +28,12 @@ TracePulse breaks this chain at the source: fewer tokens wasted means less compu
 
 ## What TracePulse Does
 
-TracePulse is a runtime feedback MCP server that watches dev server stdout/stderr, parses errors through 25 framework-specific parsers, scores them by importance (0-100), deduplicates by fingerprint, and serves structured results via 44 MCP tools. The agent gets the exact file:line in one call instead of scanning raw logs.
+TracePulse is a runtime feedback MCP server that watches dev server stdout/stderr, parses errors through 25 framework-specific parsers, scores them by importance (0-100), deduplicates by fingerprint, and serves structured results via 45 MCP tools. The agent gets the exact file:line in one call instead of scanning raw logs.
 
 **Measured impact:**
 - 12x token reduction per error - 12,000 tokens down to 1,000 (measured in live debugging sessions - see [TracePulse in Action](https://chaoslabz.gitbook.io/tracepulse/tutorials/tracepulse-in-action-real-examples))
 - Additional ~21,000 tokens/session estimated from acknowledged errors, loop detection, and response compression (based on [M17 spec](../../.kiro/specs/m17-token-wave1/requirements.md) calculations)
-- Environmental tracking: tokens saved -> energy (Wh) -> CO2 (g) per session. Constants: 0.34 Wh per 1K tokens ([ChatGPT energy data](https://arxiv.org/html/2512.03024)), 0.4 gCO2e/Wh (US grid avg)
+- Environmental tracking: tokens saved -> energy (Wh) -> CO2 (g) per session. Constants: 0.034 Wh per 1K tokens ([ChatGPT energy data](https://arxiv.org/html/2512.03024)), 0.4 gCO2e/Wh (US grid avg)
 - 15-30 minutes saved per debugging session (measured across 3 live projects)
 - 3 real production bugs caught per session that agents would have missed (measured - see [TracePulse in Action](https://chaoslabz.gitbook.io/tracepulse/tutorials/tracepulse-in-action-real-examples))
 - 92% fewer tokens consumed per debugging loop (derived from 12x reduction: 1 - 1/12 = 91.7%)

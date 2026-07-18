@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+- **TRP-87:** Doc accuracy sweep. Tool count corrected 44 → 45 across README/GitBook/product docs (TRP-84 added `get_effectiveness_report`); the energy constant in `mission-and-positioning.md` corrected `0.34 → 0.034 Wh/1K tokens` to match its own arXiv citation and the reconciled model (TRP-81); README test-count badge refreshed. CHANGELOG history and the research doc documenting the 0.34-vs-0.034 disagreement left intact.
+
 ### Added
 - **TRP-86:** `tracepulse report [--html]` — an on-demand, read-only view over persisted telemetry (`.tracepulse/telemetry.json`). Terminal form prints totals + a Unicode sparkline of errors-per-session + top recurring fingerprints; `--html` writes a single self-contained HTML dashboard (inline SVG bar charts, theme-aware, no external requests) to `.tracepulse/report.html`. Kept entirely off the hot path — no server, no daemon; it just formats data that already exists. Footer directs to `get_effectiveness_report` for the measured fix/recurrence rates (not persisted here).
 - **TRP-84:** New `get_effectiveness_report` MCP tool — TracePulse's MEASURED lifecycle outcomes (confirmed-fix / recurrence / suppressed rates) as `{value, n, 95% Wilson CI}`, version-stamped, `provenance: measured`. The honest, observed counterpart to `get_session_impact`'s modeled estimate. (Adds a tool; the "44 tools" doc counts are now stale — deferred to a doc sweep.)

@@ -25,7 +25,7 @@ Dev Server -> stdout/stderr -> TracePulse -> MCP Tools -> AI Agent
 5. **Scores** each error 0-100 by importance
 6. **Stores** in a ring buffer (500 events max)
 7. **Tracks** each error through a lifecycle (surfaced → investigated → suppressed → resolved)
-8. **Serves** via 44 MCP tools the agent can call
+8. **Serves** via 45 MCP tools the agent can call
 
 ## Two Modes
 
