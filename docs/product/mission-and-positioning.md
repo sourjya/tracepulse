@@ -79,7 +79,7 @@ TracePulse is a runtime feedback MCP server that watches dev server stdout/stder
 4. **Hot-reload detection (11 frameworks)** - no competitor tells agents "your change took effect"
 5. **Agent skill files** - no competitor teaches agents how to use it
 6. **Zero configuration** - install and run in under 2 minutes
-7. **Protocol-neutral** - works with any MCP client (Kiro, Cursor, Claude Code, Copilot, Windsurf, Cline)
+7. **Protocol-neutral** - works with any MCP client (Kiro, Cursor, Claude Code, Copilot, Windsurf, Cline). First-class Claude Code integration: `tracepulse init --claude` sets up the MCP server, auto-loaded rules, a `/tracepulse` command, and a `PreToolUse` gate that stops the agent shelling test/build/lint past TracePulse.
 8. **Open source (AGPL-3.0)** - free for the global developer community
 
 ## The Three-Layer Stack

@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added
+- **TRP-72:** Documented Claude Code support. New dedicated [Claude Code](../../gitbook/getting-started/claude-code.md) GitBook page (one-command `init --claude`, the friction gate, verification, manual setup, troubleshooting); refreshed the stale Claude section in Agent Integration; corrected MCP Client Setup to note Claude Code reads project-root `.mcp.json`/`~/.claude.json` (not `.claude/mcp.json`); README + product positioning now surface first-class Claude Code integration.
 - **TRP-77:** Tracked local pre-push gate. `main` isn't branch-protected (no paid GitHub plan), so red CI never blocked a merge. `.githooks/pre-push` now runs `lint → build → test` and blocks the push on failure (human-only bypass: `TRACEPULSE_PUSH_GATE_BYPASS=1`); `.githooks/pre-commit` carries forward the private-name leak guard; a `prepare` script points `core.hooksPath` at `.githooks/` so a fresh clone gets the gate on `npm install`.
 
 ### Fixed

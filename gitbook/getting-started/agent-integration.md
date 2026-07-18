@@ -19,7 +19,9 @@ This teaches Cursor's agent:
 
 ## Claude Code
 
-Add the TracePulse section from [`rules/claude-code-integration.md`](https://github.com/sourjya/tracepulse/blob/main/rules/claude-code-integration.md) to your project's `CLAUDE.md`.
+Run `tracepulse init --claude` — one command installs the MCP server, auto-loaded workflow rules (`~/.claude/rules/tracepulse.md`), a `/tracepulse` slash command, and a `PreToolUse` gate that blocks shelled test/build/lint runners so the agent uses TracePulse's structured tools.
+
+See the dedicated **[Claude Code](claude-code.md)** page for setup, verification, the friction gate, and manual configuration.
 
 This gives Claude Code the same workflow guidance as Kiro and Cursor: use [`run_and_watch`](../features/mcp-tools.md#run_and_watch) instead of shell for tests, use [`verify_fix`](../features/mcp-tools.md#verify_fix) after changes, start sessions with [`get_project_health`](../features/mcp-tools.md#get_project_health).
 
@@ -39,7 +41,7 @@ Every agent benefits from TracePulse's tool descriptions and SKILL.md. The integ
 |-------|-------------|-------------|
 | **Kiro** | SKILL.md (automatic) | Optional hooks for post-edit checks |
 | **Cursor** | Rules file | `.cursor/rules/` |
-| **Claude Code** | CLAUDE.md | Add section to project CLAUDE.md |
+| **Claude Code** | Auto-loaded rules + `/tracepulse` | `tracepulse init --claude` (installs MCP, rules, gate) |
 | **VS Code / Copilot** | Tool descriptions | None needed |
 | **Windsurf** | Tool descriptions | None needed |
 | **Cline** | Tool descriptions | None needed |

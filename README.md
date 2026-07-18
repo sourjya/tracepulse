@@ -344,6 +344,14 @@ Auto-detects your MCP client (Kiro, Claude Code, Cursor) and:
 
 Re-run `tracepulse init` after updating TracePulse to sync the latest steering and prompts.
 
+### Claude Code
+
+```bash
+tracepulse init --claude
+```
+
+Installs the full Claude Code integration in one command: the MCP server (project-root `.mcp.json`), auto-loaded workflow rules (`~/.claude/rules/tracepulse.md`), a `/tracepulse` slash command, and a `PreToolUse` **friction gate** that blocks shelled test/build/lint runners so the agent uses `run_and_watch` and the other structured tools instead. Restart Claude Code afterward so the MCP server attaches, then run `/mcp` to confirm. Full guide: [Claude Code setup](https://chaoslabz.gitbook.io/tracepulse/getting-started/claude-code).
+
 ### Prompt Shortcuts (Kiro)
 
 After running `tracepulse init`, these shortcuts are available in Kiro:
