@@ -22,6 +22,8 @@ import type { RuntimeEvent } from "@/types/events.js";
 import type { EventBuffer } from "@/types/collectors.js";
 import type { JournalEntry } from "@/persistence/journal-types.js";
 import { createEventJournal, compactJournal } from "@/persistence/event-journal.js";
+import type { LifecycleFSM } from "@/store/lifecycle-fsm.js";
+import { computeLifecycleMetrics } from "@/store/lifecycle-metrics.js";
 
 // ──────────────────────────────────────────────
 // Types
@@ -39,6 +41,8 @@ export interface JournalBridgeConfig {
   readonly agentInfo?: { readonly name: string; readonly version?: string };
   /** Optional project type for session metadata. */
   readonly projectType?: string;
+  /** Optional lifecycle FSM — used to populate the session_end rollup (TRP-80). */
+  readonly lifecycleFsm?: LifecycleFSM;
 }
 
 /** Public API for the journal bridge. */
@@ -86,7 +90,7 @@ const MAX_JOURNAL_MESSAGE_LENGTH = 200;
  * @returns JournalBridge instance.
  */
 export function createJournalBridge(config: JournalBridgeConfig): JournalBridge {
-  const { journalPath, telemetryPath, buffer, agentInfo, projectType } = config;
+  const { journalPath, telemetryPath, buffer, agentInfo, projectType, lifecycleFsm } = config;
   const sessionId = new Date().toISOString();
   const startedAt = Date.now();
   let eventCount = 0;
@@ -186,6 +190,9 @@ export function createJournalBridge(config: JournalBridgeConfig): JournalBridge 
 
       // Write session_end entry
       try {
+        // Populate the rollup from real lifecycle outcomes (TRP-80). Falls back
+        // to zeros when no FSM is wired (e.g. persistence-only test setups).
+        const metrics = lifecycleFsm ? computeLifecycleMetrics(lifecycleFsm) : null;
         const endEntry: JournalEntry = {
           type: "session_end",
           ts: Date.now(),
@@ -193,8 +200,8 @@ export function createJournalBridge(config: JournalBridgeConfig): JournalBridge 
           data: {
             duration_ms: Date.now() - startedAt,
             errors_surfaced: eventCount,
-            errors_suppressed: 0, // Will be populated by FSM integration later
-            errors_resolved: 0,   // Will be populated by FSM integration later
+            errors_suppressed: metrics?.suppressed_count ?? 0,
+            errors_resolved: metrics?.resolved_count ?? 0,
           },
         };
         journal.append(endEntry);
