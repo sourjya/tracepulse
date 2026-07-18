@@ -174,9 +174,6 @@ export function createLifecycleFSM(): LifecycleFSM {
   /** Max completed episodes per fingerprint. */
   const MAX_EPISODES_PER_FP = 10;
 
-  /** Reference to the FSM instance for use in timer callbacks. */
-  let fsmInstance: LifecycleFSM;
-
   /**
    * Start a resolution timer for a fingerprint.
    * When the timer fires, auto-transitions to 'suppressed'.
@@ -242,7 +239,9 @@ export function createLifecycleFSM(): LifecycleFSM {
     activeEpisodes.delete(fingerprint);
   }
 
-  fsmInstance = {
+  // Self-referencing FSM instance; methods reference it via closure (deferred),
+  // so a single const assignment is safe.
+  const fsmInstance: LifecycleFSM = {
     getState(fingerprint: string): LifecycleState {
       return states.get(fingerprint) ?? "first_seen";
     },
