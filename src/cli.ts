@@ -760,6 +760,7 @@ async function main(): Promise<void> {
     infraMonitor,
     errorLifecycle,
     lifecycleFsm,
+    lifecycleHooks,
     journalBridge,
     patternAnalyzer,
     detectedStacks,

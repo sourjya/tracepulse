@@ -75,6 +75,7 @@ export async function handleRunAndWatch(
   args: Record<string, unknown>,
   allowedPrefixes?: readonly string[],
   mainBuffer?: import("@/types/collectors.js").EventBuffer,
+  lifecycleHooks?: import("@/store/lifecycle-hooks.js").LifecycleHooks,
 ): Promise<CallToolResult> {
   const command = args.command as string | undefined;
   const cwd = args.cwd as string | undefined;
@@ -263,6 +264,12 @@ export async function handleRunAndWatch(
         for (const err of errors) {
           mainBuffer.push(err);
         }
+      }
+
+      // Record the command → fingerprints mapping so re-runs can confirm fixes
+      // (absent → resolved) or detect recurrence (TRP-79).
+      if (lifecycleHooks && command) {
+        lifecycleHooks.onCommandRun(command, errors.map((e) => e.fingerprint));
       }
 
       // Extract test summary from info-level events (pytest/vitest/jest/cargo/junit summaries)
