@@ -108,4 +108,19 @@ describe("runInit — claude branch", () => {
     expect((settings.hooks?.PreToolUse ?? []).length).toBeGreaterThan(0);
   });
 
+  // TRP-75: Claude Code reads project MCP servers from root .mcp.json, never .claude/mcp.json.
+  it("writes MCP config to root .mcp.json, not .claude/mcp.json", () => {
+    runInit("claude", dir);
+
+    expect(existsSync(join(dir, ".claude", "mcp.json"))).toBe(false);
+
+    const rootMcp = join(dir, ".mcp.json");
+    expect(existsSync(rootMcp)).toBe(true);
+
+    const cfg = JSON.parse(readFileSync(rootMcp, "utf8")) as {
+      mcpServers?: Record<string, { command?: string }>;
+    };
+    expect(cfg.mcpServers?.tracepulse).toBeDefined();
+    expect(cfg.mcpServers?.tracepulse.command).toBe("tracepulse");
+  });
 });

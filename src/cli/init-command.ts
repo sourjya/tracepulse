@@ -260,8 +260,9 @@ export function runInit(client: McpClient | "auto", cwd: string): string[] {
         registerClaudeGateHook(resolve(cwd, ".claude", "settings.json"), actions);
       }
 
-      // MCP config merging
-      mergeMcpConfig(resolve(cwd, ".claude", "mcp.json"), actions);
+      // MCP config merging — Claude Code reads project MCP servers from the
+      // project-root .mcp.json, NOT .claude/mcp.json (TRP-75).
+      mergeMcpConfig(resolve(cwd, ".mcp.json"), actions);
       break;
     }
 
