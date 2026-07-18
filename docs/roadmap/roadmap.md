@@ -169,6 +169,22 @@ Persistent cross-session telemetry that answers: "Is TracePulse actually helping
 | 5 | **Efficiency delta metrics** — tokens saved, mean_time_to_fix, savings_ratio, energy/CO2/USD cumulative | 3 days | HIGH | ROI measurement |
 | 6 | **Effectiveness steering auto-generation** — `tracepulse init` produces data-driven `tracepulse-tuning.md` | 2 days | Medium | TRP-7 |
 
+### M27.1: Telemetry Honesty (TRP-73)
+
+Source: [`docs/research/telemetry-savings-measurement.md`](../research/telemetry-savings-measurement.md) — the M27 telemetry surfaces were built but never wired to the live tool-call path, so numbers were modeled, not measured. Nine child tickets flip the surface from inert to honest.
+
+| Ticket | Work | Status |
+|--------|------|--------|
+| TRP-78 | `registerTool` middleware → audit buffer + `journalToolCall` | Merged |
+| TRP-79 | Fire FSM episode hooks from tool handlers | Merged |
+| TRP-80 | Populate `session_end` rollup from `computeLifecycleMetrics` | Merged |
+| TRP-81 | Reconcile energy/CO₂ constants + provenance labels | Merged |
+| TRP-84 | `get_effectiveness_report` tool (`{value, n, CI}`) | Merged |
+| TRP-86 | `tracepulse report [--html]` dashboard + sparklines | Merged |
+| **TRP-82** | **Investigation-episode segmentation + modality (TP/shell/mixed) tag** — first observational per-episode metric. **Spec:** [`.kiro/specs/telemetry-episode-segmentation/`](../../.kiro/specs/telemetry-episode-segmentation/) | Spec ready |
+| TRP-83 | Local OTLP receiver for Claude Code telemetry (real token denominator) | Planned |
+| TRP-85 | Opt-in randomized fingerprint holdout (first causal efficacy number) | Planned |
+
 ## M28: Safe Agent Command Execution (Security)
 
 **Spec:** [`.kiro/specs/m28-safe-command-execution/`](../../.kiro/specs/m28-safe-command-execution/)
