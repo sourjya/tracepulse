@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { detectMcpClient, runInit } from "@/cli/init-command.js";
-import { mkdtempSync, mkdirSync, existsSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -94,7 +94,6 @@ describe("runInit — claude branch", () => {
   // TRP-74: registration must preserve pre-existing hooks in the settings file.
   it("preserves existing hooks when registering the gate", () => {
     const settingsPath = join(dir, ".claude", "settings.json");
-    const { writeFileSync } = require("node:fs") as typeof import("node:fs");
     writeFileSync(settingsPath, JSON.stringify({
       hooks: { PostToolUse: [{ matcher: "Write", hooks: [{ type: "command", command: "echo existing" }] }] },
     }, null, 2));
