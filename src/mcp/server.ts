@@ -25,6 +25,7 @@ import { handleGetAuditTrail } from "@/tools/get-audit-trail.js";
 import { handleGetSessionInsights } from "@/tools/get-session-insights.js";
 import { handleCheckDrift } from "@/tools/check-drift.js";
 import { handleGetSessionImpact } from "@/tools/get-session-impact.js";
+import { handleGetEffectivenessReport } from "@/tools/get-effectiveness-report.js";
 import { handleGetSessionSummary } from "@/tools/get-session-summary.js";
 import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
 import { handleStartServer, handleStopServer, createServerManager, type ServerManager } from "@/tools/start-server.js";
@@ -526,6 +527,13 @@ export function createMcpServer(
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionImpact(auditBuffer));
+
+  registerTool("get_effectiveness_report", {
+    title: "Get Effectiveness Report",
+    description: "MEASURED lifecycle outcomes (confirmed-fix / recurrence / suppressed rates) as {value, n, 95% CI}, version-stamped. The honest, observed counterpart to get_session_impact's modeled estimate.",
+    inputSchema: {},
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, () => handleGetEffectivenessReport(auditBuffer, options?.lifecycleFsm));
 
   registerTool("get_session_summary", {
     title: "Get Session Summary",
