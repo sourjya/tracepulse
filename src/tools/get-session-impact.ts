@@ -10,23 +10,14 @@
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { AuditBuffer } from "@/store/audit-buffer.js";
+import { WH_PER_1K_TOKENS, CO2_G_PER_WH, ENERGY_MODEL_SOURCES, ESTIMATE_PROVENANCE } from "@/analysis/energy-model.js";
 
 /**
- * Energy constants from published research.
- * - 0.34 Wh per LLM query (ChatGPT avg, June 2025)
- * - ~1,000 tokens per query average
- * - 0.4 gCO2e per Wh (US grid average)
- */
-const WH_PER_1K_TOKENS = 0.34;
-const CO2_G_PER_WH = 0.4;
-
-/**
- * Estimated tokens the agent would have consumed WITHOUT TracePulse
- * for the same task. Based on measured session data:
- * - Manual log reading: ~12,000 tokens per error investigation
- * - TracePulse structured response: ~1,000 tokens per error
- * - Ratio: 12x savings per error-related call
- * - Non-error calls (health, build): ~3x savings
+ * Counterfactual multipliers: an ASSUMPTION of how many tokens the agent would have
+ * spent WITHOUT TracePulse for the same task. These are NOT measured against a control
+ * arm — they are modeled constants (12× for error investigation, 3× for other tools).
+ * Treat every number derived from them as `estimated`, not observed. Replacing these
+ * with an observed per-episode measurement is tracked in TRP-82/TRP-85.
  */
 const ERROR_TOOL_MULTIPLIER = 12;
 const OTHER_TOOL_MULTIPLIER = 3;
@@ -75,7 +66,8 @@ export function handleGetSessionImpact(
         energy_saved_wh: Math.round(energySavedWh * 100) / 100,
         co2_saved_g: Math.round(co2SavedG * 100) / 100,
         equivalent: googleSearches > 0 ? `${googleSearches} Google searches` : "minimal",
-        methodology: "Based on 12x token reduction for error tools, 3x for other tools. Energy: 0.34 Wh/1K tokens (ChatGPT avg). CO2: 0.4 gCO2e/Wh (US grid avg).",
+        provenance: ESTIMATE_PROVENANCE,
+        methodology: `ASSUMED 12× token reduction for error tools, 3× for other tools (not measured against a control arm). ${ENERGY_MODEL_SOURCES}.`,
       }),
     }],
   };

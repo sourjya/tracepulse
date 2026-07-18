@@ -73,8 +73,12 @@ describe("Environmental Report (W1.7)", () => {
     expect(data.total_tool_calls).toBe(10);
     expect(data.total_response_tokens).toBe(10000);
     expect(data.estimated_tokens_saved).toBeGreaterThan(0);
-    expect(data.energy_saved_wh).toBeGreaterThan(0);
+    // Energy uses the reconciled 0.034 Wh/1K constant (TRP-81): 110k saved → 3.74 Wh.
+    expect(data.energy_saved_wh).toBe(3.74);
     expect(data.co2_saved_g).toBeGreaterThan(0);
+    // Modeled figures must be labelled as estimates, not measurements (TRP-81).
+    expect(data.provenance).toContain("estimated");
+    expect(data.methodology).toMatch(/ASSUMED/);
   });
 
   it("returns zero impact for empty session", () => {

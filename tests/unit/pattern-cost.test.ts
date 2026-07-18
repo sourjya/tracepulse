@@ -17,8 +17,12 @@ describe("calculatePatternCost", () => {
 
     expect(cost.total_tokens_wasted).toBe(50000);
     expect(cost.estimated_cost_usd).toBeGreaterThan(0);
-    expect(cost.energy_wh).toBeGreaterThan(0);
-    expect(cost.co2_g).toBeGreaterThan(0);
+    // Reconciled shared constant (TRP-81): 50k tokens → 1.7 Wh → 0.68 g CO₂.
+    expect(cost.energy_wh).toBe(1.7);
+    expect(cost.co2_g).toBe(0.68);
+    // Modeled figures carry a provenance label + citation (TRP-81).
+    expect(cost.provenance).toContain("estimated");
+    expect(cost.sources).toContain("arXiv");
   });
 
   it("returns zero for zero occurrences", () => {
