@@ -61,7 +61,7 @@ function mergeMcpConfig(configPath: string, actions: string[]): void {
       "get_correlated_errors", "get_cross_layer_diagnosis", "run_and_watch",
       "get_health_summary", "get_project_health", "verify_fix", "verify_loop",
       "verify_build", "verify_mcp", "get_bug_patterns", "get_prompt_context",
-      "get_session_insights", "get_session_impact", "get_session_summary",
+      "get_session_insights", "get_session_impact", "get_effectiveness_report", "get_session_summary",
       "get_audit_trail", "get_infra_status", "get_infra_detail", "check_port",
       "check_drift", "get_migration_status", "list_services", "list_probes",
       "start_server", "stop_server", "restart_server", "register_probe",
