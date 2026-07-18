@@ -1,0 +1,10 @@
+#!/bin/bash
+# Pre-commit gate — reject commits that leak private project names into this public repo.
+#
+# `core.hooksPath` points git at `.githooks/` (see package.json `prepare`), which
+# replaces the default `.git/hooks/` dir entirely — so this hook carries forward the
+# leak guard that used to live at `.git/hooks/pre-commit`. Single source of truth is
+# scripts/check-private-refs.sh; this just invokes it. See TRP-77.
+set -euo pipefail
+
+exec "$(git rev-parse --show-toplevel)/scripts/check-private-refs.sh"

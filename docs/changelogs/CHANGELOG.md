@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+- **TRP-77:** Tracked local pre-push gate. `main` isn't branch-protected (no paid GitHub plan), so red CI never blocked a merge. `.githooks/pre-push` now runs `lint → build → test` and blocks the push on failure (human-only bypass: `TRACEPULSE_PUSH_GATE_BYPASS=1`); `.githooks/pre-commit` carries forward the private-name leak guard; a `prepare` script points `core.hooksPath` at `.githooks/` so a fresh clone gets the gate on `npm install`.
+
 ### Fixed
 - **TRP-74:** `tracepulse init --claude` installed `tracepulse-gate.sh` into `.claude/hooks/` but never declared it in a settings file, so Claude Code never ran it — the friction-gradient gate shipped dormant. Init now registers a Bash `PreToolUse` entry in `.claude/settings.json` (deep-merged, idempotent) pointing at the copied gate.
 - **TRP-75:** `tracepulse init --claude` wrote MCP config to `.claude/mcp.json`, a path Claude Code does not read (it reads project-root `.mcp.json` or `~/.claude.json`), so consumers never got the TracePulse MCP server connected. Init now writes to project-root `.mcp.json`, matching the generic branch.

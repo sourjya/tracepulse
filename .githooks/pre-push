@@ -1,0 +1,33 @@
+#!/bin/bash
+# Pre-push gate — block pushing a branch whose lint / build / test is red.
+#
+# GitHub branch protection / required status checks aren't available on this repo
+# (no paid plan), so `main` is unprotected and red CI never blocks a merge. This
+# tracked hook is the deterministic stand-in, mirroring the fleet pattern (local
+# gating scripts). Wired for fresh clones by the `prepare` script in package.json,
+# which points `core.hooksPath` at `.githooks/`. See TRP-77.
+#
+# Human-only emergency bypass (production down / hotfix — never for "the suite is slow"):
+#   TRACEPULSE_PUSH_GATE_BYPASS=1 git push
+set -euo pipefail
+
+if [ "${TRACEPULSE_PUSH_GATE_BYPASS:-}" = "1" ]; then
+  echo "⚠️  pre-push gate bypassed (TRACEPULSE_PUSH_GATE_BYPASS=1)"
+  exit 0
+fi
+
+fail() {
+  echo ""
+  echo "✗ pre-push gate FAILED at: $1"
+  echo "  Push blocked. Fix the failure above, then push again."
+  echo "  Genuine emergency only: TRACEPULSE_PUSH_GATE_BYPASS=1 git push"
+  exit 1
+}
+
+echo "▶ pre-push gate: lint → build → test"
+
+echo "  → lint";  npm run lint  || fail "lint"
+echo "  → build"; npm run build || fail "build"
+echo "  → test";  npm test      || fail "test"
+
+echo "✓ pre-push gate passed"
