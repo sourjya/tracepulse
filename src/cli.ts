@@ -107,8 +107,14 @@ interface InitArgs {
   readonly client: string;
 }
 
+/** Parsed CLI arguments for the report subcommand. */
+interface ReportArgs {
+  readonly command: "report";
+  readonly html: boolean;
+}
+
 /** Union of all valid parsed argument shapes. */
-export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs | DoctorArgs | InitArgs;
+export type ParsedArgs = StartArgs | AttachArgs | ComposeArgs | FlagArgs | StandaloneArgs | AnalyzeArgs | DoctorArgs | InitArgs | ReportArgs;
 
 // ──────────────────────────────────────────────
 // Usage Text
@@ -122,6 +128,7 @@ Usage:
   tracepulse attach --log-file <path> Tail an existing log file
   tracepulse standalone               Tools only - no dev server or log file needed
   tracepulse analyze                  Analyze cross-session bug patterns
+  tracepulse report [--html]          Summarize persisted telemetry (terminal, or a self-contained HTML file)
   tracepulse doctor                   Check installation and environment
   tracepulse init                     Set up TracePulse for your AI tool (auto-detects)
   tracepulse init --claude            Set up for Claude Code specifically
@@ -259,6 +266,10 @@ export function parseArgs(argv: readonly string[]): ParsedArgs | null {
 
   if (subcommand === "doctor") {
     return { command: "doctor" as const };
+  }
+
+  if (subcommand === "report") {
+    return { command: "report" as const, html: args.includes("--html") };
   }
 
   if (subcommand === "init") {
@@ -458,6 +469,32 @@ async function main(): Promise<void> {
     process.stderr.write(formatDoctorOutput(checks) + "\n");
     const failures = checks.filter(c => c.status === "fail").length;
     return process.exit(failures > 0 ? 1 : 0);
+  }
+
+  if (parsed.command === "report") {
+    const { readFileSync, writeFileSync, existsSync } = await import("node:fs");
+    const { buildReportModel, renderReportText, renderReportHtml } = await import("@/tools/report.js");
+    const telemetryPath = ".tracepulse/telemetry.json";
+    if (!existsSync(telemetryPath)) {
+      process.stderr.write("No telemetry yet. Run TracePulse with persistence (default) first — data lands in .tracepulse/telemetry.json.\n");
+      return process.exit(1);
+    }
+    let summary: import("@/persistence/event-journal.js").TelemetrySummary;
+    try {
+      summary = JSON.parse(readFileSync(telemetryPath, "utf8")) as import("@/persistence/event-journal.js").TelemetrySummary;
+    } catch {
+      process.stderr.write("Could not read .tracepulse/telemetry.json (invalid JSON).\n");
+      return process.exit(1);
+    }
+    const model = buildReportModel(summary);
+    if (parsed.html) {
+      const outPath = ".tracepulse/report.html";
+      writeFileSync(outPath, renderReportHtml(model));
+      process.stderr.write(`Wrote ${outPath} — open it in a browser.\n`);
+    } else {
+      process.stderr.write(renderReportText(model) + "\n");
+    }
+    return process.exit(0);
   }
 
   if (parsed.command === "init") {
