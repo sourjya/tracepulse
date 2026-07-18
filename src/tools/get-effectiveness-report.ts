@@ -15,6 +15,7 @@ import type { LifecycleFSM } from "@/store/lifecycle-fsm.js";
 import type { LifecycleMetrics } from "@/store/lifecycle-metrics.js";
 import { computeLifecycleMetrics } from "@/store/lifecycle-metrics.js";
 import { computeEffectivenessReport } from "@/analysis/effectiveness-report.js";
+import { computePerEpisodeCost } from "@/analysis/episode-cost.js";
 import { VERSION } from "@/index.js";
 
 const EMPTY_METRICS: LifecycleMetrics = {
@@ -43,6 +44,8 @@ export function handleGetEffectivenessReport(
   const tpResponseTokensTotal = auditBuffer
     .query(500)
     .reduce((sum, r) => sum + r.response_tokens, 0);
-  const report = computeEffectivenessReport(metrics, { version: VERSION, tpResponseTokensTotal });
+  // Per-episode cost (TRP-82) over all completed episodes; empty block when no FSM.
+  const perEpisodeCost = computePerEpisodeCost(lifecycleFsm ? lifecycleFsm.getAllEpisodes() : []);
+  const report = computeEffectivenessReport(metrics, { version: VERSION, tpResponseTokensTotal, perEpisodeCost });
   return { content: [{ type: "text", text: JSON.stringify(report) }] };
 }

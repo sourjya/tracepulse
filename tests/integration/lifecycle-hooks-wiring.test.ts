@@ -52,6 +52,43 @@ describe("lifecycle hooks wiring (end-to-end)", () => {
     await server.close();
   });
 
+  it("a real investigate→resolve sequence yields a resolved tp-arm episode in get_effectiveness_report (TRP-82)", async () => {
+    const buffer = createRingBuffer();
+    const lifecycleFsm = createLifecycleFSM();
+    const lifecycleHooks = createLifecycleHooks(lifecycleFsm);
+
+    const fp = "fp-episode-82";
+    buffer.push(makeEvent({ level: "error", fingerprint: fp, signal_score: 80 }));
+
+    const server = createMcpServer(buffer, () => true, { lifecycleFsm, lifecycleHooks });
+    const client = await connect(server);
+
+    // Real MCP calls: surface then investigate. The middleware attributes tp tokens and
+    // onErrorInvestigated stamps arm=tp on the active episode.
+    await client.callTool({ name: "get_errors", arguments: {} });
+    await client.callTool({ name: "get_error_context", arguments: { fingerprint: fp } });
+    expect(lifecycleFsm.getState(fp)).toBe("investigated");
+
+    // Complete the lifecycle to a confirmed fix (edit → suppressed → resolved).
+    lifecycleHooks.onFileChanged();
+    lifecycleFsm.transition(fp, "resolution_window_elapsed"); // suppressed — episode ends (arm=tp, tokens frozen)
+    lifecycleHooks.onReExercisedAbsent(fp); // resolved (history upgrade)
+
+    const res = await client.callTool({ name: "get_effectiveness_report", arguments: {} });
+    const report = JSON.parse((res.content as Array<{ type: string; text: string }>)[0].text);
+
+    const cost = report.per_episode_cost;
+    expect(cost.overall.tool_calls.n).toBe(1);
+    expect(cost.overall.tool_calls.value).toBeGreaterThanOrEqual(1);
+    expect(cost.overall.tp_response_tokens.value).toBeGreaterThan(0); // real context tokens attributed
+    // The resolved episode was tp-arm (investigated via TracePulse tools).
+    expect(cost.by_arm.tp.tool_calls.n).toBe(1);
+    expect(cost.by_arm.shell.tool_calls.n).toBe(0);
+
+    await client.close();
+    await server.close();
+  });
+
   it("acknowledge_error advances a surfaced fingerprint to investigated", async () => {
     const buffer = createRingBuffer();
     const lifecycleFsm = createLifecycleFSM();

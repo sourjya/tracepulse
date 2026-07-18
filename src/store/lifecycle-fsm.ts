@@ -21,6 +21,7 @@
 
 import type { LifecycleState } from "@/persistence/journal-types.js";
 import { RESOLUTION_WINDOW_MS } from "@/constants/limits.js";
+import { mergeArm, type Arm } from "@/store/tool-arms.js";
 
 // ──────────────────────────────────────────────
 // Types
@@ -72,9 +73,23 @@ export interface LifecycleFSM {
 
   /**
    * Record a tool call associated with a fingerprint's active episode.
-   * Increments the tool_calls counter. No-op if no active episode exists.
+   * Increments the tool_calls counter and, if an `arm` is given, merges it into the
+   * episode's modality (`none → arm`, distinct arms → `mixed`). No-op if no active
+   * episode exists. TRP-82.
    */
-  recordToolCall(fingerprint: string): void;
+  recordToolCall(fingerprint: string, arm?: "tp" | "shell"): void;
+
+  /**
+   * Add TracePulse response tokens to a fingerprint's active episode (the labelled
+   * cost proxy). No-op if no active episode exists. TRP-82.
+   */
+  attributeTokens(fingerprint: string, tokens: number): void;
+
+  /**
+   * Get every completed episode across all fingerprints (excludes active episodes).
+   * Input for the per-episode effectiveness metrics. TRP-82.
+   */
+  getAllEpisodes(): Episode[];
 
   /**
    * Get the number of active resolution timers.
@@ -94,6 +109,22 @@ export interface Episode {
   readonly state: LifecycleState;
   readonly tool_calls: number;
   readonly outcome?: "suppressed" | "resolved" | "recurred";
+  /**
+   * Modality: how this episode was driven — `tp` (TracePulse investigation tools),
+   * `shell` (`run_and_watch`/`verify_*`), `mixed`, or `none`. TRP-82.
+   */
+  readonly arm: Arm;
+  /**
+   * TracePulse's own estimated response-token volume attributed to this episode.
+   * A labelled proxy for investigation cost (not the agent's real tokens — see TRP-83).
+   */
+  readonly tp_response_tokens: number;
+  /**
+   * When the episode entered `edit_observed` (first fix signal). Enables the
+   * effort proxy `time_to_edit_ms = edit_observed_at - started_at`, which excludes
+   * the auto-suppress resolution-window timer that dominates terminal duration. TRP-82 (F2).
+   */
+  readonly edit_observed_at?: number;
 }
 
 // ──────────────────────────────────────────────
@@ -149,6 +180,9 @@ interface MutableEpisode {
   state: LifecycleState;
   tool_calls: number;
   outcome?: "suppressed" | "resolved" | "recurred";
+  arm: Arm;
+  tp_response_tokens: number;
+  edit_observed_at?: number;
 }
 
 /**
@@ -213,6 +247,8 @@ export function createLifecycleFSM(): LifecycleFSM {
       started_at: Date.now(),
       state: "surfaced",
       tool_calls: 0,
+      arm: "none",
+      tp_response_tokens: 0,
     });
   }
 
@@ -300,6 +336,10 @@ export function createLifecycleFSM(): LifecycleFSM {
         const episode = activeEpisodes.get(fingerprint);
         if (episode) {
           episode.state = nextState;
+          // Stamp the first-fix-signal time for the effort metric (TRP-82 F2)
+          if (nextState === "edit_observed") {
+            episode.edit_observed_at = Date.now();
+          }
         }
       }
 
@@ -336,11 +376,29 @@ export function createLifecycleFSM(): LifecycleFSM {
       return episodeHistory.get(fingerprint) ?? [];
     },
 
-    recordToolCall(fingerprint: string): void {
+    recordToolCall(fingerprint: string, arm?: "tp" | "shell"): void {
       const episode = activeEpisodes.get(fingerprint);
       if (episode) {
         episode.tool_calls++;
+        if (arm) {
+          episode.arm = mergeArm(episode.arm, arm);
+        }
       }
+    },
+
+    attributeTokens(fingerprint: string, tokens: number): void {
+      const episode = activeEpisodes.get(fingerprint);
+      if (episode && tokens > 0) {
+        episode.tp_response_tokens += tokens;
+      }
+    },
+
+    getAllEpisodes(): Episode[] {
+      const all: Episode[] = [];
+      for (const history of episodeHistory.values()) {
+        all.push(...history);
+      }
+      return all;
     },
 
     getActiveTimerCount(): number {

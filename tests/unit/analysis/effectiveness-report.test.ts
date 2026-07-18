@@ -7,7 +7,11 @@
 
 import { describe, it, expect } from "vitest";
 import { wilsonInterval, computeEffectivenessReport } from "@/analysis/effectiveness-report.js";
+import { computePerEpisodeCost } from "@/analysis/episode-cost.js";
+import type { Episode } from "@/store/lifecycle-fsm.js";
 import type { LifecycleMetrics } from "@/store/lifecycle-metrics.js";
+
+const EMPTY_COST = computePerEpisodeCost([]);
 
 function metrics(overrides: Partial<LifecycleMetrics> = {}): LifecycleMetrics {
   return {
@@ -48,17 +52,17 @@ function high(x: { high: number }) { return x.high; }
 
 describe("computeEffectivenessReport", () => {
   it("reports zeros with empty CIs and n=0 for no episodes", () => {
-    const r = computeEffectivenessReport(metrics(), { version: "9.9.9", tpResponseTokensTotal: 0 });
+    const r = computeEffectivenessReport(metrics(), { version: "9.9.9", tpResponseTokensTotal: 0, perEpisodeCost: EMPTY_COST });
     expect(r.total_episodes).toBe(0);
     expect(r.confirmed_fix_rate).toEqual({ value: 0, n: 0, ci_low: 0, ci_high: 0 });
     expect(r.tp_version).toBe("9.9.9");
     expect(r.provenance).toContain("measured");
   });
 
-  it("computes rates with n and CIs from lifecycle counts", () => {
+  it("computes rates with n and CIs from lifecycle counts (existing fields unchanged)", () => {
     const r = computeEffectivenessReport(
       metrics({ total_episodes: 10, resolved_count: 6, recurred_count: 1, suppressed_count: 3, mean_time_to_fix: 4200 }),
-      { version: "1.0.0", tpResponseTokensTotal: 12345 },
+      { version: "1.0.0", tpResponseTokensTotal: 12345, perEpisodeCost: EMPTY_COST },
     );
     expect(r.total_episodes).toBe(10);
     expect(r.confirmed_fix_rate.value).toBe(0.6);
@@ -70,5 +74,19 @@ describe("computeEffectivenessReport", () => {
     expect(r.mean_time_to_fix_ms).toBe(4200);
     expect(r.counts).toEqual({ suppressed: 3, resolved: 6, recurred: 1 });
     expect(r.tp_response_tokens_total).toBe(12345);
+  });
+
+  it("embeds the per_episode_cost block (TRP-82)", () => {
+    const episodes: Episode[] = [
+      { fingerprint: "fp-1", started_at: 0, ended_at: 500, state: "resolved", tool_calls: 4, outcome: "resolved", arm: "tp", tp_response_tokens: 180, edit_observed_at: 120 },
+    ];
+    const r = computeEffectivenessReport(
+      metrics({ total_episodes: 1, resolved_count: 1 }),
+      { version: "1.0.0", tpResponseTokensTotal: 180, perEpisodeCost: computePerEpisodeCost(episodes) },
+    );
+    expect(r.per_episode_cost.provenance).toBe("observational (no control arm)");
+    expect(r.per_episode_cost.overall.tool_calls.value).toBe(4);
+    expect(r.per_episode_cost.overall.time_to_edit_ms.value).toBe(120);
+    expect(r.per_episode_cost.by_arm.tp.tool_calls.n).toBe(1);
   });
 });

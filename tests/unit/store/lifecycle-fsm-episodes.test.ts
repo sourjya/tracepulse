@@ -260,4 +260,114 @@ describe("lifecycle-fsm episode tracking", () => {
       expect(fsm.getEpisodeHistory("fp-1")).toHaveLength(0);
     });
   });
+
+  // ──────────────────────────────────────────────
+  // TRP-82: episode cost accounting + modality (arm)
+  // ──────────────────────────────────────────────
+
+  describe("TRP-82: cost and modality fields", () => {
+    it("a started episode initialises arm=none, tp_response_tokens=0, no edit_observed_at (REQ-1)", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.arm).toBe("none");
+      expect(ep.tp_response_tokens).toBe(0);
+      expect(ep.edit_observed_at).toBeUndefined();
+    });
+
+    it("stamps edit_observed_at on the edit_observed transition, not before (F2)", () => {
+      vi.setSystemTime(1000);
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.transition("fp-1", "investigated");
+      expect(fsm.getEpisode("fp-1")!.edit_observed_at).toBeUndefined();
+      vi.setSystemTime(2500);
+      fsm.transition("fp-1", "file_changed");
+      expect(fsm.getEpisode("fp-1")!.edit_observed_at).toBe(2500);
+    });
+
+    it("recordToolCall(fp, 'tp') sets arm=tp and still counts (REQ-1)", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.recordToolCall("fp-1", "tp");
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.arm).toBe("tp");
+      expect(ep.tool_calls).toBe(1);
+    });
+
+    it("recordToolCall(fp, 'shell') sets arm=shell", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.recordToolCall("fp-1", "shell");
+      expect(fsm.getEpisode("fp-1")!.arm).toBe("shell");
+    });
+
+    it("tp then shell promotes arm to mixed", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.recordToolCall("fp-1", "tp");
+      fsm.recordToolCall("fp-1", "shell");
+      expect(fsm.getEpisode("fp-1")!.arm).toBe("mixed");
+    });
+
+    it("recordToolCall without an arm counts but leaves arm unchanged", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.recordToolCall("fp-1", "tp");
+      fsm.recordToolCall("fp-1"); // neutral tool — count only
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.arm).toBe("tp");
+      expect(ep.tool_calls).toBe(2);
+    });
+
+    it("attributeTokens accumulates on the active episode (REQ-1)", () => {
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.attributeTokens("fp-1", 120);
+      fsm.attributeTokens("fp-1", 30);
+      expect(fsm.getEpisode("fp-1")!.tp_response_tokens).toBe(150);
+    });
+
+    it("attributeTokens is a no-op with no active episode (before start or after end)", () => {
+      fsm.attributeTokens("nope", 100); // no active episode — must not throw
+      expect(fsm.getEpisode("nope")).toBeNull();
+
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.transition("fp-1", "investigated");
+      fsm.transition("fp-1", "file_changed");
+      fsm.transition("fp-1", "resolution_window_elapsed"); // ended (suppressed)
+      fsm.attributeTokens("fp-1", 999);
+      expect(fsm.getEpisode("fp-1")!.tp_response_tokens).toBe(0);
+    });
+
+    it("an ended episode freezes arm, tokens, and edit_observed_at (REQ-1)", () => {
+      vi.setSystemTime(1000);
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.recordToolCall("fp-1", "tp");
+      fsm.attributeTokens("fp-1", 200);
+      fsm.transition("fp-1", "investigated");
+      vi.setSystemTime(2000);
+      fsm.transition("fp-1", "file_changed");
+      vi.setSystemTime(4000);
+      fsm.transition("fp-1", "resolution_window_elapsed");
+
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.arm).toBe("tp");
+      expect(ep.tp_response_tokens).toBe(200);
+      expect(ep.edit_observed_at).toBe(2000);
+      expect(ep.outcome).toBe("suppressed");
+    });
+
+    it("getAllEpisodes returns completed episodes across fingerprints, excluding active (REQ-3 input)", () => {
+      // fp-1 completes → suppressed
+      fsm.transition("fp-1", "surfaced_to_agent");
+      fsm.transition("fp-1", "investigated");
+      fsm.transition("fp-1", "file_changed");
+      fsm.transition("fp-1", "resolution_window_elapsed");
+      // fp-2 completes → recurred
+      fsm.transition("fp-2", "surfaced_to_agent");
+      fsm.transition("fp-2", "investigated");
+      fsm.transition("fp-2", "file_changed");
+      fsm.transition("fp-2", "recurred");
+      // fp-3 still active — excluded
+      fsm.transition("fp-3", "surfaced_to_agent");
+
+      const all = fsm.getAllEpisodes();
+      expect(all).toHaveLength(2);
+      expect(all.map((e) => e.fingerprint).sort()).toEqual(["fp-1", "fp-2"]);
+    });
+  });
 });

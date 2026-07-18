@@ -269,4 +269,47 @@ describe("lifecycle-hooks", () => {
       expect(fsm.getState("fp-2")).toBe("surfaced"); // unchanged
     });
   });
+
+  // ──────────────────────────────────────────────
+  // TRP-82: modality (arm) stamping
+  // ──────────────────────────────────────────────
+
+  describe("TRP-82: arm stamping", () => {
+    it("onErrorInvestigated stamps the active episode arm as tp", () => {
+      hooks.onErrorsSurfaced(["fp-1"]);
+      hooks.onErrorInvestigated("fp-1");
+      expect(fsm.getEpisode("fp-1")!.arm).toBe("tp");
+    });
+
+    it("onCommandRun stamps arm shell on an ACTIVE episode before it recurs (→ mixed)", () => {
+      // Establish the command→fingerprint mapping
+      hooks.onCommandRun("npm test", ["fp-1"]);
+      // Surface + investigate (tp) + edit → active episode in edit_observed
+      hooks.onErrorsSurfaced(["fp-1"]);
+      hooks.onErrorInvestigated("fp-1");
+      hooks.onFileChanged();
+      expect(fsm.getState("fp-1")).toBe("edit_observed");
+      // Re-run the command; fp-1 still present → recurred. Episode is active → shell stamped first.
+      hooks.onCommandRun("npm test", ["fp-1"]);
+
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.outcome).toBe("recurred");
+      expect(ep.arm).toBe("mixed"); // tp (investigated) + shell (re-run)
+    });
+
+    it("onCommandRun does NOT re-stamp arm on an already-ended episode (documented limit F6)", () => {
+      // tp investigation → suppressed (episode ends with arm=tp), then a shell re-exercise resolves it
+      hooks.onCommandRun("npm test", ["fp-1"]);
+      hooks.onErrorsSurfaced(["fp-1"]);
+      hooks.onErrorInvestigated("fp-1"); // tp
+      hooks.onFileChanged();
+      fsm.transition("fp-1", "resolution_window_elapsed"); // suppressed — episode ends (arm=tp)
+      hooks.onCommandRun("npm test", []); // fp-1 absent → re_exercised_absent → resolved (history upgrade)
+
+      const ep = fsm.getEpisode("fp-1")!;
+      expect(ep.outcome).toBe("resolved");
+      // Episode already ended at suppression; the confirming shell re-exercise does not re-tag it.
+      expect(ep.arm).toBe("tp");
+    });
+  });
 });
