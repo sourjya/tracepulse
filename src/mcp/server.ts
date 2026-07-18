@@ -114,6 +114,7 @@ export function handleGetErrors(
   errorLifecycle?: ErrorLifecycle,
   patternAnalyzer?: PatternAnalyzer,
   changedFiles?: readonly string[],
+  lifecycleHooks?: import("@/store/lifecycle-hooks.js").LifecycleHooks,
 ): CallToolResult {
   const validation = validateEventFilters(args);
   if (!validation.valid) {
@@ -175,6 +176,11 @@ export function handleGetErrors(
 
   // Inject loop warning if detected (W1.6)
   const loopWarning = args._auditBuffer ? (args._auditBuffer as AuditBuffer).detectLoop() : null;
+
+  // Advance the lifecycle FSM: these fingerprints have now been surfaced to the agent (TRP-79).
+  if (lifecycleHooks && enriched.length > 0) {
+    lifecycleHooks.onErrorsSurfaced(enriched.map((e) => e.fingerprint));
+  }
 
   return jsonResult(addEmptyDiagnostics("get_errors", {
     errors: enriched,
@@ -301,6 +307,7 @@ export function createMcpServer(
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
     lifecycleFsm?: import("@/store/lifecycle-fsm.js").LifecycleFSM;
+    lifecycleHooks?: import("@/store/lifecycle-hooks.js").LifecycleHooks;
     journalBridge?: { journalToolCall(tool: string, fingerprint?: string): void };
     patternAnalyzer?: PatternAnalyzer;
     serverManager?: ServerManager;
@@ -350,7 +357,7 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer, options?.getChangedFiles?.()));
+  }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer, options?.getChangedFiles?.(), options?.lifecycleHooks));
 
   registerTool("get_server_logs", {
     title: "Get Server Logs",
@@ -412,6 +419,8 @@ export function createMcpServer(
     const fp = args.fingerprint as string;
     if (!fp) return errorResult("fingerprint is required");
     auditBuffer.acknowledge(fp);
+    // Acknowledging an error counts as investigating it: surfaced → investigated (TRP-79).
+    options?.lifecycleHooks?.onErrorInvestigated(fp);
     return jsonResult({ acknowledged: fp, message: "Error excluded from future get_errors results." });
   });
 
@@ -554,7 +563,13 @@ export function createMcpServer(
       idempotentHint: true,
       openWorldHint: false,
     },
-  }, (args) => handleGetErrorContext(buffer, args as Record<string, unknown>));
+  }, (args) => {
+    const result = handleGetErrorContext(buffer, args as Record<string, unknown>);
+    // Investigating a specific error advances its lifecycle: surfaced → investigated (TRP-79).
+    const fp = (args as Record<string, unknown>).fingerprint;
+    if (typeof fp === "string" && fp) options?.lifecycleHooks?.onErrorInvestigated(fp);
+    return result;
+  });
 
   registerTool("get_timeline", {
     title: "Get Timeline",
@@ -687,7 +702,12 @@ export function createMcpServer(
       max_tokens: z.number().optional().describe("Token budget for the context (default 3000)."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  }, (args) => handleGetPromptContext(buffer, args as Record<string, unknown>, options?.cwd));
+  }, (args) => {
+    const result = handleGetPromptContext(buffer, args as Record<string, unknown>, options?.cwd);
+    const fp = (args as Record<string, unknown>).fingerprint;
+    if (typeof fp === "string" && fp) options?.lifecycleHooks?.onErrorInvestigated(fp);
+    return result;
+  });
 
   registerTool("verify_build", {
     title: "Verify Build",
@@ -739,7 +759,7 @@ export function createMcpServer(
       inherit_env: z.boolean().optional().describe("Opt out of secret env scrubbing and inherit the full environment. Use only when a command needs vars TracePulse would otherwise drop."),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
-  }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist, buffer));
+  }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist, buffer, options?.lifecycleHooks));
 
   registerTool("get_requests", {
     title: "Get Requests",
