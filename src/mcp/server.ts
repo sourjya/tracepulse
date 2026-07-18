@@ -30,6 +30,7 @@ import { handleGetBugPatterns } from "@/tools/get-bug-patterns.js";
 import { handleStartServer, handleStopServer, createServerManager, type ServerManager } from "@/tools/start-server.js";
 import { LAYER_2_TOOLS } from "@/mcp/tool-layers.js";
 import { registerSkillResources } from "@/mcp/register-resources.js";
+import { instrumentHandler } from "@/mcp/tool-telemetry.js";
 import type { PatternAnalyzer } from "@/analysis/pattern-analyzer.js";
 import { annotateWithPatterns } from "@/analysis/pattern-injector.js";
 import { loadClusterConfig, createToolRegistry, createGatewayHandler } from "@/clusters/gateway.js";
@@ -300,6 +301,7 @@ export function createMcpServer(
     perfBaseline?: PerfBaseline;
     errorLifecycle?: ErrorLifecycle;
     lifecycleFsm?: import("@/store/lifecycle-fsm.js").LifecycleFSM;
+    journalBridge?: { journalToolCall(tool: string, fingerprint?: string): void };
     patternAnalyzer?: PatternAnalyzer;
     serverManager?: ServerManager;
     detectedStacks?: readonly import("@/diagnostics/project-detector.js").ProjectStack[];
@@ -317,7 +319,19 @@ export function createMcpServer(
   const auditBuffer = options?.auditBuffer ?? createAuditBuffer();
   const perfBaseline = options?.perfBaseline ?? createPerfBaseline();
 
-  server.registerTool("get_errors", {
+  // Telemetry middleware (TRP-78): every tool call is recorded to the audit buffer
+  // and journal via `registerTool`, so get_session_impact / get_audit_trail / the
+  // journal rollup read real data instead of an empty buffer.
+  const rawRegister = server.registerTool.bind(server);
+  const registerTool = (name: string, config: any, handler: (...args: any[]) => CallToolResult | Promise<CallToolResult>): void => {
+    rawRegister(
+      name,
+      config,
+      instrumentHandler(name, handler, { auditBuffer, journalBridge: options?.journalBridge }) as never,
+    );
+  };
+
+  registerTool("get_errors", {
     title: "Get Errors",
     description:
       "Get recent error and warning events sorted by signal_score descending.",
@@ -338,7 +352,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetErrors(buffer, { ...args as Record<string, unknown>, _auditBuffer: auditBuffer }, options?.errorLifecycle, options?.patternAnalyzer, options?.getChangedFiles?.()));
 
-  server.registerTool("get_server_logs", {
+  registerTool("get_server_logs", {
     title: "Get Server Logs",
     description:
       "Get recent log events at any severity level sorted by timestamp descending.",
@@ -357,7 +371,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetServerLogs(buffer, args as Record<string, unknown>));
 
-  server.registerTool("get_runtime_status", {
+  registerTool("get_runtime_status", {
     title: "Get Runtime Status",
     description: "Quick health check - connection state, error count, last error time.",
     annotations: {
@@ -373,7 +387,7 @@ export function createMcpServer(
     options?.frontendBuffer?.size(),
   ));
 
-  server.registerTool("clear_errors", {
+  registerTool("clear_errors", {
     title: "Clear Errors",
     description: "Clear events from the buffer. Pass fingerprint to clear a specific error, or omit to clear all.",
     inputSchema: {
@@ -387,7 +401,7 @@ export function createMcpServer(
     },
   }, (args) => handleClearErrors(buffer, args as Record<string, unknown>));
 
-  server.registerTool("acknowledge_error", {
+  registerTool("acknowledge_error", {
     title: "Acknowledge Error",
     description: "Mark an error as investigated. Acknowledged errors are excluded from get_errors results. Saves tokens by preventing re-investigation.",
     inputSchema: {
@@ -403,7 +417,7 @@ export function createMcpServer(
 
   // ── Phase 2 Tools ──
 
-  server.registerTool("watch_for_errors", {
+  registerTool("watch_for_errors", {
     title: "Watch For Errors",
     description:
       "Watch N seconds for new errors after a code change. Returns events + hot_reload_detected.",
@@ -419,7 +433,7 @@ export function createMcpServer(
     },
   }, (args) => handleWatchForErrors(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
-  server.registerTool("get_build_errors", {
+  registerTool("get_build_errors", {
     title: "Get Build Errors",
     description:
       "Get current build/compilation errors (TypeScript, ESLint, Vite/webpack). Returns only errors with source 'build-error'.",
@@ -434,7 +448,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetBuildErrors(buffer, args as Record<string, unknown>));
 
-  server.registerTool("get_error_clusters", {
+  registerTool("get_error_clusters", {
     title: "Get Error Clusters",
     description:
       "Group errors by type + module path. See patterns across the codebase.",
@@ -449,7 +463,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetErrorClusters(buffer, args as Record<string, unknown>));
 
-  server.registerTool("get_migration_status", {
+  registerTool("get_migration_status", {
     title: "Get Migration Status",
     description:
       "Check or apply database migrations. Auto-detects alembic/prisma/django/knex. Pass apply=true to run pending migrations.",
@@ -465,7 +479,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetMigrationStatus(args as Record<string, unknown>, options?.cwd ?? process.cwd()));
 
-  server.registerTool("get_audit_trail", {
+  registerTool("get_audit_trail", {
     title: "Get Audit Trail",
     description:
       "Review your own MCP tool usage this session. Shows which tools were called, when, with what params, and response sizes. Use to optimize your workflow.",
@@ -481,7 +495,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetAuditTrail(auditBuffer, args as Record<string, unknown>));
 
-  server.registerTool("get_session_insights", {
+  registerTool("get_session_insights", {
     title: "Get Session Insights",
     description:
       "Analyze agent effectiveness: uninvestigated errors, verification gaps, tool usage patterns, parser stats. Use at end of session.",
@@ -489,7 +503,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionInsights(buffer, auditBuffer, options?.lifecycleFsm));
 
-  server.registerTool("check_drift", {
+  registerTool("check_drift", {
     title: "Check Drift",
     description:
       "Check for env, dependency, and migration drift in one call. Detects missing .env vars, lock files, and migration frameworks.",
@@ -497,21 +511,21 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleCheckDrift({ cwd: options?.cwd ?? process.cwd() }));
 
-  server.registerTool("get_session_impact", {
+  registerTool("get_session_impact", {
     title: "Get Session Impact",
     description: "Environmental report: tokens saved, energy saved (Wh), CO2 saved (g). Shows the impact of using TracePulse this session.",
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionImpact(auditBuffer));
 
-  server.registerTool("get_session_summary", {
+  registerTool("get_session_summary", {
     title: "Get Session Summary",
     description: "Compact session manifest: errors seen/acknowledged/pending, build status, tool count. ~200 tokens. Use after context compaction.",
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetSessionSummary(buffer, auditBuffer));
 
-  server.registerTool("get_perf_baseline", {
+  registerTool("get_perf_baseline", {
     title: "Get Performance Baseline",
     description:
       "Per-endpoint response time percentiles (P50, P95, max) from HTTP access logs. Use to detect performance regressions after code changes.",
@@ -527,7 +541,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetPerfBaseline(perfBaseline, args as Record<string, unknown>));
 
-  server.registerTool("get_error_context", {
+  registerTool("get_error_context", {
     title: "Get Error Context",
     description:
       "Deep-dive into a specific error by fingerprint. Returns the full error, surrounding logs (±5s), and occurrence count.",
@@ -542,7 +556,7 @@ export function createMcpServer(
     },
   }, (args) => handleGetErrorContext(buffer, args as Record<string, unknown>));
 
-  server.registerTool("get_timeline", {
+  registerTool("get_timeline", {
     title: "Get Timeline",
     description:
       "Get a unified chronological stream of ALL events in a time window. Use for full situational awareness.",
@@ -563,7 +577,7 @@ export function createMcpServer(
 
   // ── Phase 3 Tools (always registered) ──
 
-  server.registerTool("list_services", {
+  registerTool("list_services", {
     title: "List Services",
     description: "List all monitored services with status, error count, and last activity.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -573,7 +587,7 @@ export function createMcpServer(
 
   // ── Phase 4 Tools (always registered) ──
 
-  server.registerTool("get_correlated_errors", {
+  registerTool("get_correlated_errors", {
     title: "Get Correlated Errors",
     description: "Match browser HTTP failures with backend stack traces. Returns paired errors with confidence scores.",
     inputSchema: { url: z.string().optional().describe("Filter by URL substring") },
@@ -584,7 +598,7 @@ export function createMcpServer(
 
   // ── Phase 5 Tools (always registered) ──
 
-  server.registerTool("get_new_errors", {
+  registerTool("get_new_errors", {
     title: "Get New Errors",
     description: "Get only errors with fingerprints not seen in previous sessions. Use `since` (Unix ms) to scope to a specific time window — e.g., pass the timestamp from when a smoke test started to see only errors that appeared during that test run.",
     inputSchema: {
@@ -596,7 +610,7 @@ export function createMcpServer(
     ? handleGetNewErrors(buffer, options.fingerprintHistory, args as Record<string, unknown>)
     : errorResult("get_new_errors requires --persist flag for cross-session fingerprint tracking"));
 
-  server.registerTool("get_error_trends", {
+  registerTool("get_error_trends", {
     title: "Get Error Trends",
     description: "Cross-session frequency and history for a specific error fingerprint.",
     inputSchema: { fingerprint: z.string().describe("The fingerprint to look up") },
@@ -605,7 +619,7 @@ export function createMcpServer(
     ? handleGetErrorTrends(options.fingerprintHistory, args as Record<string, unknown>)
     : errorResult("get_error_trends requires --persist flag for cross-session fingerprint tracking"));
 
-  server.registerTool("correlate_with_diff", {
+  registerTool("correlate_with_diff", {
     title: "Correlate With Diff",
     description:
       "Link recent errors to uncommitted git changes. Shows which errors may be caused by your recent edits.",
@@ -617,7 +631,7 @@ export function createMcpServer(
     },
   }, () => handleCorrelateWithDiff(buffer, options?.cwd ?? process.cwd()));
 
-  server.registerTool("get_cross_layer_diagnosis", {
+  registerTool("get_cross_layer_diagnosis", {
     title: "Get Cross-Layer Diagnosis",
     description:
       "Cross-layer failure diagnosis. Correlates backend logs, frontend errors, git state, and process state to identify root causes that span multiple layers.",
@@ -633,14 +647,14 @@ export function createMcpServer(
     buffer.lastBuildAt,
   ));
 
-  server.registerTool("get_health_summary", {
+  registerTool("get_health_summary", {
     title: "Get Health Summary",
     description:
       "One-line health check: error count, warning count, total events, uptime. Use instead of calling get_runtime_status + get_errors + get_server_logs separately.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetHealthSummary(buffer, getConnected));
 
-  server.registerTool("verify_fix", {
+  registerTool("verify_fix", {
     title: "Verify Fix",
     description:
       "Post-fix check: watch + build + errors in one call. Returns pass/fail verdict.",
@@ -651,7 +665,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyFix(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
-  server.registerTool("verify_loop", {
+  registerTool("verify_loop", {
     title: "Verify Loop",
     description:
       "Composite fix verification: checks new errors, pinned fingerprint resolved, build clean, HMR detected. Returns confidence-scored verdict (high/medium/low). Collapses 5-7 calls into 1.",
@@ -664,7 +678,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleVerifyLoop(buffer, args as Record<string, unknown>));
 
-  server.registerTool("get_prompt_context", {
+  registerTool("get_prompt_context", {
     title: "Get Prompt Context",
     description:
       "Pre-assembled reasoning packet for an error: message + stack + surrounding logs + file context. Token-budgeted. One call instead of 4-5.",
@@ -675,7 +689,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleGetPromptContext(buffer, args as Record<string, unknown>, options?.cwd));
 
-  server.registerTool("verify_build", {
+  registerTool("verify_build", {
     title: "Verify Build",
     description:
       "Type-check + build + runtime error check in one call. Replaces 3 separate tool calls.",
@@ -688,7 +702,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleVerifyBuild(buffer, args as Record<string, unknown>, options?.isAttachMode));
 
-  server.registerTool("wait_for_build", {
+  registerTool("wait_for_build", {
     title: "Wait For Build",
     description:
       "Block until next build/hot-reload completes. Event-driven, no polling.",
@@ -698,7 +712,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, (args) => handleWaitForBuild(buffer, args as Record<string, unknown>));
 
-  server.registerTool("wait_for_event", {
+  registerTool("wait_for_event", {
     title: "Wait For Event",
     description:
       "Block until the next event of a specific type arrives. Types: error, warning, build, crash, any.",
@@ -712,7 +726,7 @@ export function createMcpServer(
   // Build stack-aware allowlist for run_and_watch (M21 Phase 2)
   const allowlist = options?.detectedStacks ? buildAllowlist(options.detectedStacks) : undefined;
 
-  server.registerTool("run_and_watch", {
+  registerTool("run_and_watch", {
     title: "Run And Watch",
     description:
       "Run a command, parse output through 25 parsers, return structured pass/fail results. Use INSTEAD OF shell for tests, builds, and linters. If timeout occurs, increase timeout_seconds (e.g., timeout_seconds: 120 for large suites). Never fall back to shell for commands that produce pass/fail output.",
@@ -727,7 +741,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleRunAndWatch(args as Record<string, unknown>, allowlist, buffer));
 
-  server.registerTool("get_requests", {
+  registerTool("get_requests", {
     title: "Get Requests",
     description:
       "Get recent HTTP requests from access logs. Filter by URL path and status code. Shows method, path, status, and timing.",
@@ -739,21 +753,21 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleGetRequests(buffer, args as Record<string, unknown>));
 
-  server.registerTool("restart_server", {
+  registerTool("restart_server", {
     title: "Restart Server",
     description:
       "Kill and respawn the dev server process. Only works in start mode. Use after installing dependencies, changing config, or when the server is stuck.",
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
   }, () => handleRestartServer(options?.restartFn ?? null, buffer));
 
-  server.registerTool("get_infra_status", {
+  registerTool("get_infra_status", {
     title: "Get Infrastructure Status",
     description:
       "Summary of all discovered backend services (databases, Redis, queues) with connectivity status. Reads from .env files, probes every 60s.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, () => handleGetInfraStatus(options?.infraMonitor ?? createNoOpInfraMonitor()));
 
-  server.registerTool("get_infra_detail", {
+  registerTool("get_infra_detail", {
     title: "Get Infrastructure Detail",
     description:
       "Detailed status for a specific infrastructure service including connection history. Use after get_infra_status to investigate an unreachable service.",
@@ -766,7 +780,7 @@ export function createMcpServer(
     args as Record<string, unknown>,
   ));
 
-  server.registerTool("check_port", {
+  registerTool("check_port", {
     title: "Check Port",
     description: "Check if TCP port(s) are available or in use on localhost. Accepts single port or array.",
     inputSchema: {
@@ -776,7 +790,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, (args) => handleCheckPort(args as Record<string, unknown>));
 
-  server.registerTool("free_port", {
+  registerTool("free_port", {
     title: "Free Port",
     description:
       "Kill the process occupying a port. Use when start_server fails because a port is in use from a crashed previous session. Do not use shell with lsof/kill — this tool does it safely.",
@@ -787,7 +801,7 @@ export function createMcpServer(
   }, (args) => handleFreePort(args as Record<string, unknown>));
 
 
-  server.registerTool("get_project_health", {
+  registerTool("get_project_health", {
     title: "Get Project Health",
     description:
       "Composite health check: server status + infrastructure connectivity + error count + build status in one call. Use as the first call in any debugging session.",
@@ -800,7 +814,7 @@ export function createMcpServer(
     options?.patternAnalyzer,
   ));
 
-  server.registerTool("verify_mcp", {
+  registerTool("verify_mcp", {
     title: "Verify MCP Server",
     description:
       "Test that an MCP server starts and responds to the initialize handshake. Sends the same JSON-RPC message that Kiro/Claude/Cursor sends on connect. Use after changing MCP server code, imports, or dependencies.",
@@ -815,7 +829,7 @@ export function createMcpServer(
 
   const probeManager = options?.probeManager ?? createProbeManager();
 
-  server.registerTool("register_probe", {
+  registerTool("register_probe", {
     title: "Register Probe",
     description:
       "Register a health probe for a critical endpoint. TP will check it periodically and alert on failure. Use after building a new API route.",
@@ -831,7 +845,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   }, (args) => handleRegisterProbe(probeManager, args as Record<string, unknown>));
 
-  server.registerTool("list_probes", {
+  registerTool("list_probes", {
     title: "List Probes",
     description:
       "List all registered health probes with their latest results (pass/fail/error).",
@@ -841,7 +855,7 @@ export function createMcpServer(
 
   // ── Bug Pattern Detection (M20) ──
 
-  server.registerTool("get_bug_patterns", {
+  registerTool("get_bug_patterns", {
     title: "Get Bug Patterns",
     description:
       "Analyze cross-session error patterns: recurring bugs, velocity changes, error chains, flaky errors, regressions. Requires persistence (default).",
@@ -854,7 +868,7 @@ export function createMcpServer(
 
   const serverManager = options?.serverManager ?? createServerManager();
 
-  server.registerTool("start_server", {
+  registerTool("start_server", {
     title: "Start Server",
     description:
       "Start a dev server for live error monitoring. Pre-validates the command and returns diagnostics if invalid. Use when TracePulse started without a server command. On failure, use run_and_watch with the same command to see full error output — do not fall back to shell.",
@@ -869,7 +883,7 @@ export function createMcpServer(
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   }, (args) => handleStartServer(serverManager, args as Record<string, unknown>));
 
-  server.registerTool("stop_server", {
+  registerTool("stop_server", {
     title: "Stop Server",
     description:
       "Stop a running dev server. Sends SIGTERM, waits, then SIGKILL if needed.",
@@ -940,7 +954,7 @@ export function createMcpServer(
 
     // Register 7 gateway tools on the MCP server
     for (const cluster of clusterConfig.clusters) {
-      server.registerTool(cluster.gateway, {
+      registerTool(cluster.gateway, {
         title: cluster.gateway,
         description: cluster.description,
         inputSchema: {
