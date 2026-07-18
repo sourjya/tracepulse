@@ -37,6 +37,7 @@ Last updated: 2026-05-02
 
 | Document | Date | Summary | Roadmap Items Derived |
 |----------|------|---------|----------------------|
+| [Telemetry & Savings Measurement](telemetry-savings-measurement.md) | 2026-07-18 | The audit buffer, lifecycle FSM, and journal rollup are built + tested but never wired into the live tool-call path — telemetry emits zeros and savings numbers are asserted, not measured. Phased fix (wire existing code first) + an on-demand HTML reporting surface. | TRP-73 child tickets 1-9 (telemetry wiring, honest constants, episode segmentation, OTLP receiver, effectiveness report, holdout, `tracepulse report`) |
 | [Advanced Token Savings Research](tracepulse-advanced-token-savings-research.md) | 2026-05-02 | 12 dimensions, 40-80% additional savings. Tool Attention, delta responses, loop detection, semantic compression, push notifications. | M17 (Wave 1 quick wins), M18 (Wave 2 medium effort) |
 | [Operations & Token Savings Report](tracepulse-operations-and-token-savings.md) | 2026-05-02 | Full feature inventory, 6 token saving mechanisms, 90.6% savings analysis. | Demo designs, marketing metrics |
 | [Token Savings Research Prompt](token-savings-research-prompt.md) | 2026-05-02 | 12-dimension research prompt for advanced token savings. | Advanced Token Savings Research (above) |
